@@ -15,10 +15,15 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with Ada.Containers;
+with Ada.Containers.Hashed_Maps;
 
 with System;
-with MAT.Events;
+
 with Util.Properties;
+
+with MAT.Types;
+with MAT.Events;
 package MAT.Readers is
 
    type Buffer_Type is private;
@@ -73,6 +78,10 @@ package MAT.Readers is
    --  Setup the servant to receive and process messages identified
    --  by Name.
 
+   procedure Dispatch_Message (Client : in out Manager_Base;
+                               Msg_Id : in MAT.Events.Internal_Reference;
+                               Msg    : in out Message);
+
 private
 
    type Buffer_Type is record
@@ -87,8 +96,25 @@ private
       Owner : Manager := null;
    end record;
 
+   --  Record a servant
+   type Message_Handler is record
+      For_Servant : Reader_Access;
+      Id          : MAT.Events.Internal_Reference;
+   end record;
+
+   function Hash (Key : in MAT.Events.Internal_Reference) return Ada.Containers.Hash_Type;
+
+   use type MAT.Types.Uint32;
+
+   --  Runtime handlers associated with the events.
+   package Handler_Maps is
+     new Ada.Containers.Hashed_Maps (Key_Type     => MAT.Events.Internal_Reference,
+                                     Element_Type => Message_Handler,
+                                     Hash         => Hash,
+                                     Equivalent_Keys => "=");
+
    type Manager_Base is tagged limited record
-      A : Natural;
+      Handlers    : Handler_Maps.Map;
    end record;
 
 end MAT.Readers;
