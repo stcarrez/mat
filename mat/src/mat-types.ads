@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------
 --  mat-types -- Global types
---  Copyright (C) 2014 Stephane.Carrez
---  Written by Stephane.Carrez (Stephane.Carrez.com)
+--  Copyright (C) 2014 Stephane Carrez
+--  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
 --  you may not use this file except in compliance with the License.
