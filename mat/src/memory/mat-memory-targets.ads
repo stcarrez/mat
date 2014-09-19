@@ -17,10 +17,9 @@
 -----------------------------------------------------------------------
 with MAT.Types;
 with MAT.Frames;
-with MAT.Clients;
 with Util.Events;
 with MAT.Memory.Events;
-package MAT.Memory.Clients is
+package MAT.Memory.Targets is
 
    type Client_Memory is new MAT.Clients.ClientInfo with record
       Memory_Slots  : Allocation_Map;
@@ -31,4 +30,4 @@ package MAT.Memory.Clients is
 
 --     procedure Create_Instance (Refs : in ClientInfo_Ref_Map);
 
-end MAT.Memory.Clients;
+end MAT.Memory.Targets;
