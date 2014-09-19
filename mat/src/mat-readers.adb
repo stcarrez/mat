@@ -16,33 +16,17 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 
-with Ada.Containers.Hashed_Maps;
 
 with MAT.Events;
 with MAT.Types;
 with Interfaces;
 package body MAT.Readers is
 
-   type Message_Handler is record
-      For_Servant : Reader_Access;
-      Id          : MAT.Events.Internal_Reference;
-   end record;
-   --  Record a servant
-
-   function Hash (Key : in MAT.Events.Internal_Reference) return Ada.Containers.Hash_Type;
-
    function Hash (Key : in MAT.Events.Internal_Reference) return Ada.Containers.Hash_Type is
    begin
       return Ada.Containers.Hash_Type (Key);
    end Hash;
 
-   use type MAT.Types.Uint32;
-   package Handler_Maps is
-     new Ada.Containers.Hashed_Maps (Key_Type     => MAT.Events.Internal_Reference,
-                                     Element_Type => Message_Handler,
-                                     Hash         => Hash,
-                                     Equivalent_Keys => "=");
-   --  Runtime handlers associated with the events.
 --
 --     function "<" (Left, Right : String_Ptr) return Boolean;
 --     package Event_Def_Containers is
@@ -144,10 +128,10 @@ package body MAT.Readers is
       end;
    end Register_Message_Analyzer;
 
-   procedure Dispatch_Message (Client : in out ClientInfo;
+   procedure Dispatch_Message (Client : in out Manager_Base;
                                Msg_Id : in MAT.Events.Internal_Reference;
                                Msg    : in out Message) is
-      It : Handler_Maps.Cursor := Client.Adapter.Handlers.Find (Msg_Id);
+      It : Handler_Maps.Cursor := Client.Handlers.Find (Msg_Id);
    begin
       if Is_Done (It) then
          --  Message is not handled, skip it.
