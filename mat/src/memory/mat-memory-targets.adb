@@ -16,10 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with MAT.Types; use MAT.Types;
-with MAT.Memory.Events.Servant;
-package body MAT.Memory.Clients is
-
-   use MAT.Memory.Events.Servant;
+package body MAT.Memory.Targets is
 
    procedure Create_Instance (Refs : in ClientInfo_Ref_Map) is
       --  Adapter : Manager       := Get_Manager (Refs);
@@ -30,4 +27,4 @@ package body MAT.Memory.Clients is
       null;
    end Create_Instance;
 
-end MAT.Memory.Clients;
+end MAT.Memory.Targets;
