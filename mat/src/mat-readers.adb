@@ -40,7 +40,7 @@ package body MAT.Readers is
                               Reader : in Reader_Access;
                               Name   : in String;
                               Id     : in MAT.Events.Internal_Reference;
-                              Model  : in MAT.Events.Attribute_Table_Ptr) is
+                              Model  : in MAT.Events.Const_Attribute_Table_Access) is
       Handler : Message_Handler;
    begin
       Handler.For_Servant := Reader;
