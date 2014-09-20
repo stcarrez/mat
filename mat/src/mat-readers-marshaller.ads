@@ -34,6 +34,10 @@ package MAT.Readers.Marshaller is
 
    function Get_Uint64 (Buffer : in Buffer_Ptr) return MAT.Types.Uint64;
 
+   --  Extract a string from the buffer.  The string starts with a byte that
+   --  indicates the string length.
+   function Get_String (Buffer : in Buffer_Ptr) return String;
+
    --  procedure Put_Uint8 (Buffer : in Buffer_Ptr; Data : in Uint8);
 
    --  procedure Put_Uint16 (Buffer : in Buffer_Ptr; Data : in Uint16);
