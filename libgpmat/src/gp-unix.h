@@ -58,7 +58,7 @@ struct rusage_info
 struct frame_info
 {
   long	frame_count;
-  long*	frame_pc;
+  void*	frame_pc;
 };
 
 typedef unsigned long long time_info;
