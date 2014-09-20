@@ -30,9 +30,9 @@ package MAT.Readers is
    type Buffer_Ptr is access Buffer_Type;
 
    type Message is record
-      Kind : MAT.Events.Event_Type;
-      Size : Natural;
-      Buf  : Buffer_Ptr;
+      Kind   : MAT.Events.Event_Type;
+      Size   : Natural;
+      Buffer : Buffer_Ptr;
    end record;
 
    -----------------
@@ -45,6 +45,7 @@ package MAT.Readers is
 
    procedure Dispatch (For_Servant : in out Reader_Base;
                        Id          : in MAT.Events.Internal_Reference;
+                       Params      : in MAT.Events.Const_Attribute_Table_Access;
                        Msg         : in out Message) is abstract;
    --  Dispatch the message
 
