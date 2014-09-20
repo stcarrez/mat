@@ -80,7 +80,6 @@ package MAT.Readers is
    --  by Name.
 
    procedure Dispatch_Message (Client : in out Manager_Base;
-                               Msg_Id : in MAT.Events.Internal_Reference;
                                Msg    : in out Message);
 
 private
@@ -101,21 +100,24 @@ private
    type Message_Handler is record
       For_Servant : Reader_Access;
       Id          : MAT.Events.Internal_Reference;
+      Mapping     : MAT.Events.Const_Attribute_Table_Access;
    end record;
 
-   function Hash (Key : in MAT.Events.Internal_Reference) return Ada.Containers.Hash_Type;
+   function Hash (Key : in MAT.Types.Uint16) return Ada.Containers.Hash_Type;
 
-   use type MAT.Types.Uint32;
+   use type MAT.Types.Uint16;
 
    --  Runtime handlers associated with the events.
    package Handler_Maps is
-     new Ada.Containers.Hashed_Maps (Key_Type     => MAT.Events.Internal_Reference,
+     new Ada.Containers.Hashed_Maps (Key_Type     => MAT.Types.Uint16,
                                      Element_Type => Message_Handler,
                                      Hash         => Hash,
                                      Equivalent_Keys => "=");
 
    type Manager_Base is tagged limited record
       Handlers    : Handler_Maps.Map;
+      Version     : MAT.Types.Uint16;
+      Flags       : MAT.Types.Uint16;
    end record;
 
 end MAT.Readers;
