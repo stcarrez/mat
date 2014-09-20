@@ -17,6 +17,8 @@
 #ifndef _GP_REMOTE_H
 #define _GP_REMOTE_H
 
+#define GP_VERSION 1
+
 struct gp_server;
 
 typedef void (* gp_remote_send_t) (struct gp_server *, const void *, size_t);
@@ -31,6 +33,10 @@ struct gp_server
   gp_remote_sync_t to_synchronize;
   gp_remote_close_t to_close;
 };
+
+extern void gp_dump (const char* title, int indent, const void* addr, size_t len);
+
+extern void gp_write (const char* title, int indent, const void* addr, size_t len);
 
 extern void gp_remote_send (const void *addr, size_t len);
 
