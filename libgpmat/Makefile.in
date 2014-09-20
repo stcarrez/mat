@@ -24,7 +24,7 @@ target_triplet = @target@
 AR = @AR@
 AS = @AS@
 CC = @CC@
-CFLAGS = @CFLAGS@ -Wall
+CFLAGS = @CFLAGS@ -Wall -fpic
 CPPFLAGS = @CPPFLAGS@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
@@ -35,7 +35,7 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LD = @LD@
-LDFLAGS = @LDFLAGS@
+LDFLAGS = @LDFLAGS@ -shared
 RANLIB = @RANLIB@
 
 CPPFLAGS = -I$(top_srcdir)/include
@@ -53,7 +53,14 @@ SOURCES = \
 	src/shm-ops.c \
 	src/frame-unix.c
 
-OBJS=$(SOURCES:.c=.o)
+OBJS=gp-events.o \
+	gp-probe.o \
+	gp-remote.o \
+	gp-file.o \
+	gp-malloc.o \
+	shm-channel.o \
+	shm-ops.o \
+	frame-unix.o
 
 LIBNAME=libgpmat.so
 
