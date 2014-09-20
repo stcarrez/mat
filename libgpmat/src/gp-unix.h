@@ -20,6 +20,7 @@
 
 #include <stddef.h>
 #include <sys/time.h>
+#include <pthread.h>
 
 #include "gp-remote.h"
 
@@ -44,7 +45,7 @@ struct proc_info
 
 struct thread_info
 {
-  long	thread_id;
+  gp_uint32 thread_id;
   long	thread_stack;
 };
 
@@ -75,7 +76,8 @@ static inline void
 gp_get_probe_info (struct gp_probe *gp)
 {
   gettimeofday (&gp->time, (struct timezone*) NULL);
-
+  gp->thread.thread_id    = (gp_uint32) pthread_self ();
+  gp->thread.thread_stack = 0;
 #ifdef HAVE_RUSAGE
   {
     struct rusage ru;
@@ -95,7 +97,9 @@ gp_remote_send_probe (struct gp_probe *gp)
 {
   gp_remote_send (&gp->time, sizeof (gp->time));
   gp_remote_send (&gp->thread, sizeof (gp->thread));
+#ifdef HAVE_RUSAGE
   gp_remote_send (&gp->rusage, sizeof (gp->rusage));
+#endif
   gp_remote_send (&gp->frame.frame_count, sizeof (gp->frame.frame_count));
   gp_remote_send (gp->frame.frame_pc,
                   gp->frame.frame_count * sizeof (gp->frame.frame_pc[0]));
