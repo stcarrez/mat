@@ -31,15 +31,6 @@ package body MAT.Readers is
       return Ada.Containers.Hash_Type (Key);
    end Hash;
 
-   procedure Register_Servant (Adapter : in Manager;
-                               Proxy : in Servant) is
-   begin
-      if Proxy.Owner /= null then
-         raise PROGRAM_ERROR;
-      end if;
-      Proxy.Owner := Adapter;
-   end Register_Servant;
-
    --  ------------------------------
    --  Register the reader to handle the event identified by the given name.
    --  The event is mapped to the given id and the attributes table is used
@@ -58,43 +49,6 @@ package body MAT.Readers is
       Handler.Mapping     := null;
       Into.Readers.Insert (Name, Handler);
    end Register_Reader;
-
-   procedure Register_Message_Analyzer (Proxy  : in Reader_Access;
-                                        Name   : in String;
-                                        Id     : in MAT.Events.Internal_Reference;
-                                        Model  : in MAT.Events.Attribute_Table;
-                                        Table  : out MAT.Events.Attribute_Table_Ptr) is
-      Handler : Message_Handler := (For_Servant => Proxy, Id => Id);
-      Adapter : IpcManager := IpcManager_Base (Proxy.Owner.all)'Access;
-      N : String_Ptr := new String'(Name);
-      It      : Event_Def_AVL.Iterator   := Find (adapter.Event_Types, N);
-   begin
-      if Is_Done (It) then
-         return;
-      end if;
-
-      declare
-         Event_Def : Event_Description_Ptr := Current_Item (It);
-         Inserted  : Boolean;
-      begin
-         Insert (T => Adapter.Handlers,
-                 Element => Handler,
-                 The_Key => Event_Def.Id,
-                 Not_Found => Inserted);
-
-         Table := new Attribute_Table (1 .. Event_Def.Nb_Attributes);
-         Table (Table'Range) := Event_Def.Def (Table'Range);
-         for I in Table'Range loop
-            Table (I).Ref := 0;
-            for J in Model'Range loop
-               if Table (I).Name.all = Model (I).Name.all then
-                  Table (I).Ref := Model (I).Ref;
-                  exit;
-               end if;
-            end loop;
-         end loop;
-      end;
-   end Register_Message_Analyzer;
 
    procedure Dispatch_Message (Client : in out Manager_Base;
                                Msg    : in out Message) is
