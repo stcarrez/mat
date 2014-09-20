@@ -15,19 +15,19 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with MAT.Types;
 with MAT.Frames;
 with Util.Events;
 with MAT.Memory.Events;
 package MAT.Memory.Targets is
 
-   type Client_Memory is new MAT.Clients.ClientInfo with record
+   type Client_Memory is record
       Memory_Slots  : Allocation_Map;
       Frames        : MAT.Frames.Frame;
-      Event_Channel : MAT.Memory.Events.Memory_Event_Channel.Channel;
+--        Event_Channel : MAT.Memory.Events.Memory_Event_Channel.Channel;
    end record;
-   type Client_Memory_Ref is access all Client_Memory'Class;
+   type Client_Memory_Ref is access all Client_Memory;
 
 --     procedure Create_Instance (Refs : in ClientInfo_Ref_Map);
 
+   procedure Init;
 end MAT.Memory.Targets;
