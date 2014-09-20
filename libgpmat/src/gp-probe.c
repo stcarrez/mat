@@ -15,12 +15,15 @@
 --  limitations under the License.
 */
 
-#include "config.h"
+#include "gp-config.h"
 #include "gp-probe.h"
 #include "gp-events.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 #define GP_STACK_FRAME_MAX 256
+
+int _gp_initialize (void);
 
 static void* gp_stack_frame_buffer [GP_STACK_FRAME_MAX];
 
@@ -90,7 +93,7 @@ gp_free_probe (struct gp_probe *gp)
 }
 
 void
-gp_exit ()
+gp_exit (void)
 {
   struct gp_probe probe;
   int result;
@@ -108,7 +111,7 @@ gp_exit ()
 }
 
 int
-_gp_initialize ()
+_gp_initialize (void)
 {
   struct gp_probe probe;
   int result;
