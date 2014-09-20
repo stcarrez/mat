@@ -2,7 +2,7 @@ INSTALL=@INSTALL@
 
 srcdir = .
 top_srcdir = @top_srcdir@
-VPATH = @srcdir@
+VPATH = @srcdir@/src
 prefix = @prefix@
 exec_prefix = @exec_prefix@
 top_builddir = .
@@ -66,10 +66,15 @@ LIBNAME=libgpmat.so
 
 COMPILE=$(CC) $(CFLAGS)
 
+LIBS=-ldl
+
 all:	$(LIBNAME)
 
+clean:
+	$(RM) -f $(OBJS) $(LIBNAME)
+
 $(LIBNAME):		$(OBJS)
-	$(LD) -o $(LIBNAME) $(LDFLAGS) $(OBJS)
+	$(CC) -o $(LIBNAME) $(LDFLAGS) $(OBJS) $(LIBS)
 
 .c.o:
 	$(COMPILE) -c $<
