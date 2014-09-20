@@ -36,16 +36,22 @@ enum gp_probe_state
 
 static enum gp_probe_state gp_is_initialized = GP_NOT_INITIALIZED;
 
+static __thread int gp_recursive = 0;
+
 int
 gp_probe_lock ()
 {
+  if (gp_recursive != 0)
+    return -1;
+
+  gp_recursive++;
   return 0;
 }
 
 void
 gp_probe_unlock ()
 {
-  ;
+  gp_recursive--;
 }
 
 int
@@ -80,8 +86,6 @@ gp_get_probe (struct gp_probe *gp)
   gp->frame.frame_count = gp_fetch_stack_frame (gp_stack_frame_buffer,
                                                 GP_STACK_FRAME_MAX, 1);
   gp->frame.frame_pc = gp_stack_frame_buffer;
-  
-  gp->thread.thread_id    = 0;
   gp->thread.thread_stack = (long) (gp) + sizeof (*gp);
   return 1;
 }
