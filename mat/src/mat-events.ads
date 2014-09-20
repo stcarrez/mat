@@ -18,6 +18,7 @@
 with Interfaces;
 with Ada.Strings.Unbounded;
 with MAT.Types;
+with Util.Strings;
 package MAT.Events is
 
    use Interfaces;
@@ -30,6 +31,7 @@ package MAT.Events is
                            T_PROBE,
                            T_FRAME,
                            T_THREAD,
+                           T_TIME,
                            T_SIZE_T);
 
    type Event_Type is new Interfaces.Unsigned_32;
@@ -37,7 +39,7 @@ package MAT.Events is
    subtype Internal_Reference is Natural;
 
    type Attribute is record
-      Name : Ada.Strings.Unbounded.Unbounded_String;
+      Name : Util.Strings.Name_Access;
       Size : Natural;
       Kind : Attribute_Type;
       Ref  : Internal_Reference;
@@ -46,6 +48,7 @@ package MAT.Events is
 
    type Attribute_Table is array (Natural range <>) of Attribute;
    type Attribute_Table_Ptr is access all Attribute_Table;
+   type Const_Attribute_Table_Access is access constant Attribute_Table;
 
    type Event_Description (Nb_Attributes : Natural) is record
       Name : Ada.Strings.Unbounded.Unbounded_String;
