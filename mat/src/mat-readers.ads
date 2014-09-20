@@ -65,6 +65,15 @@ package MAT.Readers is
    type Manager_Base is tagged limited private;
    type Manager is access all Manager_Base'Class;
 
+   --  Register the reader to handle the event identified by the given name.
+   --  The event is mapped to the given id and the attributes table is used
+   --  to setup the mapping from the data stream attributes.
+   procedure Register_Reader (Into   : in out Manager_Base;
+                              Reader : in Reader_Access;
+                              Name   : in String;
+                              Id     : in MAT.Events.Internal_Reference;
+                              Model  : in MAT.Events.Attribute_Table_Ptr);
+
    procedure Register_Servant (Adapter : in Manager;
                                Proxy   : in Reader_Access);
    --  Register the proxy servant in the object adapter.
