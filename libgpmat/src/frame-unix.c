@@ -52,6 +52,10 @@
 #include <stdio.h>
 #include "gp-probe.h"
 
+#ifdef HAVE_BACKTRACE
+# include <execinfo.h>
+#endif
+
 #ifdef HAVE_SIGNAL_H
 # include <signal.h>
 #endif
@@ -78,17 +82,6 @@
 #error "CPU not supported for frame unwinding"
 #endif
 
-static jmp_buf	gp_frame_restart_point;
-
-/* A SIGBUS or SIGSEGV signal has been received while
-   examining the stack frame.  */
-static void
-catch_bus_error (int sig)
-{
-  longjmp (gp_frame_restart_point, 1);
-}
-
-
 #ifdef HAVE_REGISTER_WINDOW
 
 #  ifndef REGISTER_WINDOW_COUNT
@@ -111,22 +104,44 @@ gp_flush_registers (int count)
 }
 #endif
 
+#ifdef HAVE_BACKTRACE
+int
+gp_fetch_stack_frame (void **table, int size, int skip)
+{
+    return backtrace (table, size);
+}
+#else
+
+static jmp_buf	gp_frame_restart_point;
+
+/* A SIGBUS or SIGSEGV signal has been received while
+   examining the stack frame.  */
+static void
+catch_bus_error (int sig)
+{
+  longjmp (gp_frame_restart_point, 1);
+}
+
 int
 gp_fetch_stack_frame (void **table, int size, int skip)
 {
   struct frame	*fp;
   auto int nr_frames = 0;
 
-#ifdef HAVE_SIGNAL
+#ifdef HAVE_SIGACTION
   struct sigaction	oact_SIGBUS;
   struct sigaction	oact_SIGSEGV;
   struct sigaction	act;
-  int			omask;
+  sigset_t set;
+  sigset_t oldset;
 
-  omask = sigblock (-1 & ~(sigmask (SIGBUS)|sigmask (SIGSEGV)));
+  sigfillset (&set);
+  sigdelset (&set, SIGBUS);
+  sigdelset (&set, SIGSEGV);
+  (void) sigprocmask (SIG_BLOCK, &set, &oldset);
 
   /* Catch the SIGBUS and SIGSEGV signals.  */
-  act.sa_handler = CatchSigBus;
+  act.sa_handler = catch_bus_error;
   sigemptyset (&act.sa_mask);
   act.sa_flags   = 0;
 
@@ -139,7 +154,7 @@ gp_fetch_stack_frame (void **table, int size, int skip)
       sigaction (SIGBUS, &oact_SIGBUS, (struct sigaction *) 0);
       sigaction (SIGSEGV, &oact_SIGSEGV, (struct sigaction *) 0);
 
-      (void) sigsetmask (omask);
+      (void) sigprocmask (SIG_SETMASK, &oldset, NULL);
       return 0;
     }
 
@@ -152,7 +167,7 @@ gp_fetch_stack_frame (void **table, int size, int skip)
       sigaction (SIGBUS, &oact_SIGBUS, (struct sigaction *) 0);
       sigaction (SIGSEGV, &oact_SIGSEGV, (struct sigaction *) 0);
 
-      (void) sigsetmask (omask);
+      (void) sigprocmask (SIG_SETMASK, &oldset, NULL);
       return nr_frames;
     }
 #endif
@@ -188,13 +203,14 @@ gp_fetch_stack_frame (void **table, int size, int skip)
       fp = gp_get_frame_next (fp);
     }
 
-#ifdef HAVE_SIGNAL
+#ifdef HAVE_SIGACION
   sigaction (SIGBUS, &oact_SIGBUS, (struct sigaction *) 0);
   sigaction (SIGSEGV, &oact_SIGSEGV, (struct sigaction *) 0);
 
-  (void) sigsetmask (omask);
+  (void) sigprocmask (SIG_SETMASK, &oldset, NULL);
 #endif
 
   return nr_frames;
 }
+#endif
 
