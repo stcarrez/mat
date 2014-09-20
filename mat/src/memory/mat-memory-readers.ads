@@ -31,6 +31,7 @@ package MAT.Memory.Readers is
 --        Slots : Client_Memory_Ref;
 --        Impl        : Client_Memory_Ref;
    end record;
+   type Memory_Reader_Access is access all Memory_Servant'Class;
    --  The memory servant is a proxy for the generic communication
    --  channel to process incomming events (such as memory allocations).
 
@@ -40,8 +41,8 @@ package MAT.Memory.Readers is
                        Params      : in MAT.Events.Const_Attribute_Table_Access;
                        Msg         : in out MAT.Readers.Message);
 
-   procedure Bind (For_Servant : in out Memory_Servant);
-   --  Bind the servant with the object adapter to register the
-   --  events it recognizes.
+   --  Register the reader to extract and analyze memory events.
+   procedure Register (Into   : in out MAT.Readers.Manager_Base'Class;
+                       Reader : in Memory_Reader_Access);
 
 end MAT.Memory.Readers;
