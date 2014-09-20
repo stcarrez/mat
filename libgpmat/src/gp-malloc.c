@@ -125,7 +125,10 @@ __libc_free (void* ptr)
       gp_free_probe (&probe);
     }
 
-  _free (ptr);
+  if (_free != NULL)
+    {
+      _free (ptr);
+    }
 }
 
 void
