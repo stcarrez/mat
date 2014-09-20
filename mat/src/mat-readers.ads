@@ -74,22 +74,6 @@ package MAT.Readers is
                               Id     : in MAT.Events.Internal_Reference;
                               Model  : in MAT.Events.Attribute_Table_Ptr);
 
-   procedure Register_Servant (Adapter : in Manager;
-                               Proxy   : in Reader_Access);
-   --  Register the proxy servant in the object adapter.
-
---     function Get_Manager (Refs : in ClientInfo_Ref_Map) return Manager;
-   --  Return the object adapter manager which holds all the servant
-   --  for the client.
-
-   procedure Register_Message_Analyzer (Proxy  : in Reader_Access;
-                                        Name   : in String;
-                                        Id     : in MAT.Events.Internal_Reference;
-                                        Model  : in MAT.Events.Attribute_Table;
-                                        Table  : out MAT.Events.Attribute_Table_Ptr);
-   --  Setup the servant to receive and process messages identified
-   --  by Name.
-
    procedure Dispatch_Message (Client : in out Manager_Base;
                                Msg    : in out Message);
 
