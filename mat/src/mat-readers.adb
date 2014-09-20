@@ -19,6 +19,7 @@
 
 with MAT.Events;
 with MAT.Types;
+with MAT.Readers.Marshaller;
 with Interfaces;
 package body MAT.Readers is
 
@@ -129,20 +130,49 @@ package body MAT.Readers is
    end Register_Message_Analyzer;
 
    procedure Dispatch_Message (Client : in out Manager_Base;
-                               Msg_Id : in MAT.Events.Internal_Reference;
                                Msg    : in out Message) is
-      It : Handler_Maps.Cursor := Client.Handlers.Find (Msg_Id);
+      Event : constant MAT.Types.Uint16 := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
+      Pos   : constant Handler_Maps.Cursor := Client.Handlers.Find (Event);
    begin
-      if Is_Done (It) then
+      if Handler_Maps.Has_Element (Pos) then
          --  Message is not handled, skip it.
          null;
       else
          declare
-            Handler : Message_Handler := Current_Item (It);
+            Handler : constant Message_Handler := Handler_Maps.Element (Pos);
          begin
-            Dispatch (Handler.For_Servant.all, Handler.Id, Msg);
+            Dispatch (Handler.For_Servant.all, Handler.Id, Handler.Mapping, Msg);
          end;
       end if;
    end Dispatch_Message;
+
+   procedure Read_Headers (Client : in out Manager_Base;
+                           Msg    : in out Message) is
+      Count : MAT.Types.Uint16;
+
+   begin
+      Client.Version := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
+      Client.Flags   := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
+      Count := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
+      for I in 1 .. Count loop
+         declare
+            Name  : constant String := MAT.Readers.Marshaller.Get_String (Msg.Buffer);
+            Event : constant MAT.Types.Uint16 := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
+            Cnt   : constant MAT.Types.Uint8 := MAT.Readers.Marshaller.Get_Uint8 (Msg.Buffer);
+            Pos   : constant Cursor := Client.Readers.Find (Name);
+
+            procedure Read_Attribute_Definition (Element : in out Event_Description) is
+               Name : constant String := MAT.Readers.Marshaller.Get_String (Msg.Buffer);
+               Size : constant MAT.Types.Uint16 := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
+            begin
+            end Read_Attribute_Definition;
+
+         begin
+            if Has_Element (Pos) then
+               Client.Readers.Update_Element (Pos, Read_Attribute_Definition'Access);
+            end if;
+         end;
+      end loop;
+   end Read_Headers;
 
 end MAT.Readers;
