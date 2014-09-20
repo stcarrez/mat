@@ -87,4 +87,26 @@ package body MAT.Readers.Marshaller is
       return Val + MAT.Types.Uint64 (Get_Uint32 (Buffer)) * 2**32;
    end Get_Uint64;
 
+   function Get_Target_Value (Msg  : in Buffer_Ptr;
+                              Kind : in MAT.Events.Attribute_Type) return Target_Type is
+   begin
+      case Kind is
+         when MAT.Events.T_UINT8 =>
+            return Target_Type (Get_Uint8 (Msg));
+
+         when MAT.Events.T_UINT16 =>
+            return Target_Type (Get_Uint16 (Msg));
+
+         when MAT.Events.T_UINT32 =>
+            return Target_Type (Get_Uint32 (Msg));
+
+         when MAT.Events.T_UINT64 =>
+            return Target_Type (Get_Uint64 (Msg));
+
+         when others =>
+            pragma Assert (False, "Invalid attribute type ");
+            return 0;
+      end case;
+   end Get_Target_Value;
+
 end MAT.Readers.Marshaller;
