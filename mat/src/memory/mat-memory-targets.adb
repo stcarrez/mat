@@ -17,14 +17,18 @@
 -----------------------------------------------------------------------
 with MAT.Types; use MAT.Types;
 package body MAT.Memory.Targets is
-
-   procedure Create_Instance (Refs : in ClientInfo_Ref_Map) is
-      --  Adapter : Manager       := Get_Manager (Refs);
-      --  Client  : Client_Memory := new Client_Memory;
+--
+--     procedure Create_Instance (Refs : in ClientInfo_Ref_Map) is
+--        --  Adapter : Manager       := Get_Manager (Refs);
+--        --  Client  : Client_Memory := new Client_Memory;
+--     begin
+--        --  Register_Client (Refs, "memory", Client.all'Access);
+--        --  Register_Servant (Adapter, Proxy);
+--        null;
+--     end Create_Instance;
+   procedure Init is
    begin
-      --  Register_Client (Refs, "memory", Client.all'Access);
-      --  Register_Servant (Adapter, Proxy);
       null;
-   end Create_Instance;
+   end Init;
 
 end MAT.Memory.Targets;
