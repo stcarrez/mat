@@ -56,7 +56,8 @@ package MAT.Readers.Marshaller is
 
    function Get_Target_Thread is new Get_Target_Value (MAT.Types.Target_Thread_Ref);
 
-   procedure Skip (Msg  : in Buffer_Ptr;
-                   Size : in Natural);
+   --  Skip the given number of bytes from the message.
+   procedure Skip (Buffer : in Buffer_Ptr;
+                   Size   : in Natural);
 
 end MAT.Readers.Marshaller;
