@@ -40,16 +40,22 @@ package body MAT.Readers is
       Proxy.Owner := Adapter;
    end Register_Servant;
 
-   procedure Register_Reader (Into  : in out Manager_Base;
-                              Name  : in String;
-                              Id    : in MAT.Events.Internal_Reference;
-                              Model : in MAT.Events.Attribute_Table_Ptr) is
+   --  ------------------------------
+   --  Register the reader to handle the event identified by the given name.
+   --  The event is mapped to the given id and the attributes table is used
+   --  to setup the mapping from the data stream attributes.
+   --  ------------------------------
+   procedure Register_Reader (Into   : in out Manager_Base;
+                              Reader : in Reader_Access;
+                              Name   : in String;
+                              Id     : in MAT.Events.Internal_Reference;
+                              Model  : in MAT.Events.Attribute_Table_Ptr) is
       Handler : Message_Handler;
    begin
+      Handler.For_Servant := Reader;
       Handler.Id := Id;
       Handler.Attributes  := Model;
-      Handler.Mapping     := new MAT.Events.Attribute_Table (Model'Range);
-      Handler.Mapping.all := Model.all;
+      Handler.Mapping     := null;
       Into.Readers.Insert (Name, Handler);
    end Register_Reader;
 
