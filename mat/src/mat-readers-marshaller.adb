@@ -109,4 +109,18 @@ package body MAT.Readers.Marshaller is
       end case;
    end Get_Target_Value;
 
+   --  ------------------------------
+   --  Extract a string from the buffer.  The string starts with a byte that
+   --  indicates the string length.
+   --  ------------------------------
+   function Get_String (Buffer : in Buffer_Ptr) return String is
+      Len    : constant MAT.Types.Uint8 := Get_Uint8 (Buffer);
+      Result : String (1 .. Natural (Len));
+   begin
+      for I in Result'Range loop
+         Result (I) := Character'Val (Get_Uint8 (Buffer));
+      end loop;
+      return Result;
+   end Get_String;
+
 end MAT.Readers.Marshaller;
