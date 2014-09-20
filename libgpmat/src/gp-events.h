@@ -18,13 +18,6 @@
 #ifndef _GP_EVENTS_H
 #define _GP_EVENTS_H
 
-typedef unsigned char gp_uint8;
-typedef unsigned gp_uint8_varg;
-typedef unsigned short gp_uint16;
-typedef unsigned gp_uint16_varg;
-typedef unsigned long gp_uint32;
-typedef unsigned long long gp_uint64;
-
 typedef enum
 {
   GP_TYPE_UINT8,

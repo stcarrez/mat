@@ -18,6 +18,13 @@
 #ifndef _GP_PROBE_H
 #define _GP_PROBE_H
 
+typedef unsigned char gp_uint8;
+typedef unsigned gp_uint8_varg;
+typedef unsigned short gp_uint16;
+typedef unsigned gp_uint16_varg;
+typedef unsigned long gp_uint32;
+typedef unsigned long long gp_uint64;
+
 #include "gp-unix.h"
 
 extern int gp_get_probe (struct gp_probe *gp);
