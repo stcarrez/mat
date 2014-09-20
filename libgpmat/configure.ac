@@ -14,17 +14,12 @@ dnl  See the License for the specific language governing permissions and
 dnl  limitations under the License.
 dnl 
 
-sinclude(../aclocal.m4)
-
 AC_PREREQ(2.59)
-AC_INIT(Grand Profiler, 1.0,gprofiler@vacs.fr,libgprofiler)
-
+AC_INIT(mat, 1.0,gprofiler@vacs.fr,libgpmat)
 
 AC_CANONICAL_SYSTEM
 
 AC_CONFIG_HEADERS([src/gp-config.h])
-AM_INIT_AUTOMAKE([-Wall gnu 1.9 dist-bzip2 dist-zip check-news])
-AM_MAINTAINER_MODE
 
 AC_EXEEXT
 
@@ -38,10 +33,8 @@ AC_PROG_LN_S
 
 AC_ISC_POSIX
 AC_PROG_CC
-AC_PROG_LD
 AC_PROG_CPP
 AC_LANG(C)
-AM_PROG_AS
 AC_PROG_INSTALL
 
 test_CFLAGS=${CFLAGS+set}
@@ -55,14 +48,12 @@ if test "$test_CFLAGS" != set && test -n "$GCC"; then
   fi
 fi
 
-AM_PROG_CC_C_O
-AM_C_PROTOTYPES
 AC_C_CONST
 AC_C_VOLATILE
 
-AC_LIBTOOL_WIN32_DLL
-
 AC_CHECK_HEADERS(sys/shm.h sys/ipc.h sys/sem.h sys/time.h time.h stdlib.h signal.h setjmp.h)
+AC_CHECK_FUNCS(sigaction)
+AC_CHECK_FUNCS(backtrace)
 
 case "$target" in
   i386-*|i486-*|i586-*|i686-*)
