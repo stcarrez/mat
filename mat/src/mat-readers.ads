@@ -51,7 +51,7 @@ package MAT.Readers is
                        Msg         : in out Message) is abstract;
    --  Dispatch the message
 
-   procedure Bind (For_Servant : in out Reader_Base) is abstract;
+--     procedure Bind (For_Servant : in out Reader_Base) is abstract;
    --  Bind the servant with the object adapter to register the
    --  events it recognizes.  This is called once we have all the
    --  information about the structures of events that we can
@@ -72,7 +72,7 @@ package MAT.Readers is
                               Reader : in Reader_Access;
                               Name   : in String;
                               Id     : in MAT.Events.Internal_Reference;
-                              Model  : in MAT.Events.Attribute_Table_Ptr);
+                              Model  : in MAT.Events.Const_Attribute_Table_Access);
 
    procedure Dispatch_Message (Client : in out Manager_Base;
                                Msg    : in out Message);
@@ -95,7 +95,7 @@ private
    type Message_Handler is record
       For_Servant : Reader_Access;
       Id          : MAT.Events.Internal_Reference;
-      Attributes  : MAT.Events.Attribute_Table_Ptr;
+      Attributes  : MAT.Events.Const_Attribute_Table_Access;
       Mapping     : MAT.Events.Attribute_Table_Ptr;
    end record;
 
