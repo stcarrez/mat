@@ -16,8 +16,30 @@
 */
 #include "gp-config.h"
 #include <stdarg.h>
+#include <string.h>
+#include <unistd.h>
 #include "gp-probe.h"
 #include "gp-events.h"
+
+void
+gp_send_attributes (const struct gp_event_def *type)
+{
+  size_t len = strlen(type->name) + 2;
+  const struct gp_attr_def *attr;
+  int i;
+  
+  gp_write ("BLOCK", 0, &len, sizeof (len));
+  gp_write ("EVENT", 2, type->name, len);
+  gp_write ("ID", 2, &type->type, sizeof (type->type));
+  attr = type->attributes;
+  for (i = type->nr_attrs; --i >= 0; attr++)
+    {
+      len = strlen (attr->name);
+      gp_write ("A-LEN", 4, &len, sizeof (len));
+      gp_write ("A-NAME", 4, attr->name, len);
+      gp_write ("A-TYPE", 4, &attr->type, sizeof (attr->type));
+    }
+}
 
 void
 gp_event_send (struct gp_probe *gp, int size,
@@ -32,8 +54,8 @@ gp_event_send (struct gp_probe *gp, int size,
     + size
     + gp_remote_sizeof_probe (gp);
 
-  gp_remote_send (&len, sizeof (len));
-  gp_remote_send (&type->type, sizeof (type->type));
+  gp_write ("PROBE", 0, &len, sizeof (len));
+  gp_write (type->name, 2, &type->type, sizeof (type->type));
   gp_remote_send_probe (gp);
   
   va_start (argp, type);
@@ -52,22 +74,22 @@ gp_event_send (struct gp_probe *gp, int size,
         {
         case 1:
           u.u8 = va_arg (argp, gp_uint8_varg);
-          gp_remote_send (&u.u8, sizeof (gp_uint8));
+          gp_write (attr->name, 4, &u.u8, sizeof (gp_uint8));
           break;
 
         case 2:
           u.u16 = va_arg (argp, gp_uint16_varg);
-          gp_remote_send (&u.u16, sizeof (gp_uint16));
+          gp_write (attr->name, 4, &u.u16, sizeof (gp_uint16));
           break;
           
         case 4:
           u.u32 = va_arg (argp, gp_uint32);
-          gp_remote_send (&u.u32, sizeof (gp_uint32));
+          gp_write (attr->name, 4, &u.u32, sizeof (gp_uint32));
           break;
 
         case 8:
           u.u64 = va_arg (argp, gp_uint64);
-          gp_remote_send (&u.u64, sizeof (gp_uint64));
+          gp_write (attr->name, 4, &u.u64, sizeof (gp_uint64));
           break;
 
         default:
@@ -140,9 +162,27 @@ const struct gp_event_def gp_event_begin_def = {
   0
 };
 
+static const struct gp_event_def* events[] = {
+  &gp_event_begin_def,
+  &gp_event_malloc_def,
+  &gp_event_free_def,
+  &gp_event_realloc_def,
+  &gp_event_end_def
+};
+
 void
 gp_event_begin (struct gp_probe *gp)
 {
+  int i;
+  gp_uint16 version = GP_VERSION;
+  gp_uint16 count   = sizeof (events) / sizeof (const struct gp_event_def*);
+
+  gp_remote_send (&version, sizeof (version));
+  gp_remote_send (&count, sizeof (count));
+  for (i = 0; i < count; i++)
+    {
+      gp_send_attributes (events[i]);
+    }
   gp_event_send (gp, 0, &gp_event_begin_def);
 }
 
