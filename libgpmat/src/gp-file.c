@@ -14,7 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 */
-#include "config.h"
+#include "gp-config.h"
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
@@ -75,8 +75,9 @@ void gp_file_send (struct gp_server* server, const void* ptr, size_t len)
      }
 }
 
-void gp_file_synchronize (struct gp_server* server)
+int gp_file_synchronize (struct gp_server* server)
 {
+    return 0;
 }
 
 void gp_file_close (struct gp_server* server)
