@@ -15,9 +15,10 @@
 --  limitations under the License.
 */
 
-#include "config.h"
+#include "gp-config.h"
 #include <stdarg.h>
 #include <stdlib.h>
+#include <string.h>
 #include "gp-probe.h"
 #include "gp-events.h"
 #include "gp-file.h"
@@ -60,7 +61,7 @@ gp_remote_initialize (void)
     {
       if (strncmp (p, "file://", 7) == 0)
         {
-          server = gp_file_open (&p[7]);
+            server = (struct gp_server*) gp_file_open (&p[7]);
         }
     }
   // return gp_shm_channel_create (&gp_shm, SHARED_MEMORY_CLIENT_KEY, 8192);
