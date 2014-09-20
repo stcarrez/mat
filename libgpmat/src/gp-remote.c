@@ -19,12 +19,49 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "gp-probe.h"
 #include "gp-events.h"
 #include "gp-file.h"
 #include "shm-channel.h"
 
 static struct gp_server* server;
+
+static void
+to_hex (char* buf, unsigned byte)
+{
+  buf[0] = "0123456789ABCDEF"[(byte >> 4) & 0x0F];
+  buf[1] = "0123456789ABCDEF"[byte & 0x0F];
+}
+
+void
+gp_dump (const char* title, int indent, const void* addr, size_t len)
+{
+  char buf[256];
+  unsigned char* ptr = (unsigned char*) addr;
+
+  if (indent > 0)
+    {
+      memset (buf, ' ', indent);
+      write (STDERR_FILENO, buf, indent);
+    }
+  write (STDERR_FILENO, title, strlen (title));
+  write (STDERR_FILENO, ": ", 2);
+  while (len != 0) {
+    to_hex(buf, *ptr);
+    ptr++;
+    len--;
+    write (STDERR_FILENO, buf, 2);
+  }
+  write (STDERR_FILENO, "\n", 1);
+}
+
+void
+gp_write (const char* title, int indent, const void* addr, size_t len)
+{
+  gp_dump (title, indent, addr, len);
+  gp_remote_send (addr, len);
+}
 
 void
 gp_remote_send (const void *addr, size_t len)
