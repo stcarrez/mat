@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 with System;
 with MAT.Types;
+with MAT.Events;
 package MAT.Readers.Marshaller is
 
    Buffer_Underflow_Error : exception;
@@ -38,5 +39,20 @@ package MAT.Readers.Marshaller is
    --  procedure Put_Uint16 (Buffer : in Buffer_Ptr; Data : in Uint16);
 
    --  procedure Put_Uint32 (Buffer : in Buffer_Ptr; Data : in Uint32);
+   generic
+      type Target_Type is mod <>;
+   function Get_Target_Value (Msg  : in Buffer_Ptr;
+                              Kind : in MAT.Events.Attribute_Type) return Target_Type;
+
+   function Get_Target_Size is new Get_Target_Value (MAT.Types.Target_Size);
+
+   function Get_Target_Addr is new Get_Target_Value (MAT.Types.Target_Addr);
+
+   function Get_Target_Tick is new Get_Target_Value (MAT.Types.Target_Tick_Ref);
+
+   function Get_Target_Thread is new Get_Target_Value (MAT.Types.Target_Thread_Ref);
+
+   procedure Skip (Msg  : in Buffer_Ptr;
+                   Size : in Natural);
 
 end MAT.Readers.Marshaller;
