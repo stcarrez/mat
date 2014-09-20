@@ -17,6 +17,6 @@
 #ifndef _GP_FILE_H
 #define _GP_FILE_H
 
-extern struct gp_server* gp_file_initialize (void);
+extern struct gp_file_server* gp_file_open (const char* param);
 
 #endif
