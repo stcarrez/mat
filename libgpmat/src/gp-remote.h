@@ -19,7 +19,7 @@
 
 struct gp_server;
 
-typedef int (* gp_remote_send_t) (struct gp_server *, const void *, size_t);
+typedef void (* gp_remote_send_t) (struct gp_server *, const void *, size_t);
 
 typedef int (* gp_remote_sync_t) (struct gp_server *);
 
