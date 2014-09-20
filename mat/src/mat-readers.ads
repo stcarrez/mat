@@ -17,6 +17,8 @@
 -----------------------------------------------------------------------
 with Ada.Containers;
 with Ada.Containers.Hashed_Maps;
+with Ada.Containers.Indefinite_Hashed_Maps;
+with Ada.Strings.Hash;
 
 with System;
 
@@ -100,12 +102,19 @@ private
    type Message_Handler is record
       For_Servant : Reader_Access;
       Id          : MAT.Events.Internal_Reference;
-      Mapping     : MAT.Events.Const_Attribute_Table_Access;
+      Attributes  : MAT.Events.Attribute_Table_Ptr;
+      Mapping     : MAT.Events.Attribute_Table_Ptr;
    end record;
 
    function Hash (Key : in MAT.Types.Uint16) return Ada.Containers.Hash_Type;
 
    use type MAT.Types.Uint16;
+
+   package Reader_Maps is
+     new Ada.Containers.Indefinite_Hashed_Maps (Key_Type        => String,
+                                                Element_Type    => Message_Handler,
+                                                Hash            => Ada.Strings.Hash,
+                                                Equivalent_Keys => "=");
 
    --  Runtime handlers associated with the events.
    package Handler_Maps is
@@ -115,9 +124,14 @@ private
                                      Equivalent_Keys => "=");
 
    type Manager_Base is tagged limited record
+      Readers     : Reader_Maps.Map;
       Handlers    : Handler_Maps.Map;
       Version     : MAT.Types.Uint16;
       Flags       : MAT.Types.Uint16;
    end record;
+
+   --  Read an event definition from the stream and configure the reader.
+   procedure Read_Definition (Client : in out Manager_Base;
+                              Msg    : in out Message);
 
 end MAT.Readers;
