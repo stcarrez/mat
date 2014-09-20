@@ -27,6 +27,11 @@
 /* Define if you have the <time.h> header file.  */
 #undef HAVE_TIME_H
 
+/* Define if the sigaction is available.  */
+#undef HAVE_SIGACTION
+
+#undef HAVE_BACKTRACE
+
 /* Name of package */
 #undef PACKAGE
 
