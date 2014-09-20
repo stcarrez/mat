@@ -15,7 +15,7 @@
 --  limitations under the License.
 */
 
-#include "config.h"
+#include "gp-config.h"
 #include "gp-probe.h"
 #include "gp-events.h"
 #include <stdlib.h>
@@ -115,7 +115,6 @@ __libc_free (void* ptr)
 {
   struct gp_probe probe;
   int has_probe;
-  void *p;
 
   /* Get the probe information.  */
   has_probe = gp_get_probe (&probe);
