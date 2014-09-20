@@ -38,7 +38,7 @@ package MAT.Memory is
    --  Memory allocation objects are stored in an AVL tree sorted
    --  on the memory slot address.
 --
---     subtype Allocation_Map is Allocation_Maps.Map;
+   subtype Allocation_Map is Allocation_Maps.Map;
 --
 --     subtype Allocation_Ref is Allocation_AVL.Iterator;
 --     --  Type representing a reference to a memory allocation slot.
