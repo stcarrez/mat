@@ -123,4 +123,14 @@ package body MAT.Readers.Marshaller is
       return Result;
    end Get_String;
 
+   --  ------------------------------
+   --  Skip the given number of bytes from the message.
+   --  ------------------------------
+   procedure Skip (Buffer : in Buffer_Ptr;
+                   Size   : in Natural) is
+   begin
+      Buffer.Size := Buffer.Size - Size;
+      Buffer.Current := Buffer.Current + Storage_Offset (Size);
+   end Skip;
+
 end MAT.Readers.Marshaller;
