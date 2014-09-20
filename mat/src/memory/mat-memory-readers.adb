@@ -57,18 +57,18 @@ package body MAT.Memory.Readers is
             Kind => MAT.Events.T_TIME, Ref => M_TIME));
 
    ----------------------
-   --  Bind the servant with the object adapter to register the
-   --  events it recognizes.
+   --  Register the reader to extract and analyze memory events.
    ----------------------
-   procedure Bind (For_Servant : in out Memory_Servant) is
+   procedure Register (Into   : in out MAT.Readers.Manager_Base'Class;
+                       Reader : in Memory_Reader_Access) is
    begin
-      Bind_Servant (For_Servant, "malloc", MSG_MALLOC,
-                    Memory_Attributes'Access);
-      Bind_Servant (For_Servant, "free", MSG_FREE,
-                    Memory_Attributes'Access);
-      Bind_Servant (For_Servant, "realloc", MSG_REALLOC,
-                    Memory_Attributes'Access);
-   end Bind;
+      Into.Register_Reader (Reader.all'Access, "malloc", MSG_MALLOC,
+                            Memory_Attributes'Access);
+      Into.Register_Reader (Reader.all'Access, "free", MSG_FREE,
+                            Memory_Attributes'Access);
+      Into.Register_Reader (Reader.all'Access, "realloc", MSG_REALLOC,
+                            Memory_Attributes'Access);
+   end Register;
 
    ----------------------
    --  A memory allocation message is received.  Register the memory
