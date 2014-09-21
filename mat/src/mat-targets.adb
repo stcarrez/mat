@@ -17,31 +17,15 @@
 -----------------------------------------------------------------------
 package body MAT.Targets is
 
-   function Find_Sibling (Client : ClientInfo_Ref;
-                          Kind : in String) return ClientInfo_Ref is
+   --  ------------------------------
+   --  Initialize the target object to manage the memory slots, the stack frames
+   --  and setup the reader to analyze the memory and other events.
+   --  ------------------------------
+   procedure Initialize (Target : in out Target_Type;
+                         Reader : in out MAT.Readers.Manager_Base'Class) is
    begin
-      return null;
-   end Find_Sibling;
-
-   function Find (Container : ClientInfo_Ref_Map;
-                  Kind : in String) return ClientInfo_Ref is
---        It : Iterator := Find (Container.Map, +Kind);
-   begin
-      return null;
---        if Is_Done (It) then
---  	 return null;
---        else
---  	 return Current_Item (It);
---        end if;
-   end Find;
-
-   procedure Register_Client (Refs   : in out ClientInfo_Ref_Map;
-                              Name   : in String;
-                              Client : in ClientInfo_Ref) is
-      Inserted : Boolean;
-   begin
-      --        Insert (Refs.Map, Client, +Name, Inserted);
-      null;
-   end Register_Client;
+      MAT.Memory.Targets.Initialize (Memory => Target.Memory,
+                                     Reader => Reader);
+   end Initialize;
 
 end MAT.Targets;
