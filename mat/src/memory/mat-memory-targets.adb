@@ -15,20 +15,19 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with MAT.Types; use MAT.Types;
+with MAT.Memory.Readers;
 package body MAT.Memory.Targets is
---
---     procedure Create_Instance (Refs : in ClientInfo_Ref_Map) is
---        --  Adapter : Manager       := Get_Manager (Refs);
---        --  Client  : Client_Memory := new Client_Memory;
---     begin
---        --  Register_Client (Refs, "memory", Client.all'Access);
---        --  Register_Servant (Adapter, Proxy);
---        null;
---     end Create_Instance;
-   procedure Init is
+
+
+   --  Initialize the target memory object to manage the memory slots, the stack frames
+   --  and setup the reader to analyze the memory events.
+   procedure Initialize (Memory : in out Target_Memory;
+                         Reader : in out MAT.Readers.Manager_Base'Class) is
+      Memory_Reader : constant MAT.Memory.Readers.Memory_Reader_Access
+        := new MAT.Memory.Readers.Memory_Servant;
    begin
-      null;
-   end Init;
+      Memory.Reader := Memory_Reader.all'Access;
+      MAT.Memory.Readers.Register (Reader, Memory_Reader);
+   end Initialize;
 
 end MAT.Memory.Targets;
