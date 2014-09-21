@@ -40,9 +40,9 @@ package MAT.Events is
 
    type Attribute is record
       Name : Util.Strings.Name_Access;
-      Size : Natural;
-      Kind : Attribute_Type;
-      Ref  : Internal_Reference;
+      Size : Natural            := 0;
+      Kind : Attribute_Type     := T_UINT8;
+      Ref  : Internal_Reference := 0;
    end record;
    --  Logical description of an event attribute.
 
