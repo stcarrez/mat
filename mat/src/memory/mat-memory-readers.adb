@@ -15,11 +15,16 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with Util.Log.Loggers;
+
 with MAT.Types;
 with MAT.Readers.Marshaller;
 with MAT.Memory;
 with MAT.Events;
 package body MAT.Memory.Readers is
+
+   --  The logger
+   Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Memory.Readers");
 
    MSG_MALLOC  : constant MAT.Events.Internal_Reference := 0;
    MSG_FREE    : constant MAT.Events.Internal_Reference := 1;
@@ -37,7 +42,7 @@ package body MAT.Memory.Readers is
 
    SIZE_NAME  : aliased constant String := "size";
    FRAME_NAME : aliased constant String := "frame";
-   ADDR_NAME  : aliased constant String := "addr";
+   ADDR_NAME  : aliased constant String := "pointer";
    OLD_NAME   : aliased constant String := "old-pointer";
    THREAD_NAME : aliased constant String := "thread";
    TIME_NAME   : aliased constant String := "time";
@@ -81,6 +86,9 @@ package body MAT.Memory.Readers is
       Inserted : Boolean;
 --        Ev       : MAT.Memory.Events.Memory_Event := (Kind => EV_MALLOC, Addr => Addr);
    begin
+      if Log.Get_Level = Util.Log.DEBUG_LEVEL then
+         Log.Debug ("Malloc at {0}", MAT.Types.Target_Addr'Image (Addr));
+      end if;
       Client.Data.Memory_Slots.Insert (Addr, Slot);
 --        Post (Client.Event_Channel, Ev);
    end Process_Malloc_Message;
@@ -141,11 +149,11 @@ package body MAT.Memory.Readers is
                   null;
                   pragma Assert (False, "must fix M_FRAME");
 
-               when M_TIME =>
-                  Slot.Time := MAT.Readers.Marshaller.Get_Target_Tick (Msg.Buffer, Def.Kind);
-
-               when M_THREAD =>
-                  Slot.Thread := MAT.Readers.Marshaller.Get_Target_Thread (Msg.Buffer, Def.Kind);
+--                 when M_TIME =>
+--                    Slot.Time := MAT.Readers.Marshaller.Get_Target_Tick (Msg.Buffer, Def.Kind);
+--
+--                 when M_THREAD =>
+--                    Slot.Thread := MAT.Readers.Marshaller.Get_Target_Thread (Msg.Buffer, Def.Kind);
 
                when M_UNKNOWN =>
                   MAT.Readers.Marshaller.Skip (Msg.Buffer, Def.Size);
