@@ -24,38 +24,67 @@
 void
 gp_send_attributes (const struct gp_event_def *type)
 {
-  size_t len = strlen(type->name) + 2;
+  gp_uint8 len = strlen(type->name);
+  gp_uint16 val = type->type;
   const struct gp_attr_def *attr;
   int i;
   
   gp_write ("BLOCK", 0, &len, sizeof (len));
   gp_write ("EVENT", 2, type->name, len);
-  gp_write ("ID", 2, &type->type, sizeof (type->type));
+  gp_write ("ID", 2, &val, sizeof (val));
+
+  len = type->nr_attrs;
+  gp_write ("COUNT", 2, &len, sizeof (len));
+
   attr = type->attributes;
   for (i = type->nr_attrs; --i >= 0; attr++)
     {
       len = strlen (attr->name);
+      val = attr->type;
       gp_write ("A-LEN", 4, &len, sizeof (len));
       gp_write ("A-NAME", 4, attr->name, len);
-      gp_write ("A-TYPE", 4, &attr->type, sizeof (attr->type));
+      gp_write ("A-TYPE", 4, &val, sizeof (val));
     }
+}
+
+static int
+gp_get_attribute_size (const struct gp_event_def *type)
+{
+  int result = sizeof (gp_uint8);
+  const struct gp_attr_def *attr;
+  int i;
+
+  result += strlen (type->name);
+  result += sizeof (gp_uint16);
+  result += sizeof (gp_uint8);
+
+  attr = type->attributes;
+  for (i = type->nr_attrs; --i >= 0; attr++)
+    {
+      result += sizeof (gp_uint8) + sizeof (gp_uint16);
+      result += strlen (attr->name);
+    }
+  
+  return result;
 }
 
 void
 gp_event_send (struct gp_probe *gp, int size,
                const struct gp_event_def *type, ...)
 {
-  size_t len;
+  gp_uint16 len;
+  gp_uint16 val;
   const struct gp_attr_def *attr;
   int i;
   va_list argp;
 
-  len = sizeof (gp_event_type)
+  len = sizeof (gp_uint16)
     + size
     + gp_remote_sizeof_probe (gp);
 
+  val = type->type;
   gp_write ("PROBE", 0, &len, sizeof (len));
-  gp_write (type->name, 2, &type->type, sizeof (type->type));
+  gp_write (type->name, 2, &val, sizeof (val));
   gp_remote_send_probe (gp);
   
   va_start (argp, type);
@@ -155,15 +184,28 @@ gp_event_realloc (struct gp_probe *gp, void *p, void *old, size_t size)
   gp_event_send (gp, 12, &gp_event_free_def, p, old, size);
 }
 
+const struct gp_attr_def gp_frame_attrs[] = {
+  { "time",    GP_TYPE_TIMESTAMP, sizeof (struct timeval) },
+  { "thread",  GP_TYPE_THREAD,    sizeof (struct thread_info) },
+  { "frame",   GP_TYPE_FRAME,     sizeof (gp_uint16) }
+};
+
+const struct gp_event_def gp_event_begin_frame_def = {
+  "begin",
+  GP_EVENT_BEGIN,
+  3,
+  gp_frame_attrs
+};
+
 const struct gp_event_def gp_event_begin_def = {
   "begin",
   GP_EVENT_BEGIN,
   0,
-  0
+  NULL
 };
 
 static const struct gp_event_def* events[] = {
-  &gp_event_begin_def,
+  &gp_event_begin_frame_def,
   &gp_event_malloc_def,
   &gp_event_free_def,
   &gp_event_realloc_def,
@@ -174,9 +216,29 @@ void
 gp_event_begin (struct gp_probe *gp)
 {
   int i;
+  gp_uint8  mode;
   gp_uint16 version = GP_VERSION;
   gp_uint16 count   = sizeof (events) / sizeof (const struct gp_event_def*);
+  gp_uint16 len;
 
+  i = 1;
+  if (((unsigned char*) &i)[0] == 1)
+    {
+      mode = GP_LITTLE_ENDIAN;
+    }
+  else
+    {
+      mode = GP_BIG_ENDIAN;
+    }
+  gp_remote_send (&mode, sizeof (mode));
+
+  len = sizeof (version);
+  len += sizeof (count);
+  for (i = 0; i < count; i++)
+    {
+      len += gp_get_attribute_size (events[i]);
+    }
+  gp_remote_send (&len, sizeof (len));
   gp_remote_send (&version, sizeof (version));
   gp_remote_send (&count, sizeof (count));
   for (i = 0; i < count; i++)
