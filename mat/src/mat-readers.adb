@@ -55,7 +55,11 @@ package body MAT.Readers is
       Event : constant MAT.Types.Uint16 := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
       Pos   : constant Handler_Maps.Cursor := Client.Handlers.Find (Event);
    begin
-      if Handler_Maps.Has_Element (Pos) then
+      Log.Debug ("Dispatch message {0} - size {1}",
+                 MAT.Types.Uint16'Image (Event),
+                 Natural'Image (Msg.Size));
+
+      if not Handler_Maps.Has_Element (Pos) then
          --  Message is not handled, skip it.
          null;
       else
@@ -76,30 +80,34 @@ package body MAT.Readers is
       Event : constant MAT.Types.Uint16 := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
       Count : constant MAT.Types.Uint8 := MAT.Readers.Marshaller.Get_Uint8 (Msg.Buffer);
       Pos   : constant Reader_Maps.Cursor := Client.Readers.Find (Name);
+   begin
+      Log.Debug ("Read event definition {0}", Name);
+      for I in 1 .. Natural (Count) loop
+         declare
+            Name : constant String := MAT.Readers.Marshaller.Get_String (Msg.Buffer);
+            Size : constant MAT.Types.Uint16 := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
 
-      procedure Read_Attributes (Key     : in String;
-                                 Element : in out Message_Handler) is
-      begin
-         Element.Mapping := new MAT.Events.Attribute_Table (1 .. Natural (Count));
-         for I in 1 .. Natural (Count) loop
-            declare
-               Name : constant String := MAT.Readers.Marshaller.Get_String (Msg.Buffer);
-               Size : constant MAT.Types.Uint16 := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
+            procedure Read_Attribute (Key     : in String;
+                                      Element : in out Message_Handler) is
+               use type MAT.Events.Attribute_Table_Ptr;
             begin
+               if Element.Mapping = null then
+                  Element.Mapping := new MAT.Events.Attribute_Table (1 .. Natural (Count));
+               end if;
                for J in Element.Attributes'Range loop
                   if Element.Attributes (J).Name.all = Name then
                      Element.Mapping (I) := Element.Attributes (J);
                   end if;
                end loop;
-            end;
-         end loop;
-      end Read_Attributes;
+            end Read_Attribute;
 
-   begin
-      Log.Debug ("Read event definition {0}", Name);
-      if Reader_Maps.Has_Element (Pos) then
-         Client.Readers.Update_Element (Pos, Read_Attributes'Access);
-      end if;
+         begin
+            if Reader_Maps.Has_Element (Pos) then
+               Client.Readers.Update_Element (Pos, Read_Attribute'Access);
+            end if;
+         end;
+      end loop;
+
    end Read_Definition;
 
    --  ------------------------------
