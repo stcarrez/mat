@@ -79,12 +79,15 @@ package MAT.Readers is
 
 private
 
+   type Endian_Type is (BIG_ENDIAN, LITTLE_ENDIAN);
+
    type Buffer_Type is record
       Current : System.Address;
       Start   : System.Address;
       Last    : System.Address;
       Size    : Natural;
       Total   : Natural;
+      Endian  : Endian_Type := LITTLE_ENDIAN;
    end record;
 
    type Reader_Base is abstract tagged limited record
@@ -122,6 +125,11 @@ private
       Version     : MAT.Types.Uint16;
       Flags       : MAT.Types.Uint16;
    end record;
+
+   --  Read the event data stream headers with the event description.
+   --  Configure the reader to analyze the data stream according to the event descriptions.
+   procedure Read_Headers (Client : in out Manager_Base;
+                           Msg    : in out Message);
 
    --  Read an event definition from the stream and configure the reader.
    procedure Read_Definition (Client : in out Manager_Base;
