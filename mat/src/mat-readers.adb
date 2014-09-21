@@ -102,12 +102,15 @@ package body MAT.Readers is
       end if;
    end Read_Definition;
 
+   --  ------------------------------
+   --  Read the event data stream headers with the event description.
+   --  Configure the reader to analyze the data stream according to the event descriptions.
+   --  ------------------------------
    procedure Read_Headers (Client : in out Manager_Base;
                            Msg    : in out Message) is
       Count : MAT.Types.Uint16;
    begin
       Client.Version := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
-      Client.Flags   := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
       Count := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
 
       Log.Info ("Read event stream version {0} with {1} definitions",
