@@ -29,7 +29,7 @@ with MAT.Events;
 package MAT.Readers is
 
    type Buffer_Type is private;
-   type Buffer_Ptr is access Buffer_Type;
+   type Buffer_Ptr is access all Buffer_Type;
 
    type Message is record
       Kind   : MAT.Events.Event_Type;
