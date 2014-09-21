@@ -25,6 +25,9 @@ typedef unsigned gp_uint16_varg;
 typedef unsigned long gp_uint32;
 typedef unsigned long long gp_uint64;
 
+typedef gp_uint32 gp_addr;
+// typedef gp_uint64 gp_addr;
+
 #include "gp-unix.h"
 
 extern int gp_get_probe (struct gp_probe *gp);
