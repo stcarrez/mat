@@ -20,10 +20,14 @@ with System; use System;
 with System.Address_To_Access_Conversions;
 with System.Storage_Elements;
 with MAT.Types;
+with Util.Log.Loggers;
 with Interfaces; use Interfaces;
 package body MAT.Readers.Marshaller is
 
    use System.Storage_Elements;
+
+   --  The logger
+   Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Readers.Marshaller");
 
    package Uint8_Access is new System.Address_To_Access_Conversions (MAT.Types.Uint8);
 
@@ -43,6 +47,7 @@ package body MAT.Readers.Marshaller is
       P : Object_Pointer := To_Pointer (Buffer.Current);
    begin
       if Buffer.Size = 0 then
+         Log.Error ("Not enough data to get a uint8");
          raise Buffer_Underflow_Error;
       end if;
       Buffer.Size := Buffer.Size - 1;
@@ -58,6 +63,7 @@ package body MAT.Readers.Marshaller is
       Low : Object_Pointer := To_Pointer (Buffer.Current);
    begin
       if Buffer.Size <= 1 then
+         Log.Error ("Not enough data to get a uint16");
          raise Buffer_Underflow_Error;
       end if;
       Buffer.Size := Buffer.Size - 2;
@@ -71,6 +77,7 @@ package body MAT.Readers.Marshaller is
       P : Object_Pointer := To_Pointer (Buffer.Current);
    begin
       if Buffer.Size < 4 then
+         Log.Error ("Not enough data to get a uint32");
          raise Buffer_Underflow_Error;
       end if;
       Buffer.Size := Buffer.Size - 4;
@@ -104,7 +111,8 @@ package body MAT.Readers.Marshaller is
             return Target_Type (Get_Uint64 (Msg));
 
          when others =>
-            pragma Assert (False, "Invalid attribute type ");
+            Log.Error ("Invalid attribute type {0}",
+                       MAT.EVents.Attribute_Type'Image (Kind));
             return 0;
       end case;
    end Get_Target_Value;
