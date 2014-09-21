@@ -27,7 +27,7 @@ with MAT.Memory.Targets;
 package MAT.Memory.Readers is
 
    type Memory_Servant is new MAT.Readers.Reader_Base with record
-      Data  : MAT.Memory.Targets.Client_Memory;
+      Data  : MAT.Memory.Targets.Target_Memory;
 --        Slots : Client_Memory_Ref;
 --        Impl        : Client_Memory_Ref;
    end record;
