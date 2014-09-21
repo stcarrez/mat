@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------
---  Targets - Abstract representation of target information
+--  Targets - Representation of target information
 --  Copyright (C) 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
@@ -17,41 +17,22 @@
 -----------------------------------------------------------------------
 with MAT.Types;
 with Ada.Strings.Unbounded;
+with MAT.Memory.Targets;
+with MAT.Readers;
 package MAT.Targets is
 
-   use Ada.Strings.Unbounded;
+   type Target_Type is tagged limited private;
+   type Target_Type_Access is access all Target_Type'Class;
 
-   subtype ClientInfoType is Ada.Strings.Unbounded.Unbounded_String;
-
-   function "+" (S : String) return ClientInfoType renames To_Unbounded_String;
-
-   type ClientInfo is tagged limited private;
-
-   type ClientInfo_Ref is access all ClientInfo'Class;
-
-   type ClientInfo_Ref_Map is limited private;
-
-   function Find_Sibling (Client : ClientInfo_Ref;
-                          Kind : in String) return ClientInfo_Ref;
-
-   function Find (Container : ClientInfo_Ref_Map;
-                  Kind : in String) return ClientInfo_Ref;
-
-   procedure Register_Client (Refs : in out ClientInfo_Ref_Map;
-                              Name : in String;
-                              Client : in ClientInfo_Ref);
+   --  Initialize the target object to manage the memory slots, the stack frames
+   --  and setup the reader to analyze the memory and other events.
+   procedure Initialize (Target : in out Target_Type;
+                         Reader : in out MAT.Readers.Manager_Base'Class);
 
 private
-   type ClientInfo is tagged limited null record;
---
---     package Clients_Containers is new BC.Containers (Item => ClientInfo_Ref);
---     package Clients_Trees is new Clients_Containers.Trees;
---     package Clients_AVL is
---       new Clients_Trees.AVL (Key     => ClientInfoType,
---                              Storage => Global_Heap.Storage);
 
-   type ClientInfo_Ref_Map is limited record
-      Map : Natural; --  Clients_AVL.AVL_Tree;
+   type Target_Type is tagged limited record
+      Memory : MAT.Memory.Targets.Target_Memory;
    end record;
 
 end MAT.Targets;
