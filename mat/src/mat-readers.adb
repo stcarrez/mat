@@ -69,6 +69,10 @@ package body MAT.Readers is
             Dispatch (Handler.For_Servant.all, Handler.Id, Handler.Mapping.all'Access, Msg);
          end;
       end if;
+
+   exception
+      when E : others =>
+         Log.Error ("Exception while processing event " & MAT.Types.Uint16'Image (Event), E);
    end Dispatch_Message;
 
    --  ------------------------------
@@ -80,6 +84,13 @@ package body MAT.Readers is
       Event : constant MAT.Types.Uint16 := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
       Count : constant MAT.Types.Uint8 := MAT.Readers.Marshaller.Get_Uint8 (Msg.Buffer);
       Pos   : constant Reader_Maps.Cursor := Client.Readers.Find (Name);
+
+      procedure Add_Handler (Key : in String;
+                             Element : in out Message_Handler) is
+      begin
+         Client.Handlers.Insert (Event, Element);
+      end Add_Handler;
+
    begin
       Log.Debug ("Read event definition {0}", Name);
       for I in 1 .. Natural (Count) loop
@@ -97,6 +108,17 @@ package body MAT.Readers is
                for J in Element.Attributes'Range loop
                   if Element.Attributes (J).Name.all = Name then
                      Element.Mapping (I) := Element.Attributes (J);
+                     if Size = 1 then
+                        Element.Mapping (I).Kind := MAT.Events.T_UINT8;
+                     elsif Size = 2 then
+                        Element.Mapping (I).Kind := MAT.Events.T_UINT16;
+                     elsif Size = 4 then
+                        Element.Mapping (I).Kind := MAT.Events.T_UINT32;
+                     elsif Size = 8 then
+                        Element.Mapping (I).Kind := MAT.Events.T_UINT64;
+                     else
+                        Element.Mapping (I).Kind := MAT.Events.T_UINT32;
+                     end if;
                   end if;
                end loop;
             end Read_Attribute;
@@ -107,7 +129,9 @@ package body MAT.Readers is
             end if;
          end;
       end loop;
-
+      if Reader_Maps.Has_Element (Pos) then
+         Client.Readers.Update_Element (Pos, Add_Handler'Access);
+      end if;
    end Read_Definition;
 
    --  ------------------------------
