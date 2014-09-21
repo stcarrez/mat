@@ -47,14 +47,20 @@ package MAT.Readers.Marshaller is
       type Target_Type is mod <>;
    function Get_Target_Value (Msg  : in Buffer_Ptr;
                               Kind : in MAT.Events.Attribute_Type) return Target_Type;
+--
+--     function Get_Target_Size is new Get_Target_Value (MAT.Types.Target_Size);
+--
+--     function Get_Target_Addr is new Get_Target_Value (MAT.Types.Target_Addr);
+--
+--     function Get_Target_Tick is new Get_Target_Value (MAT.Types.Target_Tick_Ref);
+--
+--     function Get_Target_Thread is new Get_Target_Value (MAT.Types.Target_Thread_Ref);
 
-   function Get_Target_Size is new Get_Target_Value (MAT.Types.Target_Size);
+   function Get_Target_Size (Msg  : in Buffer_Ptr;
+                             Kind : in MAT.Events.Attribute_Type) return MAT.Types.Target_Size;
 
-   function Get_Target_Addr is new Get_Target_Value (MAT.Types.Target_Addr);
-
-   function Get_Target_Tick is new Get_Target_Value (MAT.Types.Target_Tick_Ref);
-
-   function Get_Target_Thread is new Get_Target_Value (MAT.Types.Target_Thread_Ref);
+   function Get_Target_Addr (Msg  : in Buffer_Ptr;
+                             Kind : in MAT.Events.Attribute_Type) return MAT.Types.Target_Addr;
 
    --  Skip the given number of bytes from the message.
    procedure Skip (Buffer : in Buffer_Ptr;
