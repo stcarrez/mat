@@ -18,6 +18,16 @@
 #ifndef _GP_EVENTS_H
 #define _GP_EVENTS_H
 
+#define GP_LITTLE_ENDIAN (0)
+#define GP_BIG_ENDIAN    (1)
+
+typedef enum
+{
+  GP_CPU_X86    = 0x8600,
+  GP_CPU_X86_64 = 0x8664,
+  GP_CPU_MIPS
+} gp_cpu_id;
+    
 typedef enum
 {
   GP_TYPE_UINT8,
@@ -25,7 +35,10 @@ typedef enum
   GP_TYPE_UIN32,
   GP_TYPE_UINT64,
   GP_TYPE_POINTER,
-  GP_TYPE_SIZE_T
+  GP_TYPE_SIZE_T,
+  GP_TYPE_TIMESTAMP,
+  GP_TYPE_THREAD,
+  GP_TYPE_FRAME
 } gp_type_id;
 
 typedef enum
