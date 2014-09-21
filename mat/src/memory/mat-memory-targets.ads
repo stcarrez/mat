@@ -18,16 +18,20 @@
 with MAT.Frames;
 with Util.Events;
 with MAT.Memory.Events;
+with MAT.Readers;
 package MAT.Memory.Targets is
 
-   type Client_Memory is record
+   type Target_Memory is record
+      Reader        : MAT.Readers.Reader_Access;
       Memory_Slots  : Allocation_Map;
       Frames        : MAT.Frames.Frame;
 --        Event_Channel : MAT.Memory.Events.Memory_Event_Channel.Channel;
    end record;
-   type Client_Memory_Ref is access all Client_Memory;
+   type Client_Memory_Ref is access all Target_Memory;
 
---     procedure Create_Instance (Refs : in ClientInfo_Ref_Map);
+   --  Initialize the target memory object to manage the memory slots, the stack frames
+   --  and setup the reader to analyze the memory events.
+   procedure Initialize (Memory : in out Target_Memory;
+                         Reader : in out MAT.Readers.Manager_Base'Class);
 
-   procedure Init;
 end MAT.Memory.Targets;
