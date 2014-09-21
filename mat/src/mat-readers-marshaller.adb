@@ -141,4 +141,18 @@ package body MAT.Readers.Marshaller is
       Buffer.Current := Buffer.Current + Storage_Offset (Size);
    end Skip;
 
+   function Get_Target_Size (Msg  : in Buffer_Ptr;
+                             Kind : in MAT.Events.Attribute_Type) return MAT.Types.Target_Size is
+         function Get_Value is new Get_Target_Value (MAT.Types.Target_Size);
+   begin
+      return Get_Value (Msg, Kind);
+   end Get_Target_Size;
+
+   function Get_Target_Addr (Msg  : in Buffer_Ptr;
+                             Kind : in MAT.Events.Attribute_Type) return MAT.Types.Target_Addr is
+         function Get_Value is new Get_Target_Value (MAT.Types.Target_Addr);
+   begin
+      return Get_Value (Msg, Kind);
+   end Get_Target_Addr;
+
 end MAT.Readers.Marshaller;
