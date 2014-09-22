@@ -61,7 +61,7 @@ package body MAT.Events is
             Put (MAT.Types.Uint64'Image (Value.U64));
 
          when T_PROBE =>
-            Put_Line ("Th " & MAT.Types.Uint32'Image (Value.Probe.Thid));
+            Put_Line ("Th " & MAT.Types.Uint32'Image (Value.Probe.Thread));
             Set_Col (29);
             for I in 1 .. Natural (Value.Probe.Cur_Depth) loop
                exit when I > Value.Probe.Frame'Last;
