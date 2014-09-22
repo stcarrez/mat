@@ -38,4 +38,6 @@ package MAT.Types is
 
    subtype Target_Thread_Ref is Uint32;
 
+   subtype Target_Time is Uint64;
+
 end MAT.Types;
