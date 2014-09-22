@@ -185,15 +185,26 @@ gp_event_realloc (struct gp_probe *gp, void *p, void *old, size_t size)
 }
 
 const struct gp_attr_def gp_frame_attrs[] = {
-  { "time",    GP_TYPE_TIMESTAMP, sizeof (struct timeval) },
-  { "thread",  GP_TYPE_THREAD,    sizeof (struct thread_info) },
-  { "frame",   GP_TYPE_FRAME,     sizeof (gp_uint16) }
+  { "time-sec",  GP_TYPE_UINT32, sizeof (gp_uint32) },
+  { "time-usec", GP_TYPE_UINT32, sizeof (gp_uint32) },
+  { "thread-id", GP_TYPE_UINT32, sizeof (gp_uint32) },
+  { "thread-sp", GP_TYPE_UINT32, sizeof (gp_uint32) },
+#ifdef HAVE_RUSAGE
+  { "ru-minflt", GP_TYPE_UINT32, sizeof (gp_uint32) },  
+  { "ru-majflt", GP_TYPE_UINT32, sizeof (gp_uint32) },  
+  { "ru-nvcsw",  GP_TYPE_UINT32, sizeof (gp_uint32) },  
+  { "ru-nivcsw", GP_TYPE_UINT32, sizeof (gp_uint32) },  
+#endif
+  { "frame",     GP_TYPE_UINT16, sizeof (gp_uint16) },
+  { "frame-pc",  GP_TYPE_UINT32, sizeof (gp_uint32) },
 };
+
+#define GP_TABLE_SIZE(T) ((sizeof(T)) / sizeof(T[0]))
 
 const struct gp_event_def gp_event_begin_frame_def = {
   "begin",
   GP_EVENT_BEGIN,
-  3,
+  GP_TABLE_SIZE(gp_frame_attrs),
   gp_frame_attrs
 };
 
