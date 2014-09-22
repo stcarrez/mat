@@ -155,4 +155,11 @@ package body MAT.Readers.Marshaller is
       return Get_Value (Msg, Kind);
    end Get_Target_Addr;
 
+   function Get_Target_Uint32 (Msg  : in Buffer_Ptr;
+                               Kind : in MAT.Events.Attribute_Type) return MAT.Types.Uint32 is
+      function Get_Value is new Get_Target_Value (MAT.Types.Target_Addr);
+   begin
+      return Get_Value (Msg, Kind);
+   end Get_Target_Uint32;
+
 end MAT.Readers.Marshaller;
