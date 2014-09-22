@@ -40,7 +40,7 @@ gp_send_attributes (const struct gp_event_def *type)
   for (i = type->nr_attrs; --i >= 0; attr++)
     {
       len = strlen (attr->name);
-      val = attr->type;
+      val = attr->size;
       gp_write ("A-LEN", 4, &len, sizeof (len));
       gp_write ("A-NAME", 4, attr->name, len);
       gp_write ("A-TYPE", 4, &val, sizeof (val));
