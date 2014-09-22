@@ -31,8 +31,8 @@ typedef enum
 typedef enum
 {
   GP_TYPE_UINT8,
-  GP_TYPE_UIN16,
-  GP_TYPE_UIN32,
+  GP_TYPE_UINT16,
+  GP_TYPE_UINT32,
   GP_TYPE_UINT64,
   GP_TYPE_POINTER,
   GP_TYPE_SIZE_T,
