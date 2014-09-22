@@ -62,6 +62,9 @@ package MAT.Readers.Marshaller is
    function Get_Target_Addr (Msg  : in Buffer_Ptr;
                              Kind : in MAT.Events.Attribute_Type) return MAT.Types.Target_Addr;
 
+   function Get_Target_Uint32 (Msg  : in Buffer_Ptr;
+                               Kind : in MAT.Events.Attribute_Type) return MAT.Types.Uint32;
+
    --  Skip the given number of bytes from the message.
    procedure Skip (Buffer : in Buffer_Ptr;
                    Size   : in Natural);
