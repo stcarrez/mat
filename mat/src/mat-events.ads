@@ -67,12 +67,12 @@ package MAT.Events is
    end record;
 
    type Frame_Info (Depth : Natural) is record
-      Time   : Unsigned_64;
-      Thid   : Unsigned_32;
-      Thstk  : Unsigned_32;
-      Rusage : Rusage_Info;
-      Cur_Depth : Unsigned_32;
-      Frame  : Frame_Table (1 .. Depth);
+      Time      : MAT.Types.Target_Time;
+      Thread    : MAT.Types.Target_Thread_Ref;
+      Stack     : MAT.Types.Target_Addr;
+      Rusage    : Rusage_Info;
+      Cur_Depth : Natural;
+      Frame     : Frame_Table (1 .. Depth);
    end record;
 
    type Event_Data is record
