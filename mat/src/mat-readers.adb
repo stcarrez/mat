@@ -26,6 +26,56 @@ package body MAT.Readers is
    --  The logger
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Readers");
 
+   P_TIME_SEC         : constant MAT.Events.Internal_Reference := 0;
+   P_TIME_USEC        : constant MAT.Events.Internal_Reference := 1;
+   P_THREAD_ID        : constant MAT.Events.Internal_Reference := 2;
+   P_THREAD_SP        : constant MAT.Events.Internal_Reference := 3;
+   P_RUSAGE_MINFLT    : constant MAT.Events.Internal_Reference := 4;
+   P_RUSAGE_MAJFLT    : constant MAT.Events.Internal_Reference := 5;
+   P_RUSAGE_NVCSW     : constant MAT.Events.Internal_Reference := 6;
+   P_RUSAGE_NIVCSW    : constant MAT.Events.Internal_Reference := 7;
+   P_FRAME            : constant MAT.Events.Internal_Reference := 8;
+   P_FRAME_PC         : constant MAT.Events.Internal_Reference := 9;
+
+   TIME_SEC_NAME      : aliased constant String := "time-sec";
+   TIME_USEC_NAME     : aliased constant String := "time-usec";
+   THREAD_ID_NAME     : aliased constant String := "thread-id";
+   THREAD_SP_NAME     : aliased constant String := "thread-sp";
+   RUSAGE_MINFLT_NAME : aliased constant String := "ru-minflt";
+   RUSAGE_MAJFLT_NAME : aliased constant String := "ru-majflt";
+   RUSAGE_NVCSW_NAME  : aliased constant String := "ru-nvcsw";
+   RUSAGE_NIVCSW_NAME : aliased constant String := "ru-nivcsw";
+   FRAME_NAME         : aliased constant String := "frame";
+   FRAME_PC_NAME      : aliased constant String := "frame-pc";
+
+   Probe_Attributes : aliased constant MAT.Events.Attribute_Table :=
+     (1 => (Name => TIME_SEC_NAME'Access,
+            Size => 0,
+            Kind => MAT.Events.T_SIZE_T,
+            Ref  => P_TIME_SEC),
+      2 => (Name => TIME_USEC_NAME'Access,
+             Size => 0,
+             Kind => MAT.Events.T_SIZE_T,
+             Ref  => P_TIME_USEC),
+      3 => (Name => THREAD_ID_NAME'Access,
+            Size => 0,
+            Kind => MAT.Events.T_SIZE_T,
+            Ref  => P_THREAD_ID),
+      4 => (Name => THREAD_SP_NAME'Access,
+            Size => 0,
+            Kind => MAT.Events.T_SIZE_T,
+            Ref  => P_THREAD_SP),
+      5 => (Name => FRAME_NAME'Access,
+            Size => 0,
+            Kind => MAT.Events.T_SIZE_T,
+            Ref  => P_FRAME),
+      6 => (Name => FRAME_PC_NAME'Access,
+            Size => 0,
+            Kind => MAT.Events.T_SIZE_T,
+            Ref  => P_FRAME_PC)
+
+     );
+
    function Hash (Key : in MAT.Types.Uint16) return Ada.Containers.Hash_Type is
    begin
       return Ada.Containers.Hash_Type (Key);
@@ -50,8 +100,61 @@ package body MAT.Readers is
       Into.Readers.Insert (Name, Handler);
    end Register_Reader;
 
+   procedure Read_Probe (Client : in out Manager_Base;
+                         Msg    : in out Message) is
+      use type Interfaces.Unsigned_64;
+
+      Count     : Natural := 0;
+      Time_Sec  : MAT.Types.Uint32  := 0;
+      Time_Usec : MAT.Types.Uint32 := 0;
+      Frame     : access MAT.Events.Frame_Info := Client.Frame;
+   begin
+      Frame.Thread := 0;
+      Frame.Stack  := 0;
+      Frame.Cur_Depth := 0;
+      for I in Client.Probe'Range loop
+         declare
+            Def : MAT.Events.Attribute renames Client.Probe (I);
+         begin
+            case Def.Ref is
+               when P_TIME_SEC =>
+                  Time_Sec := MAT.Readers.Marshaller.Get_Target_Uint32 (Msg.Buffer, Def.Kind);
+
+               when P_TIME_USEC =>
+                  Time_Usec := MAT.Readers.Marshaller.Get_Target_Uint32 (Msg.Buffer, Def.Kind);
+
+               when P_THREAD_ID =>
+                  Frame.Thread := MAT.Readers.Marshaller.Get_Target_Uint32 (Msg.Buffer, Def.Kind);
+
+               when P_THREAD_SP =>
+                  Frame.Stack := MAT.Readers.Marshaller.Get_Target_Addr (Msg.Buffer, Def.Kind);
+
+               when P_FRAME =>
+                  Count := Natural (MAT.Readers.Marshaller.Get_Target_Uint32 (Msg.Buffer,
+                                    Def.Kind));
+
+               when P_FRAME_PC =>
+                  for I in 1 .. Natural (Count) loop
+                     if Count < Frame.Depth then
+                        Frame.Frame (I) := MAT.Readers.Marshaller.Get_Target_Addr (Msg.Buffer,
+                                                                                   Def.Kind);
+                     end if;
+                  end loop;
+
+               when others =>
+                  null;
+
+            end case;
+         end;
+      end loop;
+      Frame.Time := Interfaces.Shift_Left (Interfaces.Unsigned_64 (Time_Sec), 32);
+      Frame.Time := Frame.Time or Interfaces.Unsigned_64 (Time_Usec);
+   end Read_Probe;
+
    procedure Dispatch_Message (Client : in out Manager_Base;
                                Msg    : in out Message) is
+      use type MAT.Events.Attribute_Table_Ptr;
+
       Event : constant MAT.Types.Uint16 := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
       Pos   : constant Handler_Maps.Cursor := Client.Handlers.Find (Event);
    begin
@@ -63,6 +166,9 @@ package body MAT.Readers is
          --  Message is not handled, skip it.
          null;
       else
+         if Client.Probe /= null then
+            Read_Probe (Client, Msg);
+         end if;
          declare
             Handler : constant Message_Handler := Handler_Maps.Element (Pos);
          begin
@@ -84,6 +190,7 @@ package body MAT.Readers is
       Event : constant MAT.Types.Uint16 := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
       Count : constant MAT.Types.Uint8 := MAT.Readers.Marshaller.Get_Uint8 (Msg.Buffer);
       Pos   : constant Reader_Maps.Cursor := Client.Readers.Find (Name);
+      Frame : Message_Handler;
 
       procedure Add_Handler (Key : in String;
                              Element : in out Message_Handler) is
@@ -93,6 +200,14 @@ package body MAT.Readers is
 
    begin
       Log.Debug ("Read event definition {0}", Name);
+
+      if Name = "begin" then
+         Frame.Mapping := new MAT.Events.Attribute_Table (1 .. Natural (Count));
+         Frame.Attributes := Probe_Attributes'Access;
+         Client.Probe := Frame.Mapping;
+      else
+         Frame.Mapping := null;
+      end if;
       for I in 1 .. Natural (Count) loop
          declare
             Name : constant String := MAT.Readers.Marshaller.Get_String (Msg.Buffer);
@@ -123,9 +238,13 @@ package body MAT.Readers is
                end loop;
             end Read_Attribute;
 
+            use type MAT.Events.Attribute_Table_Ptr;
          begin
             if Reader_Maps.Has_Element (Pos) then
                Client.Readers.Update_Element (Pos, Read_Attribute'Access);
+            end if;
+            if Frame.Mapping /= null then
+               Read_Attribute ("begin", Frame);
             end if;
          end;
       end loop;
@@ -151,6 +270,11 @@ package body MAT.Readers is
       for I in 1 .. Count loop
          Read_Definition (Client, Msg);
       end loop;
+
+      Client.Frame := new MAT.Events.Frame_Info (512);
+   exception
+         when E : others =>
+         Log.Error ("Exception while reading headers ", E);
    end Read_Headers;
 
 end MAT.Readers;
