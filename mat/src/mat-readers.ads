@@ -124,6 +124,8 @@ private
       Handlers    : Handler_Maps.Map;
       Version     : MAT.Types.Uint16;
       Flags       : MAT.Types.Uint16;
+      Probe       : MAT.Events.Attribute_Table_Ptr;
+      Frame       : access MAT.Events.Frame_Info;
    end record;
 
    --  Read the event data stream headers with the event description.
