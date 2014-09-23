@@ -40,4 +40,8 @@ package MAT.Types is
 
    subtype Target_Time is Uint64;
 
+   --  Return an hexadecimal string representation of the value.
+   function Hex_Image (Value : in Uint32;
+                       Length : in Positive := 8) return String;
+
 end MAT.Types;
