@@ -87,7 +87,7 @@ package body MAT.Memory.Readers is
 --        Ev       : MAT.Memory.Events.Memory_Event := (Kind => EV_MALLOC, Addr => Addr);
    begin
       if Log.Get_Level = Util.Log.DEBUG_LEVEL then
-         Log.Debug ("Malloc at {0}", MAT.Types.Target_Addr'Image (Addr));
+         Log.Debug ("Malloc at {0}", MAT.Types.Hex_Image (Addr));
       end if;
       Client.Data.Memory_Slots.Insert (Addr, Slot);
 --        Post (Client.Event_Channel, Ev);
