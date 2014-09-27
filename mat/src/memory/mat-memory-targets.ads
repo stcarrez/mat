@@ -19,6 +19,7 @@ with MAT.Frames;
 with Util.Events;
 with MAT.Memory.Events;
 with MAT.Readers;
+with Ada.Containers.Ordered_Maps;
 package MAT.Memory.Targets is
 
    type Target_Memory is record
@@ -33,5 +34,21 @@ package MAT.Memory.Targets is
    --  and setup the reader to analyze the memory events.
    procedure Initialize (Memory : in out Target_Memory;
                          Reader : in out MAT.Readers.Manager_Base'Class);
+
+   type Size_Info_Type is record
+      Count : Natural;
+   end record;
+
+   use type MAT.Types.Target_Size;
+
+   package Size_Info_Maps is
+     new Ada.Containers.Ordered_Maps (Key_Type => MAT.Types.Target_Size,
+                                      Element_Type => Size_Info_Type);
+   subtype Size_Info_Map is Size_Info_Maps.Map;
+   subtype Size_Info_Cursor is Size_Info_Maps.Cursor;
+
+   --  Collect the information about memory slot sizes allocated by the application.
+   procedure Size_Information (Memory : in Target_Memory;
+                               Sizes  : in out Size_Info_Map);
 
 end MAT.Memory.Targets;
