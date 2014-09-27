@@ -181,7 +181,7 @@ const struct gp_event_def gp_event_realloc_def = {
 void
 gp_event_realloc (struct gp_probe *gp, void *p, void *old, size_t size)
 {
-  gp_event_send (gp, 12, &gp_event_free_def, p, old, size);
+  gp_event_send (gp, 12, &gp_event_realloc_def, p, old, size);
 }
 
 const struct gp_attr_def gp_frame_attrs[] = {
