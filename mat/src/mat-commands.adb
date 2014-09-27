@@ -27,6 +27,8 @@ with MAT.Types;
 with MAT.Readers.Files;
 with MAT.Memory.Targets;
 with MAT.Symbols.Targets;
+with MAT.Frames;
+with MAT.Frames.Print;
 package body MAT.Commands is
 
    --  The logger
@@ -39,6 +41,35 @@ package body MAT.Commands is
                                                 Hash            => Ada.Strings.Hash);
 
    Commands : Command_Map.Map;
+
+   --  ------------------------------
+   --  Sizes command.
+   --  Collect statistics about the used memory slots and report the different slot
+   --  sizes with count.
+   --  ------------------------------
+   procedure Slot_Command (Target : in out MAT.Targets.Target_Type'Class;
+                           Args   : in String) is
+      Iter : MAT.Memory.Allocation_Cursor := Target.Memory.Memory_Slots.First;
+
+      procedure Print (Addr : in MAT.Types.Target_Addr;
+                       Slot : in MAT.Memory.Allocation) is
+         use type MAT.Frames.Frame_Ptr;
+      begin
+         Ada.Text_IO.Put (MAT.Types.Hex_Image (Addr));
+         Ada.Text_IO.Set_Col (14);
+         Ada.Text_IO.Put (MAT.Types.Target_Size'Image (Slot.Size));
+         Ada.Text_IO.New_Line;
+         if Slot.Frame /= null then
+            MAT.Frames.Print (Ada.Text_IO.Standard_Output, Slot.Frame);
+         end if;
+      end Print;
+
+   begin
+      while MAT.Memory.Allocation_Maps.Has_Element (Iter) loop
+         MAT.Memory.Allocation_Maps.Query_Element (Iter, Print'Access);
+         MAT.Memory.Allocation_Maps.Next (Iter);
+      end loop;
+   end Slot_Command;
 
    --  ------------------------------
    --  Sizes command.
@@ -136,4 +167,5 @@ begin
    Commands.Insert ("open", Open_Command'Access);
    Commands.Insert ("sizes", Sizes_Command'Access);
    Commands.Insert ("symbol", Symbol_Command'Access);
+   Commands.Insert ("slots", Slot_Command'Access);
 end MAT.Commands;
