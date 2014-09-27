@@ -25,7 +25,7 @@ package MAT.Memory.Targets is
    type Target_Memory is record
       Reader        : MAT.Readers.Reader_Access;
       Memory_Slots  : Allocation_Map;
-      Frames        : MAT.Frames.Frame;
+      Frames        : MAT.Frames.Frame_Ptr;
 --        Event_Channel : MAT.Memory.Events.Memory_Event_Channel.Channel;
    end record;
    type Client_Memory_Ref is access all Target_Memory;
