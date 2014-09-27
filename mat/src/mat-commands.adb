@@ -21,8 +21,11 @@ with Util.Log.Loggers;
 with Ada.Containers.Indefinite_Hashed_Maps;
 with Ada.Strings.Hash;
 with Ada.IO_Exceptions;
+with Ada.Text_IO;
 
+with MAT.Types;
 with MAT.Readers.Files;
+with MAT.Memory.Targets;
 package body MAT.Commands is
 
    --  The logger
@@ -35,6 +38,37 @@ package body MAT.Commands is
                                                 Hash            => Ada.Strings.Hash);
 
    Commands : Command_Map.Map;
+
+   --  ------------------------------
+   --  Sizes command.
+   --  Collect statistics about the used memory slots and report the different slot
+   --  sizes with count.
+   --  ------------------------------
+   procedure Sizes_Command (Target : in out MAT.Targets.Target_Type'Class;
+                            Args   : in String) is
+      Sizes : MAT.Memory.Targets.Size_Info_Map;
+      Iter  : MAT.Memory.Targets.Size_Info_Cursor;
+   begin
+      MAT.Memory.Targets.Size_Information (Memory => Target.Memory,
+                                           Sizes  => Sizes);
+      Iter := Sizes.First;
+      while MAT.Memory.Targets.Size_Info_Maps.Has_Element (Iter) loop
+         declare
+            use type MAT.Types.Target_Size;
+
+            Size  : MAT.Types.Target_Size := MAT.Memory.Targets.Size_Info_Maps.Key (Iter);
+            Info  : MAT.Memory.Targets.Size_Info_Type := MAT.Memory.Targets.Size_Info_Maps.Element (Iter);
+            Total : MAT.Types.Target_Size := Size * MAT.Types.Target_Size (Info.Count);
+         begin
+            Ada.Text_IO.Put (MAT.Types.Target_Size'Image (Size));
+            Ada.Text_IO.Set_Col (20);
+            Ada.Text_IO.Put (Natural'Image (Info.Count));
+            Ada.Text_IO.Set_Col (30);
+            Ada.Text_IO.Put_Line (MAT.Types.Target_Size'Image (Total));
+         end;
+         MAT.Memory.Targets.Size_Info_Maps.Next (Iter);
+      end loop;
+   end Sizes_Command;
 
    --  ------------------------------
    --  Exit command.
@@ -87,5 +121,7 @@ package body MAT.Commands is
 
 begin
    Commands.Insert ("exit", Exit_Command'Access);
+   Commands.Insert ("quit", Exit_Command'Access);
    Commands.Insert ("open", Open_Command'Access);
+   Commands.Insert ("sizes", Sizes_Command'Access);
 end MAT.Commands;
