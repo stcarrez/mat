@@ -39,6 +39,7 @@ package MAT.Memory is
    --  on the memory slot address.
 --
    subtype Allocation_Map is Allocation_Maps.Map;
+   subtype Allocation_Cursor is Allocation_Maps.Cursor;
 --
 --     subtype Allocation_Ref is Allocation_AVL.Iterator;
 --     --  Type representing a reference to a memory allocation slot.
