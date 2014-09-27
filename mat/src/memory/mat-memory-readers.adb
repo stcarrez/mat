@@ -82,12 +82,13 @@ package body MAT.Memory.Readers is
    ----------------------
    procedure Process_Malloc_Message (Client : in out Memory_Servant;
                                      Addr   : in MAT.Types.Target_Addr;
-                                     Slot   : in Allocation) is
+                                     Slot   : in out Allocation) is
       Inserted : Boolean;
 --        Ev       : MAT.Memory.Events.Memory_Event := (Kind => EV_MALLOC, Addr => Addr);
    begin
       if Log.Get_Level = Util.Log.DEBUG_LEVEL then
-         Log.Debug ("Malloc at {0}", MAT.Types.Hex_Image (Addr));
+         Log.Debug ("Malloc at {0} size {1}", MAT.Types.Hex_Image (Addr),
+                    MAT.Types.Target_Size'Image (Slot.Size));
       end if;
       Client.Data.Memory_Slots.Insert (Addr, Slot);
 --        Post (Client.Event_Channel, Ev);
@@ -104,10 +105,13 @@ package body MAT.Memory.Readers is
       It : MAT.Memory.Allocation_Maps.Cursor := Client.Data.Memory_Slots.Find (Addr);
 --        Ev : Memory_Event := (Kind => EV_FREE, Addr => Addr);
    begin
-      if MAT.Memory.Allocation_Maps.Has_Element (It) then
+      if Log.Get_Level = Util.Log.DEBUG_LEVEL then
+         Log.Debug ("Free {0}", MAT.Types.Hex_Image (Addr));
+      end if;
+      if not MAT.Memory.Allocation_Maps.Has_Element (It) then
          --  Address is not in the map.  The application is freeing
          --  an already freed memory or something wrong.
-         null;
+         return;
       end if;
 --        Post (Client.Event_Channel, Ev);
       declare
@@ -119,6 +123,38 @@ package body MAT.Memory.Readers is
       --  Remove the memory slot from our map.
       Client.Data.Memory_Slots.Delete (It);
    end Process_Free_Message;
+
+   ----------------------
+   --  A memory deallocation message.  Find the memory slot being freed
+   --  and remove it from the allocated list.  Post an event on the event
+   --  channel to notify the listeners that the slot is removed.
+   ----------------------
+   procedure Process_Realloc_Message (Client   : in out Memory_Servant;
+                                      Addr     : in MAT.Types.Target_Addr;
+                                      Old_Addr : in MAT.Types.Target_Addr;
+                                      Slot     : in Allocation) is
+      It : MAT.Memory.Allocation_Maps.Cursor := Client.Data.Memory_Slots.Find (Old_Addr);
+      --        Ev : Memory_Event := (Kind => EV_FREE, Addr => Addr);
+   begin
+      if Log.Get_Level = Util.Log.DEBUG_LEVEL then
+         Log.Debug ("Realloc {0} to {1}", MAT.Types.Hex_Image (Old_Addr),
+                    MAT.Types.Hex_Image (Addr));
+      end if;
+      if MAT.Memory.Allocation_Maps.Has_Element (It) then
+         --  Address is not in the map.  The application is freeing
+         --  an already freed memory or something wrong.
+         --        Post (Client.Event_Channel, Ev);
+         declare
+            Slot : Allocation := MAT.Memory.Allocation_Maps.Element (It);
+         begin
+            Frames.Release (Slot.Frame);
+         end;
+
+         --  Remove the memory slot from our map.
+         Client.Data.Memory_Slots.Delete (It);
+      end if;
+      Client.Data.Memory_Slots.Insert (Addr, Slot);
+   end Process_Realloc_Message;
 
    ----------------------
    --  Unmarshall from the message the memory slot information.
@@ -169,6 +205,7 @@ package body MAT.Memory.Readers is
    procedure Dispatch (For_Servant : in out Memory_Servant;
                        Id          : in MAT.Events.Internal_Reference;
                        Params      : in MAT.Events.Const_Attribute_Table_Access;
+                       Frame       : in MAT.Events.Frame_Info;
                        Msg         : in out MAT.Readers.Message) is
       Slot     : Allocation;
       Addr     : MAT.Types.Target_Addr;
@@ -177,6 +214,9 @@ package body MAT.Memory.Readers is
       case Id is
          when MSG_MALLOC =>
             Unmarshall_Allocation (Msg, Slot, Addr, Old_Addr, Params.all);
+            Frames.Insert (F      => For_Servant.Data.Frames,
+                           Pc     => Frame.Frame (1 .. Frame.Cur_Depth),
+                           Result => Slot.Frame);
             Process_Malloc_Message (For_Servant, Addr, Slot);
 
          when MSG_FREE =>
@@ -185,8 +225,10 @@ package body MAT.Memory.Readers is
 
          when MSG_REALLOC =>
             Unmarshall_Allocation (Msg, Slot, Addr, Old_Addr, Params.all);
-            Process_Malloc_Message (For_Servant, Addr, Slot);
-            Process_Free_Message (For_Servant, Old_Addr, Slot);
+            Frames.Insert (F      => For_Servant.Data.Frames,
+                           Pc     => Frame.Frame (1 .. Frame.Cur_Depth),
+                           Result => Slot.Frame);
+            Process_Realloc_Message (For_Servant, Addr, Old_Addr, Slot);
 
          when others =>
             raise Program_Error;
