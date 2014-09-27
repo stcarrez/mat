@@ -26,6 +26,7 @@ with Ada.Text_IO;
 with MAT.Types;
 with MAT.Readers.Files;
 with MAT.Memory.Targets;
+with MAT.Symbols.Targets;
 package body MAT.Commands is
 
    --  The logger
@@ -69,6 +70,16 @@ package body MAT.Commands is
          MAT.Memory.Targets.Size_Info_Maps.Next (Iter);
       end loop;
    end Sizes_Command;
+
+   --  ------------------------------
+   --  Symbol command.
+   --  Load the symbols from the binary file.
+   --  ------------------------------
+   procedure Symbol_Command (Target : in out MAT.Targets.Target_Type'Class;
+                             Args   : in String) is
+   begin
+      MAT.Symbols.Targets.Open (Target.Symbols, Args);
+   end Symbol_Command;
 
    --  ------------------------------
    --  Exit command.
@@ -124,4 +135,5 @@ begin
    Commands.Insert ("quit", Exit_Command'Access);
    Commands.Insert ("open", Open_Command'Access);
    Commands.Insert ("sizes", Sizes_Command'Access);
+   Commands.Insert ("symbol", Symbol_Command'Access);
 end MAT.Commands;
