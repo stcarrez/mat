@@ -34,6 +34,7 @@ package body MAT.Memory.Targets is
    begin
       Memory.Reader := Memory_Reader.all'Access;
       Memory_Reader.Data := Memory'Unrestricted_Access;
+      Memory.Frames := Frames.Create_Root;
       MAT.Memory.Readers.Register (Reader, Memory_Reader);
    end Initialize;
 
