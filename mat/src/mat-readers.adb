@@ -172,7 +172,8 @@ package body MAT.Readers is
          declare
             Handler : constant Message_Handler := Handler_Maps.Element (Pos);
          begin
-            Dispatch (Handler.For_Servant.all, Handler.Id, Handler.Mapping.all'Access, Msg);
+            Dispatch (Handler.For_Servant.all, Handler.Id, Handler.Mapping.all'Access,
+                      Client.Frame.all, Msg);
          end;
       end if;
 
