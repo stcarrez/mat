@@ -19,6 +19,7 @@ with Ada.IO_Exceptions;
 with Readline;
 with MAT.Commands;
 with MAT.Targets;
+with Util.Log.Loggers;
 procedure Matp is
 
    procedure Interactive_Loop is
@@ -44,5 +45,6 @@ procedure Matp is
    end Interactive_Loop;
 
 begin
+   Util.Log.Loggers.Initialize ("matp.properties");
    Interactive_Loop;
 end Matp;
