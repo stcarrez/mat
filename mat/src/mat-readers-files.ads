@@ -30,8 +30,8 @@ package MAT.Readers.Files is
 private
 
    type File_Reader_Type is new Manager_Base with record
-      Stream : Util.Streams.Buffered.Buffered_Stream;
       File   : aliased Util.Streams.Files.File_Stream;
+      Stream : Util.Streams.Buffered.Buffered_Stream;
    end record;
 
 end MAT.Readers.Files;
