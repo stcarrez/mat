@@ -48,6 +48,7 @@ package MAT.Readers is
    procedure Dispatch (For_Servant : in out Reader_Base;
                        Id          : in MAT.Events.Internal_Reference;
                        Params      : in MAT.Events.Const_Attribute_Table_Access;
+                       Frame       : in MAT.Events.Frame_Info;
                        Msg         : in out Message) is abstract;
    --  Dispatch the message
 
