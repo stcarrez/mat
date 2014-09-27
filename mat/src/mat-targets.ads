@@ -18,21 +18,28 @@
 with MAT.Types;
 with Ada.Strings.Unbounded;
 with MAT.Memory.Targets;
+with MAT.Symbols.Targets;
 with MAT.Readers;
 package MAT.Targets is
 
-   type Target_Type is tagged limited private;
+--     type Target_Type is tagged limited private;
+
+   type Target_Type is tagged limited record
+      Memory  : MAT.Memory.Targets.Target_Memory;
+      Symbols : MAT.Symbols.Targets.Target_Symbols;
+   end record;
+
    type Target_Type_Access is access all Target_Type'Class;
 
    --  Initialize the target object to manage the memory slots, the stack frames
    --  and setup the reader to analyze the memory and other events.
    procedure Initialize (Target : in out Target_Type;
                          Reader : in out MAT.Readers.Manager_Base'Class);
-
-private
-
-   type Target_Type is tagged limited record
-      Memory : MAT.Memory.Targets.Target_Memory;
-   end record;
+--
+--  private
+--
+--     type Target_Type is tagged limited record
+--        Memory : MAT.Memory.Targets.Target_Memory;
+--     end record;
 
 end MAT.Targets;
