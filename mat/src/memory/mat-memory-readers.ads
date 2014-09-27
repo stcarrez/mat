@@ -27,7 +27,7 @@ with MAT.Memory.Targets;
 package MAT.Memory.Readers is
 
    type Memory_Servant is new MAT.Readers.Reader_Base with record
-      Data  : MAT.Memory.Targets.Target_Memory;
+      Data  : access MAT.Memory.Targets.Target_Memory;
 --        Slots : Client_Memory_Ref;
 --        Impl        : Client_Memory_Ref;
    end record;
@@ -39,6 +39,7 @@ package MAT.Memory.Readers is
    procedure Dispatch (For_Servant : in out Memory_Servant;
                        Id          : in MAT.Events.Internal_Reference;
                        Params      : in MAT.Events.Const_Attribute_Table_Access;
+                       Frame       : in MAT.Events.Frame_Info;
                        Msg         : in out MAT.Readers.Message);
 
    --  Register the reader to extract and analyze memory events.
