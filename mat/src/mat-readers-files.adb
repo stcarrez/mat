@@ -37,7 +37,7 @@ package body MAT.Readers.Files is
 
       Reader.Stream.Initialize (Size   => BUFFER_SIZE,
                                 Input  => Reader.File'Unchecked_Access,
-                                Output => Reader.File'Unchecked_Access);
+                                Output => null);
       Reader.File.Open (Mode => Ada.Streams.Stream_IO.In_File,
                         Name => Path);
    end Open;
