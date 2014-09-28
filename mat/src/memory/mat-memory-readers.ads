@@ -15,21 +15,13 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with MAT.Types;
 with MAT.Events;
---  with MAT.Ipc;
-with Util.Events;
 with MAT.Readers;
 with MAT.Memory.Targets;
---  with MAT.Memory.Clients;
---  with MAT.Ipc.Clients;
---  with MAT.Events; use MAT.Events;
 package MAT.Memory.Readers is
 
    type Memory_Servant is new MAT.Readers.Reader_Base with record
       Data  : access MAT.Memory.Targets.Target_Memory;
---        Slots : Client_Memory_Ref;
---        Impl        : Client_Memory_Ref;
    end record;
    type Memory_Reader_Access is access all Memory_Servant'Class;
    --  The memory servant is a proxy for the generic communication
