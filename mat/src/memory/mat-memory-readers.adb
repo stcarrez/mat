@@ -20,7 +20,6 @@ with Util.Log.Loggers;
 with MAT.Types;
 with MAT.Readers.Marshaller;
 with MAT.Memory;
-with MAT.Events;
 package body MAT.Memory.Readers is
 
    --  The logger
@@ -60,6 +59,25 @@ package body MAT.Memory.Readers is
             Kind => MAT.Events.T_THREAD, Ref => M_THREAD),
       6 => (Name => TIME_NAME'Access, Size => 0,
             Kind => MAT.Events.T_TIME, Ref => M_TIME));
+
+   procedure Unmarshall_Allocation (Msg      : in out MAT.Readers.Message;
+                                    Slot     : in out Allocation;
+                                    Addr     : in out MAT.Types.Target_Addr;
+                                    Old_Addr : in out MAT.Types.Target_Addr;
+                                    Defs     : in MAT.Events.Attribute_Table);
+
+   procedure Process_Malloc_Message (Client : in out Memory_Servant;
+                                     Addr   : in MAT.Types.Target_Addr;
+                                     Slot   : in out Allocation);
+
+   procedure Process_Free_Message (Client : in out Memory_Servant;
+                                   Addr   : in MAT.Types.Target_Addr;
+                                   Slot   : in Allocation);
+
+   procedure Process_Realloc_Message (Client   : in out Memory_Servant;
+                                      Addr     : in MAT.Types.Target_Addr;
+                                      Old_Addr : in MAT.Types.Target_Addr;
+                                      Slot     : in Allocation);
 
    ----------------------
    --  Register the reader to extract and analyze memory events.
@@ -115,7 +133,7 @@ package body MAT.Memory.Readers is
       end if;
 --        Post (Client.Event_Channel, Ev);
       declare
-         Slot : Allocation := MAT.Memory.Allocation_Maps.Element (It);
+         Slot : constant Allocation := MAT.Memory.Allocation_Maps.Element (It);
       begin
          Frames.Release (Slot.Frame);
       end;
@@ -145,7 +163,7 @@ package body MAT.Memory.Readers is
          --  an already freed memory or something wrong.
          --        Post (Client.Event_Channel, Ev);
          declare
-            Slot : Allocation := MAT.Memory.Allocation_Maps.Element (It);
+            Slot : constant Allocation := MAT.Memory.Allocation_Maps.Element (It);
          begin
             Frames.Release (Slot.Frame);
          end;
@@ -180,17 +198,6 @@ package body MAT.Memory.Readers is
                when M_OLD_ADDR =>
                   Old_Addr := MAT.Readers.Marshaller.Get_Target_Addr (Msg.Buffer, Def.Kind);
 
-               when M_FRAME =>
-                  --  Unmarshal_Frame (Msg, Slot.Frame);
-                  null;
-                  pragma Assert (False, "must fix M_FRAME");
-
---                 when M_TIME =>
---                    Slot.Time := MAT.Readers.Marshaller.Get_Target_Tick (Msg.Buffer, Def.Kind);
---
---                 when M_THREAD =>
---                    Slot.Thread := MAT.Readers.Marshaller.Get_Target_Thread (Msg.Buffer, Def.Kind);
-
                when M_UNKNOWN =>
                   MAT.Readers.Marshaller.Skip (Msg.Buffer, Def.Size);
 
@@ -208,7 +215,7 @@ package body MAT.Memory.Readers is
                        Frame       : in MAT.Events.Frame_Info;
                        Msg         : in out MAT.Readers.Message) is
       Slot     : Allocation;
-      Addr     : MAT.Types.Target_Addr;
+      Addr     : MAT.Types.Target_Addr := 0;
       Old_Addr : MAT.Types.Target_Addr := 0;
    begin
       case Id is
