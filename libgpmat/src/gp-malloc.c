@@ -70,6 +70,7 @@ __libc_malloc (size_t size)
      could also failed to be open).  */
   if (has_probe) 
     {
+      gp_frame_add_skip (&probe, 2);
       gp_event_malloc (&probe, p, size);
       gp_free_probe (&probe);
     }
@@ -97,6 +98,7 @@ __libc_realloc (void *ptr, size_t size)
 
   if (has_probe)
     {
+      gp_frame_add_skip (&probe, 2);
       gp_event_realloc (&probe, p, ptr, size);
       gp_free_probe (&probe);
     }
@@ -121,6 +123,7 @@ __libc_free (void* ptr)
 
   if (has_probe) 
     {
+      gp_frame_add_skip (&probe, 2);
       gp_event_free (&probe, ptr);
       gp_free_probe (&probe);
     }
