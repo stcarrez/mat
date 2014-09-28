@@ -60,6 +60,7 @@ struct rusage_info
 struct frame_info
 {
   gp_uint16	frame_count;
+  gp_uint16 frame_skip_count;
   void*	    frame_pc;
 };
 
