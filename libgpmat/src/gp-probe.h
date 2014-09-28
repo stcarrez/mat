@@ -30,6 +30,18 @@ typedef gp_uint32 gp_addr;
 
 #include "gp-unix.h"
 
+/**
+ * @brief Skip a number of frames in the backtrace report.
+ *
+ * @param gp the probe information.
+ * @param skip the number of frames to skip.
+ */
+static inline void
+gp_frame_add_skip (struct gp_probe *gp, int skip)
+{
+    gp->frame.frame_skip_count += skip;
+}
+
 extern int gp_get_probe (struct gp_probe *gp);
 
 extern void gp_free_probe (struct gp_probe *gp);
