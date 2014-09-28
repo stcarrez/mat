@@ -35,14 +35,16 @@ package body MAT.Frames is
       end if;
    end Parent;
 
+   --  ------------------------------
    --  Returns the backtrace of the current frame (up to the root).
+   --  ------------------------------
    function Backtrace (Frame :  in Frame_Type) return Frame_Table is
-      Pc      : Prame_Table (1 .. F.Depth);
+      Pc      : Frame_Table (1 .. Frame.Depth);
       Current : Frame_Type := Frame;
       Pos     : Natural   := Current.Depth;
       New_Pos : Natural;
    begin
-      while Pos /= 0 loop
+      while Current /= null and Pos /= 0 loop
          New_Pos := Pos - Current.Local_Depth + 1;
          Pc (New_Pos .. Pos) := Current.Calls (1 .. Current.Local_Depth);
          Pos     := New_Pos - 1;
