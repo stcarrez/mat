@@ -15,7 +15,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with Interfaces;
 with Interfaces.C;
 with Interfaces.C.Strings;
 with Ada.IO_Exceptions;
@@ -42,7 +41,7 @@ package body Readline is
    begin
       R := Readline (P);
       Interfaces.C.Strings.Free (P);
-      if R = Interfaces.C.Strings.null_ptr then
+      if R = Interfaces.C.Strings.Null_Ptr then
          raise Ada.IO_Exceptions.End_Error;
       end if;
       declare
