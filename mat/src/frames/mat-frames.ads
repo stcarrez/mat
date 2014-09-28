@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------
---  Frames - Representation of stack frames
+--  mat-frames - Representation of stack frames
 --  Copyright (C) 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
@@ -15,62 +15,60 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with MAT.Types; use MAT.Types;
+with MAT.Types;
 with MAT.Events;
 package MAT.Frames is
 
    Not_Found : exception;
 
-   type Frame is limited private;
-   type Frame_Ptr is access all Frame;
+   type Frame_Type is private;
 
-   subtype PC_Table is MAT.Events.Frame_Table;
+   subtype Frame_Table is MAT.Events.Frame_Table;
 
-   function Parent (F : in Frame_Ptr) return Frame_Ptr;
    --  Return the parent frame.
+   function Parent (Frame : in Frame_Type) return Frame_Type;
 
-   function Backtrace (F : in Frame_Ptr) return PC_Table;
    --  Returns the backtrace of the current frame (up to the root).
+   function Backtrace (Frame : in Frame_Type) return Frame_Table;
 
-   function Calls (F : in Frame_Ptr) return PC_Table;
    --  Returns all the direct calls made by the current frame.
+   function Calls (Frame : in Frame_Type) return Frame_Table;
 
-   function Count_Children (F : in Frame_Ptr;
-                            Recursive : in Boolean := False) return Natural;
    --  Returns the number of children in the frame.
    --  When recursive is true, compute in the sub-tree.
+   function Count_Children (Frame     : in Frame_Type;
+                            Recursive : in Boolean := False) return Natural;
 
-   function Current_Depth (F : in Frame_Ptr) return Natural;
    --  Returns the current stack depth (# of calls from the root
    --  to reach the frame).
+   function Current_Depth (F : in Frame_Type) return Natural;
 
-   function Create_Root return Frame_Ptr;
    --  Create a root for stack frame representation.
+   function Create_Root return Frame_Type;
 
-   procedure Destroy (Tree : in out Frame_Ptr);
    --  Destroy the frame tree recursively.
+   procedure Destroy (Tree : in out Frame_Type);
 
-   procedure Release (F : in Frame_Ptr);
    --  Release the frame when its reference is no longer necessary.
+   procedure Release (Frame : in Frame_Type);
 
-   procedure Insert (F : in Frame_Ptr;
-                     Pc : in Pc_Table;
-                     Result : out Frame_Ptr);
-
-   function Find (F : in Frame_Ptr;
-                  Pc : in Target_Addr) return Frame_Ptr;
-   --  Find the child frame which has the given PC address.
-   --  Returns that frame pointer or raises the Not_Found exception.
-
-   function Find (F : in Frame_Ptr;
-                  Pc : in Pc_Table) return Frame_Ptr;
-   --
+   procedure Insert (Frame : in Frame_Type;
+                     Pc : in Frame_Table;
+                     Result : out Frame_Type);
 
    --  Find the child frame which has the given PC address.
    --  Returns that frame pointer or raises the Not_Found exception.
-   procedure Find (F       : in Frame_Ptr;
-                   Pc      : in PC_Table;
-                   Result  : out Frame_Ptr;
+   function Find (Frame : in Frame_Type;
+                  Pc    : in MAT.Types.Target_Addr) return Frame_Type;
+
+   function Find (Frame : in Frame_Type;
+                  Pc    : in Frame_Table) return Frame_Type;
+
+   --  Find the child frame which has the given PC address.
+   --  Returns that frame pointer or raises the Not_Found exception.
+   procedure Find (Frame   : in Frame_Type;
+                   Pc      : in Frame_Table;
+                   Result  : out Frame_Type;
                    Last_Pc : out Natural);
 private
 
@@ -78,15 +76,18 @@ private
 
    subtype Local_Depth_Type is Natural range 0 .. Frame_Group_Size;
 
-   subtype Frame_Table is Pc_Table (1 .. Local_Depth_Type'Last);
+   subtype Mini_Frame_Table is Frame_Table (1 .. Local_Depth_Type'Last);
+
+   type Frame;
+   type Frame_Type is access all Frame;
 
    type Frame is record
-      Parent   : Frame_Ptr := null;
-      Next     : Frame_Ptr := null;
-      Children : Frame_Ptr := null;
+      Parent   : Frame_Type := null;
+      Next     : Frame_Type := null;
+      Children : Frame_Type := null;
       Used     : Natural   := 0;
       Depth    : Natural   := 0;
-      Calls    : Frame_Table;
+      Calls    : Mini_Frame_Table;
       Local_Depth : Local_Depth_Type := 0;
    end record;
 
