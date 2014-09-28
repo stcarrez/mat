@@ -15,9 +15,12 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with Ada.Strings.Unbounded;
 
 with Bfd.Symbols;
 with Bfd.Files;
+
+with MAT.Types;
 package MAT.Symbols.Targets is
 
    type Target_Symbols is limited record
@@ -28,5 +31,12 @@ package MAT.Symbols.Targets is
    --  Open the binary and load the symbols from that file.
    procedure Open (Symbols : in out Target_Symbols;
                    Path    : in String);
+
+   --  Find the nearest source file and line for the given address.
+   procedure Find_Nearest_Line (Symbols : in Target_Symbols;
+                                Addr    : in MAT.Types.Target_Addr;
+                                Name    : out Ada.Strings.Unbounded.Unbounded_String;
+                                Func    : out Ada.Strings.Unbounded.Unbounded_String;
+                                Line    : out Natural);
 
 end MAT.Symbols.Targets;
