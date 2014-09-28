@@ -61,7 +61,7 @@ struct frame_info
 {
   gp_uint16	frame_count;
   gp_uint16 frame_skip_count;
-  void*	    frame_pc;
+  void**	frame_pc;
 };
 
 typedef unsigned long long time_info;
@@ -92,7 +92,6 @@ gp_get_probe_info (struct gp_probe *gp)
     gp->rusage.ru_nivcsw = ru.ru_nivcsw;
   }
 #endif
-  
 }
 
 static inline void
@@ -106,21 +105,29 @@ gp_remote_send_probe (struct gp_probe *gp)
 #ifdef HAVE_RUSAGE
   gp_remote_send (&gp->rusage, sizeof (gp->rusage));
 #endif
-  gp_remote_send (&gp->frame.frame_count, sizeof (gp->frame.frame_count));
-  gp_remote_send (gp->frame.frame_pc,
-                  gp->frame.frame_count * sizeof (void*));
+  if (gp->frame.frame_count > gp->frame.frame_skip_count)
+    {
+      gp_uint16 val = gp->frame.frame_count - gp->frame.frame_skip_count;
+      
+      gp_remote_send (&val, sizeof (val));
+      gp_remote_send (&gp->frame.frame_pc[gp->frame.frame_skip_count],
+                      (gp->frame.frame_count - gp->frame.frame_skip_count) * sizeof (void*));
+    }
 }
 
 static inline size_t
 gp_remote_sizeof_probe (struct gp_probe *gp)
 {
-  return sizeof (gp->time)
-    + sizeof (gp->thread)
+  size_t result;
+  
+  result = sizeof (gp->time) + sizeof (gp->thread) + sizeof (gp->frame.frame_count);
 #ifdef HAVE_RUSAGE
-    + sizeof (gp->rusage)
+  result += sizeof (gp->rusage);
 #endif
-    + sizeof (gp->frame.frame_count)
-    + gp->frame.frame_count * sizeof (void*);
+  if (gp->frame.frame_count > gp->frame.frame_skip_count)
+    result += (gp->frame.frame_count - gp->frame.frame_skip_count) * sizeof (void*);
+
+  return result;
 }
 
 extern int gp_fetch_stack_frame (void** table, int size, int skip);
