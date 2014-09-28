@@ -53,43 +53,54 @@ package body MAT.Frames is
       return Pc;
    end Backtrace;
 
+   --  ------------------------------
    --  Returns the number of children in the frame.
    --  When recursive is true, compute in the sub-tree.
-   function Count_Children (F : in Frame_Ptr;
+   --  ------------------------------
+   function Count_Children (Frame     : in Frame_Type;
                             Recursive : in Boolean := False) return Natural is
-      Count : Natural   := 0;
-      N : Natural;
-      Child : Frame_Ptr := F.Children;
+      Count : Natural := 0;
+      Child : Frame_Type;
    begin
-      while Child /= null loop
-         Count := Count + 1;
-         if Recursive then
-            declare
-               N : Natural := Count_Children (Child, True);
-            begin
-               if N > 0 then
-                  N := N - 1;
-               end if;
-               Count := Count + N;
-            end;
-         end if;
-         Child := Child.Next;
-      end loop;
+      if Frame /= null then
+         Child := Frame.Children;
+         while Child /= null loop
+            Count := Count + 1;
+            if Recursive then
+               declare
+                  N : Natural := Count_Children (Child, True);
+               begin
+                  if N > 0 then
+                     N := N - 1;
+                  end if;
+                  Count := Count + N;
+               end;
+            end if;
+            Child := Child.Next;
+         end loop;
+      end if;
       return Count;
    end Count_Children;
 
+   --  ------------------------------
    --  Returns all the direct calls made by the current frame.
-   function Calls (F : in Frame_Ptr) return PC_Table is
-      Nb_Calls : Natural   := Count_Children (F);
-      Pc       : Pc_Table (1 .. Nb_Calls);
-      Child    : Frame_Ptr := F.Children;
-      Pos      : Natural   := 1;
+   --  ------------------------------
+   function Calls (Frame : in Frame_Type) return Frame_Table is
+      Nb_Calls : Natural   := Count_Children (Frame);
+      Pc       : Frame_Table (1 .. Nb_Calls);
    begin
-      while Child /= null loop
-         Pc (Pos) := Child.Calls (1);
-         Pos   := Pos + 1;
-         Child := Child.Next;
-      end loop;
+      if Frame /= null then
+         declare
+            Child : Frame_Type := Frame.Children;
+            Pos   : Natural   := 1;
+         begin
+            while Child /= null loop
+               Pc (Pos) := Child.Calls (1);
+               Pos   := Pos + 1;
+               Child := Child.Next;
+            end loop;
+         end;
+      end if;
       return Pc;
    end Calls;
 
