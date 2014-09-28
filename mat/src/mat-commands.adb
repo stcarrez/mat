@@ -22,6 +22,7 @@ with Ada.Containers.Indefinite_Hashed_Maps;
 with Ada.Strings.Hash;
 with Ada.IO_Exceptions;
 with Ada.Text_IO;
+with Ada.Strings.Unbounded;
 
 with MAT.Types;
 with MAT.Readers.Files;
@@ -55,6 +56,10 @@ package body MAT.Commands is
                        Slot : in MAT.Memory.Allocation) is
          use type MAT.Frames.Frame_Ptr;
          Backtrace : MAT.Frames.PC_Table := MAT.Frames.Backtrace (Slot.Frame);
+
+         Name : Ada.Strings.Unbounded.Unbounded_String;
+         Func : Ada.Strings.Unbounded.Unbounded_String;
+         Line : Natural;
       begin
          Ada.Text_IO.Put (MAT.Types.Hex_Image (Addr));
          Ada.Text_IO.Set_Col (14);
@@ -64,7 +69,21 @@ package body MAT.Commands is
             Ada.Text_IO.Put ("   ");
             Ada.Text_IO.Put (Natural'Image (I));
             Ada.Text_IO.Put ("   ");
-            Ada.Text_IO.Put_Line (MAT.Types.Hex_Image (Backtrace (I)));
+            Ada.Text_IO.Put (MAT.Types.Hex_Image (Backtrace (I)));
+            MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Target.Symbols,
+                                                   Addr    => Backtrace (I),
+                                                   Name    => Name,
+                                                   Func    => Func,
+                                                   Line    => Line);
+            Ada.Text_IO.Put ("   ");
+            Ada.Text_IO.Put (Ada.Strings.Unbounded.To_String (Func));
+            Ada.Text_IO.Put (" ");
+            Ada.Text_IO.Put (Ada.Strings.Unbounded.To_String (Name));
+            if Line /= 0 then
+               Ada.Text_IO.Put (":");
+               Ada.Text_IO.Put (Util.Strings.Image (Line));
+            end if;
+            Ada.Text_IO.New_Line;
          end loop;
       end Print;
 
