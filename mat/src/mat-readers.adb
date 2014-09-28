@@ -149,6 +149,7 @@ package body MAT.Readers is
       end loop;
       Frame.Time := Interfaces.Shift_Left (Interfaces.Unsigned_64 (Time_Sec), 32);
       Frame.Time := Frame.Time or Interfaces.Unsigned_64 (Time_Usec);
+      Frame.Cur_Depth := Count;
    end Read_Probe;
 
    procedure Dispatch_Message (Client : in out Manager_Base;
