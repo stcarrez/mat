@@ -181,6 +181,8 @@ package body MAT.Commands is
    begin
       if Command_Map.Has_Element (Pos) then
          Command_Map.Element (Pos) (Target, Line (Index + 1 .. Line'Last));
+      elsif Command'Length > 0 then
+         Ada.Text_IO.Put_Line ("Command '" & Command & "' not found");
       end if;
    end Execute;
 
