@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with MAT.Readers.Tests;
+with MAT.Targets.Tests;
 package body MAT.Testsuite is
 
    Tests : aliased Util.Tests.Test_Suite;
@@ -24,6 +25,7 @@ package body MAT.Testsuite is
       Result : constant Util.Tests.Access_Test_Suite := Tests'Access;
    begin
       MAT.Readers.Tests.Add_Tests (Result);
+      MAT.Targets.Tests.Add_Tests (Result);
       return Result;
    end Suite;
 
