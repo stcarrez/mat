@@ -15,7 +15,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-
+with Bfd.Sections;
 package body MAT.Symbols.Targets is
 
    --  ------------------------------
@@ -29,5 +29,38 @@ package body MAT.Symbols.Targets is
          Bfd.Symbols.Read_Symbols (Symbols.File, Symbols.Symbols);
       end if;
    end Open;
+
+   --  ------------------------------
+   --  Find the nearest source file and line for the given address.
+   --  ------------------------------
+   procedure Find_Nearest_Line (Symbols : in Target_Symbols;
+                                Addr    : in MAT.Types.Target_Addr;
+                                Name    : out Ada.Strings.Unbounded.Unbounded_String;
+                                Func    : out Ada.Strings.Unbounded.Unbounded_String;
+                                Line    : out Natural) is
+      Text_Section : Bfd.Sections.Section;
+   begin
+      Line := 0;
+      if Bfd.Files.Is_Open (Symbols.File) then
+         Text_Section := Bfd.Sections.Find_Section (Symbols.File, ".text");
+         Bfd.Symbols.Find_Nearest_Line (File    => Symbols.File,
+                                        Sec     => Text_Section,
+                                        Symbols => Symbols.Symbols,
+                                        Addr    => Bfd.Vma_Type (Addr),
+                                        Name    => Name,
+                                        Func    => Func,
+                                        Line    => Line);
+      else
+         Line := 0;
+         Name := Ada.Strings.Unbounded.To_Unbounded_String ("");
+         Func := Ada.Strings.Unbounded.To_Unbounded_String ("");
+      end if;
+
+   exception
+      when Bfd.NOT_FOUND =>
+         Line := 0;
+         Name := Ada.Strings.Unbounded.To_Unbounded_String ("");
+         Func := Ada.Strings.Unbounded.To_Unbounded_String ("");
+   end Find_Nearest_Line;
 
 end MAT.Symbols.Targets;
