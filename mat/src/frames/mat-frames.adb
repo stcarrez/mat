@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------
---  Frames - Representation of stack frames
+--  mat-frames - Representation of stack frames
 --  Copyright (C) 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
@@ -21,18 +21,24 @@ with MAT.Types; use MAT.Types;
 package body MAT.Frames is
 
    procedure Free is
-      new Ada.Unchecked_Deallocation (Frame, Frame_Ptr);
+      new Ada.Unchecked_Deallocation (Frame, Frame_Type);
 
+   --  ------------------------------
    --  Return the parent frame.
-   function Parent (F : in Frame_Ptr) return Frame_Ptr is
+   --  ------------------------------
+   function Parent (Frame : in Frame_Type) return Frame_Type is
    begin
-      return F.Parent;
+      if Frame = null then
+         return null;
+      else
+         return Frame.Parent;
+      end if;
    end Parent;
 
    --  Returns the backtrace of the current frame (up to the root).
-   function Backtrace (F :  in Frame_Ptr) return PC_Table is
-      Pc      : Pc_Table (1 .. F.Depth);
-      Current : Frame_Ptr := F;
+   function Backtrace (Frame :  in Frame_Type) return Frame_Table is
+      Pc      : Prame_Table (1 .. F.Depth);
+      Current : Frame_Type := Frame;
       Pos     : Natural   := Current.Depth;
       New_Pos : Natural;
    begin
