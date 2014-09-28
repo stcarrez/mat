@@ -83,8 +83,8 @@ gp_get_probe (struct gp_probe *gp)
 
   gp_get_probe_info (gp);
 
-  gp->frame.frame_count = gp_fetch_stack_frame (gp_stack_frame_buffer,
-                                                GP_STACK_FRAME_MAX, 1);
+  gp->frame.frame_count = gp_fetch_stack_frame (gp_stack_frame_buffer, GP_STACK_FRAME_MAX, 1);
+  gp->frame.frame_skip_count = 2;
   gp->frame.frame_pc = gp_stack_frame_buffer;
   gp->thread.thread_stack = (long) (gp) + sizeof (*gp);
   return 1;
