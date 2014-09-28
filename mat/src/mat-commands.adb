@@ -54,14 +54,18 @@ package body MAT.Commands is
       procedure Print (Addr : in MAT.Types.Target_Addr;
                        Slot : in MAT.Memory.Allocation) is
          use type MAT.Frames.Frame_Ptr;
+         Backtrace : MAT.Frames.PC_Table := MAT.Frames.Backtrace (Slot.Frame);
       begin
          Ada.Text_IO.Put (MAT.Types.Hex_Image (Addr));
          Ada.Text_IO.Set_Col (14);
          Ada.Text_IO.Put (MAT.Types.Target_Size'Image (Slot.Size));
          Ada.Text_IO.New_Line;
-         if Slot.Frame /= null then
-            MAT.Frames.Print (Ada.Text_IO.Standard_Output, Slot.Frame);
-         end if;
+         for I in Backtrace'Range loop
+            Ada.Text_IO.Put ("   ");
+            Ada.Text_IO.Put (Natural'Image (I));
+            Ada.Text_IO.Put ("   ");
+            Ada.Text_IO.Put_Line (MAT.Types.Hex_Image (Backtrace (I)));
+         end loop;
       end Print;
 
    begin
