@@ -86,7 +86,7 @@ package body MAT.Frames is
    --  Returns all the direct calls made by the current frame.
    --  ------------------------------
    function Calls (Frame : in Frame_Type) return Frame_Table is
-      Nb_Calls : Natural   := Count_Children (Frame);
+      Nb_Calls : constant Natural   := Count_Children (Frame);
       Pc       : Frame_Table (1 .. Nb_Calls);
    begin
       if Frame /= null then
@@ -182,13 +182,16 @@ package body MAT.Frames is
       end loop;
    end Release;
 
+   --  ------------------------------
    --  Split the node pointed to by `F' at the position `Pos'
    --  in the caller chain.  A new parent is created for the node
    --  and the brothers of the node become the brothers of the
    --  new parent.
    --
    --  Returns in `F' the new parent node.
-   procedure Split (F : in out Frame_Ptr; Pos : in Positive) is
+   --  ------------------------------
+   procedure Split (F     : in out Frame_Type;
+                    Pos   : in Positive) is
 
       --  Before:                       After:
       --
@@ -208,14 +211,14 @@ package body MAT.Frames is
       --                                |   c   |
       --                                +-------+
       --
-      New_Parent : Frame_Ptr := new Frame '(Parent      => F.Parent,
-                                            Next        => F.Next,
-                                            Children    => F,
-                                            Used        => F.Used,
-                                            Depth       => F.Depth,
-                                            Local_Depth => Pos,
-                                            Calls       => (others => 0));
-      Child : Frame_Ptr := F.Parent.Children;
+      New_Parent : constant Frame_Type := new Frame '(Parent      => F.Parent,
+                                                      Next        => F.Next,
+                                                      Children    => F,
+                                                      Used        => F.Used,
+                                                      Depth       => F.Depth,
+                                                      Local_Depth => Pos,
+                                                      Calls       => (others => 0));
+      Child : Frame_Type := F.Parent.Children;
    begin
       --  Move the PC values in the new parent.
       New_Parent.Calls (1 .. Pos) := F.Calls (1 .. Pos);
@@ -237,12 +240,12 @@ package body MAT.Frames is
       F := New_Parent;
    end Split;
 
-   procedure Add_Frame (F  : in Frame_Ptr;
-                        Pc : in Pc_Table;
-                        Result : out Frame_Ptr) is
-      Child         : Frame_Ptr := F;
-      Pos           : Positive  := Pc'First;
-      Current_Depth : Natural   := F.Depth;
+   procedure Add_Frame (F      : in Frame_Type;
+                        Pc     : in Frame_Table;
+                        Result : out Frame_Type) is
+      Child         : Frame_Type := F;
+      Pos           : Positive   := Pc'First;
+      Current_Depth : Natural    := F.Depth;
       Cnt           : Local_Depth_Type;
    begin
       while Pos <= Pc'Last loop
