@@ -41,7 +41,7 @@ package MAT.Frames is
 
    --  Returns the current stack depth (# of calls from the root
    --  to reach the frame).
-   function Current_Depth (F : in Frame_Type) return Natural;
+   function Current_Depth (Frame : in Frame_Type) return Natural;
 
    --  Create a root for stack frame representation.
    function Create_Root return Frame_Type;
