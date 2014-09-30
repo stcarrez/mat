@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 with MAT.Readers.Tests;
 with MAT.Targets.Tests;
+with MAT.Frames.Tests;
 package body MAT.Testsuite is
 
    Tests : aliased Util.Tests.Test_Suite;
@@ -24,6 +25,7 @@ package body MAT.Testsuite is
    function Suite return Util.Tests.Access_Test_Suite is
       Result : constant Util.Tests.Access_Test_Suite := Tests'Access;
    begin
+      MAT.Frames.Tests.Add_Tests (Result);
       MAT.Readers.Tests.Add_Tests (Result);
       MAT.Targets.Tests.Add_Tests (Result);
       return Result;
