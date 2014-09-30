@@ -25,7 +25,7 @@ procedure MAT.Frames.Print (File : in File_Type;
    use Interfaces;
 
    Depth : Natural := F.Depth - F.Local_Depth + 1;
-   Child : Frame_Ptr;
+   Child : Frame_Type;
 
    procedure Print_Address (File : in File_Type;
                             Addr : in Target_Addr);
