@@ -25,7 +25,7 @@ package MAT.Memory is
 
    type Allocation is record
       Size   : MAT.Types.Target_Size;
-      Frame  : Frames.Frame_Ptr;
+      Frame  : Frames.Frame_Type;
       Time   : MAT.Types.Target_Tick_Ref;
       Thread : MAT.Types.Target_Thread_Ref;
    end record;
