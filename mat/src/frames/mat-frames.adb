@@ -158,17 +158,19 @@ package body MAT.Frames is
       Free (Frame);
    end Destroy;
 
+   --  ------------------------------
    --  Release the frame when its reference is no longer necessary.
-   procedure Release (F : in Frame_Ptr) is
-      Current : Frame_Ptr := F;
+   --  ------------------------------
+   procedure Release (Frame : in Frame_Type) is
+      Current : Frame_Type := Frame;
    begin
-      --  Scan the fram until the root is reached
+      --  Scan the frame until the root is reached
       --  and decrement the used counter.  Free the frames
       --  when the used counter reaches 0.
       while Current /= null loop
          if Current.Used <= 1 then
             declare
-               Tree : Frame_Ptr := Current;
+               Tree : Frame_Type := Current;
             begin
                Current := Current.Parent;
                Destroy (Tree);
