@@ -125,32 +125,37 @@ package body MAT.Frames is
       return new Frame;
    end Create_Root;
 
+   --  ------------------------------
    --  Destroy the frame tree recursively.
-   procedure Destroy (Tree : in out Frame_Ptr) is
-      F : Frame_Ptr;
+   --  ------------------------------
+   procedure Destroy (Frame : in out Frame_Type) is
+      F : Frame_Type;
    begin
+      if Frame = null then
+         return;
+      end if;
       --  Destroy its children recursively.
-      while Tree.Children /= null loop
-         F := Tree.Children;
+      while Frame.Children /= null loop
+         F := Frame.Children;
          Destroy (F);
       end loop;
 
       --  Unlink from parent list.
-      if Tree.Parent /= null then
-         F := Tree.Parent.Children;
-         if F = Tree then
-            Tree.Parent.Children := Tree.Next;
+      if Frame.Parent /= null then
+         F := Frame.Parent.Children;
+         if F = Frame then
+            Frame.Parent.Children := Frame.Next;
          else
-            while F /= null and F.Next /= Tree loop
+            while F /= null and F.Next /= Frame loop
                F := F.Next;
             end loop;
             if F = null then
                raise Program_Error;
             end if;
-            F.Next := Tree.Next;
+            F.Next := Frame.Next;
          end if;
       end if;
-      Free (Tree);
+      Free (Frame);
    end Destroy;
 
    --  Release the frame when its reference is no longer necessary.
