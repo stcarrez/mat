@@ -21,7 +21,14 @@ with MAT.Types; use MAT.Types;
 package body MAT.Frames is
 
    procedure Free is
-      new Ada.Unchecked_Deallocation (Frame, Frame_Type);
+     new Ada.Unchecked_Deallocation (Frame, Frame_Type);
+
+   procedure Split (F     : in out Frame_Type;
+                    Pos   : in Positive);
+
+   procedure Add_Frame (F      : in Frame_Type;
+                        Pc     : in Frame_Table;
+                        Result : out Frame_Type);
 
    --  ------------------------------
    --  Return the parent frame.
@@ -146,7 +153,7 @@ package body MAT.Frames is
          if F = Frame then
             Frame.Parent.Children := Frame.Next;
          else
-            while F /= null and F.Next /= Frame loop
+            while F /= null and then F.Next /= Frame loop
                F := F.Next;
             end loop;
             if F = null then
@@ -320,10 +327,13 @@ package body MAT.Frames is
       Result := Current;
    end Insert;
 
+   --  ------------------------------
    --  Find the child frame which has the given PC address.
    --  Returns that frame pointer or raises the Not_Found exception.
-   function Find (F : in Frame_Ptr; Pc : in Target_Addr) return Frame_Ptr is
-      Child : Frame_Ptr := F.Children;
+   --  ------------------------------
+   function Find (Frame : in Frame_Type;
+                  Pc    : in Target_Addr) return Frame_Type is
+      Child : Frame_Type := Frame.Children;
    begin
       while Child /= null loop
          if Child.Local_Depth >= 1 and then Child.Calls (1) = Pc then
@@ -334,10 +344,13 @@ package body MAT.Frames is
       raise Not_Found;
    end Find;
 
+   --  ------------------------------
    --  Find the child frame which has the given PC address.
    --  Returns that frame pointer or raises the Not_Found exception.
-   function Find (F : in Frame_Ptr; Pc : in PC_Table) return Frame_Ptr is
-      Child : Frame_Ptr := F;
+   --  ------------------------------
+   function Find (Frame : in Frame_Type;
+                  Pc    : in Frame_Table) return Frame_Type is
+      Child : Frame_Type := Frame;
       Pos   : Positive  := Pc'First;
       Lpos  : Positive;
    begin
@@ -357,21 +370,23 @@ package body MAT.Frames is
       return Child;
    end Find;
 
+   --  ------------------------------
    --  Find the child frame which has the given PC address.
    --  Returns that frame pointer or raises the Not_Found exception.
-   procedure Find (F       : in Frame_Ptr;
-                   Pc      : in PC_Table;
-                   Result  : out Frame_Ptr;
+   --  ------------------------------
+   procedure Find (Frame   : in Frame_Type;
+                   Pc      : in Frame_Table;
+                   Result  : out Frame_Type;
                    Last_Pc : out Natural) is
-      Current : Frame_Ptr := F;
+      Current : Frame_Type := Frame;
       Pos     : Positive  := Pc'First;
       Lpos    : Positive;
    begin
-      Main_Search:
+      Main_Search :
       while Pos <= Pc'Last loop
          declare
-            Addr  : Target_Addr := Pc (Pos);
-            Child : Frame_Ptr   := Current.Children;
+            Addr  : constant Target_Addr := Pc (Pos);
+            Child : Frame_Type  := Current.Children;
          begin
             --  Find the child which has the corresponding PC.
             loop
