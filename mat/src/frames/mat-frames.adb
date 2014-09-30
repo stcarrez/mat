@@ -117,8 +117,10 @@ package body MAT.Frames is
       end if;
    end Current_Depth;
 
+   --  ------------------------------
    --  Create a root for stack frame representation.
-   function Create_Root return Frame_Ptr is
+   --  ------------------------------
+   function Create_Root return Frame_Type is
    begin
       return new Frame;
    end Create_Root;
