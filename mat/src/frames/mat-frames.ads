@@ -47,13 +47,16 @@ package MAT.Frames is
    function Create_Root return Frame_Type;
 
    --  Destroy the frame tree recursively.
-   procedure Destroy (Tree : in out Frame_Type);
+   procedure Destroy (Frame : in out Frame_Type);
 
    --  Release the frame when its reference is no longer necessary.
    procedure Release (Frame : in Frame_Type);
 
-   procedure Insert (Frame : in Frame_Type;
-                     Pc : in Frame_Table;
+   --  Insert in the frame tree the new stack frame represented by <tt>Pc</tt>.
+   --  If the frame is already known, the frame reference counter is incremented.
+   --  The frame represented by <tt>Pc</tt> is returned in <tt>Result</tt>.
+   procedure Insert (Frame  : in Frame_Type;
+                     Pc     : in Frame_Table;
                      Result : out Frame_Type);
 
    --  Find the child frame which has the given PC address.
