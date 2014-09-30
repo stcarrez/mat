@@ -268,11 +268,16 @@ package body MAT.Frames is
       Result := Child;
    end Add_Frame;
 
-   procedure Insert (F : in Frame_Ptr;
-                     Pc : in Pc_Table;
-                     Result : out Frame_Ptr) is
-      Current : Frame_Ptr := F;
-      Child   : Frame_Ptr;
+   --  ------------------------------
+   --  Insert in the frame tree the new stack frame represented by <tt>Pc</tt>.
+   --  If the frame is already known, the frame reference counter is incremented.
+   --  The frame represented by <tt>Pc</tt> is returned in <tt>Result</tt>.
+   --  ------------------------------
+   procedure Insert (Frame  : in Frame_Type;
+                     Pc     : in Frame_Table;
+                     Result : out Frame_Type) is
+      Current : Frame_Type := Frame;
+      Child   : Frame_Type;
       Pos     : Positive  := Pc'First;
       Lpos    : Positive  := 1;
       Addr    : Target_Addr;
