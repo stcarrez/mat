@@ -19,7 +19,7 @@ with Ada.Text_IO; use Ada.Text_IO;
 with MAT.Types;
 with Interfaces;
 procedure MAT.Frames.Print (File : in File_Type;
-                                  F : in Frame_Ptr) is
+                                  F : in Frame_Type) is
 
    use MAT.Types;
    use Interfaces;

@@ -17,4 +17,4 @@
 -----------------------------------------------------------------------
 with Ada.Text_IO; use Ada.Text_IO;
 procedure MAT.Frames.Print (File : in File_Type;
-                                  F : in Frame_Ptr);
+                                  F : in Frame_Type);
