@@ -101,7 +101,6 @@ package body MAT.Memory.Readers is
    procedure Process_Malloc_Message (Client : in out Memory_Servant;
                                      Addr   : in MAT.Types.Target_Addr;
                                      Slot   : in out Allocation) is
-      Inserted : Boolean;
 --        Ev       : MAT.Memory.Events.Memory_Event := (Kind => EV_MALLOC, Addr => Addr);
    begin
       if Log.Get_Level = Util.Log.DEBUG_LEVEL then
@@ -221,7 +220,7 @@ package body MAT.Memory.Readers is
       case Id is
          when MSG_MALLOC =>
             Unmarshall_Allocation (Msg, Slot, Addr, Old_Addr, Params.all);
-            Frames.Insert (F      => For_Servant.Data.Frames,
+            Frames.Insert (Frame  => For_Servant.Data.Frames,
                            Pc     => Frame.Frame (1 .. Frame.Cur_Depth),
                            Result => Slot.Frame);
             Process_Malloc_Message (For_Servant, Addr, Slot);
@@ -232,7 +231,7 @@ package body MAT.Memory.Readers is
 
          when MSG_REALLOC =>
             Unmarshall_Allocation (Msg, Slot, Addr, Old_Addr, Params.all);
-            Frames.Insert (F      => For_Servant.Data.Frames,
+            Frames.Insert (Frame  => For_Servant.Data.Frames,
                            Pc     => Frame.Frame (1 .. Frame.Cur_Depth),
                            Result => Slot.Frame);
             Process_Realloc_Message (For_Servant, Addr, Old_Addr, Slot);
