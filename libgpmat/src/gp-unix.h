@@ -28,6 +28,10 @@
 /*extern "C" {*/
 #endif
 
+#ifdef HAVE_BACKTRACE
+# define HAVE_FRAME 1
+#endif
+
 /*! @defgroup triacs Triacs Control Interface
 
 
@@ -57,12 +61,14 @@ struct rusage_info
   gp_uint32	ru_nivcsw;
 };
 
+#ifdef HAVE_FRAME
 struct frame_info
 {
   gp_uint16	frame_count;
   gp_uint16 frame_skip_count;
   void**	frame_pc;
 };
+#endif
 
 typedef unsigned long long time_info;
 
@@ -70,8 +76,12 @@ struct gp_probe
 {
   struct timeval        time;
   struct thread_info	thread;
+#ifdef HAVE_RUSAGE
   struct rusage_info	rusage;
+#endif
+#ifdef HAVE_FRAME
   struct frame_info	frame;
+#endif
 };
 
 static inline void
@@ -105,6 +115,7 @@ gp_remote_send_probe (struct gp_probe *gp)
 #ifdef HAVE_RUSAGE
   gp_remote_send (&gp->rusage, sizeof (gp->rusage));
 #endif
+#ifdef HAVE_FRAME
   if (gp->frame.frame_count > gp->frame.frame_skip_count)
     {
       gp_uint16 val = gp->frame.frame_count - gp->frame.frame_skip_count;
@@ -113,6 +124,7 @@ gp_remote_send_probe (struct gp_probe *gp)
       gp_remote_send (&gp->frame.frame_pc[gp->frame.frame_skip_count],
                       (gp->frame.frame_count - gp->frame.frame_skip_count) * sizeof (void*));
     }
+#endif
 }
 
 static inline size_t
@@ -120,13 +132,15 @@ gp_remote_sizeof_probe (struct gp_probe *gp)
 {
   size_t result;
   
-  result = sizeof (gp->time) + sizeof (gp->thread) + sizeof (gp->frame.frame_count);
+  result = sizeof (gp->time) + sizeof (gp->thread);
 #ifdef HAVE_RUSAGE
   result += sizeof (gp->rusage);
 #endif
+#ifdef HAVE_FRAME
+  result += sizeof (gp->frame.frame_count);
   if (gp->frame.frame_count > gp->frame.frame_skip_count)
     result += (gp->frame.frame_count - gp->frame.frame_skip_count) * sizeof (void*);
-
+#endif
   return result;
 }
 
