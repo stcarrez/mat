@@ -21,11 +21,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define GP_STACK_FRAME_MAX 256
-
 int _gp_initialize (void);
 
+#ifdef HAVE_FRAME
+#define GP_STACK_FRAME_MAX 256
+
 static void* gp_stack_frame_buffer [GP_STACK_FRAME_MAX];
+#endif
 
 enum gp_probe_state
 {
@@ -83,9 +85,11 @@ gp_get_probe (struct gp_probe *gp)
 
   gp_get_probe_info (gp);
 
+#ifdef HAVE_FRAME
   gp->frame.frame_count = gp_fetch_stack_frame (gp_stack_frame_buffer, GP_STACK_FRAME_MAX, 1);
   gp->frame.frame_skip_count = 2;
   gp->frame.frame_pc = gp_stack_frame_buffer;
+#endif
   gp->thread.thread_stack = (long) (gp) + sizeof (*gp);
   return 1;
 }
