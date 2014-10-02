@@ -38,7 +38,7 @@ LD = @LD@
 LDFLAGS = @LDFLAGS@ -shared
 RANLIB = @RANLIB@
 
-CPPFLAGS = -I$(top_srcdir)/include
+CPPFLAGS = -I$(top_builddir)/src -I$(top_srcdir)/src
 
 HEADERS = src/gp-events.h \
  src/gp-probe.h
@@ -51,7 +51,7 @@ SOURCES = \
 	src/gp-malloc.c \
 	src/shm-channel.c \
 	src/shm-ops.c \
-	src/frame-unix.c
+	@CPU_FILES@
 
 OBJS=gp-events.o \
 	gp-probe.o \
@@ -60,11 +60,11 @@ OBJS=gp-events.o \
 	gp-malloc.o \
 	shm-channel.o \
 	shm-ops.o \
-	frame-unix.o
+	@CPU_OBJS@
 
 LIBNAME=libgpmat.so
 
-COMPILE=$(CC) $(CFLAGS)
+COMPILE=$(CC) $(CFLAGS) $(CPPFLAGS)
 
 LIBS=-ldl
 
