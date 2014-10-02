@@ -22,6 +22,10 @@
 #include "gp-remote.h"
 #include "gp-file.h"
 
+#ifndef O_CLOEXEC
+# define O_CLOEXEC 0
+#endif
+
 struct gp_file_server 
 {
   struct gp_server root;
