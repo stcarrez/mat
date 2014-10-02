@@ -39,7 +39,9 @@ typedef gp_uint32 gp_addr;
 static inline void
 gp_frame_add_skip (struct gp_probe *gp, int skip)
 {
+#ifdef HAVE_FRAME
     gp->frame.frame_skip_count += skip;
+#endif
 }
 
 extern int gp_get_probe (struct gp_probe *gp);
