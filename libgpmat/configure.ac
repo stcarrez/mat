@@ -51,14 +51,14 @@ fi
 AC_C_CONST
 AC_C_VOLATILE
 
-AC_CHECK_HEADERS(sys/shm.h sys/ipc.h sys/sem.h sys/time.h time.h stdlib.h signal.h setjmp.h)
+AC_CHECK_HEADERS(sys/shm.h sys/ipc.h sys/sem.h sys/time.h time.h stdlib.h signal.h setjmp.h unwind.h)
 AC_CHECK_FUNCS(sigaction)
 AC_CHECK_FUNCS(backtrace)
 
 case "$target" in
   i386-*|i486-*|i586-*|i686-*)
 	cpu_files="src/frame-unix.c"
-	cpu_obj_files="src/frame-unix.o"
+	cpu_obj_files="frame-unix.o"
 	;;
 
   *)
@@ -66,9 +66,9 @@ case "$target" in
 esac
 
 CPU_FILES=$cpu_files
-CPU_OBJ_FILES=$cpu_obj_files
+CPU_OBJS=$cpu_obj_files
 AC_SUBST(CPU_FILES)
-AC_SUBST(CPU_OBJ_FILES)
+AC_SUBST(CPU_OBJS)
 AC_SUBST(AR)
 
 AC_OUTPUT([
