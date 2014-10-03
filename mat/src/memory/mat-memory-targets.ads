@@ -22,7 +22,7 @@ with MAT.Readers;
 with Ada.Containers.Ordered_Maps;
 package MAT.Memory.Targets is
 
-   type Target_Memory is record
+   type Target_Memory is limited record
       Reader        : MAT.Readers.Reader_Access;
       Memory_Slots  : Allocation_Map;
       Frames        : MAT.Frames.Frame_Type;
@@ -50,5 +50,21 @@ package MAT.Memory.Targets is
    --  Collect the information about memory slot sizes allocated by the application.
    procedure Size_Information (Memory : in Target_Memory;
                                Sizes  : in out Size_Info_Map);
+
+private
+
+   protected type Memory_Allocator is
+
+      --  Take into account a malloc probe.  The memory slot [Addr .. Slot.Size] is inserted
+      --  in the used slots map.  The freed slots that intersect the malloc'ed region are
+      --  removed from the freed map.
+      procedure Probe_Malloc (Addr   : in MAT.Types.Target_Addr;
+                              Slot   : in Allocation);
+
+   private
+      Used_Slots    : Allocation_Map;
+      Freed_Slots   : Allocation_Map;
+      Frames        : MAT.Frames.Frame_Type;
+   end Memory_Allocator;
 
 end MAT.Memory.Targets;
