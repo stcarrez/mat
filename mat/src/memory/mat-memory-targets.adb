@@ -74,4 +74,40 @@ package body MAT.Memory.Targets is
       end loop;
    end Size_Information;
 
+   protected body Memory_Allocator is
+
+      --  ------------------------------
+      --  Take into account a malloc probe.  The memory slot [Addr .. Slot.Size] is inserted
+      --  in the used slots map.  The freed slots that intersect the malloc'ed region are
+      --  removed from the freed map.
+      --  ------------------------------
+      procedure Probe_Malloc (Addr   : in MAT.Types.Target_Addr;
+                              Slot   : in Allocation) is
+         Iter : Allocation_Cursor;
+         Last : constant MAT.Types.Target_Addr := Addr + MAT.Types.Target_Addr (Slot.Size);
+         Item : Allocation;
+      begin
+         --  Walk the list of free blocks and remove all the blocks which intersect the region
+         --  [Addr .. Addr + Slot.Size].  We start walking at the first block below and near
+         --  the address.  Slots are then removed when they intersect the malloc'ed region.
+         Iter := Freed_Slots.Floor (Addr);
+         while Allocation_Maps.Has_Element (Iter) loop
+            declare
+               Freed_Addr : constant MAT.Types.Target_Addr := Allocation_Maps.Key (Iter);
+            begin
+               exit when Freed_Addr > Last;
+               Item := Allocation_Maps.Element (Iter);
+               if Freed_Addr + MAT.Types.Target_Addr (Item.Size) > Addr then
+                  Freed_Slots.Delete (Iter);
+                  Iter := Freed_Slots.Floor (Addr);
+               else
+                  Allocation_Maps.Next (Iter);
+               end if;
+            end;
+         end loop;
+         Used_Slots.Insert (Addr, Slot);
+      end Probe_Malloc;
+
+   end Memory_Allocator;
+
 end MAT.Memory.Targets;
