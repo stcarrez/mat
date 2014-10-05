@@ -61,6 +61,11 @@ private
       procedure Probe_Malloc (Addr   : in MAT.Types.Target_Addr;
                               Slot   : in Allocation);
 
+      --  Take into account a free probe.  Add the memory slot in the freed map and remove
+      --  the slot from the used slots map.
+      procedure Probe_Free (Addr   : in MAT.Types.Target_Addr;
+                            Slot   : in Allocation);
+
    private
       Used_Slots    : Allocation_Map;
       Freed_Slots   : Allocation_Map;
