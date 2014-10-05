@@ -77,15 +77,13 @@ package body MAT.Memory.Targets is
    protected body Memory_Allocator is
 
       --  ------------------------------
-      --  Take into account a malloc probe.  The memory slot [Addr .. Slot.Size] is inserted
-      --  in the used slots map.  The freed slots that intersect the malloc'ed region are
-      --  removed from the freed map.
+      --  Remove the memory region [Addr .. Addr + Size] from the free list.
       --  ------------------------------
-      procedure Probe_Malloc (Addr   : in MAT.Types.Target_Addr;
-                              Slot   : in Allocation) is
+      procedure Remove_Free (Addr : in MAT.Types.Target_Addr;
+                             Size : in MAT.Types.Target_Size) is
          Iter : Allocation_Cursor;
-         Last : constant MAT.Types.Target_Addr := Addr + MAT.Types.Target_Addr (Slot.Size);
-         Item : Allocation;
+         Last : constant MAT.Types.Target_Addr := Addr + MAT.Types.Target_Addr (Size);
+         Slot : Allocation;
       begin
          --  Walk the list of free blocks and remove all the blocks which intersect the region
          --  [Addr .. Addr + Slot.Size].  We start walking at the first block below and near
@@ -96,8 +94,8 @@ package body MAT.Memory.Targets is
                Freed_Addr : constant MAT.Types.Target_Addr := Allocation_Maps.Key (Iter);
             begin
                exit when Freed_Addr > Last;
-               Item := Allocation_Maps.Element (Iter);
-               if Freed_Addr + MAT.Types.Target_Addr (Item.Size) > Addr then
+               Slot := Allocation_Maps.Element (Iter);
+               if Freed_Addr + MAT.Types.Target_Addr (Slot.Size) > Addr then
                   Freed_Slots.Delete (Iter);
                   Iter := Freed_Slots.Floor (Addr);
                else
@@ -105,6 +103,17 @@ package body MAT.Memory.Targets is
                end if;
             end;
          end loop;
+      end Remove_Free;
+
+      --  ------------------------------
+      --  Take into account a malloc probe.  The memory slot [Addr .. Slot.Size] is inserted
+      --  in the used slots map.  The freed slots that intersect the malloc'ed region are
+      --  removed from the freed map.
+      --  ------------------------------
+      procedure Probe_Malloc (Addr   : in MAT.Types.Target_Addr;
+                              Slot   : in Allocation) is
+      begin
+         Remove_Free (Addr, Slot.Size);
          Used_Slots.Insert (Addr, Slot);
       end Probe_Malloc;
 
@@ -126,6 +135,44 @@ package body MAT.Memory.Targets is
             Freed_Slots.Insert (Addr, Item);
          end if;
       end Probe_Free;
+
+      --  ------------------------------
+      --  Take into account a realloc probe.  The old memory slot represented by Old_Addr is
+      --  removed from the used slots maps and the new memory slot [Addr .. Slot.Size] is
+      --  inserted in the used slots map.
+      --  ------------------------------
+      procedure Probe_Realloc (Addr     : in MAT.Types.Target_Addr;
+                               Old_Addr : in MAT.Types.Target_Addr;
+                               Slot     : in Allocation) is
+         Old_Slot : Allocation;
+         Pos      : Allocation_Cursor;
+
+         procedure Update_Size (Key : in MAT.Types.Target_Addr;
+                                Element : in out Allocation) is
+         begin
+            Element.Size := Slot.Size;
+            MAT.Frames.Release (Element.Frame);
+            Element.Frame := Slot.Frame;
+         end Update_Size;
+
+      begin
+         if Old_Addr /= 0 then
+            Pos := Used_Slots.Find (Old_Addr);
+            if Allocation_Maps.Has_Element (Pos) then
+               if Addr = Old_Addr then
+                  Used_Slots.Update_Element (Pos, Update_Size'Access);
+               else
+                  Used_Slots.Delete (Pos);
+                  Used_Slots.Insert (Addr, Slot);
+               end if;
+            else
+               Used_Slots.Insert (Addr, Slot);
+            end if;
+         else
+            Used_Slots.Insert (Addr, Slot);
+         end if;
+         Remove_Free (Addr, Slot.Size);
+      end Probe_Realloc;
 
    end Memory_Allocator;
 
