@@ -66,6 +66,13 @@ private
       procedure Probe_Free (Addr   : in MAT.Types.Target_Addr;
                             Slot   : in Allocation);
 
+      --  Take into account a realloc probe.  The old memory slot represented by Old_Addr is
+      --  removed from the used slots maps and the new memory slot [Addr .. Slot.Size] is
+      --  inserted in the used slots map.
+      procedure Probe_Realloc (Addr     : in MAT.Types.Target_Addr;
+                               Old_Addr : in MAT.Types.Target_Addr;
+                               Slot     : in Allocation);
+
    private
       Used_Slots    : Allocation_Map;
       Freed_Slots   : Allocation_Map;
