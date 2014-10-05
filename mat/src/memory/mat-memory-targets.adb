@@ -108,6 +108,25 @@ package body MAT.Memory.Targets is
          Used_Slots.Insert (Addr, Slot);
       end Probe_Malloc;
 
+      --  ------------------------------
+      --  Take into account a free probe.  Add the memory slot in the freed map and remove
+      --  the slot from the used slots map.
+      --  ------------------------------
+      procedure Probe_Free (Addr   : in MAT.Types.Target_Addr;
+                            Slot   : in Allocation) is
+         Item : Allocation;
+         Iter : Allocation_Cursor;
+      begin
+         Iter := Used_Slots.Find (Addr);
+         if Allocation_Maps.Has_Element (Iter) then
+            Item := Allocation_Maps.Element (Iter);
+            MAT.Frames.Release (Item.Frame);
+            Used_Slots.Delete (Iter);
+            Item.Frame := Slot.Frame;
+            Freed_Slots.Insert (Addr, Item);
+         end if;
+      end Probe_Free;
+
    end Memory_Allocator;
 
 end MAT.Memory.Targets;
