@@ -64,6 +64,8 @@ package body MAT.Frames.Tests is
                        Test_Find_Frames'Access);
       Caller.Add_Test (Suite, "Test MAT.Frames.Backtrace",
                        Test_Complex_Frames'Access);
+      Caller.Add_Test (Suite, "Test MAT.Frames.Release",
+                       Test_Release_Frames'Access);
    end Add_Tests;
 
    --  ------------------------------
@@ -218,5 +220,29 @@ package body MAT.Frames.Tests is
       end if;
       Destroy (Root);
    end Test_Complex_Frames;
+
+   --  ------------------------------
+   --  Test allocating and releasing frames.
+   --  ------------------------------
+   procedure Test_Release_Frames (T : in out Test) is
+      Root : Frame_Type := Create_Root;
+      F1   : Frame_Type;
+      F2   : Frame_Type;
+      F3   : Frame_Type;
+   begin
+      Insert (Root, Frame_1_1, F1);
+      T.Assert (Root.Used > 0, "Insert must increment the root used count");
+      MAT.Frames.Print (Ada.Text_IO.Standard_Output, Root);
+      Insert (Root, Frame_1_2, F2);
+      MAT.Frames.Print (Ada.Text_IO.Standard_Output, Root);
+      Insert (Root, Frame_1_3, F3);
+      MAT.Frames.Print (Ada.Text_IO.Standard_Output, Root);
+      Ada.Text_IO.Put_Line (Ada.Text_IO.Standard_Output, "Release frame F1");
+      Release (F1);
+      MAT.Frames.Print (Ada.Text_IO.Standard_Output, Root);
+      T.Assert (F2.Used > 0, "Release must not change other frames");
+      T.Assert (Root.Used > 0, "Release must not change root frame");
+      Destroy (Root);
+   end Test_Release_Frames;
 
 end MAT.Frames.Tests;
