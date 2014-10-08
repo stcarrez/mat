@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 with Ada.Text_IO; use Ada.Text_IO;
 with MAT.Types;
+with System.Address_Image;
 with Interfaces;
 procedure MAT.Frames.Print (File : in File_Type;
                                   F : in Frame_Type) is
@@ -56,10 +57,17 @@ procedure MAT.Frames.Print (File : in File_Type;
    end Print_Address;
 
 begin
+   Set_Col (File, Positive_Count (Depth));
+   if F.Parent = null then
+      Put_Line (File, "R " & Natural'Image (F.Used) & " - " & System.Address_Image (F.all'Address));
+   else
+      Put_Line (File, "F " & Natural'Image (F.Used) & " - " & System.Address_Image (F.all'Address)
+                & " - P=" & System.Address_Image (F.Parent.all'Address));
+   end if;
    for I in 1 .. F.Local_Depth loop
       Set_Col (File, Positive_Count (Depth));
       Print_Address (File, F.Calls (I));
-      Put_Line (" D " & Natural'Image (Depth));
+      Put_Line (File, " D " & Natural'Image (Depth));
       Depth := Depth + 1;
    end loop;
    Child := F.Children;
