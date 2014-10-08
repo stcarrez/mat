@@ -18,10 +18,14 @@
 with Ada.Unchecked_Deallocation;
 with Interfaces; use Interfaces;
 with MAT.Types; use MAT.Types;
+with Util.Log.Loggers;
 package body MAT.Frames is
 
    procedure Free is
      new Ada.Unchecked_Deallocation (Frame, Frame_Type);
+
+   --  The logger
+   Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Frames.Targets");
 
    procedure Split (F     : in out Frame_Type;
                     Pos   : in Positive);
@@ -29,6 +33,32 @@ package body MAT.Frames is
    procedure Add_Frame (F      : in Frame_Type;
                         Pc     : in Frame_Table;
                         Result : out Frame_Type);
+
+   function Check (Frame : in Frame_Type) return Boolean is
+      Parent : Frame_Type;
+      Child  : Frame_Type;
+      Found  : Boolean := False;
+      Result : Boolean := True;
+   begin
+      if Frame = null then
+         return False;
+      end if;
+      Parent := Frame.Parent;
+      if Parent /= null then
+         Child := Parent.Children;
+         while Child /= null loop
+            if Child = Frame then
+               Found := True;
+            end if;
+            if Child.Parent /= Parent then
+               Log.Error ("Invalid parent link");
+               Result := False;
+            end if;
+            Child := Child.Next;
+         end loop;
+      end if;
+      return Result;
+   end Check;
 
    --  ------------------------------
    --  Return the parent frame.
@@ -157,9 +187,11 @@ package body MAT.Frames is
                F := F.Next;
             end loop;
             if F = null then
-               raise Program_Error;
+               Log.Error ("Frame is not linked to the correct parent");
+               return;
+            else
+               F.Next := Frame.Next;
             end if;
-            F.Next := Frame.Next;
          end if;
       end if;
       Free (Frame);
@@ -175,7 +207,8 @@ package body MAT.Frames is
       --  and decrement the used counter.  Free the frames
       --  when the used counter reaches 0.
       while Current /= null loop
-         if Current.Used <= 1 then
+         Current.Used := Current.Used - 1;
+         if Current.Used = 0 then
             declare
                Tree : Frame_Type := Current;
             begin
@@ -183,7 +216,6 @@ package body MAT.Frames is
                Destroy (Tree);
             end;
          else
-            Current.Used := Current.Used - 1;
             Current := Current.Parent;
          end if;
       end loop;
@@ -221,17 +253,20 @@ package body MAT.Frames is
       New_Parent : constant Frame_Type := new Frame '(Parent      => F.Parent,
                                                       Next        => F.Next,
                                                       Children    => F,
-                                                      Used        => F.Used,
+                                                      Used        => F.Used - 1,
                                                       Depth       => F.Depth,
                                                       Local_Depth => Pos,
                                                       Calls       => (others => 0));
       Child : Frame_Type := F.Parent.Children;
    begin
+      Log.Debug ("Split frame");
+
       --  Move the PC values in the new parent.
       New_Parent.Calls (1 .. Pos) := F.Calls (1 .. Pos);
       F.Calls (1 .. F.Local_Depth - Pos) := F.Calls (Pos + 1 .. F.Local_Depth);
       F.Parent         := New_Parent;
       F.Next           := null;
+      F.Used           := F.Used - 1;
       New_Parent.Depth := F.Depth - F.Local_Depth + Pos;
       F.Local_Depth    := F.Local_Depth - Pos;
 
@@ -245,6 +280,9 @@ package body MAT.Frames is
          Child.Next := New_Parent;
       end if;
       F := New_Parent;
+      if not Check (F) then
+         Log.Error ("Error when splitting frame");
+      end if;
    end Split;
 
    procedure Add_Frame (F      : in Frame_Type;
@@ -271,6 +309,9 @@ package body MAT.Frames is
          Child.Calls (1 .. Cnt) := Pc (Pos .. Pos + Cnt - 1);
          Pos := Pos + Cnt;
          Child.Parent.Children := Child;
+         if not Check (Child) then
+            Log.Error ("Error when adding frame");
+         end if;
       end loop;
       Result := Child;
    end Add_Frame;
@@ -300,6 +341,8 @@ package body MAT.Frames is
             else
                if Lpos > 1 then
                   Split (Current, Lpos - 1);
+               else
+                  Current.Used := Current.Used + 1;
                end if;
                Add_Frame (Current, Pc (Pos .. Pc'Last), Result);
                return;
@@ -312,6 +355,7 @@ package body MAT.Frames is
                Child := Child.Next;
             end loop;
             if Child = null then
+               Current.Used := Current.Used + 1;
                Add_Frame (Current, Pc (Pos .. Pc'Last), Result);
                return;
             end if;
