@@ -33,4 +33,7 @@ package MAT.Frames.Tests is
    --  Create a complex frame tree and run tests on it.
    procedure Test_Complex_Frames (T : in out Test);
 
+   --  Test allocating and releasing frames.
+   procedure Test_Release_Frames (T : in out Test);
+
 end MAT.Frames.Tests;
