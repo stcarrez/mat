@@ -213,6 +213,18 @@ package body MAT.Memory.Targets is
          MAT.Memory.Tools.Size_Information (Used_Slots, Sizes);
       end Size_Information;
 
+      --  ------------------------------
+      --  Find from the memory map the memory slots whose address intersects
+      --  the region [From .. To] and add the memory slot in the <tt>Into</tt> list if
+      --  it does not already contains the memory slot.
+      --  ------------------------------
+      procedure Find (From   : in MAT.Types.Target_Addr;
+                      To     : in MAT.Types.Target_Addr;
+                      Into   : in out MAT.Memory.Allocation_Map) is
+      begin
+         MAT.Memory.Tools.Find (Used_Slots, From, To, Into);
+      end Find;
+
    end Memory_Allocator;
 
 end MAT.Memory.Targets;
