@@ -146,6 +146,10 @@ package body MAT.Memory.Targets is
       procedure Probe_Malloc (Addr   : in MAT.Types.Target_Addr;
                               Slot   : in Allocation) is
       begin
+         if Log.Get_Level = Util.Log.DEBUG_LEVEL then
+            Log.Debug ("Malloc at {0} size {1}", MAT.Types.Hex_Image (Addr),
+                       MAT.Types.Target_Size'Image (Slot.Size));
+         end if;
          Remove_Free (Addr, Slot.Size);
          Used_Slots.Insert (Addr, Slot);
       end Probe_Malloc;
@@ -159,6 +163,9 @@ package body MAT.Memory.Targets is
          Item : Allocation;
          Iter : Allocation_Cursor;
       begin
+         if Log.Get_Level = Util.Log.DEBUG_LEVEL then
+            Log.Debug ("Free {0}", MAT.Types.Hex_Image (Addr));
+         end if;
          Iter := Used_Slots.Find (Addr);
          if Allocation_Maps.Has_Element (Iter) then
             Item := Allocation_Maps.Element (Iter);
@@ -189,7 +196,11 @@ package body MAT.Memory.Targets is
          end Update_Size;
 
       begin
-         if Old_Addr /= 0 then
+         if Log.Get_Level = Util.Log.DEBUG_LEVEL then
+            Log.Debug ("Realloc {0} to {1} size {2}", MAT.Types.Hex_Image (old_Addr),
+                       MAT.Types.Hex_Image (Addr), MAT.Types.Target_Size'Image (Slot.Size));
+         end if;
+         if Addr /= 0 then
             Pos := Used_Slots.Find (Old_Addr);
             if Allocation_Maps.Has_Element (Pos) then
                if Addr = Old_Addr then
@@ -201,10 +212,8 @@ package body MAT.Memory.Targets is
             else
                Used_Slots.Insert (Addr, Slot);
             end if;
-         else
-            Used_Slots.Insert (Addr, Slot);
+            Remove_Free (Addr, Slot.Size);
          end if;
-         Remove_Free (Addr, Slot.Size);
       end Probe_Realloc;
 
       --  ------------------------------
