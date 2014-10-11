@@ -127,9 +127,8 @@ package body MAT.Memory.Readers is
       case Id is
          when MSG_MALLOC =>
             Unmarshall_Allocation (Msg, Slot, Addr, Old_Addr, Params.all);
-            Frames.Insert (Frame  => For_Servant.Data.Frames,
-                           Pc     => Frame.Frame (1 .. Frame.Cur_Depth),
-                           Result => Slot.Frame);
+            For_Servant.Data.Create_Frame (Pc     => Frame.Frame (1 .. Frame.Cur_Depth),
+                                           Result => Slot.Frame);
             For_Servant.Data.Probe_Malloc (Addr, Slot);
 
          when MSG_FREE =>
@@ -138,9 +137,8 @@ package body MAT.Memory.Readers is
 
          when MSG_REALLOC =>
             Unmarshall_Allocation (Msg, Slot, Addr, Old_Addr, Params.all);
-            Frames.Insert (Frame  => For_Servant.Data.Frames,
-                           Pc     => Frame.Frame (1 .. Frame.Cur_Depth),
-                           Result => Slot.Frame);
+            For_Servant.Data.Create_Frame (Pc     => Frame.Frame (1 .. Frame.Cur_Depth),
+                                           Result => Slot.Frame);
             For_Servant.Data.Probe_Realloc (Addr, Old_Addr, Slot);
 
          when others =>
