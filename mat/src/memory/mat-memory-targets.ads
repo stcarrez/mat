@@ -15,11 +15,14 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with MAT.Frames;
-with Util.Events;
-with MAT.Memory.Events;
-with MAT.Readers;
 with Ada.Containers.Ordered_Maps;
+
+with Util.Events;
+
+with MAT.Frames;
+with MAT.Readers;
+with MAT.Memory.Events;
+with MAT.Memory.Tools;
 package MAT.Memory.Targets is
 
    type Target_Memory is tagged limited private;
@@ -58,21 +61,9 @@ package MAT.Memory.Targets is
                            Pc     : in MAT.Frames.Frame_Table;
                            Result : out MAT.Frames.Frame_Type);
 
-   type Size_Info_Type is record
-      Count : Natural;
-   end record;
-
-   use type MAT.Types.Target_Size;
-
-   package Size_Info_Maps is
-     new Ada.Containers.Ordered_Maps (Key_Type => MAT.Types.Target_Size,
-                                      Element_Type => Size_Info_Type);
-   subtype Size_Info_Map is Size_Info_Maps.Map;
-   subtype Size_Info_Cursor is Size_Info_Maps.Cursor;
-
    --  Collect the information about memory slot sizes allocated by the application.
    procedure Size_Information (Memory : in out Target_Memory;
-                               Sizes  : in out Size_Info_Map);
+                               Sizes  : in out MAT.Memory.Tools.Size_Info_Map);
 
 private
 
@@ -103,7 +94,7 @@ private
                               Result : out MAT.Frames.Frame_Type);
 
       --  Collect the information about memory slot sizes allocated by the application.
-      procedure Size_Information (Sizes  : in out Size_Info_Map);
+      procedure Size_Information (Sizes  : in out MAT.Memory.Tools.Size_Info_Map);
 
    private
       Used_Slots    : Allocation_Map;
