@@ -118,6 +118,11 @@ __libc_free (void* ptr)
   struct gp_probe probe;
   int has_probe;
 
+  if (ptr == NULL)
+    {
+      return;
+    }
+
   /* Get the probe information.  */
   has_probe = gp_get_probe (&probe);
 
