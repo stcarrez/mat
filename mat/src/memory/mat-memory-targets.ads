@@ -108,7 +108,7 @@ private
    private
       Used_Slots    : Allocation_Map;
       Freed_Slots   : Allocation_Map;
-      Frames        : MAT.Frames.Frame_Type;
+      Frames        : MAT.Frames.Frame_Type := MAT.Frames.Create_Root;
    end Memory_Allocator;
 
    type Target_Memory is tagged limited record
