@@ -30,6 +30,13 @@ package MAT.Memory.Targets is
    procedure Initialize (Memory : in out Target_Memory;
                          Reader : in out MAT.Readers.Manager_Base'Class);
 
+   --  Take into account a malloc probe.  The memory slot [Addr .. Slot.Size] is inserted
+   --  in the used slots map.  The freed slots that intersect the malloc'ed region are
+   --  removed from the freed map.
+   procedure Probe_Malloc (Memory : in out Target_Memory;
+                           Addr   : in MAT.Types.Target_Addr;
+                           Slot   : in Allocation);
+
    type Size_Info_Type is record
       Count : Natural;
    end record;
