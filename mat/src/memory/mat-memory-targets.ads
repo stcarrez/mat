@@ -37,6 +37,12 @@ package MAT.Memory.Targets is
                            Addr   : in MAT.Types.Target_Addr;
                            Slot   : in Allocation);
 
+   --  Take into account a free probe.  Add the memory slot in the freed map and remove
+   --  the slot from the used slots map.
+   procedure Probe_Free (Memory : in out Target_Memory;
+                         Addr   : in MAT.Types.Target_Addr;
+                         Slot   : in Allocation);
+
    type Size_Info_Type is record
       Count : Natural;
    end record;
