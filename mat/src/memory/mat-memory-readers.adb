@@ -132,13 +132,12 @@ package body MAT.Memory.Readers is
       end if;
 --        Post (Client.Event_Channel, Ev);
       declare
-         Slot : constant Allocation := MAT.Memory.Allocation_Maps.Element (It);
+         Old_Slot : constant Allocation := MAT.Memory.Allocation_Maps.Element (It);
       begin
-         Frames.Release (Slot.Frame);
+         --  Remove the memory slot from our map.
+         Client.Data.Memory_Slots.Delete (It);
+         Frames.Release (Old_Slot.Frame);
       end;
-
-      --  Remove the memory slot from our map.
-      Client.Data.Memory_Slots.Delete (It);
    end Process_Free_Message;
 
    ----------------------
@@ -154,21 +153,20 @@ package body MAT.Memory.Readers is
       --        Ev : Memory_Event := (Kind => EV_FREE, Addr => Addr);
    begin
       if Log.Get_Level = Util.Log.DEBUG_LEVEL then
-         Log.Debug ("Realloc {0} to {1}", MAT.Types.Hex_Image (Old_Addr),
-                    MAT.Types.Hex_Image (Addr));
+         Log.Debug ("Realloc {0} to {1} size {2}", MAT.Types.Hex_Image (Old_Addr),
+                    MAT.Types.Hex_Image (Addr), MAT.Types.Target_Size'Image (Slot.Size));
       end if;
       if MAT.Memory.Allocation_Maps.Has_Element (It) then
          --  Address is not in the map.  The application is freeing
          --  an already freed memory or something wrong.
          --        Post (Client.Event_Channel, Ev);
          declare
-            Slot : constant Allocation := MAT.Memory.Allocation_Maps.Element (It);
+            Old_Slot : constant Allocation := MAT.Memory.Allocation_Maps.Element (It);
          begin
-            Frames.Release (Slot.Frame);
+            --  Remove the memory slot from our map.
+            Client.Data.Memory_Slots.Delete (It);
+            Frames.Release (Old_Slot.Frame);
          end;
-
-         --  Remove the memory slot from our map.
-         Client.Data.Memory_Slots.Delete (It);
       end if;
       Client.Data.Memory_Slots.Insert (Addr, Slot);
    end Process_Realloc_Message;
