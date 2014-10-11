@@ -20,6 +20,7 @@
 #include "gp-events.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 
 int _gp_initialize (void);
 
@@ -33,12 +34,14 @@ enum gp_probe_state
 {
   GP_NOT_INITIALIZED = 0,
   GP_NOT_CONNECTED,
-  GP_CONNECTED
+  GP_CONNECTED,
+  GP_CLOSED
 };
 
 static enum gp_probe_state gp_is_initialized = GP_NOT_INITIALIZED;
 
 static __thread int gp_recursive = 0;
+static pthread_mutex_t gp_lock;
 
 int
 gp_probe_lock ()
@@ -47,6 +50,7 @@ gp_probe_lock ()
     return -1;
 
   gp_recursive++;
+  pthread_mutex_lock (&gp_lock);
   return 0;
 }
 
@@ -54,6 +58,8 @@ void
 gp_probe_unlock ()
 {
   gp_recursive--;
+  if (gp_recursive == 0)
+    pthread_mutex_unlock (&gp_lock);
 }
 
 int
@@ -66,6 +72,7 @@ gp_get_probe (struct gp_probe *gp)
       break;
 
     case GP_NOT_CONNECTED:
+    case GP_CLOSED:
       return 0;
 
     default:
@@ -100,7 +107,7 @@ gp_free_probe (struct gp_probe *gp)
   gp_probe_unlock ();
 }
 
-void
+void __attribute__ ((destructor))
 gp_exit (void)
 {
   struct gp_probe probe;
@@ -115,7 +122,7 @@ gp_exit (void)
     }
 
   gp_remote_close ();
-  gp_is_initialized = GP_NOT_INITIALIZED;
+  gp_is_initialized = GP_CLOSED;
 }
 
 int
@@ -137,7 +144,7 @@ _gp_initialize (void)
   (void) gp_get_probe (&probe);
   gp_event_begin (&probe);
 
-  atexit (gp_exit);
+  // atexit (gp_exit);
 
   gp_free_probe (&probe);
 
