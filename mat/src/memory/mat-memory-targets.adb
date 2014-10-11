@@ -39,6 +39,18 @@ package body MAT.Memory.Targets is
    end Initialize;
 
    --  ------------------------------
+   --  Take into account a malloc probe.  The memory slot [Addr .. Slot.Size] is inserted
+   --  in the used slots map.  The freed slots that intersect the malloc'ed region are
+   --  removed from the freed map.
+   --  ------------------------------
+   procedure Probe_Malloc (Memory : in out Target_Memory;
+                           Addr   : in MAT.Types.Target_Addr;
+                           Slot   : in Allocation) is
+   begin
+      Memory.Memory.Probe_Malloc (Addr, Slot);
+   end Probe_Malloc;
+
+   --  ------------------------------
    --  Collect the information about memory slot sizes allocated by the application.
    --  ------------------------------
    procedure Size_Information (Memory : in Target_Memory;
