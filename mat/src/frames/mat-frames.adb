@@ -194,7 +194,7 @@ package body MAT.Frames is
             end if;
          end if;
       end if;
-      Free (Frame);
+--        Free (Frame);
    end Destroy;
 
    --  ------------------------------
@@ -207,8 +207,7 @@ package body MAT.Frames is
       --  and decrement the used counter.  Free the frames
       --  when the used counter reaches 0.
       while Current /= null loop
-         Current.Used := Current.Used - 1;
-         if Current.Used = 0 then
+         if Current.Used <= 1 then
             declare
                Tree : Frame_Type := Current;
             begin
@@ -216,6 +215,7 @@ package body MAT.Frames is
                Destroy (Tree);
             end;
          else
+            Current.Used := Current.Used - 1;
             Current := Current.Parent;
          end if;
       end loop;
@@ -339,10 +339,9 @@ package body MAT.Frames is
 
                --  Split this node
             else
+               Current.Used := Current.Used + 1;
                if Lpos > 1 then
                   Split (Current, Lpos - 1);
-               else
-                  Current.Used := Current.Used + 1;
                end if;
                Add_Frame (Current, Pc (Pos .. Pc'Last), Result);
                return;
@@ -359,10 +358,11 @@ package body MAT.Frames is
                Add_Frame (Current, Pc (Pos .. Pc'Last), Result);
                return;
             end if;
+            Current.Used := Current.Used + 1;
             Current := Child;
             Lpos    := 2;
             Pos     := Pos + 1;
-            Current.Used := Current.Used + 1;
+--              Current.Used := Current.Used + 1;
          end if;
       end loop;
       if Lpos <= Current.Local_Depth then
