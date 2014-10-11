@@ -89,6 +89,12 @@ private
                                Old_Addr : in MAT.Types.Target_Addr;
                                Slot     : in Allocation);
 
+      --  Insert in the frame tree the new stack frame represented by <tt>Pc</tt>.
+      --  If the frame is already known, the frame reference counter is incremented.
+      --  The frame represented by <tt>Pc</tt> is returned in <tt>Result</tt>.
+      procedure Create_Frame (Pc     : in MAT.Frames.Frame_Table;
+                              Result : out MAT.Frames.Frame_Type);
+
    private
       Used_Slots    : Allocation_Map;
       Freed_Slots   : Allocation_Map;
