@@ -51,7 +51,8 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Slot_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String) is
-      Iter : MAT.Memory.Allocation_Cursor := Target.Memory.Memory_Slots.First;
+      Slots : MAT.Memory.Allocation_Map;
+      Iter  : MAT.Memory.Allocation_Cursor;
 
       procedure Print (Addr : in MAT.Types.Target_Addr;
                        Slot : in MAT.Memory.Allocation) is
@@ -89,6 +90,10 @@ package body MAT.Commands is
       end Print;
 
    begin
+      Target.Memory.Find (From => MAT.Types.Target_Addr'First,
+                          To   => MAT.Types.Target_Addr'Last,
+                          Into => Slots);
+      Iter := Slots.First;
       while MAT.Memory.Allocation_Maps.Has_Element (Iter) loop
          MAT.Memory.Allocation_Maps.Query_Element (Iter, Print'Access);
          MAT.Memory.Allocation_Maps.Next (Iter);
