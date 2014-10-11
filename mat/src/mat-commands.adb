@@ -26,6 +26,7 @@ with Ada.Strings.Unbounded;
 
 with MAT.Types;
 with MAT.Readers.Files;
+with MAT.Memory.Tools;
 with MAT.Memory.Targets;
 with MAT.Symbols.Targets;
 with MAT.Frames;
@@ -54,8 +55,8 @@ package body MAT.Commands is
 
       procedure Print (Addr : in MAT.Types.Target_Addr;
                        Slot : in MAT.Memory.Allocation) is
-         use type MAT.Frames.Frame_Ptr;
-         Backtrace : MAT.Frames.PC_Table := MAT.Frames.Backtrace (Slot.Frame);
+         use type MAT.Frames.Frame_Type;
+         Backtrace : MAT.Frames.Frame_Table := MAT.Frames.Backtrace (Slot.Frame);
 
          Name : Ada.Strings.Unbounded.Unbounded_String;
          Func : Ada.Strings.Unbounded.Unbounded_String;
@@ -101,18 +102,18 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Sizes_Command (Target : in out MAT.Targets.Target_Type'Class;
                             Args   : in String) is
-      Sizes : MAT.Memory.Targets.Size_Info_Map;
-      Iter  : MAT.Memory.Targets.Size_Info_Cursor;
+      Sizes : MAT.Memory.Tools.Size_Info_Map;
+      Iter  : MAT.Memory.Tools.Size_Info_Cursor;
    begin
       MAT.Memory.Targets.Size_Information (Memory => Target.Memory,
                                            Sizes  => Sizes);
       Iter := Sizes.First;
-      while MAT.Memory.Targets.Size_Info_Maps.Has_Element (Iter) loop
+      while MAT.Memory.Tools.Size_Info_Maps.Has_Element (Iter) loop
          declare
             use type MAT.Types.Target_Size;
 
-            Size  : MAT.Types.Target_Size := MAT.Memory.Targets.Size_Info_Maps.Key (Iter);
-            Info  : MAT.Memory.Targets.Size_Info_Type := MAT.Memory.Targets.Size_Info_Maps.Element (Iter);
+            Size  : MAT.Types.Target_Size := MAT.Memory.Tools.Size_Info_Maps.Key (Iter);
+            Info  : MAT.Memory.Tools.Size_Info_Type := MAT.Memory.Tools.Size_Info_Maps.Element (Iter);
             Total : MAT.Types.Target_Size := Size * MAT.Types.Target_Size (Info.Count);
          begin
             Ada.Text_IO.Put (MAT.Types.Target_Size'Image (Size));
@@ -121,7 +122,7 @@ package body MAT.Commands is
             Ada.Text_IO.Set_Col (30);
             Ada.Text_IO.Put_Line (MAT.Types.Target_Size'Image (Total));
          end;
-         MAT.Memory.Targets.Size_Info_Maps.Next (Iter);
+         MAT.Memory.Tools.Size_Info_Maps.Next (Iter);
       end loop;
    end Sizes_Command;
 
