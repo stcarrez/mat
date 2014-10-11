@@ -54,4 +54,30 @@ package body MAT.Memory.Tools is
       end loop;
    end Size_Information;
 
+   --  ------------------------------
+   --  Find from the <tt>Memory</tt> map the memory slots whose address intersects
+   --  the region [From .. To] and add the memory slot in the <tt>Into</tt> list if
+   --  it does not already contains the memory slot.
+   --  ------------------------------
+   procedure Find (Memory : in MAT.Memory.Allocation_Map;
+                   From   : in MAT.Types.Target_Addr;
+                   To     : in MAT.Types.Target_Addr;
+                   Into   : in out MAT.Memory.Allocation_Map) is
+      Iter : MAT.Memory.Allocation_Cursor := Memory.Floor (From);
+      Pos  : MAT.Memory.Allocation_Cursor;
+   begin
+      while Allocation_Maps.Has_Element (Iter) loop
+         declare
+            Addr : constant MAT.Types.Target_Addr := Allocation_Maps.Key (Iter);
+         begin
+            exit when Addr > To;
+            Pos := Into.Find (Addr);
+            if not Allocation_Maps.Has_Element (Iter) then
+               Into.Insert (Addr, Allocation_Maps.Element (Iter));
+            end if;
+         end;
+         Allocation_Maps.Next (Iter);
+      end loop;
+   end Find;
+
 end MAT.Memory.Tools;
