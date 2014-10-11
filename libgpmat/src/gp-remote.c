@@ -53,7 +53,7 @@ gp_dump (const char* title, int indent, const void* addr, size_t len)
     len--;
     write (STDERR_FILENO, buf, 2);
   }
-  write (STDERR_FILENO, "\n", 1);
+  write (STDERR_FILENO, " ", 1);
 }
 
 void
