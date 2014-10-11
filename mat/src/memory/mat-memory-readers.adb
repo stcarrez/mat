@@ -54,7 +54,7 @@ package body MAT.Memory.Readers is
       3 => (Name => ADDR_NAME'Access, Size => 0,
             Kind => MAT.Events.T_POINTER, Ref => M_ADDR),
       4 => (Name => OLD_NAME'Access, Size => 0,
-            Kind => MAT.Events.T_POINTER, Ref => M_ADDR),
+            Kind => MAT.Events.T_POINTER, Ref => M_OLD_ADDR),
       5 => (Name => THREAD_NAME'Access, Size => 0,
             Kind => MAT.Events.T_THREAD, Ref => M_THREAD),
       6 => (Name => TIME_NAME'Access, Size => 0,
