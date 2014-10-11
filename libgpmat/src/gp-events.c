@@ -126,6 +126,7 @@ gp_event_send (struct gp_probe *gp, int size,
         }
     }
   va_end (argp);
+  write (STDERR_FILENO, "\n", 1);
 }
 
 const struct gp_attr_def gp_malloc_attrs[] = {
