@@ -87,6 +87,10 @@ package body MAT.Readers.Files is
          if Msg.Size < 2 then
             Log.Error ("Invalid message size {0}", Natural'Image (Msg.Size));
          end if;
+         if Ada.Streams.Stream_Element_Offset (Msg.Size) >= Data'Last then
+            Log.Error ("Message size {0} is too big", Natural'Image (Msg.Size));
+            exit;
+         end if;
 --           Msg.Size := Msg.Size - 2;
          Reader.Stream.Read (Data (0 .. Ada.Streams.Stream_Element_Offset (Msg.Size - 1)), Last);
          Msg.Buffer.Current := Msg.Buffer.Start;
