@@ -51,6 +51,17 @@ package body MAT.Memory.Targets is
    end Probe_Malloc;
 
    --  ------------------------------
+   --  Take into account a free probe.  Add the memory slot in the freed map and remove
+   --  the slot from the used slots map.
+   --  ------------------------------
+   procedure Probe_Free (Memory : in out Target_Memory;
+                         Addr   : in MAT.Types.Target_Addr;
+                         Slot   : in Allocation) is
+   begin
+      Memory.Memory.Probe_Free (Addr, Slot);
+   end Probe_Free;
+
+   --  ------------------------------
    --  Collect the information about memory slot sizes allocated by the application.
    --  ------------------------------
    procedure Size_Information (Memory : in Target_Memory;
