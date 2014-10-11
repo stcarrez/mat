@@ -35,25 +35,8 @@ package MAT.Memory is
      new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Addr,
                                       Element_Type => Allocation);
 
-   --  Memory allocation objects are stored in an AVL tree sorted
-   --  on the memory slot address.
---
    subtype Allocation_Map is Allocation_Maps.Map;
    subtype Allocation_Cursor is Allocation_Maps.Cursor;
---
---     subtype Allocation_Ref is Allocation_AVL.Iterator;
---     --  Type representing a reference to a memory allocation slot.
---
---     use Allocation_AVL;
---     package Allocation_Ref_Containers is new BC.Containers (Allocation_Ref);
---     package Allocation_Ref_Trees is new Allocation_Ref_Containers.Trees;
---     package Allocation_Ref_AVL is
---       new Allocation_Ref_Trees.AVL (Key => Target_Addr,
---                                     Storage => Global_Heap.Storage);
---     --  Tree of references to memory allocation objects.
---
---     subtype Allocation_Ref_Map is Allocation_Ref_AVL.AVL_Tree;
---     subtype Allocation_Ref_Ref is Allocation_Ref_AVL.Iterator;
 
 private
 
