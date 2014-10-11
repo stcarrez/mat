@@ -221,18 +221,18 @@ package body MAT.Memory.Readers is
             Frames.Insert (Frame  => For_Servant.Data.Frames,
                            Pc     => Frame.Frame (1 .. Frame.Cur_Depth),
                            Result => Slot.Frame);
-            Process_Malloc_Message (For_Servant, Addr, Slot);
+            For_Servant.Data.Probe_Malloc (Addr, Slot);
 
          when MSG_FREE =>
             Unmarshall_Allocation (Msg, Slot, Addr, Old_Addr, Params.all);
-            Process_Free_Message (For_Servant, Addr, Slot);
+            For_Servant.Data.Probe_Free (Addr, Slot);
 
          when MSG_REALLOC =>
             Unmarshall_Allocation (Msg, Slot, Addr, Old_Addr, Params.all);
             Frames.Insert (Frame  => For_Servant.Data.Frames,
                            Pc     => Frame.Frame (1 .. Frame.Cur_Depth),
                            Result => Slot.Frame);
-            Process_Realloc_Message (For_Servant, Addr, Old_Addr, Slot);
+            For_Servant.Data.Probe_Realloc (Addr, Old_Addr, Slot);
 
          when others =>
             raise Program_Error;
