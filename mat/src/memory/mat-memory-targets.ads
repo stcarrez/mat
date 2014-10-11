@@ -22,12 +22,7 @@ with MAT.Readers;
 with Ada.Containers.Ordered_Maps;
 package MAT.Memory.Targets is
 
-   type Target_Memory is limited record
-      Reader        : MAT.Readers.Reader_Access;
-      Memory_Slots  : Allocation_Map;
-      Frames        : MAT.Frames.Frame_Type;
---        Event_Channel : MAT.Memory.Events.Memory_Event_Channel.Channel;
-   end record;
+   type Target_Memory is limited private;
    type Client_Memory_Ref is access all Target_Memory;
 
    --  Initialize the target memory object to manage the memory slots, the stack frames
@@ -78,5 +73,10 @@ private
       Freed_Slots   : Allocation_Map;
       Frames        : MAT.Frames.Frame_Type;
    end Memory_Allocator;
+
+   type Target_Memory is limited record
+      Reader        : MAT.Readers.Reader_Access;
+      Memory        : Memory_Allocator;
+   end record;
 
 end MAT.Memory.Targets;
