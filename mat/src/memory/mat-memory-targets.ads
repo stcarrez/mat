@@ -71,7 +71,7 @@ package MAT.Memory.Targets is
    subtype Size_Info_Cursor is Size_Info_Maps.Cursor;
 
    --  Collect the information about memory slot sizes allocated by the application.
-   procedure Size_Information (Memory : in Target_Memory;
+   procedure Size_Information (Memory : in out Target_Memory;
                                Sizes  : in out Size_Info_Map);
 
 private
