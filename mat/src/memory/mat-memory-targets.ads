@@ -65,6 +65,14 @@ package MAT.Memory.Targets is
    procedure Size_Information (Memory : in out Target_Memory;
                                Sizes  : in out MAT.Memory.Tools.Size_Info_Map);
 
+   --  Find from the memory map the memory slots whose address intersects
+   --  the region [From .. To] and add the memory slot in the <tt>Into</tt> list if
+   --  it does not already contains the memory slot.
+   procedure Find (Memory : in out Target_Memory;
+                   From   : in MAT.Types.Target_Addr;
+                   To     : in MAT.Types.Target_Addr;
+                   Into   : in out MAT.Memory.Allocation_Map);
+
 private
 
    protected type Memory_Allocator is
