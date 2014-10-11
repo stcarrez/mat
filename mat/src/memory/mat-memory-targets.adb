@@ -88,37 +88,10 @@ package body MAT.Memory.Targets is
    --  ------------------------------
    --  Collect the information about memory slot sizes allocated by the application.
    --  ------------------------------
-   procedure Size_Information (Memory : in Target_Memory;
+   procedure Size_Information (Memory : in out Target_Memory;
                                Sizes  : in out Size_Info_Map) is
-      Iter : Allocation_Cursor := Memory.Memory_Slots.First;
-
-      procedure Update_Count (Size : in MAT.Types.Target_Size;
-                              Info : in out Size_Info_Type) is
-      begin
-         Info.Count := Info.Count + 1;
-      end Update_Count;
-
-      procedure Collect (Addr : in MAT.Types.Target_Addr;
-                         Slot : in Allocation) is
-         Pos : Size_Info_Cursor := Sizes.Find (Slot.Size);
-      begin
-         if Size_Info_Maps.Has_Element (Pos) then
-            Sizes.Update_Element (Pos, Update_Count'Access);
-         else
-            declare
-               Info : Size_Info_Type;
-            begin
-               Info.Count := 1;
-               Sizes.Insert (Slot.Size, Info);
-            end;
-         end if;
-      end Collect;
-
    begin
-      while Allocation_Maps.Has_Element (Iter) loop
-         Allocation_Maps.Query_Element (Iter, Collect'Access);
-         Allocation_Maps.Next (Iter);
-      end loop;
+      Memory.Memory.Size_Information (Sizes);
    end Size_Information;
 
    protected body Memory_Allocator is
