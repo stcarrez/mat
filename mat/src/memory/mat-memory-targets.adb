@@ -210,6 +210,17 @@ package body MAT.Memory.Targets is
          Remove_Free (Addr, Slot.Size);
       end Probe_Realloc;
 
+      --  ------------------------------
+      --  Insert in the frame tree the new stack frame represented by <tt>Pc</tt>.
+      --  If the frame is already known, the frame reference counter is incremented.
+      --  The frame represented by <tt>Pc</tt> is returned in <tt>Result</tt>.
+      --  ------------------------------
+      procedure Create_Frame (Pc     : in MAT.Frames.Frame_Table;
+                              Result : out MAT.Frames.Frame_Type) is
+      begin
+         MAT.Frames.Insert (Frames, Pc, Result);
+      end Create_Frame;
+
    end Memory_Allocator;
 
 end MAT.Memory.Targets;
