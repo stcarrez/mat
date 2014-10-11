@@ -19,6 +19,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 #include "gp-remote.h"
 #include "gp-file.h"
 
@@ -98,16 +99,33 @@ void gp_file_close (struct gp_server* server)
 
 struct gp_file_server* gp_file_open (const char* param)
 {
-  server.fd = open (param, O_CREAT | O_WRONLY | O_TRUNC | O_CLOEXEC, 0644);
-   if (server.fd <= 0) 
-     {
-	return NULL;
-     }
-   server.write_ptr = server.buffer;
-   server.last_ptr  = &server.buffer[sizeof (server.buffer)];
-   server.root.to_send        = gp_file_send;
-   server.root.to_synchronize = gp_file_synchronize;
-   server.root.to_close       = gp_file_close;
+  char path[PATH_MAX];
+  char* s;
+  int pid = getpid ();
+  int i;
+
+  s = path;
+  while ((s < &path[PATH_MAX - 10]) && (*param != 0))
+    {
+      *s++ = *param++;
+    }
+  *s++ = '-';
+  for (i = 1000; i > 0; i = i / 10)
+    {
+      *s++ = "0123456789"[(pid / i) % 10];
+    }
+  strcpy (s, ".mat");
+
+  server.fd = open (path, O_CREAT | O_WRONLY | O_TRUNC | O_CLOEXEC, 0644);
+  if (server.fd <= 0) 
+    {
+      return NULL;
+    }
+  server.write_ptr = server.buffer;
+  server.last_ptr  = &server.buffer[sizeof (server.buffer)];
+  server.root.to_send        = gp_file_send;
+  server.root.to_synchronize = gp_file_synchronize;
+  server.root.to_close       = gp_file_close;
    
-   return &server;
+  return &server;
 }
