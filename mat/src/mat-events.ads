@@ -34,7 +34,7 @@ package MAT.Events is
                            T_TIME,
                            T_SIZE_T);
 
-   type Event_Type is new Interfaces.Unsigned_32;
+   type Event_Type is (EVENT_BEGIN, EVENT_END, EVENT_MALLOC, EVENT_FREE, EVENT_REALLOC);
 
    subtype Internal_Reference is Natural;
 
