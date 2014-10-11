@@ -102,6 +102,9 @@ private
       procedure Create_Frame (Pc     : in MAT.Frames.Frame_Table;
                               Result : out MAT.Frames.Frame_Type);
 
+      --  Collect the information about memory slot sizes allocated by the application.
+      procedure Size_Information (Sizes  : in out Size_Info_Map);
+
    private
       Used_Slots    : Allocation_Map;
       Freed_Slots   : Allocation_Map;
