@@ -35,4 +35,12 @@ package MAT.Memory.Tools is
    procedure Size_Information (Memory : in MAT.Memory.Allocation_Map;
                                Sizes  : in out Size_Info_Map);
 
+   --  Find from the <tt>Memory</tt> map the memory slots whose address intersects
+   --  the region [From .. To] and add the memory slot in the <tt>Into</tt> list if
+   --  it does not already contains the memory slot.
+   procedure Find (Memory : in MAT.Memory.Allocation_Map;
+                   From   : in MAT.Types.Target_Addr;
+                   To     : in MAT.Types.Target_Addr;
+                   Into   : in out MAT.Memory.Allocation_Map);
+
 end MAT.Memory.Tools;
