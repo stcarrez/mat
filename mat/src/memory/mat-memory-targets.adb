@@ -62,6 +62,19 @@ package body MAT.Memory.Targets is
    end Probe_Free;
 
    --  ------------------------------
+   --  Take into account a realloc probe.  The old memory slot represented by Old_Addr is
+   --  removed from the used slots maps and the new memory slot [Addr .. Slot.Size] is
+   --  inserted in the used slots map.
+   --  ------------------------------
+   procedure Probe_Realloc (Memory : in out Target_Memory;
+                            Addr     : in MAT.Types.Target_Addr;
+                            Old_Addr : in MAT.Types.Target_Addr;
+                            Slot     : in Allocation) is
+   begin
+      Memory.Memory.Probe_Realloc (Addr, Old_Addr, Slot);
+   end Probe_Realloc;
+
+   --  ------------------------------
    --  Collect the information about memory slot sizes allocated by the application.
    --  ------------------------------
    procedure Size_Information (Memory : in Target_Memory;
