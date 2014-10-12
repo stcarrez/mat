@@ -65,17 +65,43 @@ package body MAT.Memory.Tools is
                    Into   : in out MAT.Memory.Allocation_Map) is
       Iter : MAT.Memory.Allocation_Cursor := Memory.Ceiling (From);
       Pos  : MAT.Memory.Allocation_Cursor;
+      Addr : MAT.Types.Target_Addr;
+      Size : MAT.Types.Target_Size;
    begin
+      --  If there was no slot with the ceiling From address, we have to start from the last
+      --  node because the memory slot may intersect our region.
+      if not Allocation_Maps.Has_Element (Iter) then
+         Iter := Memory.Last;
+         if not Allocation_Maps.Has_Element (Iter) then
+            return;
+         end if;
+         Addr := Allocation_Maps.Key (Iter);
+         Size := Allocation_Maps.Element (Iter).Size;
+         if Addr + Size < From then
+            return;
+         end if;
+      end if;
+
+      --  Move backward until the previous memory slot does not overlap anymore our region.
+      --  In theory, going backward once is enough but if there was a target malloc issue,
+      --  several malloc may overlap the same region (which is bad for the target).
+      loop
+         Pos := Allocation_Maps.Previous (Iter);
+         exit when not Allocation_Maps.Has_Element (Pos);
+         Addr := Allocation_Maps.Key (Pos);
+         Size := Allocation_Maps.Element (Pos).Size;
+         exit when Addr + Size < From;
+         Iter := Pos;
+      end loop;
+
+      --  Add the memory slots until we moved to the end of the region.
       while Allocation_Maps.Has_Element (Iter) loop
-         declare
-            Addr : constant MAT.Types.Target_Addr := Allocation_Maps.Key (Iter);
-         begin
-            exit when Addr > To;
-            Pos := Into.Find (Addr);
-            if not Allocation_Maps.Has_Element (Pos) then
-               Into.Insert (Addr, Allocation_Maps.Element (Iter));
-            end if;
-         end;
+         Addr := Allocation_Maps.Key (Iter);
+         exit when Addr > To;
+         Pos := Into.Find (Addr);
+         if not Allocation_Maps.Has_Element (Pos) then
+            Into.Insert (Addr, Allocation_Maps.Element (Iter));
+         end if;
          Allocation_Maps.Next (Iter);
       end loop;
    end Find;
