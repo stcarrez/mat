@@ -63,7 +63,7 @@ package body MAT.Memory.Tools is
                    From   : in MAT.Types.Target_Addr;
                    To     : in MAT.Types.Target_Addr;
                    Into   : in out MAT.Memory.Allocation_Map) is
-      Iter : MAT.Memory.Allocation_Cursor := Memory.Floor (From);
+      Iter : MAT.Memory.Allocation_Cursor := Memory.Ceiling (From);
       Pos  : MAT.Memory.Allocation_Cursor;
    begin
       while Allocation_Maps.Has_Element (Iter) loop
@@ -72,7 +72,7 @@ package body MAT.Memory.Tools is
          begin
             exit when Addr > To;
             Pos := Into.Find (Addr);
-            if not Allocation_Maps.Has_Element (Iter) then
+            if not Allocation_Maps.Has_Element (Pos) then
                Into.Insert (Addr, Allocation_Maps.Element (Iter));
             end if;
          end;
