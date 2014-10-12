@@ -23,8 +23,6 @@ package MAT.Memory.Tools is
       Count : Natural;
    end record;
 
-   use type MAT.Types.Target_Size;
-
    package Size_Info_Maps is
      new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Size,
                                       Element_Type => Size_Info_Type);
