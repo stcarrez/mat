@@ -19,7 +19,6 @@
 with System; use System;
 with System.Address_To_Access_Conversions;
 with System.Storage_Elements;
-with MAT.Types;
 with Util.Log.Loggers;
 with Interfaces; use Interfaces;
 package body MAT.Readers.Marshaller is
@@ -36,7 +35,7 @@ package body MAT.Readers.Marshaller is
    function Get_Raw_Uint32 (Buf : System.Address) return MAT.Types.Uint32 is
       use Uint32_Access;
 
-      P : Object_Pointer := To_Pointer (Buf);
+      P : constant Object_Pointer := To_Pointer (Buf);
    begin
       return P.all;
    end Get_Raw_Uint32;
@@ -44,7 +43,7 @@ package body MAT.Readers.Marshaller is
    function Get_Uint8 (Buffer : in Buffer_Ptr) return MAT.Types.Uint8 is
       use Uint8_Access;
 
-      P : Object_Pointer := To_Pointer (Buffer.Current);
+      P : constant Object_Pointer := To_Pointer (Buffer.Current);
    begin
       if Buffer.Size = 0 then
          Log.Error ("Not enough data to get a uint8");
@@ -58,9 +57,9 @@ package body MAT.Readers.Marshaller is
    function Get_Uint16 (Buffer : in Buffer_Ptr) return MAT.Types.Uint16 is
       use Uint8_Access;
 
-      High : Object_Pointer := To_Pointer (Buffer.Current
-                                           + Storage_Offset (1));
-      Low : Object_Pointer := To_Pointer (Buffer.Current);
+      High : constant Object_Pointer := To_Pointer (Buffer.Current
+                                                    + Storage_Offset (1));
+      Low  : constant Object_Pointer := To_Pointer (Buffer.Current);
    begin
       if Buffer.Size <= 1 then
          Log.Error ("Not enough data to get a uint16");
@@ -74,7 +73,7 @@ package body MAT.Readers.Marshaller is
    function Get_Uint32 (Buffer : in Buffer_Ptr) return MAT.Types.Uint32 is
       use Uint32_Access;
 
-      P : Object_Pointer := To_Pointer (Buffer.Current);
+      P : constant Object_Pointer := To_Pointer (Buffer.Current);
    begin
       if Buffer.Size < 4 then
          Log.Error ("Not enough data to get a uint32");
@@ -89,7 +88,7 @@ package body MAT.Readers.Marshaller is
    end Get_Uint32;
 
    function Get_Uint64 (Buffer : in Buffer_Ptr) return MAT.Types.Uint64 is
-      Val : MAT.Types.Uint64 := MAT.Types.Uint64 (Get_Uint32 (Buffer));
+      Val : constant MAT.Types.Uint64 := MAT.Types.Uint64 (Get_Uint32 (Buffer));
    begin
       return Val + MAT.Types.Uint64 (Get_Uint32 (Buffer)) * 2**32;
    end Get_Uint64;
@@ -112,7 +111,7 @@ package body MAT.Readers.Marshaller is
 
          when others =>
             Log.Error ("Invalid attribute type {0}",
-                       MAT.EVents.Attribute_Type'Image (Kind));
+                       MAT.Events.Attribute_Type'Image (Kind));
             return 0;
       end case;
    end Get_Target_Value;
