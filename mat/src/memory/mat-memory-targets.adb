@@ -184,20 +184,22 @@ package body MAT.Memory.Targets is
       procedure Probe_Realloc (Addr     : in MAT.Types.Target_Addr;
                                Old_Addr : in MAT.Types.Target_Addr;
                                Slot     : in Allocation) is
-         Old_Slot : Allocation;
-         Pos      : Allocation_Cursor;
+         procedure Update_Size (Key     : in MAT.Types.Target_Addr;
+                                Element : in out Allocation);
 
-         procedure Update_Size (Key : in MAT.Types.Target_Addr;
+         procedure Update_Size (Key     : in MAT.Types.Target_Addr;
                                 Element : in out Allocation) is
+            pragma Unreferenced (Key);
          begin
             Element.Size := Slot.Size;
             MAT.Frames.Release (Element.Frame);
             Element.Frame := Slot.Frame;
          end Update_Size;
 
+         Pos      : Allocation_Cursor;
       begin
          if Log.Get_Level = Util.Log.DEBUG_LEVEL then
-            Log.Debug ("Realloc {0} to {1} size {2}", MAT.Types.Hex_Image (old_Addr),
+            Log.Debug ("Realloc {0} to {1} size {2}", MAT.Types.Hex_Image (Old_Addr),
                        MAT.Types.Hex_Image (Addr), MAT.Types.Target_Size'Image (Slot.Size));
          end if;
          if Addr /= 0 then
