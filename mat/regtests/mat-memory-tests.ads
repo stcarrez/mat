@@ -27,4 +27,7 @@ package MAT.Memory.Tests is
    --  Test Probe_Malloc with update of memory slots.
    procedure Test_Probe_Malloc (T : in out Test);
 
+   --  Test Probe_Free with update of memory slots.
+   procedure Test_Probe_Free (T : in out Test);
+
 end MAT.Memory.Tests;
