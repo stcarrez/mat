@@ -124,6 +124,8 @@ package body MAT.Memory.Readers is
       Addr     : MAT.Types.Target_Addr := 0;
       Old_Addr : MAT.Types.Target_Addr := 0;
    begin
+      Slot.Thread := Frame.Thread;
+      Slot.Time   := Frame.Time;
       case Id is
          when MSG_MALLOC =>
             Unmarshall_Allocation (Msg, Slot, Addr, Old_Addr, Params.all);
