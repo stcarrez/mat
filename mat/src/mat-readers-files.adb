@@ -17,8 +17,6 @@
 -----------------------------------------------------------------------
 with Ada.Streams.Stream_IO;
 
-with Util.Streams.Buffered;
-with Util.Streams.Files;
 with Util.Log.Loggers;
 with MAT.Readers.Marshaller;
 package body MAT.Readers.Files is
@@ -50,8 +48,6 @@ package body MAT.Readers.Files is
       Buffer  : aliased Buffer_Type;
       Msg     : Message;
       Last    : Ada.Streams.Stream_Element_Offset;
-      Size    : MAT.Types.Uint16;
-      Version : MAT.Types.Uint16;
       Format  : MAT.Types.Uint8;
    begin
       Msg.Buffer := Buffer'Unchecked_Access;
@@ -72,11 +68,10 @@ package body MAT.Readers.Files is
       if Msg.Size < 2 then
          Log.Error ("Invalid message size {0}", Natural'Image (Msg.Size));
       end if;
---        Msg.Size := Msg.Size - 2;
       Reader.Stream.Read (Data (0 .. Ada.Streams.Stream_Element_Offset (Msg.Size - 1)), Last);
       Msg.Buffer.Current := Msg.Buffer.Start;
       Msg.Buffer.Last    := Data (Last)'Address;
-      Msg.Buffer.Size    := Natural (Msg.Size);
+      Msg.Buffer.Size    := Msg.Size;
       Reader.Read_Headers (Msg);
       while not Reader.Stream.Is_Eof loop
          Reader.Stream.Read (Data (0 .. 1), Last);
@@ -91,11 +86,10 @@ package body MAT.Readers.Files is
             Log.Error ("Message size {0} is too big", Natural'Image (Msg.Size));
             exit;
          end if;
---           Msg.Size := Msg.Size - 2;
          Reader.Stream.Read (Data (0 .. Ada.Streams.Stream_Element_Offset (Msg.Size - 1)), Last);
          Msg.Buffer.Current := Msg.Buffer.Start;
          Msg.Buffer.Last    := Data (Last)'Address;
-         Msg.Buffer.Size := Natural (Msg.Size);
+         Msg.Buffer.Size    := Msg.Size;
          Reader.Dispatch_Message (Msg);
       end loop;
    end Read_All;
