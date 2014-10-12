@@ -33,6 +33,8 @@ package body MAT.Memory.Tests is
    begin
       Caller.Add_Test (Suite, "Test MAT.Memory.Probe_Malloc",
                        Test_Probe_Malloc'Access);
+      Caller.Add_Test (Suite, "Test MAT.Memory.Probe_Free",
+                       Test_Probe_Free'Access);
    end Add_Tests;
 
    --  ------------------------------
@@ -89,5 +91,25 @@ package body MAT.Memory.Tests is
                                 "Find must return 1 slot in range [101 .. 1000]");
 
    end Test_Probe_Malloc;
+
+   --  ------------------------------
+   --  Test Probe_Free with update of memory slots.
+   --  ------------------------------
+   procedure Test_Probe_Free (T : in out Test) is
+      M    : MAT.Memory.Targets.Target_Memory;
+      S    : Allocation;
+      R    : Allocation_Map;
+   begin
+      S.Size :=  4;
+      M.Create_Frame (Frame_1_0, S.Frame);
+
+      --  Malloc followed by a free.
+      M.Probe_Malloc (10, S);
+      M.Probe_Free (10, S);
+
+      M.Find (1, 1000, R);
+      Util.Tests.Assert_Equals (T, 0, Integer (R.Length),
+                                "Find must return 0 slot after a free");
+   end Test_Probe_Free;
 
 end MAT.Memory.Tests;
