@@ -66,6 +66,10 @@ package body MAT.Commands is
          Ada.Text_IO.Put (MAT.Types.Hex_Image (Addr));
          Ada.Text_IO.Set_Col (14);
          Ada.Text_IO.Put (MAT.Types.Target_Size'Image (Slot.Size));
+         Ada.Text_IO.Set_Col (30);
+         Ada.Text_IO.Put (MAT.Types.Target_Thread_Ref'Image (Slot.Thread));
+         Ada.Text_IO.Set_Col (50);
+         Ada.Text_IO.Put (MAT.Types.Target_Tick_Ref'Image (Slot.Time));
          Ada.Text_IO.New_Line;
          for I in Backtrace'Range loop
             Ada.Text_IO.Put ("   ");
