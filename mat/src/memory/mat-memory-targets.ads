@@ -15,13 +15,9 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with Ada.Containers.Ordered_Maps;
-
-with Util.Events;
 
 with MAT.Frames;
 with MAT.Readers;
-with MAT.Memory.Events;
 with MAT.Memory.Tools;
 package MAT.Memory.Targets is
 
