@@ -110,6 +110,19 @@ package body MAT.Memory.Tests is
       M.Find (1, 1000, R);
       Util.Tests.Assert_Equals (T, 0, Integer (R.Length),
                                 "Find must return 0 slot after a free");
+
+      --  Free the same slot a second time (free error).
+      M.Probe_Free (10, S);
+
+      --  Malloc followed by a free.
+      M.Probe_Malloc (10, S);
+      M.Probe_Malloc (20, S);
+      M.Probe_Malloc (30, S);
+      M.Probe_Free (20, S);
+
+      M.Find (1, 1000, R);
+      Util.Tests.Assert_Equals (T, 2, Integer (R.Length),
+                                "Find must return 2 slots after a malloc/free sequence");
    end Test_Probe_Free;
 
 end MAT.Memory.Tests;
