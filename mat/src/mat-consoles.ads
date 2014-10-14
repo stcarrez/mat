@@ -72,12 +72,13 @@ package MAT.Consoles is
 
 private
 
-   type Field_Size_Array is array (Field_Type) of Positive;
+   type Field_Size_Array is array (Field_Type) of Natural;
 
    type Field_List_Array is array (1 .. Field_Type'Pos (Field_Type'Last)) of Field_Type;
 
    type Console_Type is abstract tagged limited record
       Sizes       : Field_Size_Array := (others => 1);
+      Cols        : Field_Size_Array := (others => 1);
       Fields      : Field_List_Array;
       Field_Count : Natural := 0;
    end record;
