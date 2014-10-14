@@ -41,6 +41,15 @@ package body MAT.Consoles.Text is
    end Print_Title;
 
    --  ------------------------------
+   --  Start a new title in a report.
+   --  ------------------------------
+   overriding
+   procedure Start_Title (Console : in out Console_Type) is
+   begin
+      null;
+   end Start_Title;
+
+   --  ------------------------------
    --  Start a new row in a report.
    --  ------------------------------
    overriding
