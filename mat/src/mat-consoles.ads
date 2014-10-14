@@ -20,9 +20,12 @@ package MAT.Consoles is
 
    type Field_Type is (F_ADDR,
                        F_SIZE,
-                       F_THREAD);
+                       F_TOTAL_SIZE,
+                       F_THREAD,
+                       F_COUNT);
 
    type Console_Type is abstract tagged limited private;
+   type Console_Access is access all Console_Type'Class;
 
    --  Print the field value for the given field.
    procedure Print_Field (Console : in out Console_Type;
@@ -33,6 +36,12 @@ package MAT.Consoles is
    procedure Print_Title (Console : in out Console_Type;
                           Field   : in Field_Type;
                           Title   : in String) is abstract;
+
+   --  Print the title for the given field and setup the associated field size.
+   procedure Print_Title (Console : in out Console_Type;
+                          Field   : in Field_Type;
+                          Title   : in String;
+                          Length  : in Positive);
 
    --  Format the address and print it for the given field.
    procedure Print_Field (Console : in out Console_Type;
@@ -51,8 +60,14 @@ package MAT.Consoles is
 
 private
 
+   type Field_Size_Array is array (Field_Type) of Positive;
+
+   type Field_List_Array is array (1 .. Field_Type'Pos (Field_Type'Last)) of Field_Type;
+
    type Console_Type is abstract tagged limited record
-      N : Natural;
+      Sizes       : Field_Size_Array := (others => 1);
+      Fields      : Field_List_Array;
+      Field_Count : Natural := 0;
    end record;
 
 end MAT.Consoles;
