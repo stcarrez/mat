@@ -44,6 +44,11 @@ package MAT.Consoles is
                          Field   : in Field_Type;
                          Size    : in MAT.Types.Target_Size);
 
+   --  Format the integer and print it for the given field.
+   procedure Print_Field (Console : in out Console_Type;
+                          Field   : in Field_Type;
+                          Value   : in Integer);
+
 private
 
    type Console_Type is abstract tagged limited record
