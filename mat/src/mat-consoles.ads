@@ -40,6 +40,9 @@ package MAT.Consoles is
    --  Start a new row in a report.
    procedure Start_Row (Console : in out Console_Type) is abstract;
 
+   --  Finish a new row in a report.
+   procedure End_Row (Console : in out Console_Type) is abstract;
+
    --  Print the title for the given field and setup the associated field size.
    procedure Print_Title (Console : in out Console_Type;
                           Field   : in Field_Type;
