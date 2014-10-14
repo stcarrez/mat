@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------
---  Targets - Representation of target information
+--  mat-targets - Representation of target information
 --  Copyright (C) 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
@@ -15,11 +15,13 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with MAT.Types;
 with Ada.Strings.Unbounded;
+
+with MAT.Types;
 with MAT.Memory.Targets;
 with MAT.Symbols.Targets;
 with MAT.Readers;
+with MAT.Consoles;
 package MAT.Targets is
 
 --     type Target_Type is tagged limited private;
@@ -27,6 +29,7 @@ package MAT.Targets is
    type Target_Type is tagged limited record
       Memory  : MAT.Memory.Targets.Target_Memory;
       Symbols : MAT.Symbols.Targets.Target_Symbols;
+      Console : MAT.Consoles.Console_Access;
    end record;
 
    type Target_Type_Access is access all Target_Type'Class;
