@@ -40,4 +40,15 @@ package body MAT.Consoles is
       Console_Type'Class (Console).Print_Field (Field, Value);
    end Print_Size;
 
+   --  ------------------------------
+   --  Format the integer and print it for the given field.
+   --  ------------------------------
+   procedure Print_Field (Console : in out Console_Type;
+                          Field   : in Field_Type;
+                          Value   : in Integer) is
+      Val : constant String := Integer'Image (Value);
+   begin
+      Console_Type'Class (Console).Print_Field (Field, Val);
+   end Print_Field;
+
 end MAT.Consoles;
