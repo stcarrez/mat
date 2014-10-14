@@ -25,7 +25,13 @@ package body MAT.Consoles.Text is
    procedure Print_Field (Console : in out Console_Type;
                           Field   : in Field_Type;
                           Value   : in String) is
+      use type Ada.Text_IO.Count;
+
+      Pos : constant Ada.Text_IO.Count := Ada.Text_IO.Count (Console.Cols (Field));
    begin
+      if Pos > 1 then
+         Ada.Text_IO.Set_Col (Pos + Ada.Text_IO.Count (Console.Sizes (Field)) - Value'Length);
+      end if;
       Ada.Text_IO.Put (Value);
    end Print_Field;
 
@@ -36,7 +42,13 @@ package body MAT.Consoles.Text is
    procedure Print_Title (Console : in out Console_Type;
                           Field   : in Field_Type;
                           Title   : in String) is
+      use type Ada.Text_IO.Count;
+
+      Pos : constant Ada.Text_IO.Count := Ada.Text_IO.Count (Console.Cols (Field));
    begin
+      if Pos > 1 then
+         Ada.Text_IO.Set_Col (Pos + Ada.Text_IO.Count (Console.Sizes (Field)) - Title'Length);
+      end if;
       Ada.Text_IO.Put (Title);
    end Print_Title;
 
@@ -46,7 +58,9 @@ package body MAT.Consoles.Text is
    overriding
    procedure Start_Title (Console : in out Console_Type) is
    begin
-      null;
+      Console.Field_Count := 0;
+      Console.Sizes := (others => 0);
+      Console.Cols := (others => 1);
    end Start_Title;
 
    --  ------------------------------
