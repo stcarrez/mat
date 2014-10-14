@@ -27,6 +27,12 @@ package body MAT.Consoles is
                           Length  : in Positive) is
    begin
       Console.Sizes (Field) := Length;
+      if Console.Field_Count >= 1 then
+         Console.Cols (Field) := Console.Cols (Console.Fields (Console.Field_Count))
+           + Console.Sizes (Console.Fields (Console.Field_Count));
+      else
+         Console.Cols (Field) := 1;
+      end if;
       Console.Field_Count := Console.Field_Count + 1;
       Console.Fields (Console.Field_Count) := Field;
       Console_Type'Class (Console).Print_Title (Field, Title);
