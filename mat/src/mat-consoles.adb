@@ -29,4 +29,15 @@ package body MAT.Consoles is
       Console_Type'Class (Console).Print_Field (Field, Value);
    end Print_Field;
 
+   --  ------------------------------
+   --  Format the size and print it for the given field.
+   --  ------------------------------
+   procedure Print_Size (Console : in out Console_Type;
+                         Field   : in Field_Type;
+                         Size    : in MAT.Types.Target_Size) is
+      Value : constant String := MAT.Types.Target_Size'Image (Size);
+   begin
+      Console_Type'Class (Console).Print_Field (Field, Value);
+   end Print_Size;
+
 end MAT.Consoles;
