@@ -37,6 +37,9 @@ package MAT.Consoles is
                           Field   : in Field_Type;
                           Title   : in String) is abstract;
 
+   --  Start a new title in a report.
+   procedure Start_Title (Console : in out Console_Type) is abstract;
+
    --  Start a new row in a report.
    procedure Start_Row (Console : in out Console_Type) is abstract;
 
