@@ -39,6 +39,11 @@ package MAT.Consoles is
                           Field   : in Field_Type;
                           Addr    : in MAT.Types.Target_Addr);
 
+   --  Format the size and print it for the given field.
+   procedure Print_Size (Console : in out Console_Type;
+                         Field   : in Field_Type;
+                         Size    : in MAT.Types.Target_Size);
+
 private
 
    type Console_Type is abstract tagged limited record
