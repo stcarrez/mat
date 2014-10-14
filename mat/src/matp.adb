@@ -16,15 +16,21 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.IO_Exceptions;
+
+with Util.Log.Loggers;
+
 with Readline;
+
 with MAT.Commands;
 with MAT.Targets;
-with Util.Log.Loggers;
+with MAT.Consoles.Text;
 procedure Matp is
 
    procedure Interactive_Loop is
-      Target : MAT.Targets.Target_Type;
+      Target  : MAT.Targets.Target_Type;
+      Console : aliased MAT.Consoles.Text.Console_Type;
    begin
+      Target.Console := Console'Unchecked_Access;
       loop
          declare
             Line : constant String := Readline.Get_Line ("matp>");
