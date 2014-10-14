@@ -31,6 +31,7 @@ with MAT.Memory.Targets;
 with MAT.Symbols.Targets;
 with MAT.Frames;
 with MAT.Frames.Print;
+with MAT.Consoles;
 package body MAT.Commands is
 
    --  The logger
@@ -111,9 +112,16 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Sizes_Command (Target : in out MAT.Targets.Target_Type'Class;
                             Args   : in String) is
-      Sizes : MAT.Memory.Tools.Size_Info_Map;
-      Iter  : MAT.Memory.Tools.Size_Info_Cursor;
+      Sizes   : MAT.Memory.Tools.Size_Info_Map;
+      Iter    : MAT.Memory.Tools.Size_Info_Cursor;
+      Console : constant MAT.Consoles.Console_Access := Target.Console;
    begin
+      Console.Start_Title;
+      Console.Print_Title (MAT.Consoles.F_SIZE, "Slot size", 25);
+      Console.Print_Title (MAT.Consoles.F_COUNT, "Count", 15);
+      Console.Print_Title (MAT.Consoles.F_TOTAL_SIZE, "Total size", 15);
+      Console.End_Title;
+
       MAT.Memory.Targets.Size_Information (Memory => Target.Memory,
                                            Sizes  => Sizes);
       Iter := Sizes.First;
@@ -125,11 +133,11 @@ package body MAT.Commands is
             Info  : MAT.Memory.Tools.Size_Info_Type := MAT.Memory.Tools.Size_Info_Maps.Element (Iter);
             Total : MAT.Types.Target_Size := Size * MAT.Types.Target_Size (Info.Count);
          begin
-            Ada.Text_IO.Put (MAT.Types.Target_Size'Image (Size));
-            Ada.Text_IO.Set_Col (20);
-            Ada.Text_IO.Put (Natural'Image (Info.Count));
-            Ada.Text_IO.Set_Col (30);
-            Ada.Text_IO.Put_Line (MAT.Types.Target_Size'Image (Total));
+            Console.Start_Row;
+            Console.Print_Size (MAT.Consoles.F_SIZE, Size);
+            Console.Print_Field (MAT.Consoles.F_COUNT, Info.Count);
+            Console.Print_Field (MAT.Consoles.F_TOTAL_SIZE, Total);
+            Console.End_Row;
          end;
          MAT.Memory.Tools.Size_Info_Maps.Next (Iter);
       end loop;
