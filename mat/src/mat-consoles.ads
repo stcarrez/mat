@@ -40,6 +40,9 @@ package MAT.Consoles is
    --  Start a new title in a report.
    procedure Start_Title (Console : in out Console_Type) is abstract;
 
+   --  Finish a new title in a report.
+   procedure End_Title (Console : in out Console_Type) is abstract;
+
    --  Start a new row in a report.
    procedure Start_Row (Console : in out Console_Type) is abstract;
 
