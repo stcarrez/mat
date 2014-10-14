@@ -19,6 +19,20 @@
 package body MAT.Consoles is
 
    --  ------------------------------
+   --  Print the title for the given field and setup the associated field size.
+   --  ------------------------------
+   procedure Print_Title (Console : in out Console_Type;
+                          Field   : in Field_Type;
+                          Title   : in String;
+                          Length  : in Positive) is
+   begin
+      Console.Sizes (Field) := Length;
+      Console.Field_Count := Console.Field_Count + 1;
+      Console.Fields (Console.Field_Count) := Field;
+      Console_Type'Class (Console).Print_Title (Field, Title);
+   end Print_Title;
+
+   --  ------------------------------
    --  Format the address and print it for the given field.
    --  ------------------------------
    procedure Print_Field (Console : in out Console_Type;
