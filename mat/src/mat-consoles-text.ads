@@ -32,6 +32,10 @@ package MAT.Consoles.Text is
                           Field   : in Field_Type;
                           Title   : in String);
 
+   --  Start a new title in a report.
+   overriding
+   procedure Start_Title (Console : in out Console_Type);
+
    --  Start a new row in a report.
    overriding
    procedure Start_Row (Console : in out Console_Type);
