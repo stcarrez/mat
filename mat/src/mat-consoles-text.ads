@@ -36,6 +36,9 @@ package MAT.Consoles.Text is
    overriding
    procedure Start_Title (Console : in out Console_Type);
 
+   --  Finish a new title in a report.
+   procedure End_Title (Console : in out Console_Type);
+
    --  Start a new row in a report.
    overriding
    procedure Start_Row (Console : in out Console_Type);
