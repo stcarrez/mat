@@ -36,6 +36,10 @@ package MAT.Consoles.Text is
    overriding
    procedure Start_Row (Console : in out Console_Type);
 
+   --  Finish a new row in a report.
+   overriding
+   procedure End_Row (Console : in out Console_Type);
+
 private
 
    type Console_Type is new MAT.Consoles.Console_Type with record
