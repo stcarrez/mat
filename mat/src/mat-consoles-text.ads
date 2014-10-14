@@ -21,14 +21,20 @@ package MAT.Consoles.Text is
    type Console_Type is new MAT.Consoles.Console_Type with private;
 
    --  Print the field value for the given field.
+   overriding
    procedure Print_Field (Console : in out Console_Type;
                           Field   : in Field_Type;
                           Value   : in String);
 
    --  Print the title for the given field.
+   overriding
    procedure Print_Title (Console : in out Console_Type;
                           Field   : in Field_Type;
                           Title   : in String);
+
+   --  Start a new row in a report.
+   overriding
+   procedure Start_Row (Console : in out Console_Type);
 
 private
 
