@@ -21,6 +21,7 @@ package body MAT.Consoles.Text is
    --  ------------------------------
    --  Print the field value for the given field.
    --  ------------------------------
+   overriding
    procedure Print_Field (Console : in out Console_Type;
                           Field   : in Field_Type;
                           Value   : in String) is
@@ -31,11 +32,30 @@ package body MAT.Consoles.Text is
    --  ------------------------------
    --  Print the title for the given field.
    --  ------------------------------
+   overriding
    procedure Print_Title (Console : in out Console_Type;
                           Field   : in Field_Type;
                           Title   : in String) is
    begin
       Ada.Text_IO.Put (Title);
    end Print_Title;
+
+   --  ------------------------------
+   --  Start a new row in a report.
+   --  ------------------------------
+   overriding
+   procedure Start_Row (Console : in out Console_Type) is
+   begin
+      null;
+   end Start_Row;
+
+   --  ------------------------------
+   --  Finish a new row in a report.
+   --  ------------------------------
+   overriding
+   procedure End_Row (Console : in out Console_Type) is
+   begin
+      Ada.Text_IO.New_Line;
+   end End_Row;
 
 end MAT.Consoles.Text;
