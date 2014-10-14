@@ -50,6 +50,14 @@ package body MAT.Consoles.Text is
    end Start_Title;
 
    --  ------------------------------
+   --  Finish a new title in a report.
+   --  ------------------------------
+   procedure End_Title (Console : in out Console_Type) is
+   begin
+      Ada.Text_IO.New_Line;
+   end End_Title;
+
+   --  ------------------------------
    --  Start a new row in a report.
    --  ------------------------------
    overriding
