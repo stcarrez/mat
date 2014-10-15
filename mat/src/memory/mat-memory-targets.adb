@@ -95,6 +95,15 @@ package body MAT.Memory.Targets is
    end Size_Information;
 
    --  ------------------------------
+   --  Collect the information about threads and the memory allocations they've made.
+   --  ------------------------------
+   procedure Thread_Information (Memory  : in out Target_Memory;
+                                 Threads : in out Memory_Info_Map) is
+   begin
+      Memory.Memory.Thread_Information (Threads);
+   end Thread_Information;
+
+   --  ------------------------------
    --  Find from the memory map the memory slots whose address intersects
    --  the region [From .. To] and add the memory slot in the <tt>Into</tt> list if
    --  it does not already contains the memory slot.
@@ -236,6 +245,14 @@ package body MAT.Memory.Targets is
       begin
          MAT.Memory.Tools.Size_Information (Used_Slots, Sizes);
       end Size_Information;
+
+      --  ------------------------------
+      --  Collect the information about threads and the memory allocations they've made.
+      --  ------------------------------
+      procedure Thread_Information (Threads : in out Memory_Info_Map) is
+      begin
+         MAT.Memory.Tools.Thread_Information (Used_Slots, Threads);
+      end Thread_Information;
 
       --  ------------------------------
       --  Find from the memory map the memory slots whose address intersects
