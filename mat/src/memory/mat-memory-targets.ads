@@ -61,6 +61,10 @@ package MAT.Memory.Targets is
    procedure Size_Information (Memory : in out Target_Memory;
                                Sizes  : in out MAT.Memory.Tools.Size_Info_Map);
 
+   --  Collect the information about threads and the memory allocations they've made.
+   procedure Thread_Information (Memory  : in out Target_Memory;
+                                 Threads : in out Memory_Info_Map);
+
    --  Find from the memory map the memory slots whose address intersects
    --  the region [From .. To] and add the memory slot in the <tt>Into</tt> list if
    --  it does not already contains the memory slot.
@@ -99,6 +103,9 @@ private
 
       --  Collect the information about memory slot sizes allocated by the application.
       procedure Size_Information (Sizes  : in out MAT.Memory.Tools.Size_Info_Map);
+
+      --  Collect the information about threads and the memory allocations they've made.
+      procedure Thread_Information (Threads : in out Memory_Info_Map);
 
       --  Find from the memory map the memory slots whose address intersects
       --  the region [From .. To] and add the memory slot in the <tt>Into</tt> list if
