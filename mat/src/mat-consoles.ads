@@ -21,6 +21,10 @@ package MAT.Consoles is
    type Field_Type is (F_ADDR,
                        F_SIZE,
                        F_TOTAL_SIZE,
+                       F_MIN_SIZE,
+                       F_MAX_SIZE,
+                       F_MIN_ADDR,
+                       F_MAX_ADDR,
                        F_THREAD,
                        F_COUNT);
 
