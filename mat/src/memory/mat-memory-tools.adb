@@ -63,6 +63,70 @@ package body MAT.Memory.Tools is
    end Size_Information;
 
    --  ------------------------------
+   --  Collect the information about threads and the memory allocations they've made.
+   --  ------------------------------
+   procedure Thread_Information (Memory  : in MAT.Memory.Allocation_Map;
+                                 Threads : in out Memory_Info_Map) is
+      procedure Collect (Addr : in MAT.Types.Target_Addr;
+                         Slot : in Allocation);
+
+      procedure Collect (Addr : in MAT.Types.Target_Addr;
+                         Slot : in Allocation) is
+
+         procedure Update_Count (Thread : in MAT.Types.Target_Thread_Ref;
+                                 Info   : in out Memory_Info);
+
+
+         procedure Update_Count (Thread : in MAT.Types.Target_Thread_Ref;
+                                 Info   : in out Memory_Info) is
+            pragma Unreferenced (Thread);
+
+            Size : constant MAT.Types.Target_Size := Slot.Size;
+         begin
+            Info.Alloc_Count := Info.Alloc_Count + 1;
+            if Size < Info.Min_Slot_Size then
+               Info.Min_Slot_Size := Size;
+            end if;
+            if Size > Info.Max_Slot_Size then
+               Info.Max_Slot_Size := Size;
+            end if;
+            if Addr < Info.Min_Addr then
+               Info.Min_Addr := Addr;
+            end if;
+            if Addr + Size > Info.Max_Addr then
+               Info.Max_Addr := Addr + Size;
+            end if;
+            Info.Total_Size := Info.Total_Size + Size;
+         end Update_Count;
+
+         Pos : constant Memory_Info_Cursor := Threads.Find (Slot.Thread);
+      begin
+         if Memory_Info_Maps.Has_Element (Pos) then
+            Threads.Update_Element (Pos, Update_Count'Access);
+         else
+            declare
+               Info : Memory_Info;
+            begin
+               Info.Total_Size := Slot.Size;
+               Info.Alloc_Count := 1;
+               Info.Min_Slot_Size := Slot.Size;
+               Info.Max_Slot_Size := Slot.Size;
+               Info.Min_Addr      := Addr;
+               Info.Max_Addr      := Addr + Slot.Size;
+               Threads.Insert (Slot.Thread, Info);
+            end;
+         end if;
+      end Collect;
+
+      Iter : Allocation_Cursor := Memory.First;
+   begin
+      while Allocation_Maps.Has_Element (Iter) loop
+         Allocation_Maps.Query_Element (Iter, Collect'Access);
+         Allocation_Maps.Next (Iter);
+      end loop;
+   end Thread_Information;
+
+   --  ------------------------------
    --  Find from the <tt>Memory</tt> map the memory slots whose address intersects
    --  the region [From .. To] and add the memory slot in the <tt>Into</tt> list if
    --  it does not already contains the memory slot.
