@@ -46,6 +46,16 @@ package MAT.Memory is
    subtype Allocation_Map is Allocation_Maps.Map;
    subtype Allocation_Cursor is Allocation_Maps.Cursor;
 
+   --  Define a map of <tt>Memory_Info</tt> keyed by the thread Id.
+   --  Such map allows to give the list of threads and a summary of their allocation.
+   use type MAT.Types.Target_Thread_Ref;
+   package Memory_Info_Maps is
+     new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Thread_Ref,
+                                      Element_Type => Memory_Info);
+
+   subtype Memory_Info_Map is Memory_Info_Maps.Map;
+   subtype Memory_Info_Cursor is Memory_Info_Maps.Cursor;
+
 private
 
 end MAT.Memory;
