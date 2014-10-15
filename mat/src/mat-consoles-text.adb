@@ -19,6 +19,16 @@
 package body MAT.Consoles.Text is
 
    --  ------------------------------
+   --  Report an error message.
+   --  ------------------------------
+   overriding
+   procedure Error (Console : in out Console_Type;
+                    Message : in String) is
+   begin
+      Ada.Text_IO.Put_Line (Message);
+   end Error;
+
+   --  ------------------------------
    --  Print the field value for the given field.
    --  ------------------------------
    overriding
