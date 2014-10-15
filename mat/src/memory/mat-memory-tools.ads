@@ -33,6 +33,10 @@ package MAT.Memory.Tools is
    procedure Size_Information (Memory : in MAT.Memory.Allocation_Map;
                                Sizes  : in out Size_Info_Map);
 
+   --  Collect the information about threads and the memory allocations they've made.
+   procedure Thread_Information (Memory  : in MAT.Memory.Allocation_Map;
+                                 Threads : in out Memory_Info_Map);
+
    --  Find from the <tt>Memory</tt> map the memory slots whose address intersects
    --  the region [From .. To] and add the memory slot in the <tt>Into</tt> list if
    --  it does not already contains the memory slot.
