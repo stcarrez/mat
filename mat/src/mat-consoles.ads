@@ -27,6 +27,10 @@ package MAT.Consoles is
    type Console_Type is abstract tagged limited private;
    type Console_Access is access all Console_Type'Class;
 
+   --  Report an error message.
+   procedure Error (Console : in out Console_Type;
+                    Message : in String) is abstract;
+
    --  Print the field value for the given field.
    procedure Print_Field (Console : in out Console_Type;
                           Field   : in Field_Type;
