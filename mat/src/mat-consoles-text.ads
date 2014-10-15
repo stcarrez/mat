@@ -20,6 +20,11 @@ package MAT.Consoles.Text is
 
    type Console_Type is new MAT.Consoles.Console_Type with private;
 
+   --  Report an error message.
+   overriding
+   procedure Error (Console : in out Console_Type;
+                    Message : in String);
+
    --  Print the field value for the given field.
    overriding
    procedure Print_Field (Console : in out Console_Type;
