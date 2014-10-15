@@ -36,6 +36,8 @@ package MAT.Memory is
       Alloc_Count   : Natural := 0;
       Min_Slot_Size : MAT.Types.Target_Size := 0;
       Max_Slot_Size : MAT.Types.Target_Size := 0;
+      Min_Addr      : MAT.Types.Target_Addr := 0;
+      Max_Addr      : MAT.Types.Target_Addr := 0;
    end record;
 
    use type MAT.Types.Target_Addr;
