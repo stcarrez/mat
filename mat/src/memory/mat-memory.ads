@@ -30,6 +30,14 @@ package MAT.Memory is
       Thread : MAT.Types.Target_Thread_Ref;
    end record;
 
+   --  Statistics about memory allocation.
+   type Memory_Info is record
+      Total_Size    : MAT.Types.Target_Size := 0;
+      Alloc_Count   : Natural := 0;
+      Min_Slot_Size : MAT.Types.Target_Size := 0;
+      Max_Slot_Size : MAT.Types.Target_Size := 0;
+   end record;
+
    use type MAT.Types.Target_Addr;
    package Allocation_Maps is
      new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Addr,
