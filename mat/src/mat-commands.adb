@@ -144,6 +144,51 @@ package body MAT.Commands is
    end Sizes_Command;
 
    --  ------------------------------
+   --  Threads command.
+   --  Collect statistics about the threads and their allocation.
+   --  ------------------------------
+   procedure Threads_Command (Target : in out MAT.Targets.Target_Type'Class;
+                            Args   : in String) is
+      Sizes   : MAT.Memory.Tools.Size_Info_Map;
+      Threads : MAT.Memory.Memory_Info_Map;
+      Iter    : MAT.Memory.Memory_Info_Cursor;
+      Console : constant MAT.Consoles.Console_Access := Target.Console;
+   begin
+      Console.Start_Title;
+      Console.Print_Title (MAT.Consoles.F_Thread, "Thread", 10);
+      Console.Print_Title (MAT.Consoles.F_COUNT, "# Allocation", 12);
+      Console.Print_Title (MAT.Consoles.F_TOTAL_SIZE, "Total size", 15);
+      Console.Print_Title (MAT.Consoles.F_MIN_SIZE, "Min slot size", 15);
+      Console.Print_Title (MAT.Consoles.F_MAX_SIZE, "Max slot size", 15);
+      Console.Print_Title (MAT.Consoles.F_MIN_ADDR, "Low address", 15);
+      Console.Print_Title (MAT.Consoles.F_MAX_ADDR, "High address", 15);
+      Console.End_Title;
+
+      MAT.Memory.Targets.Thread_Information (Memory  => Target.Memory,
+                                             Threads => Threads);
+      Iter := Threads.First;
+      while MAT.Memory.Memory_Info_Maps.Has_Element (Iter) loop
+         declare
+            use type MAT.Types.Target_Size;
+
+            Thread : constant Types.Target_Thread_Ref := MAT.Memory.Memory_Info_Maps.Key (Iter);
+            Info   : constant Memory.Memory_Info := MAT.Memory.Memory_Info_Maps.Element (Iter);
+         begin
+            Console.Start_Row;
+            Console.Print_Field (MAT.Consoles.F_THREAD, Thread);
+            Console.Print_Field (MAT.Consoles.F_COUNT, Info.Alloc_Count);
+            Console.Print_Size (MAT.Consoles.F_TOTAL_SIZE, Info.Total_Size);
+            Console.Print_Size (MAT.Consoles.F_MIN_SIZE, Info.Min_Slot_Size);
+            Console.Print_Size (MAT.Consoles.F_MAX_SIZE, Info.Max_Slot_Size);
+            Console.Print_Field (MAT.Consoles.F_MIN_ADDR, Info.Min_Addr);
+            Console.Print_Field (MAT.Consoles.F_MAX_ADDR, Info.Max_Addr);
+            Console.End_Row;
+         end;
+         MAT.Memory.Memory_Info_Maps.Next (Iter);
+      end loop;
+   end Threads_Command;
+
+   --  ------------------------------
    --  Symbol command.
    --  Load the symbols from the binary file.
    --  ------------------------------
@@ -211,4 +256,5 @@ begin
    Commands.Insert ("sizes", Sizes_Command'Access);
    Commands.Insert ("symbol", Symbol_Command'Access);
    Commands.Insert ("slots", Slot_Command'Access);
+   Commands.Insert ("threads", Threads_Command'Access);
 end MAT.Commands;
