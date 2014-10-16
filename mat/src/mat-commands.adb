@@ -24,6 +24,8 @@ with Ada.IO_Exceptions;
 with Ada.Text_IO;
 with Ada.Strings.Unbounded;
 
+with Bfd;
+
 with MAT.Types;
 with MAT.Readers.Files;
 with MAT.Memory.Tools;
@@ -196,6 +198,10 @@ package body MAT.Commands is
                              Args   : in String) is
    begin
       MAT.Symbols.Targets.Open (Target.Symbols, Args);
+
+   exception
+      when Bfd.OPEN_ERROR =>
+         Target.Console.Error ("Cannot open symbol file '" & Args & "'");
    end Symbol_Command;
 
    --  ------------------------------
