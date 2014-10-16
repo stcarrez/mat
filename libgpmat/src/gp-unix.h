@@ -32,11 +32,29 @@
 # define HAVE_FRAME 1
 #endif
 
-/*! @defgroup triacs Triacs Control Interface
+#ifdef HAVE_SYS_SYSCALL_H
+# define _GNU_SOURCE
+# include <unistd.h>
+# include <sys/syscall.h>
+# include <sys/types.h>
+#endif
 
-
+/**
+ * @brief Get the current thread ID.
+ *
+ * On Linux the gettid() system call gives a more useful information about the
+ * current thread.  This is however not portable.
+ *
+ * @return the thread ID.
  */
-/*@{*/
+static inline gp_uint32 gp_get_thread_id (void)
+{
+#ifdef SYS_gettid
+  return syscall (SYS_gettid);
+#else
+  return (gp_uint32) pthread_self ();
+#endif
+}
 
 struct proc_info
 {
@@ -88,7 +106,7 @@ static inline void
 gp_get_probe_info (struct gp_probe *gp)
 {
   gettimeofday (&gp->time, (struct timezone*) NULL);
-  gp->thread.thread_id    = (gp_uint32) pthread_self ();
+  gp->thread.thread_id    = gp_get_thread_id ();
   gp->thread.thread_stack = 0;
 #ifdef HAVE_RUSAGE
   {
