@@ -16,10 +16,11 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.Unchecked_Deallocation;
-with Interfaces; use Interfaces;
-with MAT.Types; use MAT.Types;
+
 with Util.Log.Loggers;
 package body MAT.Frames is
+
+   use type MAT.Types.Target_Addr;
 
    procedure Free is
      new Ada.Unchecked_Deallocation (Frame, Frame_Type);
@@ -328,7 +329,7 @@ package body MAT.Frames is
       Child   : Frame_Type;
       Pos     : Positive  := Pc'First;
       Lpos    : Positive  := 1;
-      Addr    : Target_Addr;
+      Addr    : MAT.Types.Target_Addr;
    begin
       while Pos <= Pc'Last loop
          Addr := Pc (Pos);
@@ -376,7 +377,7 @@ package body MAT.Frames is
    --  Returns that frame pointer or raises the Not_Found exception.
    --  ------------------------------
    function Find (Frame : in Frame_Type;
-                  Pc    : in Target_Addr) return Frame_Type is
+                  Pc    : in MAT.Types.Target_Addr) return Frame_Type is
       Child : Frame_Type := Frame.Children;
    begin
       while Child /= null loop
@@ -429,7 +430,7 @@ package body MAT.Frames is
       Main_Search :
       while Pos <= Pc'Last loop
          declare
-            Addr  : constant Target_Addr := Pc (Pos);
+            Addr  : constant MAT.Types.Target_Addr := Pc (Pos);
             Child : Frame_Type  := Current.Children;
          begin
             --  Find the child which has the corresponding PC.
