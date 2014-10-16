@@ -175,7 +175,7 @@ package body MAT.Commands is
             Info   : constant Memory.Memory_Info := MAT.Memory.Memory_Info_Maps.Element (Iter);
          begin
             Console.Start_Row;
-            Console.Print_Field (MAT.Consoles.F_THREAD, Thread);
+            Console.Print_Field (MAT.Consoles.F_THREAD, Integer (Thread));
             Console.Print_Field (MAT.Consoles.F_COUNT, Info.Alloc_Count);
             Console.Print_Size (MAT.Consoles.F_TOTAL_SIZE, Info.Total_Size);
             Console.Print_Size (MAT.Consoles.F_MIN_SIZE, Info.Min_Slot_Size);
