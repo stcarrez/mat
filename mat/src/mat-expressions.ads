@@ -54,9 +54,9 @@ package MAT.Expressions is
    function Create_Inside (Name : in String;
                            Kind : in Inside_Type) return Expression_Type;
 
-   --  Create a new expression node.
-   function Create (Kindx : in Kind_Type;
-                    Expr : in Expression_Type) return Expression_Type;
+   --  Create an size range expression node.
+   function Create_Size (Min : in MAT.Types.Target_Size;
+                         Max : in MAT.Types.Target_Size) return Expression_Type;
 
    --  Evaluate the expression to check if the memory slot described by the
    --  context is selected.  Returns True if the memory slot is selected.
