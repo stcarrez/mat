@@ -26,8 +26,26 @@ package body MAT.Expressions is
       Result : Expression_Type;
    begin
       Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
-                                    Kind => N_NOT, Expr => Expr.Node);
+                                    Kind        => N_NOT,
+                                    Expr        => Expr.Node);
+      Util.Concurrent.Counters.Increment (Expr.Node.Ref_Counter);
       return Result;
    end Create_Not;
+
+   --  ------------------------------
+   --  Create a AND expression node.
+   --  ------------------------------
+   function Create_And (Left  : in Expression_Type;
+                        Right : in Expression_Type) return Expression_Type is
+      Result : Expression_Type;
+   begin
+      Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
+                                    Kind        => N_AND,
+                                    Left        => Left.Node,
+                                    Right       => Right.Node);
+      Util.Concurrent.Counters.Increment (Left.Node.Ref_Counter);
+      Util.Concurrent.Counters.Increment (Right.Node.Ref_Counter);
+      return Result;
+   end Create_And;
 
 end MAT.Expressions;
