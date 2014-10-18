@@ -17,7 +17,7 @@
 -----------------------------------------------------------------------
 with Ada.Strings.Unbounded;
 
-with Util.Refs;
+private with Util.Concurrent.Counters;
 
 with MAT.Types;
 with MAT.Memory;
@@ -54,7 +54,8 @@ private
    type Node_Type;
    type Node_Type_Access is access all Node_Type;
 
-   type Node_Type (Kind : Kind_Type) is new Util.Refs.Ref_Entity with record
+   type Node_Type (Kind : Kind_Type) is record
+      Ref_Counter : Util.Concurrent.Counters.Counter;
       case Kind is
          when N_NOT =>
             Expr : Node_Type_Access;
@@ -84,8 +85,8 @@ private
    function Is_Selected (Node    : in Node_Type;
                          Context : in Context_Type) return Boolean;
 
-   package Node_Refs is new Util.Refs.Indefinite_References (Node_Type, Node_Type_Access);
-
-   type Expression_Type is new Node_Refs.Ref with null record;
+   type Expression_Type is tagged record
+      Node : Node_Type_Access;
+   end record;
 
 end MAT.Expressions;
