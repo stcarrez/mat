@@ -44,6 +44,10 @@ package MAT.Expressions is
    function Create_And (Left  : in Expression_Type;
                         Right : in Expression_Type) return Expression_Type;
 
+   --  Create a OR expression node.
+   function Create_Or (Left  : in Expression_Type;
+                       Right : in Expression_Type) return Expression_Type;
+
    --  Create a new expression node.
    function Create (Kindx : in Kind_Type;
                     Expr : in Expression_Type) return Expression_Type;
