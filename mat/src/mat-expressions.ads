@@ -15,6 +15,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with Ada.Strings.Unbounded;
+
 with MAT.Types;
 with MAT.Memory;
 package MAT.Expressions is
@@ -26,6 +28,7 @@ package MAT.Expressions is
 
    type Kind_Type is (N_NOT, N_OR, N_AND, N_TRUE, N_FALSE,
                       N_IN_FILE, N_IN_FILE_DIRECT,
+                      N_CALL_ADDR, N_CALL_ADDR_DIRECT,
                       N_IN_FUNC, N_IN_FUNC_DIRECT,
                       N_RANGE_SIZE, N_RANGE_ADDR,
                       N_CONDITION, N_THREAD);
@@ -33,7 +36,7 @@ package MAT.Expressions is
    type Expression_Type is tagged private;
 
    --  Create a new expression node.
-   function Create (Kind : in Kind_Type;
+   function Create (Kindx : in Kind_Type;
                     Expr : in Expression_Type) return Expression_Type;
 
    --  Evaluate the expression to check if the memory slot described by the
@@ -43,10 +46,35 @@ package MAT.Expressions is
 
 private
 
-   type Node_Type (Kind : Kind_Type) is tagged limited record
-      N : Natural;
-   end record;
+   type Node_Type;
    type Node_Type_Access is access all Node_Type'Class;
+
+   type Node_Type (Kind : Kind_Type) is tagged limited record
+      case Kind is
+         when N_NOT =>
+            Expr : Node_Type_Access;
+
+         when N_OR | N_AND =>
+            Left, Right : Node_Type_Access;
+
+         when N_IN_FILE | N_IN_FILE_DIRECT | N_IN_FUNC | N_IN_FUNC_DIRECT =>
+            Name : Ada.Strings.Unbounded.Unbounded_String;
+
+         when N_RANGE_SIZE =>
+            Min_Size : MAT.Types.Target_Size;
+            Max_Size : MAT.Types.Target_Size;
+
+         when N_RANGE_ADDR | N_CALL_ADDR | N_CALL_ADDR_DIRECT =>
+            Min_Addr : MAT.Types.Target_Addr;
+            Max_Addr : MAT.Types.Target_Addr;
+
+         when N_THREAD =>
+            Thread : MAT.Types.Target_Thread_Ref;
+
+         when others =>
+            null;
+      end case;
+   end record;
 
    function Is_Selected (Node    : in Node_Type;
                          Context : in Context_Type) return Boolean;
