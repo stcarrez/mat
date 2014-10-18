@@ -104,16 +104,18 @@ package body MAT.Memory.Targets is
    end Thread_Information;
 
    --  ------------------------------
-   --  Find from the memory map the memory slots whose address intersects
-   --  the region [From .. To] and add the memory slot in the <tt>Into</tt> list if
-   --  it does not already contains the memory slot.
+   --  Find from the <tt>Memory</tt> map the memory slots whose address intersects
+   --  the region [From .. To] and which is selected by the given filter expression.
+   --  Add the memory slot in the <tt>Into</tt> list if it does not already contains
+   --  the memory slot.
    --  ------------------------------
    procedure Find (Memory : in out Target_Memory;
                    From   : in MAT.Types.Target_Addr;
                    To     : in MAT.Types.Target_Addr;
+                   Filter : in MAT.Expressions.Expression_Type;
                    Into   : in out MAT.Memory.Allocation_Map) is
    begin
-      Memory.Memory.Find (From, To, Into);
+      Memory.Memory.Find (From, To, Filter, Into);
    end Find;
 
    protected body Memory_Allocator is
@@ -255,15 +257,17 @@ package body MAT.Memory.Targets is
       end Thread_Information;
 
       --  ------------------------------
-      --  Find from the memory map the memory slots whose address intersects
-      --  the region [From .. To] and add the memory slot in the <tt>Into</tt> list if
-      --  it does not already contains the memory slot.
+      --  Find from the <tt>Memory</tt> map the memory slots whose address intersects
+      --  the region [From .. To] and which is selected by the given filter expression.
+      --  Add the memory slot in the <tt>Into</tt> list if it does not already contains
+      --  the memory slot.
       --  ------------------------------
       procedure Find (From   : in MAT.Types.Target_Addr;
                       To     : in MAT.Types.Target_Addr;
+                      Filter : in MAT.Expressions.Expression_Type;
                       Into   : in out MAT.Memory.Allocation_Map) is
       begin
-         MAT.Memory.Tools.Find (Used_Slots, From, To, Into);
+         MAT.Memory.Tools.Find (Used_Slots, From, To, Filter, Into);
       end Find;
 
    end Memory_Allocator;
