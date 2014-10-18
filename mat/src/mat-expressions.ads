@@ -28,14 +28,6 @@ package MAT.Expressions is
       Allocation : MAT.Memory.Allocation;
    end record;
 
-   type Kind_Type is (N_NOT, N_OR, N_AND, N_TRUE, N_FALSE,
-                      N_IN_FILE, N_IN_FILE_DIRECT, N_INSIDE,
-                      N_CALL_ADDR, N_CALL_ADDR_DIRECT,
-                      N_IN_FUNC, N_IN_FUNC_DIRECT,
-                      N_RANGE_SIZE, N_RANGE_ADDR,
-                      N_RANGE_TIME,
-                      N_CONDITION, N_THREAD);
-
    type Inside_Type is (INSIDE_FILE, INSIDE_FUNCTION);
 
    type Expression_Type is tagged private;
@@ -73,6 +65,14 @@ package MAT.Expressions is
                          Context : in Context_Type) return Boolean;
 
 private
+
+   type Kind_Type is (N_NOT, N_OR, N_AND, N_TRUE, N_FALSE,
+                      N_IN_FILE, N_IN_FILE_DIRECT, N_INSIDE,
+                      N_CALL_ADDR, N_CALL_ADDR_DIRECT,
+                      N_IN_FUNC, N_IN_FUNC_DIRECT,
+                      N_RANGE_SIZE, N_RANGE_ADDR,
+                      N_RANGE_TIME,
+                      N_CONDITION, N_THREAD);
 
    type Node_Type;
    type Node_Type_Access is access all Node_Type;
