@@ -78,5 +78,18 @@ package body MAT.Expressions is
       return Result;
    end Create_Inside;
 
+   --  ------------------------------
+   --  Create an size range expression node.
+   --  ------------------------------
+   function Create_Size (Min : in MAT.Types.Target_Size;
+                         Max : in MAT.Types.Target_Size) return Expression_Type is
+      Result : Expression_Type;
+   begin
+      Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
+                                    Kind        => N_RANGE_SIZE,
+                                    Min_Size    => Min,
+                                    Max_Size    => Max);
+      return Result;
+   end Create_Size;
 
 end MAT.Expressions;
