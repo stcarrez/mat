@@ -40,6 +40,10 @@ package MAT.Expressions is
    --  Create a NOT expression node.
    function Create_Not (Expr : in Expression_Type) return Expression_Type;
 
+   --  Create a AND expression node.
+   function Create_And (Left  : in Expression_Type;
+                        Right : in Expression_Type) return Expression_Type;
+
    --  Create a new expression node.
    function Create (Kindx : in Kind_Type;
                     Expr : in Expression_Type) return Expression_Type;
