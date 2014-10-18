@@ -19,6 +19,7 @@
 with MAT.Frames;
 with MAT.Readers;
 with MAT.Memory.Tools;
+with MAT.Expressions;
 package MAT.Memory.Targets is
 
    type Target_Memory is tagged limited private;
@@ -65,12 +66,14 @@ package MAT.Memory.Targets is
    procedure Thread_Information (Memory  : in out Target_Memory;
                                  Threads : in out Memory_Info_Map);
 
-   --  Find from the memory map the memory slots whose address intersects
-   --  the region [From .. To] and add the memory slot in the <tt>Into</tt> list if
-   --  it does not already contains the memory slot.
+   --  Find from the <tt>Memory</tt> map the memory slots whose address intersects
+   --  the region [From .. To] and which is selected by the given filter expression.
+   --  Add the memory slot in the <tt>Into</tt> list if it does not already contains
+   --  the memory slot.
    procedure Find (Memory : in out Target_Memory;
                    From   : in MAT.Types.Target_Addr;
                    To     : in MAT.Types.Target_Addr;
+                   Filter : in MAT.Expressions.Expression_Type;
                    Into   : in out MAT.Memory.Allocation_Map);
 
 private
@@ -107,11 +110,13 @@ private
       --  Collect the information about threads and the memory allocations they've made.
       procedure Thread_Information (Threads : in out Memory_Info_Map);
 
-      --  Find from the memory map the memory slots whose address intersects
-      --  the region [From .. To] and add the memory slot in the <tt>Into</tt> list if
-      --  it does not already contains the memory slot.
+      --  Find from the <tt>Memory</tt> map the memory slots whose address intersects
+      --  the region [From .. To] and which is selected by the given filter expression.
+      --  Add the memory slot in the <tt>Into</tt> list if it does not already contains
+      --  the memory slot.
       procedure Find (From   : in MAT.Types.Target_Addr;
                       To     : in MAT.Types.Target_Addr;
+                      Filter : in MAT.Expressions.Expression_Type;
                       Into   : in out MAT.Memory.Allocation_Map);
 
    private
