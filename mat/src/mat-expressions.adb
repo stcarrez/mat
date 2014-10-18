@@ -25,8 +25,8 @@ package body MAT.Expressions is
    function Create_Not (Expr : in Expression_Type) return Expression_Type is
       Result : Expression_Type;
    begin
-      Result.Node := new Node_Type'(Util.Refs.Ref_Entity with
-                                      Kind => N_NOT, Expr => Expr.Node);
+      Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
+                                    Kind => N_NOT, Expr => Expr.Node);
       return Result;
    end Create_Not;
 
