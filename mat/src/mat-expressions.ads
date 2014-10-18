@@ -33,6 +33,7 @@ package MAT.Expressions is
                       N_CALL_ADDR, N_CALL_ADDR_DIRECT,
                       N_IN_FUNC, N_IN_FUNC_DIRECT,
                       N_RANGE_SIZE, N_RANGE_ADDR,
+                      N_RANGE_TIME,
                       N_CONDITION, N_THREAD);
 
    type Inside_Type is (INSIDE_FILE, INSIDE_FUNCTION);
@@ -92,6 +93,10 @@ private
          when N_RANGE_ADDR | N_CALL_ADDR | N_CALL_ADDR_DIRECT =>
             Min_Addr : MAT.Types.Target_Addr;
             Max_Addr : MAT.Types.Target_Addr;
+
+         when N_RANGE_TIME =>
+            Min_Time : MAT.Types.Target_Tick_Ref;
+            Max_Time : MAT.Types.Target_Tick_Ref;
 
          when N_THREAD =>
             Thread : MAT.Types.Target_Thread_Ref;
