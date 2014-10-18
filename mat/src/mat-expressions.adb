@@ -48,4 +48,20 @@ package body MAT.Expressions is
       return Result;
    end Create_And;
 
+   --  ------------------------------
+   --  Create a OR expression node.
+   --  ------------------------------
+   function Create_Or (Left  : in Expression_Type;
+                       Right : in Expression_Type) return Expression_Type is
+      Result : Expression_Type;
+   begin
+      Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
+                                    Kind        => N_OR,
+                                    Left        => Left.Node,
+                                    Right       => Right.Node);
+      Util.Concurrent.Counters.Increment (Left.Node.Ref_Counter);
+      Util.Concurrent.Counters.Increment (Right.Node.Ref_Counter);
+      return Result;
+   end Create_Or;
+
 end MAT.Expressions;
