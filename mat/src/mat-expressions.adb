@@ -106,4 +106,18 @@ package body MAT.Expressions is
       return Result;
    end Create_Addr;
 
+   --  ------------------------------
+   --  Create an time range expression node.
+   --  ------------------------------
+   function Create_Time (Min : in MAT.Types.Target_Tick_Ref;
+                         Max : in MAT.Types.Target_Tick_Ref) return Expression_Type is
+      Result : Expression_Type;
+   begin
+      Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
+                                    Kind        => N_RANGE_TIME,
+                                    Min_Time    => Min,
+                                    Max_Time    => Max);
+      return Result;
+   end Create_Time;
+
 end MAT.Expressions;
