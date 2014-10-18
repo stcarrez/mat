@@ -110,6 +110,8 @@ private
       end case;
    end record;
 
+   --  Evaluate the node against the context.  Returns True if the node expression
+   --  selects the memory slot defined by the context.
    function Is_Selected (Node    : in Node_Type;
                          Context : in Context_Type) return Boolean;
 
