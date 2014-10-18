@@ -120,4 +120,38 @@ package body MAT.Expressions is
       return Result;
    end Create_Time;
 
+   --  ------------------------------
+   --  Evaluate the node against the context.  Returns True if the node expression
+   --  selects the memory slot defined by the context.
+   --  ------------------------------
+   function Is_Selected (Node    : in Node_Type;
+                         Context : in Context_Type) return Boolean is
+      use type MAT.Types.Target_Size;
+   begin
+      case Node.Kind is
+         when N_NOT =>
+            return not Is_Selected (Node.Expr.all, Context);
+
+         when N_AND =>
+            return Is_Selected (Node.Left.all, Context)
+              and then Is_Selected (Node.Right.all, Context);
+
+         when N_OR =>
+            return Is_Selected (Node.Left.all, Context)
+              or else Is_Selected (Node.Right.all, Context);
+
+         when N_RANGE_SIZE =>
+            return Context.Allocation.Size >= Node.Min_Size
+              and Context.Allocation.Size <= Node.Max_Size;
+
+         when N_RANGE_ADDR =>
+            return Context.Addr >= Node.Min_Addr
+              and Context.Addr <= Node.Max_Addr;
+
+         when others =>
+            return False;
+
+      end case;
+      end Is_Selected;
+
 end MAT.Expressions;
