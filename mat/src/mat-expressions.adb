@@ -92,4 +92,18 @@ package body MAT.Expressions is
       return Result;
    end Create_Size;
 
+   --  ------------------------------
+   --  Create an addr range expression node.
+   --  ------------------------------
+   function Create_Addr (Min : in MAT.Types.Target_Addr;
+                         Max : in MAT.Types.Target_Addr) return Expression_Type is
+      Result : Expression_Type;
+   begin
+      Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
+                                    Kind        => N_RANGE_ADDR,
+                                    Min_Addr    => Min,
+                                    Max_Addr    => Max);
+      return Result;
+   end Create_Addr;
+
 end MAT.Expressions;
