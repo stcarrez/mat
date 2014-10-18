@@ -29,11 +29,13 @@ package MAT.Expressions is
    end record;
 
    type Kind_Type is (N_NOT, N_OR, N_AND, N_TRUE, N_FALSE,
-                      N_IN_FILE, N_IN_FILE_DIRECT,
+                      N_IN_FILE, N_IN_FILE_DIRECT, N_INSIDE,
                       N_CALL_ADDR, N_CALL_ADDR_DIRECT,
                       N_IN_FUNC, N_IN_FUNC_DIRECT,
                       N_RANGE_SIZE, N_RANGE_ADDR,
                       N_CONDITION, N_THREAD);
+
+   type Inside_Type is (INSIDE_FILE, INSIDE_FUNCTION);
 
    type Expression_Type is tagged private;
 
@@ -47,6 +49,10 @@ package MAT.Expressions is
    --  Create a OR expression node.
    function Create_Or (Left  : in Expression_Type;
                        Right : in Expression_Type) return Expression_Type;
+
+   --  Create an INSIDE expression node.
+   function Create_Inside (Name : in String;
+                           Kind : in Inside_Type) return Expression_Type;
 
    --  Create a new expression node.
    function Create (Kindx : in Kind_Type;
@@ -71,8 +77,9 @@ private
          when N_OR | N_AND =>
             Left, Right : Node_Type_Access;
 
-         when N_IN_FILE | N_IN_FILE_DIRECT | N_IN_FUNC | N_IN_FUNC_DIRECT =>
-            Name : Ada.Strings.Unbounded.Unbounded_String;
+         when N_INSIDE | N_IN_FILE | N_IN_FILE_DIRECT | N_IN_FUNC | N_IN_FUNC_DIRECT =>
+            Name   : Ada.Strings.Unbounded.Unbounded_String;
+            Inside : Inside_Type;
 
          when N_RANGE_SIZE =>
             Min_Size : MAT.Types.Target_Size;
