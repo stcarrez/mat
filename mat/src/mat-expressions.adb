@@ -124,13 +124,14 @@ package body MAT.Expressions is
    --  Evaluate the expression to check if the memory slot described by the
    --  context is selected.  Returns True if the memory slot is selected.
    --  ------------------------------
-   function Is_Selected (Node    : in Expression_Type;
-                         Context : in Context_Type) return Boolean is
+   function Is_Selected (Node       : in Expression_Type;
+                         Addr       : in MAT.Types.Target_Addr;
+                         Allocation : in MAT.Memory.Allocation) return Boolean is
    begin
       if Node.Node = null then
          return False;
       else
-         return Is_Selected (Node.Node.all, Context);
+         return Is_Selected (Node.Node.all, Addr, Allocation);
       end if;
    end Is_Selected;
 
@@ -138,34 +139,35 @@ package body MAT.Expressions is
    --  Evaluate the node against the context.  Returns True if the node expression
    --  selects the memory slot defined by the context.
    --  ------------------------------
-   function Is_Selected (Node    : in Node_Type;
-                         Context : in Context_Type) return Boolean is
+   function Is_Selected (Node       : in Node_Type;
+                         Addr       : in MAT.Types.Target_Addr;
+                         Allocation : in MAT.Memory.Allocation) return Boolean is
       use type MAT.Types.Target_Size;
       use type MAT.Types.Target_Tick_Ref;
    begin
       case Node.Kind is
          when N_NOT =>
-            return not Is_Selected (Node.Expr.all, Context);
+            return not Is_Selected (Node.Expr.all, Addr, Allocation);
 
          when N_AND =>
-            return Is_Selected (Node.Left.all, Context)
-              and then Is_Selected (Node.Right.all, Context);
+            return Is_Selected (Node.Left.all, Addr, Allocation)
+              and then Is_Selected (Node.Right.all, Addr, Allocation);
 
          when N_OR =>
-            return Is_Selected (Node.Left.all, Context)
-              or else Is_Selected (Node.Right.all, Context);
+            return Is_Selected (Node.Left.all, Addr, Allocation)
+              or else Is_Selected (Node.Right.all, Addr, Allocation);
 
          when N_RANGE_SIZE =>
-            return Context.Allocation.Size >= Node.Min_Size
-              and Context.Allocation.Size <= Node.Max_Size;
+            return Allocation.Size >= Node.Min_Size
+              and Allocation.Size <= Node.Max_Size;
 
          when N_RANGE_ADDR =>
-            return Context.Addr >= Node.Min_Addr
-              and Context.Addr <= Node.Max_Addr;
+            return Addr >= Node.Min_Addr
+              and Addr <= Node.Max_Addr;
 
          when N_RANGE_TIME =>
-            return Context.Allocation.Time >= Node.Min_Time
-              and Context.Allocation.Time <= Node.Max_Time;
+            return Allocation.Time >= Node.Min_Time
+              and Allocation.Time <= Node.Max_Time;
 
          when others =>
             return False;
