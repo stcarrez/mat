@@ -63,6 +63,10 @@ package MAT.Expressions is
    function Create_Addr (Min : in MAT.Types.Target_Addr;
                          Max : in MAT.Types.Target_Addr) return Expression_Type;
 
+   --  Create an time range expression node.
+   function Create_Time (Min : in MAT.Types.Target_Tick_Ref;
+                         Max : in MAT.Types.Target_Tick_Ref) return Expression_Type;
+
    --  Evaluate the expression to check if the memory slot described by the
    --  context is selected.  Returns True if the memory slot is selected.
    function Is_Selected (Node    : in Expression_Type;
