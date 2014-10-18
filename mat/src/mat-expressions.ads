@@ -17,6 +17,8 @@
 -----------------------------------------------------------------------
 with Ada.Strings.Unbounded;
 
+with Util.Refs;
+
 with MAT.Types;
 with MAT.Memory;
 package MAT.Expressions is
@@ -35,6 +37,9 @@ package MAT.Expressions is
 
    type Expression_Type is tagged private;
 
+   --  Create a NOT expression node.
+   function Create_Not (Expr : in Expression_Type) return Expression_Type;
+
    --  Create a new expression node.
    function Create (Kindx : in Kind_Type;
                     Expr : in Expression_Type) return Expression_Type;
@@ -49,7 +54,7 @@ private
    type Node_Type;
    type Node_Type_Access is access all Node_Type'Class;
 
-   type Node_Type (Kind : Kind_Type) is tagged limited record
+   type Node_Type (Kind : Kind_Type) is new Util.Refs.Ref_Entity with record
       case Kind is
          when N_NOT =>
             Expr : Node_Type_Access;
