@@ -64,4 +64,19 @@ package body MAT.Expressions is
       return Result;
    end Create_Or;
 
+   --  ------------------------------
+   --  Create an INSIDE expression node.
+   --  ------------------------------
+   function Create_Inside (Name : in String;
+                           Kind : in Inside_Type) return Expression_Type is
+      Result : Expression_Type;
+   begin
+      Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
+                                    Kind        => N_INSIDE,
+                                    Name        => Ada.Strings.Unbounded.To_Unbounded_String (Name),
+                                    Inside      => Kind);
+      return Result;
+   end Create_Inside;
+
+
 end MAT.Expressions;
