@@ -52,7 +52,7 @@ package MAT.Expressions is
 private
 
    type Node_Type;
-   type Node_Type_Access is access all Node_Type'Class;
+   type Node_Type_Access is access all Node_Type;
 
    type Node_Type (Kind : Kind_Type) is new Util.Refs.Ref_Entity with record
       case Kind is
@@ -84,8 +84,8 @@ private
    function Is_Selected (Node    : in Node_Type;
                          Context : in Context_Type) return Boolean;
 
-   type Expression_Type is tagged record
-      Node : Node_Type_Access;
-   end record;
+   package Node_Refs is new Util.Refs.Indefinite_References (Node_Type, Node_Type_Access);
+
+   type Expression_Type is new Node_Refs.Ref with null record;
 
 end MAT.Expressions;
