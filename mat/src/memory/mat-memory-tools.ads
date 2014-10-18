@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 with Ada.Containers.Ordered_Maps;
 
+with MAT.Expressions;
 package MAT.Memory.Tools is
 
    type Size_Info_Type is record
@@ -38,11 +39,13 @@ package MAT.Memory.Tools is
                                  Threads : in out Memory_Info_Map);
 
    --  Find from the <tt>Memory</tt> map the memory slots whose address intersects
-   --  the region [From .. To] and add the memory slot in the <tt>Into</tt> list if
-   --  it does not already contains the memory slot.
+   --  the region [From .. To] and which is selected by the given filter expression.
+   --  Add the memory slot in the <tt>Into</tt> list if it does not already contains
+   --  the memory slot.
    procedure Find (Memory : in MAT.Memory.Allocation_Map;
                    From   : in MAT.Types.Target_Addr;
                    To     : in MAT.Types.Target_Addr;
+                   Filter : in MAT.Expressions.Expression_Type;
                    Into   : in out MAT.Memory.Allocation_Map);
 
 end MAT.Memory.Tools;
