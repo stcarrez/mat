@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.Strings.Unbounded;
+with Ada.Finalization;
 
 private with Util.Concurrent.Counters;
 
@@ -126,11 +127,16 @@ private
                          Addr       : in MAT.Types.Target_Addr;
                          Allocation : in MAT.Memory.Allocation) return Boolean;
 
-   type Expression_Type is tagged record
+   type Expression_Type is new Ada.Finalization.Controlled with record
       Node : Node_Type_Access;
    end record;
 
+   --  Release the reference and destroy the expression tree if it was the last reference.
+   overriding
+   procedure Finalize (Obj : in out Expression_Type);
+
    --  Empty expression.
-   EMPTY : constant Expression_Type := Expression_Type'(Node => null);
+   EMPTY : constant Expression_Type := Expression_Type'(Ada.Finalization.Controlled with
+                                                        Node => null);
 
 end MAT.Expressions;
