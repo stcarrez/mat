@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 with MAT.Types;
 with MAT.Memory;
+with MAT.Expressions.Parser;
 package body MAT.Expressions is
 
    --  ------------------------------
@@ -67,13 +68,13 @@ package body MAT.Expressions is
    --  ------------------------------
    --  Create an INSIDE expression node.
    --  ------------------------------
-   function Create_Inside (Name : in String;
+   function Create_Inside (Name : in Ada.Strings.Unbounded.Unbounded_String;
                            Kind : in Inside_Type) return Expression_Type is
       Result : Expression_Type;
    begin
       Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
                                     Kind        => N_INSIDE,
-                                    Name        => Ada.Strings.Unbounded.To_Unbounded_String (Name),
+                                    Name        => Name,
                                     Inside      => Kind);
       return Result;
    end Create_Inside;
