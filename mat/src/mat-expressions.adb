@@ -15,10 +15,19 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with Ada.Unchecked_Deallocation;
+
 with MAT.Types;
 with MAT.Memory;
 with MAT.Expressions.Parser;
 package body MAT.Expressions is
+
+   procedure Free is
+     new Ada.Unchecked_Deallocation (Object => Node_Type,
+                                     Name   => Node_Type_Access);
+
+   --  Destroy recursively the node, releasing the storage.
+   procedure Destroy (Node : in out Node_Type_Access);
 
    --  ------------------------------
    --  Create a NOT expression node.
@@ -183,5 +192,43 @@ package body MAT.Expressions is
    begin
       return MAT.Expressions.Parser.Parse (Expr);
    end Parse;
+
+   --  ------------------------------
+   --  Destroy recursively the node, releasing the storage.
+   --  ------------------------------
+   procedure Destroy (Node : in out Node_Type_Access) is
+      Release : Boolean;
+   begin
+      if Node /= null then
+         Util.Concurrent.Counters.Decrement (Node.Ref_Counter, Release);
+         case Node.Kind is
+            when N_NOT =>
+               Destroy (Node.Expr);
+
+            when N_AND | N_OR =>
+               Destroy (Node.Left);
+               Destroy (Node.Right);
+
+            when others =>
+               null;
+         end case;
+         if Release then
+            Free (Node);
+         else
+            Node := null;
+         end if;
+      end if;
+   end Destroy;
+
+   --  ------------------------------
+   --  Release the reference and destroy the expression tree if it was the last reference.
+   --  ------------------------------
+   overriding
+   procedure Finalize (Obj : in out Expression_Type) is
+   begin
+      if Obj.Node /= null then
+         Destroy (Obj.Node);
+      end if;
+   end Finalize;
 
 end MAT.Expressions;
