@@ -130,7 +130,7 @@ package body MAT.Expressions is
                          Allocation : in MAT.Memory.Allocation) return Boolean is
    begin
       if Node.Node = null then
-         return False;
+         return True;
       else
          return Is_Selected (Node.Node.all, Addr, Allocation);
       end if;
@@ -175,5 +175,13 @@ package body MAT.Expressions is
 
       end case;
    end Is_Selected;
+
+   --  ------------------------------
+   --  Parse the string and return the expression tree.
+   --  ------------------------------
+   function Parse (Expr : in String) return Expression_Type is
+   begin
+      return MAT.Expressions.Parser.Parse (Expr);
+   end Parse;
 
 end MAT.Expressions;
