@@ -99,6 +99,7 @@ package body MAT.Commands is
 
       Filter : MAT.Expressions.Expression_Type;
    begin
+      Filter := MAT.Expressions.Parse (Args);
       Target.Memory.Find (From   => MAT.Types.Target_Addr'First,
                           To     => MAT.Types.Target_Addr'Last,
                           Filter => Filter,
@@ -108,6 +109,10 @@ package body MAT.Commands is
          MAT.Memory.Allocation_Maps.Query_Element (Iter, Print'Access);
          MAT.Memory.Allocation_Maps.Next (Iter);
       end loop;
+
+   exception
+      when E : others =>
+         Target.Console.Error ("Invalid selection");
    end Slot_Command;
 
    --  ------------------------------
