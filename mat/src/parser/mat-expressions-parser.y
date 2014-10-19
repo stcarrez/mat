@@ -149,14 +149,14 @@ count:
 range:
 		'[' integer ',' integer ']'
 				{
-				  $$.low := $2.low;
-				  $$.high := $4.high;
+				  $$.low  := $2.low;
+				  $$.high := $4.low;
 				}
 	|
 		'[' integer T_RANGE integer ']'
 				{
-				  $$.low := $2.low;
-				  $$.high := $4.high;
+				  $$.low  := $2.low;
+				  $$.high := $4.low;
 				}
 	|
 		'[' error ']'
@@ -193,6 +193,7 @@ package MAT.Expressions.Parser is
 
 end MAT.Expressions.Parser;
 
+pragma Style_Checks (Off);
 with MAT.Expressions.Parser_Goto;
 with MAT.Expressions.Parser_Tokens; 
 with MAT.Expressions.Parser_Shift_Reduce;
@@ -225,7 +226,6 @@ package body MAT.Expressions.Parser is
       return Expr;
    end Parse;
 
-pragma Style_Checks (Off);
 ##%procedure_parse
 
 end MAT.Expressions.Parser;
