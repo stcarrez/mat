@@ -65,3 +65,31 @@ bin/mat_harness:  bin/matp
 
 bin/matp:		Makefile $(GPRPATH)
 	$(GNATMAKE) -P "$(GPRPATH)" $(MAKE_ARGS)
+
+parser:	
+	cd src/parser; \
+	ayacc mat-expressions-parser.y off off off off off .x ; \
+    sed -e '/with YY_Sizes;/d' \
+	    -e 's,yy_sizes.stack_size,8192,' \
+		mat-expressions-parser.x > mat-expressions-parser.a
+	cd src/parser; \
+	gnatchop -w mat-expressions-parser.a
+	cd src/parser; \
+	  rm mat-expressions-parser.a mat-expressions-parser.x
+
+lexer:	
+	cd src/parser; \
+	aflex mat-expressions-lexer.l
+	cd src/parser; \
+    sed -e 's,mat.expressions.lexer_io,MAT.Expressions.Parser_IO,g' \
+	    < mat-expressions-lexer.a > mat-expressions-lexer.b ; \
+	mv mat-expressions-lexer.b mat-expressions-lexer.a
+	cd src/parser; \
+	gnatchop -w mat-expressions-lexer.a ; \
+	gnatchop -w mat-expressions-lexer_dfa.a
+	cd src/parser; \
+    sed -e 's,mat.expressions.lexer_io,MAT.Expressions.Parser_IO,g' \
+	    < mat-expressions-lexer_io.a > mat-expressions-parser_io.a
+	cd src/parser; \
+	  rm mat-expressions-parser_io.a mat-expressions-lexer_io.a \
+	     mat-expressions-lexer.a mat-expressions-lexer_dfa.a
