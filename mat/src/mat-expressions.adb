@@ -231,4 +231,15 @@ package body MAT.Expressions is
       end if;
    end Finalize;
 
+   --  ------------------------------
+   --  Update the reference after an assignment.
+   --  ------------------------------
+   overriding
+   procedure Adjust (Obj : in out Expression_Type) is
+   begin
+      if Obj.Node /= null then
+         Util.Concurrent.Counters.Increment (Obj.Node.Ref_Counter);
+      end if;
+   end Adjust;
+
 end MAT.Expressions;
