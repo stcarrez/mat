@@ -135,6 +135,10 @@ private
    overriding
    procedure Finalize (Obj : in out Expression_Type);
 
+   --  Update the reference after an assignment.
+   overriding
+   procedure Adjust (Obj : in out Expression_Type);
+
    --  Empty expression.
    EMPTY : constant Expression_Type := Expression_Type'(Ada.Finalization.Controlled with
                                                         Node => null);
