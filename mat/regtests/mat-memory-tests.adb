@@ -18,6 +18,7 @@
 
 with Util.Test_Caller;
 
+with MAT.Expressions;
 with MAT.Memory.Targets;
 package body MAT.Memory.Tests is
 
@@ -55,38 +56,38 @@ package body MAT.Memory.Tests is
       end loop;
 
       --  Search for a memory region that does not overlap a memory slot.
-      M.Find (15, 19, R);
+      M.Find (15, 19, MAT.Expressions.EMPTY, R);
       Util.Tests.Assert_Equals (T, 0, Integer (R.Length),
                                 "Find must return 0 slots in range [15 .. 19]");
-      M.Find (1, 9, R);
+      M.Find (1, 9, MAT.Expressions.EMPTY, R);
       Util.Tests.Assert_Equals (T, 0, Integer (R.Length),
                                 "Find must return 0 slots in range [1 .. 9]");
-      M.Find (105, 1000, R);
+      M.Find (105, 1000, MAT.Expressions.EMPTY, R);
       Util.Tests.Assert_Equals (T, 0, Integer (R.Length),
                                 "Find must return 0 slots in range [105 .. 1000]");
 
       --  Search with an overlap.
-      M.Find (1, 1000, R);
+      M.Find (1, 1000, MAT.Expressions.EMPTY, R);
       Util.Tests.Assert_Equals (T, 10, Integer (R.Length),
                                 "Find must return 10 slots in range [1 .. 1000]");
 
       R.Clear;
-      M.Find (1, 19, R);
+      M.Find (1, 19, MAT.Expressions.EMPTY, R);
       Util.Tests.Assert_Equals (T, 1, Integer (R.Length),
                                 "Find must return 1 slot in range [1 .. 19]");
 
       R.Clear;
-      M.Find (13, 19, R);
+      M.Find (13, 19, MAT.Expressions.EMPTY, R);
       Util.Tests.Assert_Equals (T, 1, Integer (R.Length),
                                 "Find must return 1 slot in range [13 .. 19]");
 
       R.Clear;
-      M.Find (100, 1000, R);
+      M.Find (100, 1000, MAT.Expressions.EMPTY, R);
       Util.Tests.Assert_Equals (T, 1, Integer (R.Length),
                                 "Find must return 1 slot in range [100 .. 1000]");
 
       R.Clear;
-      M.Find (101, 1000, R);
+      M.Find (101, 1000, MAT.Expressions.EMPTY, R);
       Util.Tests.Assert_Equals (T, 1, Integer (R.Length),
                                 "Find must return 1 slot in range [101 .. 1000]");
 
@@ -107,7 +108,7 @@ package body MAT.Memory.Tests is
       M.Probe_Malloc (10, S);
       M.Probe_Free (10, S);
 
-      M.Find (1, 1000, R);
+      M.Find (1, 1000, MAT.Expressions.EMPTY, R);
       Util.Tests.Assert_Equals (T, 0, Integer (R.Length),
                                 "Find must return 0 slot after a free");
 
@@ -120,7 +121,7 @@ package body MAT.Memory.Tests is
       M.Probe_Malloc (30, S);
       M.Probe_Free (20, S);
 
-      M.Find (1, 1000, R);
+      M.Find (1, 1000, MAT.Expressions.EMPTY, R);
       Util.Tests.Assert_Equals (T, 2, Integer (R.Length),
                                 "Find must return 2 slots after a malloc/free sequence");
    end Test_Probe_Free;
