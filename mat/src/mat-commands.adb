@@ -31,6 +31,7 @@ with MAT.Readers.Files;
 with MAT.Memory.Tools;
 with MAT.Memory.Targets;
 with MAT.Symbols.Targets;
+with MAT.Expressions;
 with MAT.Frames;
 with MAT.Frames.Print;
 with MAT.Consoles;
@@ -96,10 +97,12 @@ package body MAT.Commands is
          end loop;
       end Print;
 
+      Filter : MAT.Expressions.Expression_Type;
    begin
-      Target.Memory.Find (From => MAT.Types.Target_Addr'First,
-                          To   => MAT.Types.Target_Addr'Last,
-                          Into => Slots);
+      Target.Memory.Find (From   => MAT.Types.Target_Addr'First,
+                          To     => MAT.Types.Target_Addr'Last,
+                          Filter => Filter,
+                          Into   => Slots);
       Iter := Slots.First;
       while MAT.Memory.Allocation_Maps.Has_Element (Iter) loop
          MAT.Memory.Allocation_Maps.Query_Element (Iter, Print'Access);
