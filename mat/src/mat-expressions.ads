@@ -44,7 +44,7 @@ package MAT.Expressions is
                        Right : in Expression_Type) return Expression_Type;
 
    --  Create an INSIDE expression node.
-   function Create_Inside (Name : in String;
+   function Create_Inside (Name : in Ada.Strings.Unbounded.Unbounded_String;
                            Kind : in Inside_Type) return Expression_Type;
 
    --  Create an size range expression node.
