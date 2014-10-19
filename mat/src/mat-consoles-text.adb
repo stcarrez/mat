@@ -24,6 +24,7 @@ package body MAT.Consoles.Text is
    overriding
    procedure Error (Console : in out Console_Type;
                     Message : in String) is
+      pragma Unreferenced (Console);
    begin
       Ada.Text_IO.Put_Line (Message);
    end Error;
@@ -77,6 +78,7 @@ package body MAT.Consoles.Text is
    --  Finish a new title in a report.
    --  ------------------------------
    procedure End_Title (Console : in out Console_Type) is
+      pragma Unreferenced (Console);
    begin
       Ada.Text_IO.New_Line;
    end End_Title;
@@ -86,6 +88,7 @@ package body MAT.Consoles.Text is
    --  ------------------------------
    overriding
    procedure Start_Row (Console : in out Console_Type) is
+      pragma Unreferenced (Console);
    begin
       null;
    end Start_Row;
@@ -95,6 +98,7 @@ package body MAT.Consoles.Text is
    --  ------------------------------
    overriding
    procedure End_Row (Console : in out Console_Type) is
+      pragma Unreferenced (Console);
    begin
       Ada.Text_IO.New_Line;
    end End_Row;
