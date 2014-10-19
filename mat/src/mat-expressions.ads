@@ -68,6 +68,12 @@ package MAT.Expressions is
                          Addr       : in MAT.Types.Target_Addr;
                          Allocation : in MAT.Memory.Allocation) return Boolean;
 
+   --  Parse the string and return the expression tree.
+   function Parse (Expr : in String) return Expression_Type;
+
+   --  Empty expression.
+   EMPTY : constant Expression_Type;
+
 private
 
    type Kind_Type is (N_NOT, N_OR, N_AND, N_TRUE, N_FALSE,
@@ -123,5 +129,8 @@ private
    type Expression_Type is tagged record
       Node : Node_Type_Access;
    end record;
+
+   --  Empty expression.
+   EMPTY : constant Expression_Type := Expression_Type'(Node => null);
 
 end MAT.Expressions;
