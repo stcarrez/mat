@@ -28,7 +28,10 @@ package MAT.Expressions is
       Allocation : MAT.Memory.Allocation;
    end record;
 
-   type Inside_Type is (INSIDE_FILE, INSIDE_FUNCTION);
+   type Inside_Type is (INSIDE_FILE,
+                        INSIDE_DIRECT_FILE,
+                        INSIDE_FUNCTION,
+                        INSIDE_DIRECT_FUNCTION);
 
    type Expression_Type is tagged private;
 
