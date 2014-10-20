@@ -22,4 +22,7 @@ package MAT.Callbacks is
    --  Callback executed when the "quit" action is executed from the menu.
    procedure On_Menu_Quit (Object : access Gtkada.Builder.Gtkada_Builder_Record'Class);
 
+   --  Callback executed when the "about" action is executed from the menu.
+   procedure On_Menu_About (Object : access Gtkada.Builder.Gtkada_Builder_Record'Class);
+
 end MAT.Callbacks;
