@@ -43,6 +43,8 @@ begin
    Result := Builder.Add_From_File ("mat.glade", Error'Access);
    Builder.Register_Handler (Handler_Name => "quit",
                              Handler      => MAT.Callbacks.On_Menu_Quit'Access);
+   Builder.Register_Handler (Handler_Name => "about",
+                             Handler      => MAT.Callbacks.On_Menu_About'Access);
    Builder.Do_Connect;
    Main := Gtk.Widget.Gtk_Widget (Builder.Get_Object ("main"));
    Main.Show_All;
