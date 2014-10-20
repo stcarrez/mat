@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 
 with Gtk.Main;
+with Gtk.Widget;
 package body MAT.Callbacks is
 
    --  ------------------------------
@@ -26,5 +27,15 @@ package body MAT.Callbacks is
    begin
       Gtk.Main.Main_Quit;
    end On_Menu_Quit;
+
+   --  ------------------------------
+   --  Callback executed when the "about" action is executed from the menu.
+   --  ------------------------------
+   procedure On_Menu_About (Object : access Gtkada.Builder.Gtkada_Builder_Record'Class) is
+      About : constant Gtk.Widget.Gtk_Widget :=
+        Gtk.Widget.Gtk_Widget (Object.Get_Object ("about"));
+   begin
+      About.Show;
+   end On_Menu_About;
 
 end MAT.Callbacks;
