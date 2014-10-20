@@ -1,5 +1,5 @@
-/* Remote access
---  Copyright (C) 2011, 2012, 2013 Stephane Carrez
+/*  gp-file.c -- file storage
+--  Copyright (C) 2011, 2012, 2013, 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,6 +38,12 @@ struct gp_file_server
 
 static struct gp_file_server server;
 
+/**
+ * @brief Flush the data stored in the buffer.
+ *
+ * @param file the GP server instance.
+ * @return 0 if the operation succeeded.
+ */
 static int gp_file_flush (struct gp_file_server* file)
 {
   size_t sz = file->write_ptr - file->buffer;
@@ -52,51 +58,77 @@ static int gp_file_flush (struct gp_file_server* file)
   return 0;
 }
 
+/**
+ * @brief Send the content to a file.
+ *
+ * @param server the GP server instance.
+ * @param ptr the data to send.
+ * @param len the number of bytes to send.
+ */
 void gp_file_send (struct gp_server* server, const void* ptr, size_t len)
 {
-   struct gp_file_server* file = (struct gp_file_server*) server;
+  struct gp_file_server* file = (struct gp_file_server*) server;
 
-   if (file->fd < 0)
-     return;
+  if (file->fd < 0)
+    return;
 
-   while (len > 0)
-     {
-       size_t avail = file->last_ptr - file->write_ptr;
-       if (avail > len)
-         avail = len;
+  while (len > 0)
+    {
+      size_t avail = file->last_ptr - file->write_ptr;
+      if (avail > len)
+        avail = len;
 
-       if (avail > 0)
-         {
-           memcpy (file->write_ptr, ptr, avail);
-           file->write_ptr += avail;
-           ptr = ((unsigned char*) ptr) + avail;
-           len -= avail;
-         }
-       else
-         {
-           if (gp_file_flush (file) != 0)
-             break;
-         }
-     }
+      if (avail > 0)
+        {
+          memcpy (file->write_ptr, ptr, avail);
+          file->write_ptr += avail;
+          ptr = ((unsigned char*) ptr) + avail;
+          len -= avail;
+        }
+      else
+        {
+          if (gp_file_flush (file) != 0)
+            break;
+        }
+    }
 }
 
+/**
+ * @brief Synchronize with the GP server.
+ *
+ * For a file, do nothing.
+ *
+ * @param server the GP server instance.
+ * @return 0 if the operation succeeded or an error code.
+ */
 int gp_file_synchronize (struct gp_server* server)
 {
-    return 0;
+  return 0;
 }
 
+/**
+ * @brief Close the GP server file.
+ *
+ * @param server the GP server instance.
+ */
 void gp_file_close (struct gp_server* server)
 {
-   struct gp_file_server* file = (struct gp_file_server*) server;
+  struct gp_file_server* file = (struct gp_file_server*) server;
 
-   if (file->fd < 0)
-     return;
+  if (file->fd < 0)
+    return;
 
-   if (gp_file_flush (file) == 0)
-     close (file->fd);
-   file->fd = -1;
+  if (gp_file_flush (file) == 0)
+    close (file->fd);
+  file->fd = -1;
 }
 
+/**
+ * @brief Open the file and prepare for probe monitoring on a file.
+ *
+ * @param param the file pattern to create.
+ * @return the GP server instance.
+ */
 struct gp_file_server* gp_file_open (const char* param)
 {
   char path[PATH_MAX];
