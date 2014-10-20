@@ -38,4 +38,14 @@ package body MAT.Callbacks is
       About.Show;
    end On_Menu_About;
 
+   --  ------------------------------
+   --  Callback executed when the "close-about" action is executed from the about box.
+   --  ------------------------------
+   procedure On_Close_About (Object : access Gtkada.Builder.Gtkada_Builder_Record'Class) is
+      About : constant Gtk.Widget.Gtk_Widget :=
+        Gtk.Widget.Gtk_Widget (Object.Get_Object ("about"));
+   begin
+      About.Hide;
+   end On_Close_About;
+
 end MAT.Callbacks;
