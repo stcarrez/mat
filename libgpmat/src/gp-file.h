@@ -1,5 +1,5 @@
-/* Remote access
---  Copyright (C) 2011, 2012, 2013 Stephane Carrez
+/*  File probe stream
+--  Copyright (C) 2011, 2012, 2013, 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,12 @@
 #ifndef _GP_FILE_H
 #define _GP_FILE_H
 
+/**
+ * @brief Open the file and prepare for probe monitoring on a file.
+ *
+ * @param param the file pattern to create.
+ * @return the GP server instance.
+ */
 extern struct gp_file_server* gp_file_open (const char* param);
 
 #endif
