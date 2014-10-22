@@ -48,6 +48,7 @@ SOURCES = \
 	src/gp-probe.c \
 	src/gp-remote.c \
 	src/gp-file.c \
+	src/gp-socket.c \
 	src/gp-malloc.c \
 	src/shm-channel.c \
 	src/shm-ops.c \
@@ -58,6 +59,7 @@ OBJS=gp-events.o \
 	gp-remote.o \
 	gp-file.o \
 	gp-malloc.o \
+	gp-socket.o \
 	shm-channel.o \
 	shm-ops.o \
 	@CPU_OBJS@
