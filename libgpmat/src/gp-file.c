@@ -29,11 +29,8 @@
 
 struct gp_file_server 
 {
-  struct gp_server root;
+  struct gp_buffered_server root;
   int fd;
-  unsigned char* write_ptr;
-  unsigned char* last_ptr;
-  unsigned char buffer[4096];
 };
 
 static struct gp_file_server server;
@@ -44,65 +41,18 @@ static struct gp_file_server server;
  * @param file the GP server instance.
  * @return 0 if the operation succeeded.
  */
-static int gp_file_flush (struct gp_file_server* file)
+static int gp_file_flush (struct gp_buffered_server* server)
 {
-  size_t sz = file->write_ptr - file->buffer;
-  ssize_t res = write (file->fd, file->buffer, sz);
+  struct gp_file_server* file = (struct gp_file_server*) server;
+  size_t sz = file->root.write_ptr - file->root.buffer;
+  ssize_t res = write (file->fd, file->root.buffer, sz);
   if (res != sz)
     {
       close (file->fd);
       file->fd = -1;
       return -1;
     }
-  file->write_ptr = file->buffer;
-  return 0;
-}
-
-/**
- * @brief Send the content to a file.
- *
- * @param server the GP server instance.
- * @param ptr the data to send.
- * @param len the number of bytes to send.
- */
-void gp_file_send (struct gp_server* server, const void* ptr, size_t len)
-{
-  struct gp_file_server* file = (struct gp_file_server*) server;
-
-  if (file->fd < 0)
-    return;
-
-  while (len > 0)
-    {
-      size_t avail = file->last_ptr - file->write_ptr;
-      if (avail > len)
-        avail = len;
-
-      if (avail > 0)
-        {
-          memcpy (file->write_ptr, ptr, avail);
-          file->write_ptr += avail;
-          ptr = ((unsigned char*) ptr) + avail;
-          len -= avail;
-        }
-      else
-        {
-          if (gp_file_flush (file) != 0)
-            break;
-        }
-    }
-}
-
-/**
- * @brief Synchronize with the GP server.
- *
- * For a file, do nothing.
- *
- * @param server the GP server instance.
- * @return 0 if the operation succeeded or an error code.
- */
-int gp_file_synchronize (struct gp_server* server)
-{
+  file->root.write_ptr = file->root.buffer;
   return 0;
 }
 
@@ -118,7 +68,7 @@ void gp_file_close (struct gp_server* server)
   if (file->fd < 0)
     return;
 
-  if (gp_file_flush (file) == 0)
+  if (gp_file_flush ((struct gp_buffered_server*) server) == 0)
     close (file->fd);
   file->fd = -1;
 }
@@ -153,11 +103,9 @@ struct gp_file_server* gp_file_open (const char* param)
     {
       return NULL;
     }
-  server.write_ptr = server.buffer;
-  server.last_ptr  = &server.buffer[sizeof (server.buffer)];
-  server.root.to_send        = gp_file_send;
-  server.root.to_synchronize = gp_file_synchronize;
-  server.root.to_close       = gp_file_close;
+  gp_buffered_server_initialize (&server.root);
+  server.root.root.to_close       = gp_file_close;
+  server.root.to_flush            = gp_file_flush;
    
   return &server;
 }
