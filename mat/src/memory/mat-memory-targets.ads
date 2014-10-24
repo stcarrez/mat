@@ -66,6 +66,11 @@ package MAT.Memory.Targets is
    procedure Thread_Information (Memory  : in out Target_Memory;
                                  Threads : in out Memory_Info_Map);
 
+   --  Collect the information about frames and the memory allocations they've made.
+   procedure Frame_Information (Memory : in out Target_Memory;
+                                Level  : in Natural;
+                                Frames : in out Frame_Info_Map);
+
    --  Find from the <tt>Memory</tt> map the memory slots whose address intersects
    --  the region [From .. To] and which is selected by the given filter expression.
    --  Add the memory slot in the <tt>Into</tt> list if it does not already contains
@@ -109,6 +114,10 @@ private
 
       --  Collect the information about threads and the memory allocations they've made.
       procedure Thread_Information (Threads : in out Memory_Info_Map);
+
+      --  Collect the information about frames and the memory allocations they've made.
+      procedure Frame_Information (Level  : in Natural;
+                                   Frames : in out Frame_Info_Map);
 
       --  Find from the <tt>Memory</tt> map the memory slots whose address intersects
       --  the region [From .. To] and which is selected by the given filter expression.
