@@ -38,6 +38,11 @@ package MAT.Memory.Tools is
    procedure Thread_Information (Memory  : in MAT.Memory.Allocation_Map;
                                  Threads : in out Memory_Info_Map);
 
+   --  Collect the information about frames and the memory allocations they've made.
+   procedure Frame_Information (Memory : in MAT.Memory.Allocation_Map;
+                                Level  : in Natural;
+                                Frames : in out Frame_Info_Map);
+
    --  Find from the <tt>Memory</tt> map the memory slots whose address intersects
    --  the region [From .. To] and which is selected by the given filter expression.
    --  Add the memory slot in the <tt>Into</tt> list if it does not already contains
