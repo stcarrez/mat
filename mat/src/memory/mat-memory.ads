@@ -69,6 +69,9 @@ package MAT.Memory is
      new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Addr,
                                       Element_Type => Frame_Info);
 
+   subtype Frame_Info_Map is Frame_Info_Maps.Map;
+   subtype Frame_Info_Cursor is Frame_Info_Maps.Cursor;
+
 private
 
 end MAT.Memory;
