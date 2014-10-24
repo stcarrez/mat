@@ -101,14 +101,19 @@ package body MAT.Frames is
       end if;
       declare
          Current : Frame_Type := Frame;
-         Pos     : Natural    := Current.Depth;
+         Pos     : Natural    := Length;
          New_Pos : Natural;
          Pc      : Frame_Table (1 .. Length);
       begin
          while Current /= null and Pos /= 0 loop
-            New_Pos := Pos - Current.Local_Depth + 1;
-            Pc (New_Pos .. Pos) := Current.Calls (1 .. Current.Local_Depth);
-            Pos     := New_Pos - 1;
+            if Pos >= Current.Local_Depth then
+               New_Pos := Pos - Current.Local_Depth + 1;
+               Pc (New_Pos .. Pos) := Current.Calls (1 .. Current.Local_Depth);
+               Pos     := New_Pos - 1;
+            else
+               Pc (1 .. Pos) := Current.Calls (Current.Local_Depth - Pos - 1 .. Current.Local_Depth);
+               Pos := 0;
+            end if;
             Current := Current.Parent;
          end loop;
          return Pc;
