@@ -127,6 +127,76 @@ package body MAT.Memory.Tools is
    end Thread_Information;
 
    --  ------------------------------
+   --  Collect the information about frames and the memory allocations they've made.
+   --  ------------------------------
+   procedure Frame_Information (Memory : in MAT.Memory.Allocation_Map;
+                                Level  : in Natural;
+                                Frames : in out Frame_Info_Map) is
+      procedure Collect (Addr : in MAT.Types.Target_Addr;
+                         Slot : in Allocation);
+
+      procedure Collect (Addr : in MAT.Types.Target_Addr;
+                         Slot : in Allocation) is
+
+         procedure Update_Count (Frame_Addr : in MAT.Types.Target_Addr;
+                                 Info       : in out Frame_Info);
+
+
+         procedure Update_Count (Frame_Addr : in MAT.Types.Target_Addr;
+                                 Info       : in out Frame_Info) is
+            pragma Unreferenced (Frame_Addr);
+
+            Size : constant MAT.Types.Target_Size := Slot.Size;
+         begin
+            Info.Memory.Alloc_Count := Info.Memory.Alloc_Count + 1;
+            if Size < Info.Memory.Min_Slot_Size then
+               Info.Memory.Min_Slot_Size := Size;
+            end if;
+            if Size > Info.Memory.Max_Slot_Size then
+               Info.Memory.Max_Slot_Size := Size;
+            end if;
+            if Addr < Info.Memory.Min_Addr then
+               Info.Memory.Min_Addr := Addr;
+            end if;
+            if Addr + Size > Info.Memory.Max_Addr then
+               Info.Memory.Max_Addr := Addr + Size;
+            end if;
+            Info.Memory.Total_Size := Info.Memory.Total_Size + Size;
+         end Update_Count;
+
+         Frame : constant MAT.Frames.Frame_Table := MAT.Frames.Backtrace (Slot.Frame, Level);
+         Pos   : Frame_Info_Cursor;
+      begin
+         for I in Frame'Range loop
+            Pos := Frames.Find (Frame (I));
+            if Frame_Info_Maps.Has_Element (Pos) then
+               Frames.Update_Element (Pos, Update_Count'Access);
+            else
+               declare
+                  Info : Frame_Info;
+               begin
+                  Info.Thread               := Slot.Thread;
+                  Info.Memory.Total_Size    := Slot.Size;
+                  Info.Memory.Alloc_Count   := 1;
+                  Info.Memory.Min_Slot_Size := Slot.Size;
+                  Info.Memory.Max_Slot_Size := Slot.Size;
+                  Info.Memory.Min_Addr      := Addr;
+                  Info.Memory.Max_Addr      := Addr + Slot.Size;
+                  Frames.Insert (Frame (I), Info);
+               end;
+            end if;
+         end loop;
+      end Collect;
+
+      Iter : Allocation_Cursor := Memory.First;
+   begin
+      while Allocation_Maps.Has_Element (Iter) loop
+         Allocation_Maps.Query_Element (Iter, Collect'Access);
+         Allocation_Maps.Next (Iter);
+      end loop;
+   end Frame_Information;
+
+   --  ------------------------------
    --  Find from the <tt>Memory</tt> map the memory slots whose address intersects
    --  the region [From .. To] and which is selected by the given filter expression.
    --  Add the memory slot in the <tt>Into</tt> list if it does not already contains
