@@ -26,7 +26,10 @@ package MAT.Consoles is
                        F_MIN_ADDR,
                        F_MAX_ADDR,
                        F_THREAD,
-                       F_COUNT);
+                       F_COUNT,
+                       F_FILE_NAME,
+                       F_FUNCTION_NAME,
+                       F_LINE_NUMBER);
 
    type Console_Type is abstract tagged limited private;
    type Console_Access is access all Console_Type'Class;
