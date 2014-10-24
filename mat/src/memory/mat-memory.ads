@@ -58,6 +58,17 @@ package MAT.Memory is
    subtype Memory_Info_Map is Memory_Info_Maps.Map;
    subtype Memory_Info_Cursor is Memory_Info_Maps.Cursor;
 
+   type Frame_Info is record
+      Thread : MAT.Types.Target_Thread_Ref;
+      Memory : Memory_Info;
+   end record;
+
+   --  Define a map of <tt>Frame_Info</tt> keyed by the backtrace function address
+   --  that performed the memory allocation directly or indirectly.
+   package Frame_Info_Maps is
+     new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Addr,
+                                      Element_Type => Frame_Info);
+
 private
 
 end MAT.Memory;
