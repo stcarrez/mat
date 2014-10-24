@@ -88,20 +88,31 @@ package body MAT.Frames is
 
    --  ------------------------------
    --  Returns the backtrace of the current frame (up to the root).
+   --  When <tt>Max_Level</tt> is positive, limit the number of PC frames to the value.
    --  ------------------------------
-   function Backtrace (Frame :  in Frame_Type) return Frame_Table is
-      Pc      : Frame_Table (1 .. Frame.Depth);
-      Current : Frame_Type := Frame;
-      Pos     : Natural   := Current.Depth;
-      New_Pos : Natural;
+   function Backtrace (Frame     : in Frame_Type;
+                       Max_Level : in Natural := 0) return Frame_Table is
+      Length  : Natural;
    begin
-      while Current /= null and Pos /= 0 loop
-         New_Pos := Pos - Current.Local_Depth + 1;
-         Pc (New_Pos .. Pos) := Current.Calls (1 .. Current.Local_Depth);
-         Pos     := New_Pos - 1;
-         Current := Current.Parent;
-      end loop;
-      return Pc;
+      if Max_Level > 0 and Max_Level < Frame.Depth then
+         Length := Max_Level;
+      else
+         Length := Frame.Depth;
+      end if;
+      declare
+         Current : Frame_Type := Frame;
+         Pos     : Natural    := Current.Depth;
+         New_Pos : Natural;
+         Pc      : Frame_Table (1 .. Length);
+      begin
+         while Current /= null and Pos /= 0 loop
+            New_Pos := Pos - Current.Local_Depth + 1;
+            Pc (New_Pos .. Pos) := Current.Calls (1 .. Current.Local_Depth);
+            Pos     := New_Pos - 1;
+            Current := Current.Parent;
+         end loop;
+         return Pc;
+      end;
    end Backtrace;
 
    --  ------------------------------
