@@ -199,6 +199,65 @@ package body MAT.Commands is
    end Threads_Command;
 
    --  ------------------------------
+   --  Frames command.
+   --  Collect statistics about the frames and their allocation.
+   --  ------------------------------
+   procedure Frames_Command (Target : in out MAT.Targets.Target_Type'Class;
+                              Args   : in String) is
+      Sizes   : MAT.Memory.Tools.Size_Info_Map;
+      Frames  : MAT.Memory.Frame_Info_Map;
+      Iter    : MAT.Memory.Frame_Info_Cursor;
+      Level   : Positive := 3;
+      Console : constant MAT.Consoles.Console_Access := Target.Console;
+   begin
+      Console.Start_Title;
+      Console.Print_Title (MAT.Consoles.F_FILE_NAME, "File", 20);
+      Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 20);
+      Console.Print_Title (MAT.Consoles.F_LINE_NUMBER, "Line", 6);
+      Console.Print_Title (MAT.Consoles.F_COUNT, "# Allocation", 12);
+      Console.Print_Title (MAT.Consoles.F_TOTAL_SIZE, "Total size", 15);
+      Console.Print_Title (MAT.Consoles.F_MIN_SIZE, "Min slot size", 15);
+      Console.Print_Title (MAT.Consoles.F_MAX_SIZE, "Max slot size", 15);
+      Console.Print_Title (MAT.Consoles.F_MIN_ADDR, "Low address", 15);
+      Console.Print_Title (MAT.Consoles.F_MAX_ADDR, "High address", 15);
+      Console.End_Title;
+
+      MAT.Memory.Targets.Frame_Information (Memory => Target.Memory,
+                                            Level  => Level,
+                                            Frames => Frames);
+      Iter := Frames.First;
+      while MAT.Memory.Frame_Info_Maps.Has_Element (Iter) loop
+         declare
+            use type MAT.Types.Target_Size;
+
+            Func   : constant Types.Target_Addr := MAT.Memory.Frame_Info_Maps.Key (Iter);
+            Info   : constant Memory.Frame_Info := MAT.Memory.Frame_Info_Maps.Element (Iter);
+            Name : Ada.Strings.Unbounded.Unbounded_String;
+            File_Name : Ada.Strings.Unbounded.Unbounded_String;
+            Line : Natural;
+         begin
+            MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Target.Symbols,
+                                                   Addr    => Func,
+                                                   Name    => Name,
+                                                   Func    => File_Name,
+                                                   Line    => Line);
+            Console.Start_Row;
+            Console.Print_Field (MAT.Consoles.F_FILE_NAME, File_Name);
+            Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME, Name);
+            Console.Print_Field (MAT.Consoles.F_LINE_NUMBER, Line);
+            Console.Print_Field (MAT.Consoles.F_COUNT, Info.Memory.Alloc_Count);
+            Console.Print_Size (MAT.Consoles.F_TOTAL_SIZE, Info.Memory.Total_Size);
+            Console.Print_Size (MAT.Consoles.F_MIN_SIZE, Info.Memory.Min_Slot_Size);
+            Console.Print_Size (MAT.Consoles.F_MAX_SIZE, Info.Memory.Max_Slot_Size);
+            Console.Print_Field (MAT.Consoles.F_MIN_ADDR, Info.Memory.Min_Addr);
+            Console.Print_Field (MAT.Consoles.F_MAX_ADDR, Info.Memory.Max_Addr);
+            Console.End_Row;
+         end;
+         MAT.Memory.Frame_Info_Maps.Next (Iter);
+      end loop;
+   end Frames_Command;
+
+   --  ------------------------------
    --  Symbol command.
    --  Load the symbols from the binary file.
    --  ------------------------------
@@ -261,6 +320,15 @@ package body MAT.Commands is
       elsif Command'Length > 0 then
          Target.Console.Error ("Command '" & Command & "' not found");
       end if;
+
+   exception
+      when Stop_Interp =>
+         raise;
+
+      when E : others =>
+         Log.Error ("Exception: ", E);
+         Target.Console.Error ("Exception while processing command");
+
    end Execute;
 
 begin
@@ -271,4 +339,5 @@ begin
    Commands.Insert ("symbol", Symbol_Command'Access);
    Commands.Insert ("slots", Slot_Command'Access);
    Commands.Insert ("threads", Threads_Command'Access);
+   Commands.Insert ("frames", Frames_Command'Access);
 end MAT.Commands;
