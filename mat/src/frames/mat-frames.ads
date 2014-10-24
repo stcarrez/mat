@@ -29,7 +29,9 @@ package MAT.Frames is
    function Parent (Frame : in Frame_Type) return Frame_Type;
 
    --  Returns the backtrace of the current frame (up to the root).
-   function Backtrace (Frame : in Frame_Type) return Frame_Table;
+   --  When <tt>Max_Level</tt> is positive, limit the number of PC frames to the value.
+   function Backtrace (Frame     : in Frame_Type;
+                       Max_Level : in Natural := 0) return Frame_Table;
 
    --  Returns all the direct calls made by the current frame.
    function Calls (Frame : in Frame_Type) return Frame_Table;
