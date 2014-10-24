@@ -15,6 +15,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with Ada.Strings.Unbounded;
+
 with MAT.Types;
 package MAT.Consoles is
 
@@ -80,6 +82,11 @@ package MAT.Consoles is
    procedure Print_Field (Console : in out Console_Type;
                           Field   : in Field_Type;
                           Value   : in Integer);
+
+   --  Format the integer and print it for the given field.
+   procedure Print_Field (Console : in out Console_Type;
+                          Field   : in Field_Type;
+                          Value   : in Ada.Strings.Unbounded.Unbounded_String);
 
 private
 
