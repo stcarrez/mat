@@ -71,4 +71,14 @@ package body MAT.Consoles is
       Console_Type'Class (Console).Print_Field (Field, Val);
    end Print_Field;
 
+   --  ------------------------------
+   --  Format the integer and print it for the given field.
+   --  ------------------------------
+   procedure Print_Field (Console : in out Console_Type;
+                          Field   : in Field_Type;
+                          Value   : in Ada.Strings.Unbounded.Unbounded_String) is
+   begin
+      Console_Type'Class (Console).Print_Field (Field, Ada.Strings.Unbounded.To_String (Value));
+   end Print_Field;
+
 end MAT.Consoles;
