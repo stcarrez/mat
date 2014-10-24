@@ -16,8 +16,10 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.Unchecked_Deallocation;
+with Ada.Text_IO;
 
 with Util.Log.Loggers;
+with MAT.Frames.Print;
 package body MAT.Frames is
 
    use type MAT.Types.Target_Addr;
@@ -38,26 +40,23 @@ package body MAT.Frames is
    function Check (Frame : in Frame_Type) return Boolean is
       Parent : Frame_Type;
       Child  : Frame_Type;
-      Found  : Boolean := False;
       Result : Boolean := True;
    begin
       if Frame = null then
          return False;
       end if;
-      Parent := Frame.Parent;
-      if Parent /= null then
-         Child := Parent.Children;
-         while Child /= null loop
-            if Child = Frame then
-               Found := True;
-            end if;
-            if Child.Parent /= Parent then
-               Log.Error ("Invalid parent link");
-               Result := False;
-            end if;
-            Child := Child.Next;
-         end loop;
-      end if;
+      Child := Frame.Children;
+      while Child /= null loop
+         if Child.Parent /= Frame then
+            Log.Error ("Invalid parent link");
+            Result := False;
+         end if;
+         if Child.Children /= null and then not Check (Child) then
+            Log.Error ("A child is now invalid");
+            Result := False;
+         end if;
+         Child := Child.Next;
+      end loop;
       return Result;
    end Check;
 
@@ -72,6 +71,20 @@ package body MAT.Frames is
          return Frame.Parent;
       end if;
    end Parent;
+
+   --  ------------------------------
+   --  Get the root frame object.
+   --  ------------------------------
+   function Get_Root (Frame : in Frame_Type) return Frame_Type is
+      Parent : Frame_Type := Frame;
+   begin
+      loop
+         if Parent.Parent = null then
+            return Parent;
+         end if;
+         Parent := Parent.Parent;
+      end loop;
+   end Get_Root;
 
    --  ------------------------------
    --  Returns the backtrace of the current frame (up to the root).
@@ -188,7 +201,13 @@ package body MAT.Frames is
                F := F.Next;
             end loop;
             if F = null then
-               Log.Error ("Frame is not linked to the correct parent");
+--                 Log.Error ("Frame is not linked to the correct parent");
+--                 if not Check (Get_Root (Frame)) then
+--                    Log.Error ("Check failed");
+--                 else
+--                    Log.Error ("Check is ok");
+--                 end if;
+--                 MAT.Frames.Print (Ada.Text_IO.Standard_Output, Get_Root (Frame));
                return;
             else
                F.Next := Frame.Next;
@@ -220,6 +239,9 @@ package body MAT.Frames is
             Current := Current.Parent;
          end if;
       end loop;
+      if not Check (Get_Root (Frame)) then
+         Log.Error ("Frame is invalid");
+      end if;
    end Release;
 
    --  ------------------------------
@@ -281,7 +303,7 @@ package body MAT.Frames is
          Child.Next := New_Parent;
       end if;
       F := New_Parent;
-      if not Check (F) then
+      if not Check (Get_Root (F)) then
          Log.Error ("Error when splitting frame");
       end if;
    end Split;
@@ -310,7 +332,7 @@ package body MAT.Frames is
          Child.Calls (1 .. Cnt) := Pc (Pos .. Pos + Cnt - 1);
          Pos := Pos + Cnt;
          Child.Parent.Children := Child;
-         if not Check (Child) then
+         if not Check (Get_Root (Child)) then
             Log.Error ("Error when adding frame");
          end if;
       end loop;
@@ -363,7 +385,6 @@ package body MAT.Frames is
             Current := Child;
             Lpos    := 2;
             Pos     := Pos + 1;
---              Current.Used := Current.Used + 1;
          end if;
       end loop;
       if Lpos <= Current.Local_Depth then
