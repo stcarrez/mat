@@ -33,7 +33,6 @@ with MAT.Memory.Targets;
 with MAT.Symbols.Targets;
 with MAT.Expressions;
 with MAT.Frames;
-with MAT.Frames.Print;
 with MAT.Consoles;
 package body MAT.Commands is
 
@@ -55,13 +54,16 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Slot_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String) is
+      procedure Print (Addr : in MAT.Types.Target_Addr;
+                       Slot : in MAT.Memory.Allocation);
+
       Slots : MAT.Memory.Allocation_Map;
       Iter  : MAT.Memory.Allocation_Cursor;
 
       procedure Print (Addr : in MAT.Types.Target_Addr;
                        Slot : in MAT.Memory.Allocation) is
          use type MAT.Frames.Frame_Type;
-         Backtrace : MAT.Frames.Frame_Table := MAT.Frames.Backtrace (Slot.Frame);
+         Backtrace : constant MAT.Frames.Frame_Table := MAT.Frames.Backtrace (Slot.Frame);
 
          Name : Ada.Strings.Unbounded.Unbounded_String;
          Func : Ada.Strings.Unbounded.Unbounded_String;
