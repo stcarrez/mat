@@ -20,6 +20,7 @@ with Util.Log.Loggers;
 
 with Ada.Containers.Indefinite_Hashed_Maps;
 with Ada.Strings.Hash;
+with Ada.Exceptions;
 with Ada.IO_Exceptions;
 with Ada.Text_IO;
 with Ada.Strings.Unbounded;
@@ -38,6 +39,22 @@ package body MAT.Commands is
 
    --  The logger
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Commands");
+
+   function Get_Command (Line : in String) return String;
+   procedure Slot_Command (Target : in out MAT.Targets.Target_Type'Class;
+                           Args   : in String);
+   procedure Symbol_Command (Target : in out MAT.Targets.Target_Type'Class;
+                             Args   : in String);
+   procedure Frames_Command (Target : in out MAT.Targets.Target_Type'Class;
+                             Args   : in String);
+   procedure Threads_Command (Target : in out MAT.Targets.Target_Type'Class;
+                              Args   : in String);
+   procedure Sizes_Command (Target : in out MAT.Targets.Target_Type'Class;
+                            Args   : in String);
+   procedure Exit_Command (Target : in out MAT.Targets.Target_Type'Class;
+                           Args   : in String);
+   procedure Open_Command (Target : in out MAT.Targets.Target_Type'Class;
+                           Args   : in String);
 
    package Command_Map is
      new Ada.Containers.Indefinite_Hashed_Maps (Key_Type        => String,
@@ -114,6 +131,7 @@ package body MAT.Commands is
 
    exception
       when E : others =>
+         Log.Error ("Exception when evaluating " & Args, E);
          Target.Console.Error ("Invalid selection");
    end Slot_Command;
 
@@ -124,6 +142,8 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Sizes_Command (Target : in out MAT.Targets.Target_Type'Class;
                             Args   : in String) is
+      pragma Unreferenced (Args);
+
       Sizes   : MAT.Memory.Tools.Size_Info_Map;
       Iter    : MAT.Memory.Tools.Size_Info_Cursor;
       Console : constant MAT.Consoles.Console_Access := Target.Console;
@@ -139,11 +159,12 @@ package body MAT.Commands is
       Iter := Sizes.First;
       while MAT.Memory.Tools.Size_Info_Maps.Has_Element (Iter) loop
          declare
+            use MAT.Memory.Tools;
             use type MAT.Types.Target_Size;
 
-            Size  : MAT.Types.Target_Size := MAT.Memory.Tools.Size_Info_Maps.Key (Iter);
-            Info  : MAT.Memory.Tools.Size_Info_Type := MAT.Memory.Tools.Size_Info_Maps.Element (Iter);
-            Total : MAT.Types.Target_Size := Size * MAT.Types.Target_Size (Info.Count);
+            Size  : constant MAT.Types.Target_Size := MAT.Memory.Tools.Size_Info_Maps.Key (Iter);
+            Info  : constant Size_Info_Type := Memory.Tools.Size_Info_Maps.Element (Iter);
+            Total : constant MAT.Types.Target_Size := Size * MAT.Types.Target_Size (Info.Count);
          begin
             Console.Start_Row;
             Console.Print_Size (MAT.Consoles.F_SIZE, Size);
@@ -160,14 +181,15 @@ package body MAT.Commands is
    --  Collect statistics about the threads and their allocation.
    --  ------------------------------
    procedure Threads_Command (Target : in out MAT.Targets.Target_Type'Class;
-                            Args   : in String) is
-      Sizes   : MAT.Memory.Tools.Size_Info_Map;
+                              Args   : in String) is
+      pragma Unreferenced (Args);
+
       Threads : MAT.Memory.Memory_Info_Map;
       Iter    : MAT.Memory.Memory_Info_Cursor;
       Console : constant MAT.Consoles.Console_Access := Target.Console;
    begin
       Console.Start_Title;
-      Console.Print_Title (MAT.Consoles.F_Thread, "Thread", 10);
+      Console.Print_Title (MAT.Consoles.F_THREAD, "Thread", 10);
       Console.Print_Title (MAT.Consoles.F_COUNT, "# Allocation", 12);
       Console.Print_Title (MAT.Consoles.F_TOTAL_SIZE, "Total size", 15);
       Console.Print_Title (MAT.Consoles.F_MIN_SIZE, "Min slot size", 15);
@@ -205,13 +227,15 @@ package body MAT.Commands is
    --  Collect statistics about the frames and their allocation.
    --  ------------------------------
    procedure Frames_Command (Target : in out MAT.Targets.Target_Type'Class;
-                              Args   : in String) is
-      Sizes   : MAT.Memory.Tools.Size_Info_Map;
+                             Args   : in String) is
       Frames  : MAT.Memory.Frame_Info_Map;
       Iter    : MAT.Memory.Frame_Info_Cursor;
       Level   : Positive := 3;
       Console : constant MAT.Consoles.Console_Access := Target.Console;
    begin
+      if Args'Length > 0 then
+         Level := Positive'Value (Args);
+      end if;
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_FILE_NAME, "File", 20);
       Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 20);
@@ -295,13 +319,13 @@ package body MAT.Commands is
 
    exception
       when E : Ada.IO_Exceptions.Name_Error =>
-         Log.Error ("Cannot open {0}", Args);
+         Log.Error ("Cannot open {0}: {1}", Args, Ada.Exceptions.Exception_Message (E));
    end Open_Command;
 
    function Get_Command (Line : in String) return String is
-      Pos : Natural := Util.Strings.Index (Line, ' ');
+      Pos : constant Natural := Util.Strings.Index (Line, ' ');
    begin
-      if Pos <= 0 then
+      if Pos = 0 then
          return Line;
       else
          return Line (Line'First .. Pos - 1);
