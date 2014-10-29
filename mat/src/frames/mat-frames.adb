@@ -111,7 +111,7 @@ package body MAT.Frames is
                Pc (New_Pos .. Pos) := Current.Calls (1 .. Current.Local_Depth);
                Pos     := New_Pos - 1;
             else
-               Pc (1 .. Pos) := Current.Calls (Current.Local_Depth - Pos - 1 .. Current.Local_Depth);
+               Pc (1 .. Pos) := Current.Calls (Current.Local_Depth - Pos + 1 .. Current.Local_Depth);
                Pos := 0;
             end if;
             Current := Current.Parent;
