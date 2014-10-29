@@ -78,6 +78,11 @@ package MAT.Consoles is
                          Field   : in Field_Type;
                          Size    : in MAT.Types.Target_Size);
 
+   --  Format the thread information and print it for the given field.
+   procedure Print_Thread (Console : in out Console_Type;
+                           Field   : in Field_Type;
+                           Thread  : in MAT.Types.Target_Thread_Ref);
+
    --  Format the integer and print it for the given field.
    procedure Print_Field (Console : in out Console_Type;
                           Field   : in Field_Type;
