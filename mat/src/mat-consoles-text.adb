@@ -38,10 +38,17 @@ package body MAT.Consoles.Text is
                           Value   : in String) is
       use type Ada.Text_IO.Count;
 
-      Pos : constant Ada.Text_IO.Count := Ada.Text_IO.Count (Console.Cols (Field));
+      Pos : Ada.Text_IO.Count := Ada.Text_IO.Count (Console.Cols (Field));
    begin
       if Pos > 1 then
-         Ada.Text_IO.Set_Col (Pos + Ada.Text_IO.Count (Console.Sizes (Field)) - Value'Length);
+         Pos := Pos + Ada.Text_IO.Count (Console.Sizes (Field));
+         if Pos > Value'Length then
+            Ada.Text_IO.Set_Col (Pos - Value'Length);
+         else
+            Ada.Text_IO.Set_Col (Ada.Text_IO.Count (Console.Cols (Field)));
+            Ada.Text_IO.Put (Value (Value'Last - Console.Sizes (Field) .. Value'Last));
+            return;
+         end if;
       end if;
       Ada.Text_IO.Put (Value);
    end Print_Field;
