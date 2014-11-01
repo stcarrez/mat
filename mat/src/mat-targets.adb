@@ -30,7 +30,7 @@ package body MAT.Targets is
    --  ------------------------------
    function Process (Target : in Target_Type) return Target_Process_Type_Access is
    begin
-      return Target.Process;
+      return Target.Current;
    end Process;
 
    --  ------------------------------
@@ -57,6 +57,9 @@ package body MAT.Targets is
          Process := new Target_Process_Type;
          Process.Pid := Pid;
          Target.Processes.Insert (Pid, Process);
+      end if;
+      if Target.Current = null then
+         Target.Current := Process;
       end if;
    end Create_Process;
 
