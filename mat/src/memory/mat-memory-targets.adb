@@ -150,6 +150,11 @@ package body MAT.Memory.Targets is
                exit when Freed_Addr > Last;
                Slot := Allocation_Maps.Element (Iter);
                if Freed_Addr + MAT.Types.Target_Addr (Slot.Size) > Addr then
+                  if Stats.Total_Free > Slot.Size then
+                     Stats.Total_Free := Stats.Total_Free - Slot.Size;
+                  else
+                     Stats.Total_Free := 0;
+                  end if;
                   Freed_Slots.Delete (Iter);
                   Iter := Freed_Slots.Floor (Addr);
                else
@@ -171,6 +176,8 @@ package body MAT.Memory.Targets is
             Log.Debug ("Malloc at {0} size {1}", MAT.Types.Hex_Image (Addr),
                        MAT.Types.Target_Size'Image (Slot.Size));
          end if;
+         Stats.Malloc_Count := Stats.Malloc_Count + 1;
+         Stats.Total_Alloc := Stats.Total_Alloc + Slot.Size;
          Remove_Free (Addr, Slot.Size);
          Used_Slots.Insert (Addr, Slot);
       end Probe_Malloc;
@@ -187,9 +194,16 @@ package body MAT.Memory.Targets is
          if Log.Get_Level = Util.Log.DEBUG_LEVEL then
             Log.Debug ("Free {0}", MAT.Types.Hex_Image (Addr));
          end if;
+         Stats.Free_Count := Stats.Free_Count + 1;
          Iter := Used_Slots.Find (Addr);
          if Allocation_Maps.Has_Element (Iter) then
             Item := Allocation_Maps.Element (Iter);
+            if Stats.Total_Alloc >= Item.Size then
+               Stats.Total_Alloc := Stats.Total_Alloc - Item.Size;
+            else
+               Stats.Total_Alloc := 0;
+            end if;
+            Stats.Total_Free := Stats.Total_Free + Item.Size;
             MAT.Frames.Release (Item.Frame);
             Used_Slots.Delete (Iter);
             Item.Frame := Slot.Frame;
@@ -212,6 +226,11 @@ package body MAT.Memory.Targets is
                                 Element : in out Allocation) is
             pragma Unreferenced (Key);
          begin
+            if Stats.Total_Alloc >= Element.Size then
+               Stats.Total_Alloc := Stats.Total_Alloc - Element.Size;
+            else
+               Stats.Total_Alloc := 0;
+            end if;
             Element.Size := Slot.Size;
             MAT.Frames.Release (Element.Frame);
             Element.Frame := Slot.Frame;
@@ -223,7 +242,9 @@ package body MAT.Memory.Targets is
             Log.Debug ("Realloc {0} to {1} size {2}", MAT.Types.Hex_Image (Old_Addr),
                        MAT.Types.Hex_Image (Addr), MAT.Types.Target_Size'Image (Slot.Size));
          end if;
+         Stats.Realloc_Count := Stats.Realloc_Count + 1;
          if Addr /= 0 then
+            Stats.Total_Alloc := Stats.Total_Alloc + Slot.Size;
             Pos := Used_Slots.Find (Old_Addr);
             if Allocation_Maps.Has_Element (Pos) then
                if Addr = Old_Addr then
