@@ -68,10 +68,8 @@ private
    subtype Process_Cursor is Process_Maps.Cursor;
 
    type Target_Type is tagged limited record
-      Pid     : MAT.Types.Target_Process_Ref;
-      Memory  : MAT.Memory.Targets.Target_Memory;
-      Symbols : MAT.Symbols.Targets.Target_Symbols;
-      Console : MAT.Consoles.Console_Access;
+      Processes : Process_Map;
+      Console   : MAT.Consoles.Console_Access;
    end record;
 
 end MAT.Targets;
