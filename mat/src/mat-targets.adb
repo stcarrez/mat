@@ -26,6 +26,14 @@ package body MAT.Targets is
    end Console;
 
    --  ------------------------------
+   --  Get the current process instance.
+   --  ------------------------------
+   function Process (Target : in Target_Type) return Target_Process_Type_Access is
+   begin
+      return Target.Process;
+   end Process;
+
+   --  ------------------------------
    --  Initialize the target object to manage the memory slots, the stack frames
    --  and setup the reader to analyze the memory and other events.
    --  ------------------------------
