@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.Strings.Unbounded;
+with Ada.Containers.Ordered_Maps;
 
 with MAT.Types;
 with MAT.Memory.Targets;
@@ -45,11 +46,13 @@ package MAT.Targets is
    procedure Initialize (Target : in out Target_Type;
                          Reader : in out MAT.Readers.Manager_Base'Class);
 
-   --
---  private
---
---     type Target_Type is tagged limited record
---        Memory : MAT.Memory.Targets.Target_Memory;
---     end record;
+private
+
+   --  Define a map of <tt>Target_Process_Type_Access</tt> keyed by the process Id.
+   --  This map allows to retrieve the information about a process.
+   use type MAT.Types.Target_Process_Ref;
+   package Process_Maps is
+     new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Process_Ref,
+                                      Element_Type => Target_Process_Type_Access);
 
 end MAT.Targets;
