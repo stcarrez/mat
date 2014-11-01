@@ -28,4 +28,16 @@ package body MAT.Targets is
                                      Reader => Reader);
    end Initialize;
 
+   --  ------------------------------
+   --  Create a process instance to hold and keep track of memory and other information about
+   --  the given process ID.
+   --  ------------------------------
+   procedure Create_Process (Target  : in out Target_Type;
+                             Pid     : in MAT.Types.Target_Process_Ref;
+                             Process : out Target_Process_Type_Access) is
+   begin
+      Process := new Target_Process_Type;
+      Process.Pid := Pid;
+   end Create_Process;
+
 end MAT.Targets;
