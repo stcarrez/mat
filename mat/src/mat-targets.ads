@@ -24,9 +24,15 @@ with MAT.Readers;
 with MAT.Consoles;
 package MAT.Targets is
 
---     type Target_Type is tagged limited private;
+   type Target_Process_Type is tagged limited record
+      Pid     : MAT.Types.Target_Process_Ref;
+      Memory  : MAT.Memory.Targets.Target_Memory;
+      Console : MAT.Consoles.Console_Access;
+   end record;
+   type Target_Process_Type_Access is access all Target_Process_Type'Class;
 
    type Target_Type is tagged limited record
+      Pid     : MAT.Types.Target_Process_Ref;
       Memory  : MAT.Memory.Targets.Target_Memory;
       Symbols : MAT.Symbols.Targets.Target_Symbols;
       Console : MAT.Consoles.Console_Access;
@@ -38,7 +44,8 @@ package MAT.Targets is
    --  and setup the reader to analyze the memory and other events.
    procedure Initialize (Target : in out Target_Type;
                          Reader : in out MAT.Readers.Manager_Base'Class);
---
+
+   --
 --  private
 --
 --     type Target_Type is tagged limited record
