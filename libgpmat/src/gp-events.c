@@ -44,6 +44,7 @@ gp_send_attributes (const struct gp_event_def *type)
       gp_write ("A-LEN", 4, &len, sizeof (len));
       gp_write ("A-NAME", 4, attr->name, len);
       gp_write ("A-TYPE", 4, &val, sizeof (val));
+      write (STDERR_FILENO, "\n", 1);
     }
 }
 
@@ -209,11 +210,15 @@ const struct gp_event_def gp_event_begin_frame_def = {
   gp_frame_attrs
 };
 
+const struct gp_attr_def gp_begin_attrs[] = {
+  { "pid",   GP_TYPE_UINT16, sizeof (pid_t) }
+};
+
 const struct gp_event_def gp_event_begin_def = {
   "begin",
   GP_EVENT_BEGIN,
-  0,
-  NULL
+  GP_TABLE_SIZE(gp_begin_attrs),
+  gp_begin_attrs
 };
 
 static const struct gp_event_def* events[] = {
@@ -257,7 +262,7 @@ gp_event_begin (struct gp_probe *gp)
     {
       gp_send_attributes (events[i]);
     }
-  gp_event_send (gp, 0, &gp_event_begin_def);
+  gp_event_send (gp, 2, &gp_event_begin_def, getpid());
 }
 
 const struct gp_event_def gp_event_end_def = {
