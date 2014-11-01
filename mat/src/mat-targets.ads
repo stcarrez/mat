@@ -46,6 +46,12 @@ package MAT.Targets is
    procedure Initialize (Target : in out Target_Type;
                          Reader : in out MAT.Readers.Manager_Base'Class);
 
+   --  Create a process instance to hold and keep track of memory and other information about
+   --  the given process ID.
+   procedure Create_Process (Target  : in out Target_Type;
+                             Pid     : in MAT.Types.Target_Process_Ref;
+                             Process : out Target_Process_Type_Access);
+
 private
 
    --  Define a map of <tt>Target_Process_Type_Access</tt> keyed by the process Id.
