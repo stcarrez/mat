@@ -114,6 +114,15 @@ package body MAT.Memory.Targets is
    end Frame_Information;
 
    --  ------------------------------
+   --  Get the global memory and allocation statistics.
+   --  ------------------------------
+   procedure Stat_Information (Memory : in out Target_Memory;
+                               Result : out Memory_Stat) is
+   begin
+      Memory.Memory.Stat_Information (Result);
+   end Stat_Information;
+
+   --  ------------------------------
    --  Find from the <tt>Memory</tt> map the memory slots whose address intersects
    --  the region [From .. To] and which is selected by the given filter expression.
    --  Add the memory slot in the <tt>Into</tt> list if it does not already contains
