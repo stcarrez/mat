@@ -24,12 +24,12 @@ package MAT.Memory.Targets is
 
    --  Define some global statistics about the memory slots.
    type Memory_Stat is record
-      Thread_Count  : Natural;
-      Total_Alloc   : MAT.Types.Target_Size;
-      Total_Free    : MAT.Types.Target_Size;
-      Malloc_Count  : Natural;
-      Free_Count    : Natural;
-      Realloc_Count : Natural;
+      Thread_Count  : Natural := 0;
+      Total_Alloc   : MAT.Types.Target_Size := 0;
+      Total_Free    : MAT.Types.Target_Size := 0;
+      Malloc_Count  : Natural := 0;
+      Free_Count    : Natural := 0;
+      Realloc_Count : Natural := 0;
    end record;
 
    type Target_Memory is tagged limited private;
