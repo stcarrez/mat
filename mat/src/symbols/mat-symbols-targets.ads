@@ -45,4 +45,6 @@ package MAT.Symbols.Targets is
    package Target_Symbols_Refs is
      new Util.Refs.References (Target_Symbols, Target_Symbols_Access);
 
+   subtype Target_Symbols_Ref is Target_Symbols_Refs.Ref;
+
 end MAT.Symbols.Targets;
