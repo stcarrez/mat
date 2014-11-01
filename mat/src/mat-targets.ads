@@ -39,6 +39,9 @@ package MAT.Targets is
    --  Get the console instance.
    function Console (Target : in Target_Type) return MAT.Consoles.Console_Access;
 
+   --  Get the current process instance.
+   function Process (Target : in Target_Type) return Target_Process_Type_Access;
+
    --  Initialize the target object to manage the memory slots, the stack frames
    --  and setup the reader to analyze the memory and other events.
    procedure Initialize (Target : in out Target_Type;
@@ -68,6 +71,7 @@ private
    subtype Process_Cursor is Process_Maps.Cursor;
 
    type Target_Type is tagged limited record
+      Current   : Target_Process_Type_Access;
       Processes : Process_Map;
       Console   : MAT.Consoles.Console_Access;
    end record;
