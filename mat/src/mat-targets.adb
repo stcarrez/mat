@@ -18,6 +18,14 @@
 package body MAT.Targets is
 
    --  ------------------------------
+   --  Get the console instance.
+   --  ------------------------------
+   function Console (Target : in Target_Type) return MAT.Consoles.Console_Access is
+   begin
+      return Target.Console;
+   end Console;
+
+   --  ------------------------------
    --  Initialize the target object to manage the memory slots, the stack frames
    --  and setup the reader to analyze the memory and other events.
    --  ------------------------------
