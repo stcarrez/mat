@@ -138,6 +138,9 @@ private
                       Filter : in MAT.Expressions.Expression_Type;
                       Into   : in out MAT.Memory.Allocation_Map);
 
+      --  Get the global memory and allocation statistics.
+      procedure Stat_Information (Result : out Memory_Stat);
+
    private
       Used_Slots    : Allocation_Map;
       Freed_Slots   : Allocation_Map;
