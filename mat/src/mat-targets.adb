@@ -44,8 +44,27 @@ package body MAT.Targets is
                              Pid     : in MAT.Types.Target_Process_Ref;
                              Process : out Target_Process_Type_Access) is
    begin
-      Process := new Target_Process_Type;
-      Process.Pid := Pid;
+      Process := Target.Find_Process (Pid);
+      if Process = null then
+         Process := new Target_Process_Type;
+         Process.Pid := Pid;
+         Target.Processes.Insert (Pid, Process);
+      end if;
    end Create_Process;
+
+   --  ------------------------------
+   --  Find the process instance from the process ID.
+   --  ------------------------------
+   function Find_Process (Target : in Target_Type;
+                          Pid    : in MAT.Types.Target_Process_Ref)
+                          return Target_Process_Type_Access is
+      Pos : constant Process_Cursor := Target.Processes.Find (Pid);
+   begin
+      if Process_Maps.Has_Element (Pos) then
+         return Process_Maps.Element (Pos);
+      else
+         return null;
+      end if;
+   end Find_Process;
 
 end MAT.Targets;
