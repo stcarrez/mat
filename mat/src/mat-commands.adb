@@ -117,12 +117,13 @@ package body MAT.Commands is
       end Print;
 
       Filter : MAT.Expressions.Expression_Type;
+      Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
    begin
       Filter := MAT.Expressions.Parse (Args);
-      Target.Memory.Find (From   => MAT.Types.Target_Addr'First,
-                          To     => MAT.Types.Target_Addr'Last,
-                          Filter => Filter,
-                          Into   => Slots);
+      Process.Memory.Find (From   => MAT.Types.Target_Addr'First,
+                           To     => MAT.Types.Target_Addr'Last,
+                           Filter => Filter,
+                           Into   => Slots);
       Iter := Slots.First;
       while MAT.Memory.Allocation_Maps.Has_Element (Iter) loop
          MAT.Memory.Allocation_Maps.Query_Element (Iter, Print'Access);
@@ -147,6 +148,7 @@ package body MAT.Commands is
       Sizes   : MAT.Memory.Tools.Size_Info_Map;
       Iter    : MAT.Memory.Tools.Size_Info_Cursor;
       Console : constant MAT.Consoles.Console_Access := Target.Console;
+      Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
    begin
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_SIZE, "Slot size", 25);
@@ -154,7 +156,7 @@ package body MAT.Commands is
       Console.Print_Title (MAT.Consoles.F_TOTAL_SIZE, "Total size", 15);
       Console.End_Title;
 
-      MAT.Memory.Targets.Size_Information (Memory => Target.Memory,
+      MAT.Memory.Targets.Size_Information (Memory => Process.Memory,
                                            Sizes  => Sizes);
       Iter := Sizes.First;
       while MAT.Memory.Tools.Size_Info_Maps.Has_Element (Iter) loop
@@ -187,6 +189,7 @@ package body MAT.Commands is
       Threads : MAT.Memory.Memory_Info_Map;
       Iter    : MAT.Memory.Memory_Info_Cursor;
       Console : constant MAT.Consoles.Console_Access := Target.Console;
+      Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
    begin
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_THREAD, "Thread", 10);
@@ -198,7 +201,7 @@ package body MAT.Commands is
       Console.Print_Title (MAT.Consoles.F_MAX_ADDR, "High address", 15);
       Console.End_Title;
 
-      MAT.Memory.Targets.Thread_Information (Memory  => Target.Memory,
+      MAT.Memory.Targets.Thread_Information (Memory  => Process.Memory,
                                              Threads => Threads);
       Iter := Threads.First;
       while MAT.Memory.Memory_Info_Maps.Has_Element (Iter) loop
@@ -232,6 +235,7 @@ package body MAT.Commands is
       Iter    : MAT.Memory.Frame_Info_Cursor;
       Level   : Positive := 3;
       Console : constant MAT.Consoles.Console_Access := Target.Console;
+      Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
    begin
       if Args'Length > 0 then
          Level := Positive'Value (Args);
@@ -248,7 +252,7 @@ package body MAT.Commands is
       Console.Print_Title (MAT.Consoles.F_MAX_ADDR, "High address", 15);
       Console.End_Title;
 
-      MAT.Memory.Targets.Frame_Information (Memory => Target.Memory,
+      MAT.Memory.Targets.Frame_Information (Memory => Process.Memory,
                                             Level  => Level,
                                             Frames => Frames);
       Iter := Frames.First;
