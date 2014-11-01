@@ -20,13 +20,16 @@ with Ada.Strings.Unbounded;
 with Bfd.Symbols;
 with Bfd.Files;
 
+with Util.Refs;
+
 with MAT.Types;
 package MAT.Symbols.Targets is
 
-   type Target_Symbols is limited record
+   type Target_Symbols is new Util.Refs.Ref_Entity with record
       File    : Bfd.Files.File_Type;
       Symbols : Bfd.Symbols.Symbol_Table;
    end record;
+   type Target_Symbols_Access is access all Target_Symbols;
 
    --  Open the binary and load the symbols from that file.
    procedure Open (Symbols : in out Target_Symbols;
@@ -38,5 +41,8 @@ package MAT.Symbols.Targets is
                                 Name    : out Ada.Strings.Unbounded.Unbounded_String;
                                 Func    : out Ada.Strings.Unbounded.Unbounded_String;
                                 Line    : out Natural);
+
+   package Target_Symbols_Refs is
+     new Util.Refs.References (Target_Symbols, Target_Symbols_Access);
 
 end MAT.Symbols.Targets;
