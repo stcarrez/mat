@@ -310,6 +310,14 @@ package body MAT.Memory.Targets is
          MAT.Memory.Tools.Find (Used_Slots, From, To, Filter, Into);
       end Find;
 
+      --  ------------------------------
+      --  Get the global memory and allocation statistics.
+      --  ------------------------------
+      procedure Stat_Information (Result : out Memory_Stat) is
+      begin
+         Result := Stats;
+      end Stat_Information;
+
    end Memory_Allocator;
 
 end MAT.Memory.Targets;
