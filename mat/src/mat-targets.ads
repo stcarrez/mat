@@ -32,14 +32,12 @@ package MAT.Targets is
    end record;
    type Target_Process_Type_Access is access all Target_Process_Type'Class;
 
-   type Target_Type is tagged limited record
-      Pid     : MAT.Types.Target_Process_Ref;
-      Memory  : MAT.Memory.Targets.Target_Memory;
-      Symbols : MAT.Symbols.Targets.Target_Symbols;
-      Console : MAT.Consoles.Console_Access;
-   end record;
+   type Target_Type is tagged limited private;
 
    type Target_Type_Access is access all Target_Type'Class;
+
+   --  Get the console instance.
+   function Console (Target : in Target_Type) return MAT.Consoles.Console_Access;
 
    --  Initialize the target object to manage the memory slots, the stack frames
    --  and setup the reader to analyze the memory and other events.
@@ -68,5 +66,12 @@ private
 
    subtype Process_Map is Process_Maps.Map;
    subtype Process_Cursor is Process_Maps.Cursor;
+
+   type Target_Type is tagged limited record
+      Pid     : MAT.Types.Target_Process_Ref;
+      Memory  : MAT.Memory.Targets.Target_Memory;
+      Symbols : MAT.Symbols.Targets.Target_Symbols;
+      Console : MAT.Consoles.Console_Access;
+   end record;
 
 end MAT.Targets;
