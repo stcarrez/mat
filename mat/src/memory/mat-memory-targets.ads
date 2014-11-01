@@ -22,6 +22,16 @@ with MAT.Memory.Tools;
 with MAT.Expressions;
 package MAT.Memory.Targets is
 
+   --  Define some global statistics about the memory slots.
+   type Memory_Stat is record
+      Thread_Count  : Natural;
+      Total_Alloc   : MAT.Types.Target_Size;
+      Total_Free    : MAT.Types.Target_Size;
+      Malloc_Count  : Natural;
+      Free_Count    : Natural;
+      Realloc_Count : Natural;
+   end record;
+
    type Target_Memory is tagged limited private;
    type Client_Memory_Ref is access all Target_Memory;
 
@@ -131,6 +141,7 @@ private
    private
       Used_Slots    : Allocation_Map;
       Freed_Slots   : Allocation_Map;
+      Stats         : Memory_Stat;
       Frames        : MAT.Frames.Frame_Type := MAT.Frames.Create_Root;
    end Memory_Allocator;
 
