@@ -52,6 +52,11 @@ package MAT.Targets is
                              Pid     : in MAT.Types.Target_Process_Ref;
                              Process : out Target_Process_Type_Access);
 
+   --  Find the process instance from the process ID.
+   function Find_Process (Target : in Target_Type;
+                          Pid    : in MAT.Types.Target_Process_Ref)
+                          return Target_Process_Type_Access;
+
 private
 
    --  Define a map of <tt>Target_Process_Type_Access</tt> keyed by the process Id.
