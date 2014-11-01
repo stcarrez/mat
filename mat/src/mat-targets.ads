@@ -61,4 +61,7 @@ private
      new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Process_Ref,
                                       Element_Type => Target_Process_Type_Access);
 
+   subtype Process_Map is Process_Maps.Map;
+   subtype Process_Cursor is Process_Maps.Cursor;
+
 end MAT.Targets;
