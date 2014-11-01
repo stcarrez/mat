@@ -131,6 +131,6 @@ struct gp_socket_server* gp_socket_open (const char* param)
   gp_buffered_server_initialize (&server.root);
   server.root.to_flush = gp_socket_flush;
   server.root.root.to_close = gp_socket_close;
-  
+  unsetenv ("GP_SERVER");
   return &server;
 }
