@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with System;
+with Ada.Strings.Unbounded;
 with MAT.Types;
 with MAT.Events;
 package MAT.Readers.Marshaller is
@@ -37,6 +38,10 @@ package MAT.Readers.Marshaller is
    --  Extract a string from the buffer.  The string starts with a byte that
    --  indicates the string length.
    function Get_String (Buffer : in Buffer_Ptr) return String;
+
+   --  Extract a string from the buffer.  The string starts with a byte that
+   --  indicates the string length.
+   function Get_String (Msg : in Buffer_Ptr) return Ada.Strings.Unbounded.Unbounded_String;
 
    --  procedure Put_Uint8 (Buffer : in Buffer_Ptr; Data : in Uint8);
 
