@@ -223,7 +223,7 @@ static const struct gp_event_def gp_event_begin_frame_def = {
 
 static const struct gp_attr_def gp_begin_attrs[] = {
   { "pid",   GP_TYPE_UINT16, sizeof (pid_t) },
-  { "exe",   GP_TYPE_STRING, sizeof (pid_t) },
+  { "exe",   GP_TYPE_STRING, sizeof (gp_uint16) },
 };
 
 static const struct gp_event_def gp_event_begin_def = {
