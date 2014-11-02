@@ -18,7 +18,7 @@
 with Util.Streams.Buffered;
 with Util.Streams.Files;
 with MAT.Readers.Streams;
-package MAT.Readers.Files is
+package MAT.Readers.Streams.Files is
 
    type File_Reader_Type is new MAT.Readers.Streams.Stream_Reader_Type with private;
 
@@ -32,4 +32,4 @@ private
       File   : aliased Util.Streams.Files.File_Stream;
    end record;
 
-end MAT.Readers.Files;
+end MAT.Readers.Streams.Files;
