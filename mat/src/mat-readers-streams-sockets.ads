@@ -66,6 +66,7 @@ private
    type Socket_Reader_Type is new MAT.Readers.Streams.Stream_Reader_Type with record
       Socket : aliased Util.Streams.Sockets.Socket_Stream;
       Server : Socket_Reader_Task;
+      Client : GNAT.Sockets.Socket_Type;
       Stop   : Boolean := False;
    end record;
 
