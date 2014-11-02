@@ -27,6 +27,14 @@ package body MAT.Readers.Streams.Sockets is
    BUFFER_SIZE  : constant Natural := 100 * 1024;
    MAX_MSG_SIZE : constant Ada.Streams.Stream_Element_Offset := 2048;
 
+   --  ------------------------------
+   --  Stop the listener socket.
+   --  ------------------------------
+   procedure Stop (Listener : in out Socket_Listener) is
+   begin
+      GNAT.Sockets.Abort_Selector (Listener.Accept_Selector);
+   end Stop;
+
    task body Socket_Listener_Task is
       use type GNAT.Sockets.Socket_Type;
 
