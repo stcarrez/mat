@@ -64,14 +64,29 @@ package body MAT.Targets.Readers is
       end case;
    end Dispatch;
 
+   --  ------------------------------
    --  Register the reader to extract and analyze process events.
+   --  ------------------------------
    procedure Register (Into   : in out MAT.Readers.Manager_Base'Class;
                        Reader : in Process_Reader_Access) is
    begin
+      Reader.Reader := Into'Unchecked_Access;
       Into.Register_Reader (Reader.all'Access, "begin", MSG_BEGIN,
                             Process_Attributes'Access);
       Into.Register_Reader (Reader.all'Access, "end", MSG_END,
                             Process_Attributes'Access);
    end Register;
+
+   --  ------------------------------
+   --  Initialize the target object to prepare for reading process events.
+   --  ------------------------------
+   procedure Initialize (Target : in out Target_Type;
+                         Reader : in out MAT.Readers.Manager_Base'Class) is
+      Process_Reader : constant Process_Reader_Access
+        := new Process_Servant;
+   begin
+      Process_Reader.Target := Target'Unrestricted_Access;
+      Register (Reader, Process_Reader);
+   end Initialize;
 
 end MAT.Targets.Readers;
