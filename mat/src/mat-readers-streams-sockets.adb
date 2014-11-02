@@ -37,6 +37,16 @@ package body MAT.Readers.Streams.Sockets is
    end Initialize;
 
    --  ------------------------------
+   --  Destroy the socket listener.
+   --  ------------------------------
+   overriding
+   procedure Finalize (Listener : in out Socket_Listener_Type) is
+      use type GNAT.Sockets.Selector_Type;
+   begin
+      GNAT.Sockets.Close_Selector (Listener.Accept_Selector);
+   end Finalize;
+
+   --  ------------------------------
    --  Open the socket to accept connections and start the listener task.
    --  ------------------------------
    procedure Start (Listener : in out Socket_Listener_Type;
