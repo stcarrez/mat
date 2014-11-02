@@ -69,7 +69,7 @@ package body MAT.Readers.Streams.Sockets is
                             Address  : in GNAT.Sockets.Sock_Addr_Type) is
       Reader : Socket_Reader_Type_Access := new Socket_Reader_Type;
    begin
-      null;
+      Reader.Server.Start (Reader, Client);
    end Create_Target;
 
    task body Socket_Listener_Task is
@@ -137,18 +137,6 @@ package body MAT.Readers.Streams.Sockets is
          GNAT.Sockets.Close_Socket (Socket);
 
    end Socket_Reader_Task;
-
-   --  Open the socket to accept connections.
-   procedure Open (Reader  : in out Socket_Reader_Type;
-                   Address : in GNAT.Sockets.Sock_Addr_Type) is
-   begin
-      Log.Info ("Reading server stream");
-
-      Reader.Stream.Initialize (Size   => BUFFER_SIZE,
-                                Input  => Reader.Socket'Unchecked_Access,
-                                Output => null);
-      Reader.Server.Start (Reader'Unchecked_Access, Address);
-   end Open;
 
    procedure Close (Reader : in out Socket_Reader_Type) is
    begin
