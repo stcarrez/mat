@@ -25,6 +25,9 @@ package MAT.Readers.Streams.Sockets is
 
    type Socket_Listener is new Ada.Finalization.Limited_Controlled with private;
 
+   --  Stop the listener socket.
+   procedure Stop (Listener : in out Socket_Listener);
+
    type Socket_Reader_Type is new MAT.Readers.Streams.Stream_Reader_Type with private;
    type Socket_Reader_Type_Access is access all Socket_Reader_Type'Class;
 
