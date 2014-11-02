@@ -29,6 +29,10 @@ package MAT.Readers.Streams.Sockets is
    overriding
    procedure Initialize (Listener : in out Socket_Listener_Type);
 
+   --  Destroy the socket listener.
+   overriding
+   procedure Finalize (Listener : in out Socket_Listener_Type);
+
    --  Open the socket to accept connections and start the listener task.
    procedure Start (Listener : in out Socket_Listener_Type;
                     Address  : in GNAT.Sockets.Sock_Addr_Type);
