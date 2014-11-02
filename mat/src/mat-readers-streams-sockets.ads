@@ -51,8 +51,11 @@ package MAT.Readers.Streams.Sockets is
 
 private
 
+   type Socket_Listener_Type_Access is access all Socket_Listener_Type;
+
    task type Socket_Listener_Task is
-      entry Start (Address : in GNAT.Sockets.Sock_Addr_Type);
+      entry Start (Listener : in Socket_Listener_Type_Access;
+                   Address  : in GNAT.Sockets.Sock_Addr_Type);
    end Socket_Listener_Task;
 
    task type Socket_Reader_Task is
@@ -67,7 +70,7 @@ private
    end record;
 
    type Socket_Listener_Type is new Ada.Finalization.Limited_Controlled with record
-      Accept_Selector : GNAT.Sockets.Selector_Type;
+      Accept_Selector : aliased GNAT.Sockets.Selector_Type;
       Listener        : Socket_Listener_Task;
    end record;
 
