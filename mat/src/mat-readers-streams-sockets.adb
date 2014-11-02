@@ -63,11 +63,13 @@ package body MAT.Readers.Streams.Sockets is
       GNAT.Sockets.Abort_Selector (Listener.Accept_Selector);
    end Stop;
 
+   --  ------------------------------
    --  Create a target instance for the new client.
+   --  ------------------------------
    procedure Create_Target (Listener : in out Socket_Listener_Type;
                             Client   : in GNAT.Sockets.Socket_Type;
                             Address  : in GNAT.Sockets.Sock_Addr_Type) is
-      Reader : Socket_Reader_Type_Access := new Socket_Reader_Type;
+      Reader : constant Socket_Reader_Type_Access := new Socket_Reader_Type;
    begin
       Reader.Server.Start (Reader, Client);
    end Create_Target;
@@ -80,7 +82,6 @@ package body MAT.Readers.Streams.Sockets is
       Server   : GNAT.Sockets.Socket_Type;
       Instance : Socket_Listener_Type_Access;
       Client   : GNAT.Sockets.Socket_Type;
-      Status   : GNAT.Sockets.Selector_Status;
       Selector_Status : GNAT.Sockets.Selector_Status;
    begin
       select
@@ -105,6 +106,8 @@ package body MAT.Readers.Streams.Sockets is
                                      Status   => Selector_Status);
          exit when Selector_Status = GNAT.Sockets.Aborted;
          if Selector_Status = GNAT.Sockets.Completed then
+            Instance.Create_Target (Client  => Client,
+                                    Address => Peer);
             GNAT.Sockets.Close_Socket (Client);
          end if;
       end loop;
@@ -116,7 +119,6 @@ package body MAT.Readers.Streams.Sockets is
 
       Instance : Socket_Reader_Type_Access;
       Socket   : GNAT.Sockets.Socket_Type;
-      Status   : GNAT.Sockets.Selector_Status;
    begin
       select
          accept Start (Reader  : in Socket_Reader_Type_Access;
