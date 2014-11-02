@@ -38,6 +38,11 @@ package MAT.Readers.Streams.Sockets is
    --  Stop the listener socket.
    procedure Stop (Listener : in out Socket_Listener_Type);
 
+   --  Create a target instance for the new client.
+   procedure Create_Target (Listener : in out Socket_Listener_Type;
+                            Client   : in GNAT.Sockets.Socket_Type;
+                            Address  : in GNAT.Sockets.Sock_Addr_Type);
+
    type Socket_Reader_Type is new MAT.Readers.Streams.Stream_Reader_Type with private;
    type Socket_Reader_Type_Access is access all Socket_Reader_Type'Class;
 
@@ -57,8 +62,8 @@ private
    end Socket_Listener_Task;
 
    task type Socket_Reader_Task is
-      entry Start (S : in Socket_Reader_Type_Access;
-                   Address : in GNAT.Sockets.Sock_Addr_Type);
+      entry Start (Reader  : in Socket_Reader_Type_Access;
+                   Client  : in GNAT.Sockets.Socket_Type);
    end Socket_Reader_Task;
 
    type Socket_Reader_Type is new MAT.Readers.Streams.Stream_Reader_Type with record
