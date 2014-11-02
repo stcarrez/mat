@@ -28,7 +28,7 @@ with Ada.Strings.Unbounded;
 with Bfd;
 
 with MAT.Types;
-with MAT.Readers.Files;
+with MAT.Readers.Streams.Files;
 with MAT.Memory.Tools;
 with MAT.Memory.Targets;
 with MAT.Symbols.Targets;
@@ -266,7 +266,7 @@ package body MAT.Commands is
             File_Name : Ada.Strings.Unbounded.Unbounded_String;
             Line : Natural;
          begin
-            MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Target.Symbols,
+            MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Process.Symbols.Value.all,
                                                    Addr    => Func,
                                                    Name    => Name,
                                                    Func    => File_Name,
@@ -293,8 +293,9 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Symbol_Command (Target : in out MAT.Targets.Target_Type'Class;
                              Args   : in String) is
+      Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
    begin
-      MAT.Symbols.Targets.Open (Target.Symbols, Args);
+      MAT.Symbols.Targets.Open (Target.Symbols.all, Args);
 
    exception
       when Bfd.OPEN_ERROR =>
@@ -315,7 +316,7 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Open_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String) is
-      Reader : MAT.Readers.Files.File_Reader_Type;
+      Reader : MAT.Readers.Streams.Files.File_Reader_Type;
    begin
       Target.Initialize (Reader);
       Reader.Open (Args);
