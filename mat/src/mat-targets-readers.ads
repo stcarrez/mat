@@ -26,6 +26,10 @@ package MAT.Targets.Readers is
    end record;
    type Process_Reader_Access is access all Process_Servant'Class;
 
+   --  Create a new process after the begin event is received from the event stream.
+   procedure Create_Process (For_Servant : in out Process_Servant;
+                             Pid         : in MAT.Types.Target_Process_Ref);
+
    overriding
    procedure Dispatch (For_Servant : in out Process_Servant;
                        Id          : in MAT.Events.Internal_Reference;
@@ -40,5 +44,13 @@ package MAT.Targets.Readers is
    --  Initialize the target object to prepare for reading process events.
    procedure Initialize (Target : in out Target_Type;
                          Reader : in out MAT.Readers.Manager_Base'Class);
+
+private
+
+   procedure Probe_Begin (For_Servant : in out Process_Servant;
+                          Id          : in MAT.Events.Internal_Reference;
+                          Defs        : in MAT.Events.Attribute_Table;
+                          Frame       : in MAT.Events.Frame_Info;
+                          Msg         : in out MAT.Readers.Message);
 
 end MAT.Targets.Readers;
