@@ -74,8 +74,9 @@ package body MAT.Commands is
       procedure Print (Addr : in MAT.Types.Target_Addr;
                        Slot : in MAT.Memory.Allocation);
 
-      Slots : MAT.Memory.Allocation_Map;
-      Iter  : MAT.Memory.Allocation_Cursor;
+      Slots   : MAT.Memory.Allocation_Map;
+      Iter    : MAT.Memory.Allocation_Cursor;
+      Symbols : MAT.Symbols.Targets.Target_Symbols_Ref := Target.Process.Symbols;
 
       procedure Print (Addr : in MAT.Types.Target_Addr;
                        Slot : in MAT.Memory.Allocation) is
@@ -99,7 +100,7 @@ package body MAT.Commands is
             Ada.Text_IO.Put (Natural'Image (I));
             Ada.Text_IO.Put ("   ");
             Ada.Text_IO.Put (MAT.Types.Hex_Image (Backtrace (I)));
-            MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Target.Symbols,
+            MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Symbols.Value.all,
                                                    Addr    => Backtrace (I),
                                                    Name    => Name,
                                                    Func    => Func,
@@ -295,7 +296,7 @@ package body MAT.Commands is
                              Args   : in String) is
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
    begin
-      MAT.Symbols.Targets.Open (Target.Symbols.all, Args);
+      MAT.Symbols.Targets.Open (Process.Symbols.Value.all, Args);
 
    exception
       when Bfd.OPEN_ERROR =>
