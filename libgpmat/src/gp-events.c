@@ -18,6 +18,8 @@
 #include <stdarg.h>
 #include <string.h>
 #include <unistd.h>
+#include <limits.h>
+#include <stdio.h>
 #include "gp-probe.h"
 #include "gp-events.h"
 
@@ -99,29 +101,37 @@ gp_event_send (struct gp_probe *gp, int size,
           gp_uint32 u32;
           gp_uint64 u64;
       } u;
+      const char* data;
       
-      switch (attr->size)
+      switch (attr->type)
         {
-        case 1:
+        case GP_TYPE_UINT8:
           u.u8 = va_arg (argp, gp_uint8_varg);
           gp_write (attr->name, 4, &u.u8, sizeof (gp_uint8));
           break;
 
-        case 2:
+        case GP_TYPE_UINT16:
           u.u16 = va_arg (argp, gp_uint16_varg);
           gp_write (attr->name, 4, &u.u16, sizeof (gp_uint16));
           break;
           
-        case 4:
+        case GP_TYPE_UINT32:
           u.u32 = va_arg (argp, gp_uint32);
           gp_write (attr->name, 4, &u.u32, sizeof (gp_uint32));
           break;
 
-        case 8:
+        case GP_TYPE_UINT64:
           u.u64 = va_arg (argp, gp_uint64);
           gp_write (attr->name, 4, &u.u64, sizeof (gp_uint64));
           break;
 
+        case GP_TYPE_STRING:
+          u.u16 = va_arg (argp, gp_uint16_varg);
+          gp_write (attr->name, 4, &u.u16, sizeof (gp_uint16));
+          data = va_arg (argp, const char*);
+          gp_write (attr->name, 4, data, (size_t) u.u16);
+          break;
+          
         default:
           break;
         }
@@ -146,8 +156,6 @@ void
 gp_event_malloc (struct gp_probe *gp, void *p, size_t size)
 {
    gp_event_send (gp, 8, &gp_event_malloc_def, p, size);
-   // gp_remote_send_vmaddr (p);
-   // gp_remote_send_size (size);
 }
 
 const struct gp_attr_def gp_free_attrs[] = {
@@ -157,7 +165,7 @@ const struct gp_attr_def gp_free_attrs[] = {
 const struct gp_event_def gp_event_free_def = {
   "free",
   GP_EVENT_FREE,
-  1,
+  GP_TABLE_SIZE (gp_free_attrs),
   gp_free_attrs
 };
 
@@ -211,7 +219,8 @@ const struct gp_event_def gp_event_begin_frame_def = {
 };
 
 const struct gp_attr_def gp_begin_attrs[] = {
-  { "pid",   GP_TYPE_UINT16, sizeof (pid_t) }
+  { "pid",   GP_TYPE_UINT16, sizeof (pid_t) },
+  { "exe",   GP_TYPE_STRING, sizeof (pid_t) },
 };
 
 const struct gp_event_def gp_event_begin_def = {
@@ -237,6 +246,9 @@ gp_event_begin (struct gp_probe *gp)
   gp_uint16 version = GP_VERSION;
   gp_uint16 count   = sizeof (events) / sizeof (const struct gp_event_def*);
   gp_uint16 len;
+  char path[PATH_MAX];
+  pid_t pid;
+  ssize_t size;
 
   i = 1;
   if (((unsigned char*) &i)[0] == 1)
@@ -262,7 +274,21 @@ gp_event_begin (struct gp_probe *gp)
     {
       gp_send_attributes (events[i]);
     }
-  gp_event_send (gp, 2, &gp_event_begin_def, getpid());
+
+  pid = getpid ();
+  snprintf (path, sizeof (path), "/proc/%d/exe", pid);
+  size = readlink (path, path, sizeof (path));
+  if (size < 0)
+    {
+      path[0] = 0;
+      size = 0;
+    }
+  else
+    {
+      path[size] = 0;
+    }
+  
+  gp_event_send (gp, size + sizeof (gp_uint16), &gp_event_begin_def, pid, size, path);
 }
 
 const struct gp_event_def gp_event_end_def = {
