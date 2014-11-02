@@ -17,21 +17,19 @@
 -----------------------------------------------------------------------
 with Util.Streams.Buffered;
 with Util.Streams.Files;
+with MAT.Readers.Streams;
 package MAT.Readers.Files is
 
-   type File_Reader_Type is new Manager_Base with private;
+   type File_Reader_Type is new MAT.Readers.Streams.Stream_Reader_Type with private;
 
    --  Open the file.
    procedure Open (Reader : in out File_Reader_Type;
                    Path   : in String);
 
-   procedure Read_All (Reader : in out File_Reader_Type);
-
 private
 
-   type File_Reader_Type is new Manager_Base with record
+   type File_Reader_Type is new MAT.Readers.Streams.Stream_Reader_Type with record
       File   : aliased Util.Streams.Files.File_Stream;
-      Stream : Util.Streams.Buffered.Buffered_Stream;
    end record;
 
 end MAT.Readers.Files;
