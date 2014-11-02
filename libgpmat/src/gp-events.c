@@ -83,6 +83,7 @@ gp_event_send (struct gp_probe *gp, int size,
 
   len = sizeof (gp_uint16)
     + size
+    + type->size
     + gp_remote_sizeof_probe (gp);
 
   val = type->type;
@@ -140,31 +141,33 @@ gp_event_send (struct gp_probe *gp, int size,
   write (STDERR_FILENO, "\n", 1);
 }
 
-const struct gp_attr_def gp_malloc_attrs[] = {
+static const struct gp_attr_def gp_malloc_attrs[] = {
   { "pointer", GP_TYPE_POINTER, sizeof (void*) },
   { "size",    GP_TYPE_SIZE_T,  sizeof (size_t) }
 };
 
-const struct gp_event_def gp_event_malloc_def = {
+static const struct gp_event_def gp_event_malloc_def = {
   "malloc",
   GP_EVENT_MALLOC,
-  2,
+  sizeof (void*) + sizeof (size_t),
+  GP_TABLE_SIZE (gp_malloc_attrs),
   gp_malloc_attrs
 };
 
 void
 gp_event_malloc (struct gp_probe *gp, void *p, size_t size)
 {
-   gp_event_send (gp, 8, &gp_event_malloc_def, p, size);
+   gp_event_send (gp, 0, &gp_event_malloc_def, p, size);
 }
 
-const struct gp_attr_def gp_free_attrs[] = {
+static const struct gp_attr_def gp_free_attrs[] = {
   { "pointer", GP_TYPE_POINTER, sizeof (void*) }
 };
   
-const struct gp_event_def gp_event_free_def = {
+static const struct gp_event_def gp_event_free_def = {
   "free",
   GP_EVENT_FREE,
+  sizeof (void*),
   GP_TABLE_SIZE (gp_free_attrs),
   gp_free_attrs
 };
@@ -172,29 +175,30 @@ const struct gp_event_def gp_event_free_def = {
 void
 gp_event_free (struct gp_probe *gp, void *p)
 {
-  gp_event_send (gp, 4, &gp_event_free_def, p);
+  gp_event_send (gp, 0, &gp_event_free_def, p);
 }
 
-const struct gp_attr_def gp_realloc_attrs[] = {
+static const struct gp_attr_def gp_realloc_attrs[] = {
   { "pointer", GP_TYPE_POINTER, sizeof (void*) },
   { "old-pointer", GP_TYPE_POINTER, sizeof (void*) },
   { "size",    GP_TYPE_SIZE_T, sizeof (size_t) }
 };
 
-const struct gp_event_def gp_event_realloc_def = {
+static const struct gp_event_def gp_event_realloc_def = {
   "realloc",
   GP_EVENT_REALLOC,
-  3,
+  sizeof (void*) + sizeof (void*) + sizeof (size_t),
+  GP_TABLE_SIZE (gp_realloc_attrs),
   gp_realloc_attrs
 };
 
 void
 gp_event_realloc (struct gp_probe *gp, void *p, void *old, size_t size)
 {
-  gp_event_send (gp, 12, &gp_event_realloc_def, p, old, size);
+  gp_event_send (gp, 0, &gp_event_realloc_def, p, old, size);
 }
 
-const struct gp_attr_def gp_frame_attrs[] = {
+static const struct gp_attr_def gp_frame_attrs[] = {
   { "time-sec",  GP_TYPE_UINT32, sizeof (gp_uint32) },
   { "time-usec", GP_TYPE_UINT32, sizeof (gp_uint32) },
   { "thread-id", GP_TYPE_UINT32, sizeof (gp_uint32) },
@@ -209,25 +213,33 @@ const struct gp_attr_def gp_frame_attrs[] = {
   { "frame-pc",  GP_TYPE_UINT32, sizeof (gp_uint32) },
 };
 
-#define GP_TABLE_SIZE(T) ((sizeof(T)) / sizeof(T[0]))
-
-const struct gp_event_def gp_event_begin_frame_def = {
+static const struct gp_event_def gp_event_begin_frame_def = {
   "begin",
   GP_EVENT_BEGIN,
-  GP_TABLE_SIZE(gp_frame_attrs),
+  0,
+  GP_TABLE_SIZE (gp_frame_attrs),
   gp_frame_attrs
 };
 
-const struct gp_attr_def gp_begin_attrs[] = {
+static const struct gp_attr_def gp_begin_attrs[] = {
   { "pid",   GP_TYPE_UINT16, sizeof (pid_t) },
   { "exe",   GP_TYPE_STRING, sizeof (pid_t) },
 };
 
-const struct gp_event_def gp_event_begin_def = {
+static const struct gp_event_def gp_event_begin_def = {
   "begin",
   GP_EVENT_BEGIN,
-  GP_TABLE_SIZE(gp_begin_attrs),
+  sizeof (pid_t) + sizeof (gp_uint16),
+  GP_TABLE_SIZE (gp_begin_attrs),
   gp_begin_attrs
+};
+
+const struct gp_event_def gp_event_end_def = {
+  "end",
+  GP_EVENT_END,
+  0,
+  0,
+  0
 };
 
 static const struct gp_event_def* events[] = {
@@ -288,15 +300,8 @@ gp_event_begin (struct gp_probe *gp)
       path[size] = 0;
     }
   
-  gp_event_send (gp, size + sizeof (gp_uint16), &gp_event_begin_def, pid, size, path);
+  gp_event_send (gp, size, &gp_event_begin_def, pid, size, path);
 }
-
-const struct gp_event_def gp_event_end_def = {
-  "end",
-  GP_EVENT_END,
-  0,
-  0
-};
 
 void
 gp_event_end (struct gp_probe *gp)
