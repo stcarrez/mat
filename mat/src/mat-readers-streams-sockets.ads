@@ -17,8 +17,6 @@
 -----------------------------------------------------------------------
 with Ada.Finalization;
 
-with Util.Streams.Buffered;
-with Util.Streams.Files;
 with Util.Streams.Sockets;
 with GNAT.Sockets;
 package MAT.Readers.Streams.Sockets is
