@@ -23,10 +23,14 @@ with Util.Streams.Sockets;
 with GNAT.Sockets;
 package MAT.Readers.Streams.Sockets is
 
-   type Socket_Listener is new Ada.Finalization.Limited_Controlled with private;
+   type Socket_Listener_Type is new Ada.Finalization.Limited_Controlled with private;
+
+   --  Open the socket to accept connections and start the listener task.
+   procedure Start (Listener : in out Socket_Listener_Type;
+                    Address  : in GNAT.Sockets.Sock_Addr_Type);
 
    --  Stop the listener socket.
-   procedure Stop (Listener : in out Socket_Listener);
+   procedure Stop (Listener : in out Socket_Listener_Type);
 
    type Socket_Reader_Type is new MAT.Readers.Streams.Stream_Reader_Type with private;
    type Socket_Reader_Type_Access is access all Socket_Reader_Type'Class;
@@ -54,7 +58,7 @@ private
       Stop   : Boolean := False;
    end record;
 
-   type Socket_Listener is new Ada.Finalization.Limited_Controlled with record
+   type Socket_Listener_Type is new Ada.Finalization.Limited_Controlled with record
       Accept_Selector : GNAT.Sockets.Selector_Type;
       Listener        : Socket_Listener_Task;
    end record;
