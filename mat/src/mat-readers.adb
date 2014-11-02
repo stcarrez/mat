@@ -72,8 +72,23 @@ package body MAT.Readers is
       6 => (Name => FRAME_PC_NAME'Access,
             Size => 0,
             Kind => MAT.Events.T_SIZE_T,
-            Ref  => P_FRAME_PC)
-
+            Ref  => P_FRAME_PC),
+      7 => (Name => RUSAGE_MINFLT_NAME'Access,
+            Size => 0,
+            Kind => MAT.Events.T_SIZE_T,
+            Ref  => P_RUSAGE_MINFLT),
+      8 => (Name => RUSAGE_MAJFLT_NAME'Access,
+            Size => 0,
+            Kind => MAT.Events.T_SIZE_T,
+            Ref  => P_RUSAGE_MAJFLT),
+      9 => (Name => RUSAGE_NVCSW_NAME'Access,
+            Size => 0,
+            Kind => MAT.Events.T_SIZE_T,
+            Ref  => P_RUSAGE_NVCSW),
+      10 => (Name => RUSAGE_NIVCSW_NAME'Access,
+            Size => 0,
+            Kind => MAT.Events.T_SIZE_T,
+            Ref  => P_RUSAGE_NIVCSW)
      );
 
    function Hash (Key : in MAT.Types.Uint16) return Ada.Containers.Hash_Type is
