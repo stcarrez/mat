@@ -57,6 +57,7 @@ package body MAT.Targets is
       if Process = null then
          Process := new Target_Process_Type;
          Process.Pid := Pid;
+         Process.Symbols := MAT.Symbols.Targets.Target_Symbols_Refs.Create;
          Target.Processes.Insert (Pid, Process);
       end if;
       if Target.Current = null then
