@@ -19,7 +19,7 @@ with Ada.Streams;
 with Util.Log.Loggers;
 
 with MAT.Readers.Marshaller;
-package body MAT.Readers.Sockets is
+package body MAT.Readers.Streams.Sockets is
 
    --  The logger
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Readers.Sockets");
@@ -139,4 +139,4 @@ package body MAT.Readers.Sockets is
       end loop;
    end Read_All;
 
-end MAT.Readers.Sockets;
+end MAT.Readers.Streams.Sockets;
