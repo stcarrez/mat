@@ -21,6 +21,8 @@
 #define GP_LITTLE_ENDIAN (0)
 #define GP_BIG_ENDIAN    (1)
 
+#define GP_TABLE_SIZE(T) ((sizeof(T)) / sizeof(T[0]))
+
 typedef enum
 {
   GP_CPU_X86    = 0x8600,
@@ -38,7 +40,8 @@ typedef enum
   GP_TYPE_SIZE_T,
   GP_TYPE_TIMESTAMP,
   GP_TYPE_THREAD,
-  GP_TYPE_FRAME
+  GP_TYPE_FRAME,
+  GP_TYPE_STRING
 } gp_type_id;
 
 typedef enum
