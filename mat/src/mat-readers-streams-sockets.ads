@@ -46,10 +46,6 @@ package MAT.Readers.Streams.Sockets is
    type Socket_Reader_Type is new MAT.Readers.Streams.Stream_Reader_Type with private;
    type Socket_Reader_Type_Access is access all Socket_Reader_Type'Class;
 
-   --  Open the socket to accept connections.
-   procedure Open (Reader  : in out Socket_Reader_Type;
-                   Address : in GNAT.Sockets.Sock_Addr_Type);
-
    procedure Close (Reader : in out Socket_Reader_Type);
 
 private
