@@ -64,6 +64,7 @@ struct gp_event_def
 {
   const char *name;
   gp_event_type type;
+  size_t size;
   int nr_attrs;
   const struct gp_attr_def *attributes;
 };
@@ -71,20 +72,20 @@ struct gp_event_def
 extern void gp_event_send (struct gp_probe *gp, int size,
                            const struct gp_event_def *type, ...);
 
-extern const struct gp_event_def gp_event_malloc_def;
+// extern const struct gp_event_def gp_event_malloc_def;
 extern void gp_event_malloc (struct gp_probe *gp, void *p, size_t size);
 
-extern const struct gp_event_def gp_event_free_def;
+// extern const struct gp_event_def gp_event_free_def;
 extern void gp_event_free (struct gp_probe *gp, void *p);
 
-extern const struct gp_event_def gp_event_realloc_def;
+// extern const struct gp_event_def gp_event_realloc_def;
 extern void gp_event_realloc (struct gp_probe *gp, void *p,
                               void *old, size_t size);
 
-extern const struct gp_event_def gp_event_begin_def;
+// extern const struct gp_event_def gp_event_begin_def;
 extern void gp_event_begin (struct gp_probe *gp);
 
-extern const struct gp_event_def gp_event_end_def;
+// extern const struct gp_event_def gp_event_end_def;
 extern void gp_event_end (struct gp_probe *gp);
 
 extern void gp_event_begin (struct gp_probe *gp);
