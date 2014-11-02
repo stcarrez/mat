@@ -131,6 +131,15 @@ package body MAT.Readers.Marshaller is
    end Get_String;
 
    --  ------------------------------
+   --  Extract a string from the buffer.  The string starts with a byte that
+   --  indicates the string length.
+   --  ------------------------------
+   function Get_String (Msg : in Buffer_Ptr) return Ada.Strings.Unbounded.Unbounded_String is
+   begin
+      return Ada.Strings.Unbounded.To_Unbounded_String (Get_String (Msg));
+   end Get_String;
+
+   --  ------------------------------
    --  Skip the given number of bytes from the message.
    --  ------------------------------
    procedure Skip (Buffer : in Buffer_Ptr;
