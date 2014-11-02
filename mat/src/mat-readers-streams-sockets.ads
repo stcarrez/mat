@@ -19,7 +19,7 @@ with Util.Streams.Buffered;
 with Util.Streams.Files;
 with Util.Streams.Sockets;
 with GNAT.Sockets;
-package MAT.Readers.Sockets is
+package MAT.Readers.Streams.Sockets is
 
    type Socket_Reader_Type is new Manager_Base with private;
    type Socket_Reader_Type_Access is access all Socket_Reader_Type'Class;
@@ -46,4 +46,4 @@ private
       Stop   : Boolean := False;
    end record;
 
-end MAT.Readers.Sockets;
+end MAT.Readers.Streams.Sockets;
