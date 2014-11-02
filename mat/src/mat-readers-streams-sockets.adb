@@ -28,9 +28,20 @@ package body MAT.Readers.Streams.Sockets is
    MAX_MSG_SIZE : constant Ada.Streams.Stream_Element_Offset := 2048;
 
    --  ------------------------------
+   --  Open the socket to accept connections and start the listener task.
+   --  ------------------------------
+   procedure Start (Listener : in out Socket_Listener_Type;
+                    Address  : in GNAT.Sockets.Sock_Addr_Type) is
+   begin
+      Log.Info ("Starting the listener socket task");
+
+      Listener.Listener.Start (Address);
+   end Start;
+
+   --  ------------------------------
    --  Stop the listener socket.
    --  ------------------------------
-   procedure Stop (Listener : in out Socket_Listener) is
+   procedure Stop (Listener : in out Socket_Listener_Type) is
    begin
       GNAT.Sockets.Abort_Selector (Listener.Accept_Selector);
    end Stop;
