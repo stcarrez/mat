@@ -71,7 +71,12 @@ package body MAT.Readers.Streams.Sockets is
                             Address  : in GNAT.Sockets.Sock_Addr_Type) is
       Reader : constant Socket_Reader_Type_Access := new Socket_Reader_Type;
    begin
+      Reader.Client := Client;
+      Reader.Stream.Initialize (Size   => BUFFER_SIZE,
+                                Input  => Reader.Socket'Unchecked_Access,
+                                Output => null);
       Reader.Server.Start (Reader, Client);
+      Listener.Clients.Append (Reader);
    end Create_Target;
 
    task body Socket_Listener_Task is
