@@ -18,14 +18,12 @@
 with Ada.Streams;
 with Util.Log.Loggers;
 
-with MAT.Readers.Marshaller;
 package body MAT.Readers.Streams.Sockets is
 
    --  The logger
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Readers.Sockets");
 
    BUFFER_SIZE  : constant Natural := 100 * 1024;
-   MAX_MSG_SIZE : constant Ada.Streams.Stream_Element_Offset := 2048;
 
    --  ------------------------------
    --  Initialize the socket listener.
@@ -64,6 +62,15 @@ package body MAT.Readers.Streams.Sockets is
    begin
       GNAT.Sockets.Abort_Selector (Listener.Accept_Selector);
    end Stop;
+
+   --  Create a target instance for the new client.
+   procedure Create_Target (Listener : in out Socket_Listener_Type;
+                            Client   : in GNAT.Sockets.Socket_Type;
+                            Address  : in GNAT.Sockets.Sock_Addr_Type) is
+      Reader : Socket_Reader_Type_Access := new Socket_Reader_Type;
+   begin
+      null;
+   end Create_Target;
 
    task body Socket_Listener_Task is
       use type GNAT.Sockets.Socket_Type;
@@ -107,41 +114,27 @@ package body MAT.Readers.Streams.Sockets is
    task body Socket_Reader_Task is
       use type GNAT.Sockets.Socket_Type;
 
-      Peer     : GNAT.Sockets.Sock_Addr_Type;
-      Server   : GNAT.Sockets.Socket_Type;
       Instance : Socket_Reader_Type_Access;
       Socket   : GNAT.Sockets.Socket_Type;
       Status   : GNAT.Sockets.Selector_Status;
    begin
       select
-         accept Start (S : in Socket_Reader_Type_Access;
-                       Address : in GNAT.Sockets.Sock_Addr_Type) do
-            Instance := S;
-            --              Address.Addr := GNAT.Sockets.Addresses (Get_Host_By_Name (S.Get_Host), 1);
---              Address.Addr := GNAT.Sockets.Any_Inet_Addr;
---              Address.Port := 4096;
-            GNAT.Sockets.Create_Socket (Server);
-            GNAT.Sockets.Set_Socket_Option (Server, GNAT.Sockets.Socket_Level,
-                                            (GNAT.Sockets.Reuse_Address, True));
-            GNAT.Sockets.Bind_Socket (Server, Address);
---              Address := GNAT.Sockets.Get_Socket_Name (Server);
-            GNAT.Sockets.Listen_Socket (Server);
+         accept Start (Reader  : in Socket_Reader_Type_Access;
+                       Client  : in GNAT.Sockets.Socket_Type) do
+            Instance := Reader;
+            Socket := Client;
          end Start;
       or
          terminate;
       end select;
-      while not Instance.Stop loop
-         GNAT.Sockets.Accept_Socket (Server, Socket, Peer, 1.0, null, Status);
-         if Socket /= GNAT.Sockets.No_Socket then
-            Instance.Socket.Open (Socket);
-            Instance.Read_All;
-         end if;
-      end loop;
-      GNAT.Sockets.Close_Socket (Server);
+      Instance.Socket.Open (Socket);
+      Instance.Read_All;
+      GNAT.Sockets.Close_Socket (Socket);
 
    exception
       when E : others =>
          Log.Error ("Exception", E);
+         GNAT.Sockets.Close_Socket (Socket);
 
    end Socket_Reader_Task;
 
