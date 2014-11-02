@@ -15,6 +15,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with MAT.Targets.Readers;
 package body MAT.Targets is
 
    --  ------------------------------
@@ -40,8 +41,8 @@ package body MAT.Targets is
    procedure Initialize (Target : in out Target_Type;
                          Reader : in out MAT.Readers.Manager_Base'Class) is
    begin
-      MAT.Memory.Targets.Initialize (Memory => Target.Memory,
-                                     Reader => Reader);
+      MAT.Targets.Readers.Initialize (Target => Target,
+                                      Reader => Reader);
    end Initialize;
 
    --  ------------------------------
