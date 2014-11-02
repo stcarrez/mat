@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.Finalization;
+with Ada.Containers.Doubly_Linked_Lists;
 
 with Util.Streams.Sockets;
 with GNAT.Sockets;
@@ -68,9 +69,13 @@ private
       Stop   : Boolean := False;
    end record;
 
+   package Socket_Client_Lists is
+     new Ada.Containers.Doubly_Linked_Lists (Element_Type => Socket_Reader_Type_Access);
+
    type Socket_Listener_Type is new Ada.Finalization.Limited_Controlled with record
       Accept_Selector : aliased GNAT.Sockets.Selector_Type;
       Listener        : Socket_Listener_Task;
+      Clients         : Socket_Client_Lists.List;
    end record;
 
 end MAT.Readers.Streams.Sockets;
