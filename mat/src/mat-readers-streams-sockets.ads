@@ -25,6 +25,10 @@ package MAT.Readers.Streams.Sockets is
 
    type Socket_Listener_Type is new Ada.Finalization.Limited_Controlled with private;
 
+   --  Initialize the socket listener.
+   overriding
+   procedure Initialize (Listener : in out Socket_Listener_Type);
+
    --  Open the socket to accept connections and start the listener task.
    procedure Start (Listener : in out Socket_Listener_Type;
                     Address  : in GNAT.Sockets.Sock_Addr_Type);
