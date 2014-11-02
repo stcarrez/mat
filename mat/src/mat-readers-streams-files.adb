@@ -19,10 +19,12 @@ with Ada.Streams.Stream_IO;
 
 with Util.Log.Loggers;
 with MAT.Readers.Marshaller;
-package body MAT.Readers.Files is
+package body MAT.Readers.Streams.Files is
 
    --  The logger
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Readers.Files");
+
+   BUFFER_SIZE  : constant Natural := 100 * 1024;
 
    --  Open the file.
    procedure Open (Reader : in out File_Reader_Type;
@@ -37,4 +39,4 @@ package body MAT.Readers.Files is
                         Name => Path);
    end Open;
 
-end MAT.Readers.Files;
+end MAT.Readers.Streams.Files;
