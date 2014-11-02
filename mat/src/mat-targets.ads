@@ -28,6 +28,7 @@ package MAT.Targets is
    type Target_Process_Type is tagged limited record
       Pid     : MAT.Types.Target_Process_Ref;
       Memory  : MAT.Memory.Targets.Target_Memory;
+      Symbols : MAT.Symbols.Targets.Target_Symbols_Ref;
       Console : MAT.Consoles.Console_Access;
    end record;
    type Target_Process_Type_Access is access all Target_Process_Type'Class;
