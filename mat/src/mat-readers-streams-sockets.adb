@@ -117,6 +117,14 @@ package body MAT.Readers.Streams.Sockets is
          end if;
       end loop;
       GNAT.Sockets.Close_Socket (Server);
+      declare
+         Iter : Socket_Client_Lists.Cursor := Instance.Clients.First;
+      begin
+         while Socket_Client_Lists.Has_Element (Iter) loop
+            GNAT.Sockets.Close_Socket (Socket_Client_Lists.Element (Iter).Client);
+            Iter := Socket_Client_Lists.Next (Iter);
+         end loop;
+      end;
    end Socket_Listener_Task;
 
    task body Socket_Reader_Task is
