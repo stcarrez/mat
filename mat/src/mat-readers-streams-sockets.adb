@@ -54,7 +54,7 @@ package body MAT.Readers.Streams.Sockets is
    begin
       Log.Info ("Starting the listener socket task");
 
-      Listener.Listener.Start (Address);
+      Listener.Listener.Start (Listener'Unchecked_Access, Address);
    end Start;
 
    --  ------------------------------
@@ -67,17 +67,19 @@ package body MAT.Readers.Streams.Sockets is
 
    task body Socket_Listener_Task is
       use type GNAT.Sockets.Socket_Type;
+      use type GNAT.Sockets.Selector_Status;
 
       Peer     : GNAT.Sockets.Sock_Addr_Type;
       Server   : GNAT.Sockets.Socket_Type;
-      Instance : Socket_Reader_Type_Access;
-      Socket   : GNAT.Sockets.Socket_Type;
+      Instance : Socket_Listener_Type_Access;
+      Client   : GNAT.Sockets.Socket_Type;
       Status   : GNAT.Sockets.Selector_Status;
+      Selector_Status : GNAT.Sockets.Selector_Status;
    begin
       select
-         accept Start (S : in Socket_Reader_Type_Access;
-                       Address : in GNAT.Sockets.Sock_Addr_Type) do
-            Instance := S;
+         accept Start (Listener : in Socket_Listener_Type_Access;
+                       Address  : in GNAT.Sockets.Sock_Addr_Type) do
+            Instance := Listener;
             GNAT.Sockets.Create_Socket (Server);
             GNAT.Sockets.Set_Socket_Option (Server, GNAT.Sockets.Socket_Level,
                                             (GNAT.Sockets.Reuse_Address, True));
@@ -87,11 +89,16 @@ package body MAT.Readers.Streams.Sockets is
       or
          terminate;
       end select;
-      while not Instance.Stop loop
-         GNAT.Sockets.Accept_Socket (Server, Socket, Peer, 1.0, null, Status);
-         if Socket /= GNAT.Sockets.No_Socket then
-            Instance.Socket.Open (Socket);
-            Instance.Read_All;
+      loop
+         GNAT.Sockets.Accept_Socket (Server   => Server,
+                                     Socket   => Client,
+                                     Address  => Peer,
+                                     Timeout  => GNAT.Sockets.Forever,
+                                     Selector => Instance.Accept_Selector'Access,
+                                     Status   => Selector_Status);
+         exit when Selector_Status = GNAT.Sockets.Aborted;
+         if Selector_Status = GNAT.Sockets.Completed then
+            GNAT.Sockets.Close_Socket (Client);
          end if;
       end loop;
       GNAT.Sockets.Close_Socket (Server);
