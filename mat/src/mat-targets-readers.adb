@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 with Util.Log.Loggers;
 
+with MAT.Readers.Marshaller;
 package body MAT.Targets.Readers is
 
    --  The logger
@@ -37,12 +38,44 @@ package body MAT.Targets.Readers is
       2 => (Name => EXE_NAME'Access, Size => 0,
             Kind => MAT.Events.T_FRAME, Ref => M_EXE));
 
+   --  ------------------------------
+   --  Create a new process after the begin event is received from the event stream.
+   --  ------------------------------
    procedure Create_Process (For_Servant : in out Process_Servant;
                              Pid         : in MAT.Types.Target_Process_Ref) is
    begin
+      For_Servant.Target.Create_Process (Pid     => Pid,
+                                         Process => For_Servant.Process);
       MAT.Memory.Targets.Initialize (Memory => For_Servant.Process.Memory,
                                      Reader => For_Servant.Reader.all);
    end Create_Process;
+
+   procedure Probe_Begin (For_Servant : in out Process_Servant;
+                          Id          : in MAT.Events.Internal_Reference;
+                          Defs        : in MAT.Events.Attribute_Table;
+                          Frame       : in MAT.Events.Frame_Info;
+                          Msg         : in out MAT.Readers.Message) is
+      Pid  : MAT.Types.Target_Process_Ref := 0;
+      Path : Ada.Strings.Unbounded.Unbounded_String;
+   begin
+      for I in Defs'Range loop
+         declare
+            Def : MAT.Events.Attribute renames Defs (I);
+         begin
+            case Def.Ref is
+               when M_PID =>
+                  Pid := MAT.Readers.Marshaller.Get_Target_Size (Msg.Buffer, Def.Kind);
+
+               when M_EXE =>
+                  Path := MAT.Readers.Marshaller.Get_String (Msg.Buffer);
+
+               when others =>
+                  MAT.Readers.Marshaller.Skip (Msg.Buffer, Def.Size);
+            end case;
+         end;
+      end loop;
+      For_Servant.Create_Process (Pid);
+   end Probe_Begin;
 
    overriding
    procedure Dispatch (For_Servant : in out Process_Servant;
@@ -53,7 +86,7 @@ package body MAT.Targets.Readers is
    begin
       case Id is
          when MSG_BEGIN =>
-            null;
+            For_Servant.Probe_Begin (Id, Params.all, Frame, Msg);
 
          when MSG_END =>
             null;
