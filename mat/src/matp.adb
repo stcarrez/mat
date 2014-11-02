@@ -25,20 +25,20 @@ with Readline;
 with MAT.Commands;
 with MAT.Targets;
 with MAT.Consoles.Text;
-with MAT.Readers.Sockets;
+with MAT.Readers.Streams.Sockets;
 procedure Matp is
 
    procedure Interactive_Loop is
       Target  : MAT.Targets.Target_Type;
       Console : aliased MAT.Consoles.Text.Console_Type;
-      Server  : MAT.Readers.Sockets.Socket_Reader_Type;
+      Server  : MAT.Readers.Streams.Sockets.Socket_Listener_Type;
       Address : GNAT.Sockets.Sock_Addr_Type;
    begin
       Address.Addr := GNAT.Sockets.Any_Inet_Addr;
       Address.Port := 4096;
-      Target.Console := Console'Unchecked_Access;
-      Target.Initialize (Server);
-      Server.Open (Address);
+--        Target.Console := Console'Unchecked_Access;
+--        Target.Initialize (Server);
+      Server.Start (Address);
       loop
          declare
             Line : constant String := Readline.Get_Line ("matp>");
@@ -47,13 +47,15 @@ procedure Matp is
 
          exception
             when MAT.Commands.Stop_Interp =>
-               return;
+               exit;
          end;
       end loop;
 
+      Server.Stop;
    exception
 
       when Ada.IO_Exceptions.End_Error =>
+         Server.Stop;
          return;
 
    end Interactive_Loop;
