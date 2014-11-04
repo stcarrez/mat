@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------
---  Marshaller -- Marshalling of data in communication buffer
+--  mat-readers-marshaller -- Marshalling of data in communication buffer
 --  Copyright (C) 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
@@ -15,7 +15,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with System;
 with Ada.Strings.Unbounded;
 with MAT.Types;
 with MAT.Events;
@@ -24,8 +23,6 @@ package MAT.Readers.Marshaller is
    Buffer_Underflow_Error : exception;
 
    Buffer_Overflow_Error : exception;
-
-   function Get_Raw_Uint32 (Buf : System.Address) return MAT.Types.Uint32;
 
    --  Get an 8-bit value from the buffer.
    function Get_Uint8 (Buffer : in Buffer_Ptr) return MAT.Types.Uint8;
@@ -47,23 +44,10 @@ package MAT.Readers.Marshaller is
    --  indicates the string length.
    function Get_String (Msg : in Buffer_Ptr) return Ada.Strings.Unbounded.Unbounded_String;
 
-   --  procedure Put_Uint8 (Buffer : in Buffer_Ptr; Data : in Uint8);
-
-   --  procedure Put_Uint16 (Buffer : in Buffer_Ptr; Data : in Uint16);
-
-   --  procedure Put_Uint32 (Buffer : in Buffer_Ptr; Data : in Uint32);
    generic
       type Target_Type is mod <>;
    function Get_Target_Value (Msg  : in Buffer_Ptr;
                               Kind : in MAT.Events.Attribute_Type) return Target_Type;
---
---     function Get_Target_Size is new Get_Target_Value (MAT.Types.Target_Size);
---
---     function Get_Target_Addr is new Get_Target_Value (MAT.Types.Target_Addr);
---
---     function Get_Target_Tick is new Get_Target_Value (MAT.Types.Target_Tick_Ref);
---
---     function Get_Target_Thread is new Get_Target_Value (MAT.Types.Target_Thread_Ref);
 
    function Get_Target_Size (Msg  : in Buffer_Ptr;
                              Kind : in MAT.Events.Attribute_Type) return MAT.Types.Target_Size;
