@@ -15,7 +15,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-
+with Interfaces;
 with System; use System;
 with System.Address_To_Access_Conversions;
 with System.Storage_Elements;
@@ -40,6 +40,9 @@ package body MAT.Readers.Marshaller is
       return P.all;
    end Get_Raw_Uint32;
 
+   --  ------------------------------
+   --  Get an 8-bit value from the buffer.
+   --  ------------------------------
    function Get_Uint8 (Buffer : in Buffer_Ptr) return MAT.Types.Uint8 is
       use Uint8_Access;
 
@@ -57,13 +60,19 @@ package body MAT.Readers.Marshaller is
    function Get_Uint16 (Buffer : in Buffer_Ptr) return MAT.Types.Uint16 is
       use Uint8_Access;
 
-      High : constant Object_Pointer := To_Pointer (Buffer.Current
-                                                    + Storage_Offset (1));
-      Low  : constant Object_Pointer := To_Pointer (Buffer.Current);
+      High : Object_Pointer;
+      Low  : Object_Pointer;
    begin
       if Buffer.Size <= 1 then
          Log.Error ("Not enough data to get a uint16");
          raise Buffer_Underflow_Error;
+      end if;
+      if Buffer.Endian = LITTLE_ENDIAN then
+         Low  := To_Pointer (Buffer.Current);
+         High := To_Pointer (Buffer.Current + Storage_Offset (1));
+      else
+         High := To_Pointer (Buffer.Current);
+         Low  := To_Pointer (Buffer.Current + Storage_Offset (1));
       end if;
       Buffer.Size := Buffer.Size - 2;
       Buffer.Current := Buffer.Current + Storage_Offset (2);
@@ -73,18 +82,20 @@ package body MAT.Readers.Marshaller is
    function Get_Uint32 (Buffer : in Buffer_Ptr) return MAT.Types.Uint32 is
       use Uint32_Access;
 
-      P : constant Object_Pointer := To_Pointer (Buffer.Current);
+      Low, High : MAT.Types.Uint16;
    begin
       if Buffer.Size < 4 then
          Log.Error ("Not enough data to get a uint32");
          raise Buffer_Underflow_Error;
       end if;
-      Buffer.Size := Buffer.Size - 4;
-      Buffer.Current := Buffer.Current + Storage_Offset (4);
-      if Buffer.Current >= Buffer.Last then
-         Buffer.Current := Buffer.Start;
+      if Buffer.Endian = LITTLE_ENDIAN then
+         Low  := Get_Uint16 (Buffer);
+         High := Get_Uint16 (Buffer);
+      else
+         High := Get_Uint16 (Buffer);
+         Low  := Get_Uint16 (Buffer);
       end if;
-      return P.all;
+      return Interfaces.Shift_Left (MAT.Types.Uint32 (High), 16) + MAT.Types.Uint32 (Low);
    end Get_Uint32;
 
    function Get_Uint64 (Buffer : in Buffer_Ptr) return MAT.Types.Uint64 is
