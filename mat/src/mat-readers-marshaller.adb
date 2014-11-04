@@ -104,10 +104,21 @@ package body MAT.Readers.Marshaller is
       return Interfaces.Shift_Left (MAT.Types.Uint32 (High), 16) + MAT.Types.Uint32 (Low);
    end Get_Uint32;
 
+   --  ------------------------------
+   --  Get a 64-bit value either from big-endian or little endian.
+   --  ------------------------------
    function Get_Uint64 (Buffer : in Buffer_Ptr) return MAT.Types.Uint64 is
-      Val : constant MAT.Types.Uint64 := MAT.Types.Uint64 (Get_Uint32 (Buffer));
+      Low : MAT.Types.Uint32;
+      High : MAT.Types.Uint32;
    begin
-      return Val + MAT.Types.Uint64 (Get_Uint32 (Buffer)) * 2**32;
+      if Buffer.Endian = LITTLE_ENDIAN then
+         Low := Get_Uint32 (Buffer);
+         High := Get_Uint32 (Buffer);
+      else
+         High := Get_Uint32 (Buffer);
+         Low  := Get_Uint32 (Buffer);
+      end if;
+      return Interfaces.Shift_Left (MAT.Types.Uint64 (High), 32) + MAT.Types.Uint64 (Low);
    end Get_Uint64;
 
    function Get_Target_Value (Msg  : in Buffer_Ptr;
