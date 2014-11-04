@@ -57,6 +57,9 @@ package body MAT.Readers.Marshaller is
       return P.all;
    end Get_Uint8;
 
+   --  ------------------------------
+   --  Get a 16-bit value either from big-endian or little endian.
+   --  ------------------------------
    function Get_Uint16 (Buffer : in Buffer_Ptr) return MAT.Types.Uint16 is
       use Uint8_Access;
 
