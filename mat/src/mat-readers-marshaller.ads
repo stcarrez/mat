@@ -33,6 +33,7 @@ package MAT.Readers.Marshaller is
    --  Get a 16-bit value either from big-endian or little endian.
    function Get_Uint16 (Buffer : in Buffer_Ptr) return MAT.Types.Uint16;
 
+   --  Get a 32-bit value either from big-endian or little endian.
    function Get_Uint32 (Buffer : in Buffer_Ptr) return MAT.Types.Uint32;
 
    function Get_Uint64 (Buffer : in Buffer_Ptr) return MAT.Types.Uint64;
