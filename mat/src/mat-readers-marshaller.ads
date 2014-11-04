@@ -27,6 +27,7 @@ package MAT.Readers.Marshaller is
 
    function Get_Raw_Uint32 (Buf : System.Address) return MAT.Types.Uint32;
 
+   --  Get an 8-bit value from the buffer.
    function Get_Uint8 (Buffer : in Buffer_Ptr) return MAT.Types.Uint8;
 
    function Get_Uint16 (Buffer : in Buffer_Ptr) return MAT.Types.Uint16;
