@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------
---  Ipc -- Ipc channel between profiler tool and application          --
+--  mat-readers-marshaller -- Marshalling of data in communication buffer
 --  Copyright (C) 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
@@ -16,14 +16,15 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Interfaces;
-with System; use System;
+with System;
 with System.Address_To_Access_Conversions;
 with System.Storage_Elements;
 with Util.Log.Loggers;
-with Interfaces; use Interfaces;
 package body MAT.Readers.Marshaller is
 
-   use System.Storage_Elements;
+   use type System.Storage_Elements.Storage_Offset;
+   use type Interfaces.Unsigned_32;
+   use type Interfaces.Unsigned_64;
 
    --  The logger
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Readers.Marshaller");
@@ -31,14 +32,6 @@ package body MAT.Readers.Marshaller is
    package Uint8_Access is new System.Address_To_Access_Conversions (MAT.Types.Uint8);
 
    package Uint32_Access is new System.Address_To_Access_Conversions (MAT.Types.Uint32);
-
-   function Get_Raw_Uint32 (Buf : System.Address) return MAT.Types.Uint32 is
-      use Uint32_Access;
-
-      P : constant Object_Pointer := To_Pointer (Buf);
-   begin
-      return P.all;
-   end Get_Raw_Uint32;
 
    --  ------------------------------
    --  Get an 8-bit value from the buffer.
@@ -53,7 +46,7 @@ package body MAT.Readers.Marshaller is
          raise Buffer_Underflow_Error;
       end if;
       Buffer.Size := Buffer.Size - 1;
-      Buffer.Current := Buffer.Current + Storage_Offset (1);
+      Buffer.Current := Buffer.Current + System.Storage_Elements.Storage_Offset (1);
       return P.all;
    end Get_Uint8;
 
@@ -72,13 +65,13 @@ package body MAT.Readers.Marshaller is
       end if;
       if Buffer.Endian = LITTLE_ENDIAN then
          Low  := To_Pointer (Buffer.Current);
-         High := To_Pointer (Buffer.Current + Storage_Offset (1));
+         High := To_Pointer (Buffer.Current + System.Storage_Elements.Storage_Offset (1));
       else
          High := To_Pointer (Buffer.Current);
-         Low  := To_Pointer (Buffer.Current + Storage_Offset (1));
+         Low  := To_Pointer (Buffer.Current + System.Storage_Elements.Storage_Offset (1));
       end if;
       Buffer.Size := Buffer.Size - 2;
-      Buffer.Current := Buffer.Current + Storage_Offset (2);
+      Buffer.Current := Buffer.Current + System.Storage_Elements.Storage_Offset (2);
       return MAT.Types.Uint16 (High.all) * 256 + MAT.Types.Uint16 (Low.all);
    end Get_Uint16;
 
@@ -174,7 +167,7 @@ package body MAT.Readers.Marshaller is
                    Size   : in Natural) is
    begin
       Buffer.Size := Buffer.Size - Size;
-      Buffer.Current := Buffer.Current + Storage_Offset (Size);
+      Buffer.Current := Buffer.Current + System.Storage_Elements.Storage_Offset (Size);
    end Skip;
 
    function Get_Target_Size (Msg  : in Buffer_Ptr;
