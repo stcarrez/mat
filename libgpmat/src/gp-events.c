@@ -28,7 +28,7 @@
 void
 gp_send_attributes (const struct gp_event_def *type)
 {
-  gp_uint8 len = strlen (type->name);
+  gp_uint16 len = strlen (type->name);
   gp_uint16 val = type->type;
   const struct gp_attr_def *attr;
   int i;
@@ -48,7 +48,7 @@ gp_send_attributes (const struct gp_event_def *type)
       val = attr->size;
       gp_write ("A-LEN", 4, &len, sizeof (len));
       gp_write ("A-NAME", 4, attr->name, len);
-      gp_write ("A-TYPE", 4, &val, sizeof (val));
+      gp_write ("A-SIZE", 4, &val, sizeof (val));
       write (STDERR_FILENO, "\n", 1);
     }
 }
@@ -56,18 +56,18 @@ gp_send_attributes (const struct gp_event_def *type)
 static int
 gp_get_attribute_size (const struct gp_event_def *type)
 {
-  int result = sizeof (gp_uint8);
+  int result = sizeof (gp_uint16);
   const struct gp_attr_def *attr;
   int i;
 
   result += strlen (type->name);
   result += sizeof (gp_uint16);
-  result += sizeof (gp_uint8);
+  result += sizeof (gp_uint16);
 
   attr = type->attributes;
   for (i = type->nr_attrs; --i >= 0; attr++)
     {
-      result += sizeof (gp_uint8) + sizeof (gp_uint16);
+      result += sizeof (gp_uint16) + sizeof (gp_uint16);
       result += strlen (attr->name);
     }
   
@@ -225,14 +225,14 @@ static const struct gp_event_def gp_event_begin_frame_def = {
 };
 
 static const struct gp_attr_def gp_begin_attrs[] = {
-  { "pid",   GP_TYPE_UINT16, sizeof (pid_t) },
+  { "pid",   GP_TYPE_UINT32, sizeof (gp_uint32) },
   { "exe",   GP_TYPE_STRING, sizeof (gp_uint16) },
 };
 
 static const struct gp_event_def gp_event_begin_def = {
   "begin",
   GP_EVENT_BEGIN,
-  sizeof (gp_uint16) + sizeof (gp_uint16),
+  sizeof (gp_uint32) + sizeof (gp_uint16),
   GP_TABLE_SIZE (gp_begin_attrs),
   gp_begin_attrs
 };
@@ -295,7 +295,7 @@ gp_event_begin (struct gp_probe *gp)
   int i;
   gp_uint8  mode;
   char path[PATH_MAX];
-  pid_t pid;
+  gp_uint32 pid;
   ssize_t size;
 
   i = 1;
