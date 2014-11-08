@@ -27,6 +27,15 @@ package body MAT.Targets is
    end Console;
 
    --  ------------------------------
+   --  Set the console instance.
+   --  ------------------------------
+   procedure Console (Target  : in out Target_Type;
+                      Console : in MAT.Consoles.Console_Access) is
+   begin
+      Target.Console := Console;
+   end Console;
+
+   --  ------------------------------
    --  Get the current process instance.
    --  ------------------------------
    function Process (Target : in Target_Type) return Target_Process_Type_Access is
