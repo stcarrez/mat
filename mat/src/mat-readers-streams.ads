@@ -23,6 +23,11 @@ package MAT.Readers.Streams is
    --  Read the events from the stream and stop when the end of the stream is reached.
    procedure Read_All (Reader : in out Stream_Reader_Type);
 
+   --  Read a message from the stream.
+   overriding
+   procedure Read_Message (Reader : in out Stream_Reader_Type;
+                           Msg    : in out Message);
+
 private
 
    type Stream_Reader_Type is new Manager_Base with record
