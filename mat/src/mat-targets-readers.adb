@@ -42,9 +42,11 @@ package body MAT.Targets.Readers is
    --  Create a new process after the begin event is received from the event stream.
    --  ------------------------------
    procedure Create_Process (For_Servant : in out Process_Servant;
-                             Pid         : in MAT.Types.Target_Process_Ref) is
+                             Pid         : in MAT.Types.Target_Process_Ref;
+                             Path        : in Ada.Strings.Unbounded.Unbounded_String) is
    begin
       For_Servant.Target.Create_Process (Pid     => Pid,
+                                         Path    => Path,
                                          Process => For_Servant.Process);
       MAT.Memory.Targets.Initialize (Memory => For_Servant.Process.Memory,
                                      Reader => For_Servant.Reader.all);
@@ -74,7 +76,7 @@ package body MAT.Targets.Readers is
             end case;
          end;
       end loop;
-      For_Servant.Create_Process (Pid);
+      For_Servant.Create_Process (Pid, Path);
       For_Servant.Reader.Read_Message (Msg);
       For_Servant.Reader.Read_Event_Definitions (Msg);
    end Probe_Begin;
