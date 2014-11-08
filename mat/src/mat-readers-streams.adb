@@ -15,7 +15,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with Ada.Streams.Stream_IO;
+with Ada.Streams;
+with Ada.IO_Exceptions;
 
 with Util.Log.Loggers;
 with MAT.Readers.Marshaller;
@@ -24,8 +25,38 @@ package body MAT.Readers.Streams is
    --  The logger
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Readers.Files");
 
-   BUFFER_SIZE  : constant Natural := 100 * 1024;
    MAX_MSG_SIZE : constant Ada.Streams.Stream_Element_Offset := 2048;
+
+   --  ------------------------------
+   --  Read a message from the stream.
+   --  ------------------------------
+   overriding
+   procedure Read_Message (Reader : in out Stream_Reader_Type;
+                           Msg    : in out Message) is
+      use type Ada.Streams.Stream_Element_Offset;
+
+      Buffer : constant Util.Streams.Buffered.Buffer_Access := Msg.Buffer.Buffer;
+      Last   : Ada.Streams.Stream_Element_Offset;
+   begin
+      Reader.Stream.Read (Buffer (0 .. 1), Last);
+      if Last /= 2 then
+         raise Ada.IO_Exceptions.End_Error;
+      end if;
+      Msg.Buffer.Size := 2;
+      Msg.Buffer.Current := Msg.Buffer.Start;
+      Msg.Size := Natural (MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer));
+      if Msg.Size < 2 then
+         Log.Error ("Invalid message size {0}", Natural'Image (Msg.Size));
+      end if;
+      if Ada.Streams.Stream_Element_Offset (Msg.Size) >= Buffer'Last then
+         Log.Error ("Message size {0} is too big", Natural'Image (Msg.Size));
+         raise Ada.IO_Exceptions.Data_Error;
+      end if;
+      Reader.Stream.Read (Buffer (0 .. Ada.Streams.Stream_Element_Offset (Msg.Size - 1)), Last);
+      Msg.Buffer.Current := Msg.Buffer.Start;
+      Msg.Buffer.Last    := Buffer (Last)'Address;
+      Msg.Buffer.Size    := Msg.Size;
+   end Read_Message;
 
    --  ------------------------------
    --  Read the events from the stream and stop when the end of the stream is reached.
