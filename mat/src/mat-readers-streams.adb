@@ -56,6 +56,7 @@ package body MAT.Readers.Streams is
       Msg.Buffer.Current := Msg.Buffer.Start;
       Msg.Buffer.Last    := Buffer (Last)'Address;
       Msg.Buffer.Size    := Msg.Size;
+      Log.Debug ("Read message size {0}", Natural'Image (Msg.Size));
    end Read_Message;
 
    --  ------------------------------
@@ -75,9 +76,8 @@ package body MAT.Readers.Streams is
       Msg.Buffer.Start := Reader.Data (0)'Address;
       Msg.Buffer.Current := Msg.Buffer.Start;
       Msg.Buffer.Last := Reader.Data (MAX_MSG_SIZE)'Address;
-      Msg.Buffer.Size := 3;
       Buffer.Buffer := Reader.Data;
-      Reader.Stream.Read (Reader.Data (0 .. 2), Last);
+      Reader.Stream.Read (Reader.Data (0 .. 0), Last);
       Format := MAT.Readers.Marshaller.Get_Uint8 (Msg.Buffer);
       if Format = 0 then
          Msg.Buffer.Endian := LITTLE_ENDIAN;
