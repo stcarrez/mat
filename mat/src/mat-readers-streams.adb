@@ -92,6 +92,11 @@ package body MAT.Readers.Streams is
          Reader.Read_Message (Msg);
          Reader.Dispatch_Message (Msg);
       end loop;
+
+   exception
+      when Ada.IO_Exceptions.End_Error =>
+         null;
+
    end Read_All;
 
 end MAT.Readers.Streams;
