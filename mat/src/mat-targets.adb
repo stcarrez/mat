@@ -60,14 +60,20 @@ package body MAT.Targets is
    --  ------------------------------
    procedure Create_Process (Target  : in out Target_Type;
                              Pid     : in MAT.Types.Target_Process_Ref;
+                             Path    : in Ada.Strings.Unbounded.Unbounded_String;
                              Process : out Target_Process_Type_Access) is
    begin
       Process := Target.Find_Process (Pid);
       if Process = null then
          Process := new Target_Process_Type;
          Process.Pid := Pid;
+         Process.Path := Path;
          Process.Symbols := MAT.Symbols.Targets.Target_Symbols_Refs.Create;
          Target.Processes.Insert (Pid, Process);
+         Target.Console.Notice (MAT.Consoles.N_PID_INFO,
+                                "Process" & MAT.Types.Target_Process_Ref'Image (Pid) & " created");
+         Target.Console.Notice (MAT.Consoles.N_PATH_INFO,
+                                "Path " & Ada.Strings.Unbounded.To_String (Path));
       end if;
       if Target.Current = null then
          Target.Current := Process;
