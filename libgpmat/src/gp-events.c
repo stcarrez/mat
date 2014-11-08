@@ -23,8 +23,6 @@
 #include "gp-probe.h"
 #include "gp-events.h"
 
-#define TABLE_SIZE(T) ((sizeof(T)) / sizeof(T[0]))
-
 void
 gp_send_attributes (const struct gp_event_def *type)
 {
@@ -308,10 +306,10 @@ gp_event_begin (struct gp_probe *gp)
       mode = GP_BIG_ENDIAN;
     }
   gp_remote_send (&mode, sizeof (mode));
-  gp_send_attribute_list (start_events, TABLE_SIZE (start_events));
+  gp_send_attribute_list (start_events, GP_TABLE_SIZE (start_events));
 
   pid = getpid ();
-  snprintf (path, sizeof (path), "/proc/%d/exe", pid);
+  snprintf (path, sizeof (path), "/proc/%d/exe", (int) pid);
   size = readlink (path, path, sizeof (path));
   if (size < 0)
     {
@@ -324,7 +322,7 @@ gp_event_begin (struct gp_probe *gp)
     }
 
   gp_event_send (gp, size, &gp_event_begin_def, pid, size, path);
-  gp_send_attribute_list (events, TABLE_SIZE (events));
+  gp_send_attribute_list (events, GP_TABLE_SIZE (events));
 }
 
 void
