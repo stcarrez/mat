@@ -195,7 +195,7 @@ package body MAT.Readers is
 
    exception
       when E : others =>
-         Log.Error ("Exception while processing event " & MAT.Types.Uint16'Image (Event), E);
+         Log.Error ("Exception while processing event " & MAT.Types.Uint16'Image (Event), E, True);
    end Dispatch_Message;
 
    --  ------------------------------
@@ -205,7 +205,7 @@ package body MAT.Readers is
                               Msg    : in out Message) is
       Name  : constant String := MAT.Readers.Marshaller.Get_String (Msg.Buffer);
       Event : constant MAT.Types.Uint16 := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
-      Count : constant MAT.Types.Uint8 := MAT.Readers.Marshaller.Get_Uint8 (Msg.Buffer);
+      Count : constant MAT.Types.Uint16 := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
       Pos   : constant Reader_Maps.Cursor := Client.Readers.Find (Name);
       Frame : Message_Handler;
 
@@ -216,9 +216,10 @@ package body MAT.Readers is
       end Add_Handler;
 
    begin
-      Log.Debug ("Read event definition {0}", Name);
+      Log.Debug ("Read event definition {0} with {1} attributes",
+                 Name, MAT.Types.Uint16'Image (Count));
 
-      if Name = "begin" then
+      if Name = "start" then
          Frame.Mapping := new MAT.Events.Attribute_Table (1 .. Natural (Count));
          Frame.Attributes := Probe_Attributes'Access;
          Client.Probe := Frame.Mapping;
@@ -261,7 +262,7 @@ package body MAT.Readers is
                Client.Readers.Update_Element (Pos, Read_Attribute'Access);
             end if;
             if Frame.Mapping /= null then
-               Read_Attribute ("begin", Frame);
+               Read_Attribute ("start", Frame);
             end if;
          end;
       end loop;
@@ -286,6 +287,11 @@ package body MAT.Readers is
       for I in 1 .. Count loop
          Read_Definition (Client, Msg);
       end loop;
+
+   exception
+      when E : MAT.Readers.Marshaller.Buffer_Underflow_Error =>
+         Log.Error ("Not enough data in the message", E, True);
+
    end Read_Event_Definitions;
 
    --  ------------------------------
