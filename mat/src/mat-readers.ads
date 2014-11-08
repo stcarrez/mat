@@ -23,6 +23,7 @@ with Ada.Strings.Hash;
 with System;
 
 with Util.Properties;
+with Util.Streams.Buffered;
 
 with MAT.Types;
 with MAT.Events;
@@ -63,7 +64,7 @@ package MAT.Readers is
    -----------------
    --  The Manager is a kind of object adapter. It registers a collection
    --  of servants and dispatches incomming messages to those servants.
-   type Manager_Base is tagged limited private;
+   type Manager_Base is abstract tagged limited private;
    type Manager is access all Manager_Base'Class;
 
    --  Register the reader to handle the event identified by the given name.
@@ -78,6 +79,14 @@ package MAT.Readers is
    procedure Dispatch_Message (Client : in out Manager_Base;
                                Msg    : in out Message);
 
+   --  Read a message from the stream.
+   procedure Read_Message (Client : in out Manager_Base;
+                           Msg    : in out Message) is abstract;
+
+   --  Read a list of event definitions from the stream and configure the reader.
+   procedure Read_Event_Definitions (Client : in out Manager_Base;
+                                     Msg    : in out Message);
+
 private
 
    type Endian_Type is (BIG_ENDIAN, LITTLE_ENDIAN);
@@ -86,6 +95,7 @@ private
       Current : System.Address;
       Start   : System.Address;
       Last    : System.Address;
+      Buffer  : Util.Streams.Buffered.Buffer_Access;
       Size    : Natural;
       Total   : Natural;
       Endian  : Endian_Type := LITTLE_ENDIAN;
@@ -120,7 +130,7 @@ private
                                      Hash         => Hash,
                                      Equivalent_Keys => "=");
 
-   type Manager_Base is tagged limited record
+   type Manager_Base is abstract tagged limited record
       Readers     : Reader_Maps.Map;
       Handlers    : Handler_Maps.Map;
       Version     : MAT.Types.Uint16;
@@ -137,9 +147,5 @@ private
    --  Read an event definition from the stream and configure the reader.
    procedure Read_Definition (Client : in out Manager_Base;
                               Msg    : in out Message);
-
-   --  Read a list of event definitions from the stream and configure the reader.
-   procedure Read_Event_Definitions (Client : in out Manager_Base;
-                                     Msg    : in out Message);
 
 end MAT.Readers;
