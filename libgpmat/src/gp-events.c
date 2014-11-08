@@ -28,17 +28,18 @@
 void
 gp_send_attributes (const struct gp_event_def *type)
 {
-  gp_uint8 len = strlen(type->name);
+  gp_uint8 len = strlen (type->name);
   gp_uint16 val = type->type;
   const struct gp_attr_def *attr;
   int i;
   
-  gp_write ("BLOCK", 0, &len, sizeof (len));
+  gp_write ("E-LEN", 2, &len, sizeof (len));
   gp_write ("EVENT", 2, type->name, len);
   gp_write ("ID", 2, &val, sizeof (val));
 
   len = type->nr_attrs;
   gp_write ("COUNT", 2, &len, sizeof (len));
+  write (STDERR_FILENO, "\n", 1);
 
   attr = type->attributes;
   for (i = type->nr_attrs; --i >= 0; attr++)
@@ -269,18 +270,23 @@ gp_send_attribute_list (const struct gp_event_def** events, size_t count)
   gp_uint16 len;
   int i;
 
-  len = sizeof (version) + sizeof (count);
+  len = sizeof (version) + sizeof (len);
   for (i = 0; i < count; i++)
     {
       len += gp_get_attribute_size (events[i]);
     }
-  gp_remote_send (&len, sizeof (len));
-  gp_remote_send (&version, sizeof (version));
-  gp_remote_send (&count, sizeof (count));
+  gp_write ("DEF", 0, &len, sizeof (len));
+  gp_write ("VER", 0, &version, sizeof (version));
+
+  len = count;
+  gp_write ("E-CNT", 0, &len, sizeof (len));
+  write (STDERR_FILENO, "\n", 1);
+  
   for (i = 0; i < count; i++)
     {
       gp_send_attributes (events[i]);
     }
+  write (STDERR_FILENO, "\n", 1);
 }
 
 void
