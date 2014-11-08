@@ -30,6 +30,18 @@ package body MAT.Consoles.Text is
    end Error;
 
    --  ------------------------------
+   --  Report a notice message.
+   --  ------------------------------
+   overriding
+   procedure Notice (Console : in out Console_Type;
+                     Kind    : in Notice_Type;
+                     Message : in String) is
+      pragma Unreferenced (Console, Kind);
+   begin
+      Ada.Text_IO.Put_Line (Message);
+   end Notice;
+
+   --  ------------------------------
    --  Print the field value for the given field.
    --  ------------------------------
    overriding
