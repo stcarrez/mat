@@ -23,6 +23,8 @@
 #include "gp-probe.h"
 #include "gp-events.h"
 
+#define TABLE_SIZE(T) ((sizeof(T)) / sizeof(T[0]))
+
 void
 gp_send_attributes (const struct gp_event_def *type)
 {
@@ -214,7 +216,7 @@ static const struct gp_attr_def gp_frame_attrs[] = {
 };
 
 static const struct gp_event_def gp_event_begin_frame_def = {
-  "begin",
+  "start",
   GP_EVENT_BEGIN,
   0,
   GP_TABLE_SIZE (gp_frame_attrs),
@@ -229,7 +231,7 @@ static const struct gp_attr_def gp_begin_attrs[] = {
 static const struct gp_event_def gp_event_begin_def = {
   "begin",
   GP_EVENT_BEGIN,
-  sizeof (pid_t) + sizeof (gp_uint16),
+  sizeof (gp_uint16) + sizeof (gp_uint16),
   GP_TABLE_SIZE (gp_begin_attrs),
   gp_begin_attrs
 };
@@ -242,22 +244,50 @@ const struct gp_event_def gp_event_end_def = {
   0
 };
 
-static const struct gp_event_def* events[] = {
+static const struct gp_event_def* start_events[] = {
   &gp_event_begin_frame_def,
+  &gp_event_begin_def
+};
+
+static const struct gp_event_def* events[] = {
   &gp_event_malloc_def,
   &gp_event_free_def,
   &gp_event_realloc_def,
   &gp_event_end_def
 };
 
+/**
+ * @brief Send the event descriptions.
+ *
+ * @param events the event description.
+ * @param count the number of event descriptions.
+ */
+static void
+gp_send_attribute_list (const struct gp_event_def** events, size_t count)
+{
+  gp_uint16 version = GP_VERSION;
+  gp_uint16 len;
+  int i;
+
+  len = sizeof (version) + sizeof (count);
+  for (i = 0; i < count; i++)
+    {
+      len += gp_get_attribute_size (events[i]);
+    }
+  gp_remote_send (&len, sizeof (len));
+  gp_remote_send (&version, sizeof (version));
+  gp_remote_send (&count, sizeof (count));
+  for (i = 0; i < count; i++)
+    {
+      gp_send_attributes (events[i]);
+    }
+}
+
 void
 gp_event_begin (struct gp_probe *gp)
 {
   int i;
   gp_uint8  mode;
-  gp_uint16 version = GP_VERSION;
-  gp_uint16 count   = sizeof (events) / sizeof (const struct gp_event_def*);
-  gp_uint16 len;
   char path[PATH_MAX];
   pid_t pid;
   ssize_t size;
@@ -272,20 +302,7 @@ gp_event_begin (struct gp_probe *gp)
       mode = GP_BIG_ENDIAN;
     }
   gp_remote_send (&mode, sizeof (mode));
-
-  len = sizeof (version);
-  len += sizeof (count);
-  for (i = 0; i < count; i++)
-    {
-      len += gp_get_attribute_size (events[i]);
-    }
-  gp_remote_send (&len, sizeof (len));
-  gp_remote_send (&version, sizeof (version));
-  gp_remote_send (&count, sizeof (count));
-  for (i = 0; i < count; i++)
-    {
-      gp_send_attributes (events[i]);
-    }
+  gp_send_attribute_list (start_events, TABLE_SIZE (start_events));
 
   pid = getpid ();
   snprintf (path, sizeof (path), "/proc/%d/exe", pid);
@@ -299,8 +316,9 @@ gp_event_begin (struct gp_probe *gp)
     {
       path[size] = 0;
     }
-  
+
   gp_event_send (gp, size, &gp_event_begin_def, pid, size, path);
+  gp_send_attribute_list (events, TABLE_SIZE (events));
 }
 
 void
