@@ -326,6 +326,10 @@ package body MAT.Commands is
    exception
       when E : Ada.IO_Exceptions.Name_Error =>
          Log.Error ("Cannot open {0}: {1}", Args, Ada.Exceptions.Exception_Message (E));
+
+      when E : others =>
+         Log.Error ("Invalid format for " & Args, E, True);
+
    end Open_Command;
 
    function Get_Command (Line : in String) return String is
@@ -358,7 +362,7 @@ package body MAT.Commands is
          raise;
 
       when E : others =>
-         Log.Error ("Exception: ", E);
+         Log.Error ("Exception: ", E, True);
          Target.Console.Error ("Exception while processing command");
 
    end Execute;
