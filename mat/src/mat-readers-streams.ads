@@ -32,6 +32,7 @@ private
 
    type Stream_Reader_Type is new Manager_Base with record
       Stream : Util.Streams.Buffered.Buffered_Stream;
+      Data   : Util.Streams.Buffered.Buffer_Access;
    end record;
 
 end MAT.Readers.Streams;
