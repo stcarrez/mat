@@ -142,7 +142,7 @@ package body MAT.Readers.Marshaller is
    --  indicates the string length.
    --  ------------------------------
    function Get_String (Buffer : in Buffer_Ptr) return String is
-      Len    : constant MAT.Types.Uint8 := Get_Uint8 (Buffer);
+      Len    : constant MAT.Types.Uint16 := Get_Uint16 (Buffer);
       Result : String (1 .. Natural (Len));
    begin
       for I in Result'Range loop
