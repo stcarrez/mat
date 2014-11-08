@@ -75,6 +75,8 @@ package body MAT.Targets.Readers is
          end;
       end loop;
       For_Servant.Create_Process (Pid);
+      For_Servant.Reader.Read_Message (Msg);
+      For_Servant.Reader.Read_Event_Definitions (Msg);
    end Probe_Begin;
 
    overriding
