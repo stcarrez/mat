@@ -33,6 +33,9 @@ package MAT.Consoles is
                        F_FUNCTION_NAME,
                        F_LINE_NUMBER);
 
+   type Notice_Type is (N_PID_INFO,
+                        N_PATH_INFO);
+
    type Console_Type is abstract tagged limited private;
    type Console_Access is access all Console_Type'Class;
 
@@ -40,8 +43,9 @@ package MAT.Consoles is
    procedure Error (Console : in out Console_Type;
                     Message : in String) is abstract;
 
-   -- Report a notice message.
+   --  Report a notice message.
    procedure Notice (Console : in out Console_Type;
+                     Kind    : in Notice_Type;
                      Message : in String) is abstract;
 
    --  Print the field value for the given field.
