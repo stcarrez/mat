@@ -40,6 +40,10 @@ package MAT.Consoles is
    procedure Error (Console : in out Console_Type;
                     Message : in String) is abstract;
 
+   -- Report a notice message.
+   procedure Notice (Console : in out Console_Type;
+                     Message : in String) is abstract;
+
    --  Print the field value for the given field.
    procedure Print_Field (Console : in out Console_Type;
                           Field   : in Field_Type;
