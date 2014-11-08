@@ -25,6 +25,12 @@ package MAT.Consoles.Text is
    procedure Error (Console : in out Console_Type;
                     Message : in String);
 
+   --  Report a notice message.
+   overriding
+   procedure Notice (Console : in out Console_Type;
+                     Kind    : in Notice_Type;
+                     Message : in String);
+
    --  Print the field value for the given field.
    overriding
    procedure Print_Field (Console : in out Console_Type;
