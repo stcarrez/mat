@@ -34,10 +34,9 @@ procedure Matp is
       Server  : MAT.Readers.Streams.Sockets.Socket_Listener_Type;
       Address : GNAT.Sockets.Sock_Addr_Type;
    begin
+      Target.Console (Console'Unchecked_Access);
       Address.Addr := GNAT.Sockets.Any_Inet_Addr;
       Address.Port := 4096;
---        Target.Console := Console'Unchecked_Access;
---        Target.Initialize (Server);
       Server.Start (Address);
       loop
          declare
