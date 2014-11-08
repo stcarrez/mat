@@ -40,6 +40,10 @@ package MAT.Targets is
    --  Get the console instance.
    function Console (Target : in Target_Type) return MAT.Consoles.Console_Access;
 
+   --  Set the console instance.
+   procedure Console (Target  : in out Target_Type;
+                      Console : in MAT.Consoles.Console_Access);
+
    --  Get the current process instance.
    function Process (Target : in Target_Type) return Target_Process_Type_Access;
 
