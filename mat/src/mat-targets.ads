@@ -27,6 +27,7 @@ package MAT.Targets is
 
    type Target_Process_Type is tagged limited record
       Pid     : MAT.Types.Target_Process_Ref;
+      Path    : Ada.Strings.Unbounded.Unbounded_String;
       Memory  : MAT.Memory.Targets.Target_Memory;
       Symbols : MAT.Symbols.Targets.Target_Symbols_Ref;
       Console : MAT.Consoles.Console_Access;
@@ -56,6 +57,7 @@ package MAT.Targets is
    --  the given process ID.
    procedure Create_Process (Target  : in out Target_Type;
                              Pid     : in MAT.Types.Target_Process_Ref;
+                             Path    : in Ada.Strings.Unbounded.Unbounded_String;
                              Process : out Target_Process_Type_Access);
 
    --  Find the process instance from the process ID.
