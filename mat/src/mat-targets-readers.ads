@@ -28,7 +28,8 @@ package MAT.Targets.Readers is
 
    --  Create a new process after the begin event is received from the event stream.
    procedure Create_Process (For_Servant : in out Process_Servant;
-                             Pid         : in MAT.Types.Target_Process_Ref);
+                             Pid         : in MAT.Types.Target_Process_Ref;
+                             Path        : in Ada.Strings.Unbounded.Unbounded_String);
 
    overriding
    procedure Dispatch (For_Servant : in out Process_Servant;
