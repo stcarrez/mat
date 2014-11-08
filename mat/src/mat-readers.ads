@@ -138,4 +138,8 @@ private
    procedure Read_Definition (Client : in out Manager_Base;
                               Msg    : in out Message);
 
+   --  Read a list of event definitions from the stream and configure the reader.
+   procedure Read_Event_Definitions (Client : in out Manager_Base;
+                                     Msg    : in out Message);
+
 end MAT.Readers;
