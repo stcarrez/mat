@@ -243,14 +243,14 @@ package body MAT.Commands is
       end if;
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_FILE_NAME, "File", 20);
-      Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 20);
       Console.Print_Title (MAT.Consoles.F_LINE_NUMBER, "Line", 6);
-      Console.Print_Title (MAT.Consoles.F_COUNT, "# Allocation", 12);
-      Console.Print_Title (MAT.Consoles.F_TOTAL_SIZE, "Total size", 15);
-      Console.Print_Title (MAT.Consoles.F_MIN_SIZE, "Min slot size", 15);
-      Console.Print_Title (MAT.Consoles.F_MAX_SIZE, "Max slot size", 15);
-      Console.Print_Title (MAT.Consoles.F_MIN_ADDR, "Low address", 15);
-      Console.Print_Title (MAT.Consoles.F_MAX_ADDR, "High address", 15);
+      Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 20);
+      Console.Print_Title (MAT.Consoles.F_COUNT, "# Slots", 10);
+      Console.Print_Title (MAT.Consoles.F_TOTAL_SIZE, "Total size", 12);
+      Console.Print_Title (MAT.Consoles.F_MIN_SIZE, "Min size", 10);
+      Console.Print_Title (MAT.Consoles.F_MAX_SIZE, "Max size", 10);
+      Console.Print_Title (MAT.Consoles.F_MIN_ADDR, "Low addr", 10);
+      Console.Print_Title (MAT.Consoles.F_MAX_ADDR, "High addr", 10);
       Console.End_Title;
 
       MAT.Memory.Targets.Frame_Information (Memory => Process.Memory,
@@ -273,9 +273,13 @@ package body MAT.Commands is
                                                    Func    => File_Name,
                                                    Line    => Line);
             Console.Start_Row;
-            Console.Print_Field (MAT.Consoles.F_FILE_NAME, File_Name);
-            Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME, Name);
-            Console.Print_Field (MAT.Consoles.F_LINE_NUMBER, Line);
+            if Ada.Strings.Unbounded.Length (Name) = 0 then
+               Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME, Func);
+            else
+               Console.Print_Field (MAT.Consoles.F_FILE_NAME, File_Name);
+               Console.Print_Field (MAT.Consoles.F_LINE_NUMBER, Line);
+               Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME, Name);
+            end if;
             Console.Print_Field (MAT.Consoles.F_COUNT, Info.Memory.Alloc_Count);
             Console.Print_Size (MAT.Consoles.F_TOTAL_SIZE, Info.Memory.Total_Size);
             Console.Print_Size (MAT.Consoles.F_MIN_SIZE, Info.Memory.Min_Slot_Size);
