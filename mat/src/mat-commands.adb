@@ -439,7 +439,7 @@ package body MAT.Commands is
       loop
          case GNAT.Command_Line.Getopt ("i nw b:") is
             when ASCII.NUL =>
-               Usage;
+               exit;
 
             when 'i' =>
                Options.Interactive := True;
@@ -467,6 +467,21 @@ package body MAT.Commands is
          Usage;
 
    end Initialize_Options;
+
+   --  ------------------------------
+   --  Initialize the process targets by loading the MAT files.
+   --  ------------------------------
+   procedure Initialize_Files (Target  : in out MAT.Targets.Target_Type'Class) is
+   begin
+      loop
+         declare
+            Path : constant String := GNAT.Command_Line.Get_Argument;
+         begin
+            exit when Path'Length = 0;
+            Open_Command (Target, Path);
+         end;
+      end loop;
+   end Initialize_Files;
 
 begin
    Commands.Insert ("exit", Exit_Command'Access);
