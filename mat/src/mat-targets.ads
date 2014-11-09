@@ -23,6 +23,7 @@ with GNAT.Sockets;
 with MAT.Types;
 with MAT.Memory.Targets;
 with MAT.Symbols.Targets;
+with MAT.Readers.Streams.Sockets;
 with MAT.Readers;
 with MAT.Consoles;
 package MAT.Targets is
@@ -88,6 +89,9 @@ package MAT.Targets is
    --  Parse the command line arguments and configure the target instance.
    procedure Initialize_Options (Target  : in out MAT.Targets.Target_Type);
 
+   --  Start the server to listen to MAT event socket streams.
+   procedure Start (Target : in out Target_Type);
+
    --  Convert the string to a socket address.  The string can have two forms:
    --     port
    --     host:port
@@ -113,6 +117,7 @@ private
       Processes : Process_Map;
       Console   : MAT.Consoles.Console_Access;
       Options   : Options_Type;
+      Server    : MAT.Readers.Streams.Sockets.Socket_Listener_Type;
    end record;
 
 end MAT.Targets;
