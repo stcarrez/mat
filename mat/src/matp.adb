@@ -28,7 +28,7 @@ begin
    Target.Initialize_Options;
    MAT.Commands.Initialize_Files (Target);
    Target.Start;
-   MAT.Commands.Interactive (Target);
+   Target.Interactive;
    Target.Stop;
 
 exception
