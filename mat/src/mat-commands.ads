@@ -45,4 +45,9 @@ package MAT.Commands is
    procedure Initialize_Options (Target  : in out MAT.Targets.Target_Type'Class;
                                  Options : in out Options_Type);
 
+   --  Convert the string to a socket address.  The string can have two forms:
+   --     port
+   --     host:port
+   function To_Sock_Addr_Type (Param : in String) return GNAT.Sockets.Sock_Addr_Type;
+
 end MAT.Commands;
