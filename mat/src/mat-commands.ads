@@ -50,4 +50,7 @@ package MAT.Commands is
    --     host:port
    function To_Sock_Addr_Type (Param : in String) return GNAT.Sockets.Sock_Addr_Type;
 
+   --  Print the application usage.
+   procedure Usage;
+
 end MAT.Commands;
