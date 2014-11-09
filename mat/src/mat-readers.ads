@@ -23,7 +23,6 @@ with Ada.Finalization;
 
 with System;
 
-with Util.Properties;
 with Util.Streams.Buffered;
 
 with MAT.Types;
