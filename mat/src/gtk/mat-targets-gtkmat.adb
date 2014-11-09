@@ -16,9 +16,13 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Glib.Error;
+with Glib.Object;
+
 with Gtk.Main;
+with Gtk.Label;
 
 with MAT.Callbacks;
+with MAT.Consoles.Text;
 package body MAT.Targets.Gtkmat is
 
    --  ------------------------------
@@ -29,6 +33,7 @@ package body MAT.Targets.Gtkmat is
    begin
       Target.Options.Interactive := False;
       Target.Options.Graphical   := True;
+      Target.Console := new MAT.Consoles.Text.Console_Type;
    end Initialize;
 
    --  ------------------------------
@@ -87,6 +92,23 @@ package body MAT.Targets.Gtkmat is
    end Gtk_Loop;
 
    --  ------------------------------
+   --  Set the UI label with the given value.
+   --  ------------------------------
+   procedure Set_Label (Target : in Target_Type;
+                        Name   : in String;
+                        Value  : in String) is
+      use type Glib.Object.GObject;
+
+      Object : constant Glib.Object.GObject := Target.Builder.Get_Object (Name);
+      Label  : Gtk.Label.Gtk_Label;
+   begin
+      if Object /= null then
+         Label := Gtk.Label.Gtk_Label (Object);
+         Label.Set_Label (Value);
+      end if;
+   end Set_Label;
+
+   --  ------------------------------
    --  Create a process instance to hold and keep track of memory and other information about
    --  the given process ID.
    --  ------------------------------
@@ -97,6 +119,7 @@ package body MAT.Targets.Gtkmat is
                              Process : out Target_Process_Type_Access) is
    begin
       MAT.Targets.Target_Type (Target).Create_Process (Pid, Path, Process);
+      Target.Set_Label ("process_info", "Process:" & MAT.Types.Target_Process_Ref'Image (Pid));
    end Create_Process;
 
 end MAT.Targets.Gtkmat;
