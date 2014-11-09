@@ -22,24 +22,6 @@ package MAT.Commands is
 
    Stop_Interp : exception;
 
-   --  Exception raised if some option is invalid.
-   Usage_Error : exception;
-
-   --  The options that can be configured through the command line.
-   type Options_Type is record
-      --  Enable and enter in the interactive TTY console mode.
-      Interactive  : Boolean := True;
-
-      --  Try to load the symbol file automatically when a new process is recieved.
-      Load_Symbols : Boolean := True;
-
-      --  Enable the graphical mode (when available).
-      Graphical    : Boolean := False;
-
-      --  Define the server listening address.
-      Address      : GNAT.Sockets.Sock_Addr_Type := (Port => 4096, others => <>);
-   end record;
-
    --  Procedure that defines a command handler.
    type Command_Handler is access procedure (Target : in out MAT.Targets.Target_Type'Class;
                                              Args   : in String);
@@ -51,10 +33,6 @@ package MAT.Commands is
    --  Enter in the interactive loop reading the commands from the standard input
    --  and executing the commands.
    procedure Interactive (Target : in out MAT.Targets.Target_Type'Class);
-
-   --  Parse the command line arguments and configure the target instance.
-   procedure Initialize_Options (Target  : in out MAT.Targets.Target_Type'Class;
-                                 Options : in out Options_Type);
 
    --  Initialize the process targets by loading the MAT files.
    procedure Initialize_Files (Target  : in out MAT.Targets.Target_Type'Class);
