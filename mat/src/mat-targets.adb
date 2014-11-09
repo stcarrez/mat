@@ -111,6 +111,19 @@ package body MAT.Targets is
    end Find_Process;
 
    --  ------------------------------
+   --  Iterate over the list of connected processes and execute the <tt>Process</tt> procedure.
+   --  ------------------------------
+   procedure Iterator (Target  : in Target_Type;
+                       Process : access procedure (Proc : in Target_Process_Type'Class)) is
+      Iter : Process_Cursor := Target.Processes.First;
+   begin
+      while Process_Maps.Has_Element (Iter) loop
+         Process (Process_Maps.Element (Iter).all);
+         Process_Maps.Next (Iter);
+      end loop;
+   end Iterator;
+
+   --  ------------------------------
    --  Convert the string to a socket address.  The string can have two forms:
    --     port
    --     host:port
