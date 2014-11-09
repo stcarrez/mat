@@ -76,6 +76,7 @@ package body MAT.Readers.Streams is
       Msg.Buffer.Start := Reader.Data (0)'Address;
       Msg.Buffer.Current := Msg.Buffer.Start;
       Msg.Buffer.Last := Reader.Data (MAX_MSG_SIZE)'Address;
+      Msg.Buffer.Size := 1;
       Buffer.Buffer := Reader.Data;
       Reader.Stream.Read (Reader.Data (0 .. 0), Last);
       Format := MAT.Readers.Marshaller.Get_Uint8 (Msg.Buffer);
