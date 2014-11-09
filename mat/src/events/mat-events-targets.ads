@@ -17,18 +17,26 @@
 -----------------------------------------------------------------------
 with Ada.Containers.Ordered_Maps;
 
+with Util.Concurrent.Counters;
+
 with MAT.Frames;
 package MAT.Events.Targets is
 
    type Target_Event is record
-      Event : Event_Type;
+      Event : MAT.Types.Uint16;
       Frame : MAT.Frames.Frame_Type;
    end record;
 
    type Target_Events is tagged limited private;
+   type Target_Events_Access is access all Target_Events'Class;
 
+   --  Add the event in the list of events and increment the event counter.
    procedure Insert (Target : in out Target_Events;
-                     Event  : in Target_Event);
+                     Event  : in MAT.Types.Uint16;
+                     Frame  : in MAT.Events.Frame_Info);
+
+   --  Get the current event counter.
+   function Get_Event_Counter (Target : in Target_Events) return Integer;
 
 private
 
@@ -40,8 +48,19 @@ private
    subtype Event_Map is Event_Maps.Map;
    subtype Event_Cursor is Event_Maps.Cursor;
 
-   type Target_Events is tagged limited record
+   protected type Event_Collector is
+
+      --  Add the event in the list of events.
+      procedure Insert (Event  : in MAT.Types.Uint16;
+                        Frame  : in MAT.Events.Frame_Info);
+
+   private
       Events        : Event_Map;
+   end Event_Collector;
+
+   type Target_Events is tagged limited record
+      Events      : Event_Collector;
+      Event_Count : Util.Concurrent.Counters.Counter;
    end record;
 
 end MAT.Events.Targets;
