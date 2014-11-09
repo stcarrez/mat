@@ -24,6 +24,7 @@ with GNAT.Sockets;
 with MAT.Types;
 with MAT.Memory.Targets;
 with MAT.Symbols.Targets;
+with MAT.Events.Targets;
 with MAT.Readers.Streams.Sockets;
 with MAT.Readers;
 with MAT.Consoles;
@@ -52,6 +53,7 @@ package MAT.Targets is
       Path    : Ada.Strings.Unbounded.Unbounded_String;
       Memory  : MAT.Memory.Targets.Target_Memory;
       Symbols : MAT.Symbols.Targets.Target_Symbols_Ref;
+      Events  : aliased MAT.Events.Targets.Target_Events;
       Console : MAT.Consoles.Console_Access;
    end record;
    type Target_Process_Type_Access is access all Target_Process_Type'Class;
