@@ -18,7 +18,6 @@
 with Ada.Streams.Stream_IO;
 
 with Util.Log.Loggers;
-with MAT.Readers.Marshaller;
 package body MAT.Readers.Streams.Files is
 
    --  The logger
@@ -26,7 +25,9 @@ package body MAT.Readers.Streams.Files is
 
    BUFFER_SIZE  : constant Natural := 100 * 1024;
 
+   --  ------------------------------
    --  Open the file.
+   --  ------------------------------
    procedure Open (Reader : in out File_Reader_Type;
                    Path   : in String) is
    begin
