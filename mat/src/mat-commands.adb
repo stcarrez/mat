@@ -29,7 +29,6 @@ with Ada.Strings.Unbounded;
 with GNAT.Command_Line;
 
 with Bfd;
-with Readline;
 
 with MAT.Types;
 with MAT.Readers.Streams.Files;
@@ -372,25 +371,6 @@ package body MAT.Commands is
          Target.Console.Error ("Exception while processing command");
 
    end Execute;
-
-   --  ------------------------------
-   --  Enter in the interactive loop reading the commands from the standard input
-   --  and executing the commands.
-   --  ------------------------------
-   procedure Interactive (Target : in out MAT.Targets.Target_Type'Class) is
-   begin
-      loop
-         declare
-            Line : constant String := Readline.Get_Line ("matp>");
-         begin
-            MAT.Commands.Execute (Target, Line);
-
-         exception
-            when MAT.Commands.Stop_Interp =>
-               exit;
-         end;
-      end loop;
-   end Interactive;
 
    --  ------------------------------
    --  Initialize the process targets by loading the MAT files.
