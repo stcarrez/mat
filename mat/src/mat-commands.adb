@@ -47,8 +47,6 @@ package body MAT.Commands is
    function Get_Command (Line : in String) return String;
    procedure Slot_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String);
-   procedure Symbol_Command (Target : in out MAT.Targets.Target_Type'Class;
-                             Args   : in String);
    procedure Frames_Command (Target : in out MAT.Targets.Target_Type'Class;
                              Args   : in String);
    procedure Threads_Command (Target : in out MAT.Targets.Target_Type'Class;
@@ -419,10 +417,11 @@ package body MAT.Commands is
    procedure Usage is
       use Ada.Text_IO;
    begin
-      Put_Line ("Usage: mat [-i] [-nw] [-b [ip:]port] [file.mat]");
+      Put_Line ("Usage: mat [-i] [-nw] [-ns] [-b [ip:]port] [file.mat]");
       Put_Line ("-i            Enable the interactive mode");
       Put_Line ("-nw           Disable the graphical mode");
       Put_Line ("-b [ip:]port  Define the port and local address to bind");
+      Put_Line ("-ns           Disable the automatic symbols loading");
       Ada.Command_Line.Set_Exit_Status (2);
       raise Usage_Error;
    end Usage;
@@ -437,7 +436,7 @@ package body MAT.Commands is
       GNAT.Command_Line.Initialize_Option_Scan (Stop_At_First_Non_Switch => True,
                                                 Section_Delimiters       => "targs");
       loop
-         case GNAT.Command_Line.Getopt ("i nw b:") is
+         case GNAT.Command_Line.Getopt ("i nw ns b:") is
             when ASCII.NUL =>
                exit;
 
@@ -448,7 +447,11 @@ package body MAT.Commands is
                Options.Address := To_Sock_Addr_Type (GNAT.Command_Line.Parameter);
 
             when 'n' =>
-               Options.Graphical := False;
+               if GNAT.Command_Line.Full_Switch = "nw" then
+                  Options.Graphical := False;
+               else
+                  Options.Load_Symbols := False;
+               end if;
 
             when '*' =>
                exit;
