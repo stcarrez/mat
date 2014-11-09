@@ -37,14 +37,6 @@ package MAT.Commands is
    --  Initialize the process targets by loading the MAT files.
    procedure Initialize_Files (Target  : in out MAT.Targets.Target_Type'Class);
 
-   --  Convert the string to a socket address.  The string can have two forms:
-   --     port
-   --     host:port
-   function To_Sock_Addr_Type (Param : in String) return GNAT.Sockets.Sock_Addr_Type;
-
-   --  Print the application usage.
-   procedure Usage;
-
    --  Symbol command.
    --  Load the symbols from the binary file.
    procedure Symbol_Command (Target : in out MAT.Targets.Target_Type'Class;
