@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 with Ada.Strings.Unbounded;
 with Ada.Containers.Ordered_Maps;
+with Ada.Finalization;
 
 with GNAT.Sockets;
 
@@ -55,7 +56,7 @@ package MAT.Targets is
    end record;
    type Target_Process_Type_Access is access all Target_Process_Type'Class;
 
-   type Target_Type is tagged limited private;
+   type Target_Type is new Ada.Finalization.Limited_Controlled with private;
 
    type Target_Type_Access is access all Target_Type'Class;
 
@@ -115,7 +116,7 @@ private
    subtype Process_Map is Process_Maps.Map;
    subtype Process_Cursor is Process_Maps.Cursor;
 
-   type Target_Type is tagged limited record
+   type Target_Type is new Ada.Finalization.Limited_Controlled with record
       Current   : Target_Process_Type_Access;
       Processes : Process_Map;
       Console   : MAT.Consoles.Console_Access;
