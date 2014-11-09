@@ -23,6 +23,7 @@ package MAT.Targets.Readers is
       Target  : Target_Type_Access;
       Reader  : MAT.Readers.Manager;
       Process : Target_Process_Type_Access;
+      Events  : MAT.Events.Targets.Target_Events_Access;
    end record;
    type Process_Reader_Access is access all Process_Servant'Class;
 
