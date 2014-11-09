@@ -27,7 +27,8 @@ package body MAT.Targets.Gtkmat is
    overriding
    procedure Initialize (Target : in out Target_Type) is
    begin
-      Target.Options.Graphical := True;
+      Target.Options.Interactive := False;
+      Target.Options.Graphical   := True;
    end Initialize;
 
    --  ------------------------------
@@ -45,21 +46,41 @@ package body MAT.Targets.Gtkmat is
          MAT.Callbacks.Initialize (Target.Builder);
          Target.Builder.Do_Connect;
          Widget := Gtk.Widget.Gtk_Widget (Target.Builder.Get_Object ("main"));
-         Widget.Show_All;
-         Target.Gui_Task.Start (Widget);
       else
          Widget := null;
       end if;
    end Initialize_Widget;
 
-   task body Gtk_Loop is
+   --  ------------------------------
+   --  Enter in the interactive loop reading the commands from the standard input
+   --  and executing the commands.
+   --  ------------------------------
+   overriding
+   procedure Interactive (Target : in out Target_Type) is
       Main : Gtk.Widget.Gtk_Widget;
    begin
-      select
-         accept Start (Widget : in Gtk.Widget.Gtk_Widget) do
-            Main := Widget;
-         end Start;
+      if Target.Options.Graphical then
+         Main := Gtk.Widget.Gtk_Widget (Target.Builder.Get_Object ("main"));
+         Main.Show_All;
+      end if;
+      if Target.Options.Interactive and Target.Options.Graphical then
+         Target.Gui_Task.Start (Target'Unchecked_Access);
+      end if;
+      if Target.Options.Graphical then
          Gtk.Main.Main;
+      else
+         MAT.Targets.Target_Type (Target).Interactive;
+      end if;
+   end Interactive;
+
+   task body Gtk_Loop is
+      Main : Target_Type_Access;
+   begin
+      select
+         accept Start (Target : in Target_Type_Access) do
+            Main := Target;
+         end Start;
+         MAT.Targets.Target_Type (Main.all).Interactive;
       or
          terminate;
       end select;
