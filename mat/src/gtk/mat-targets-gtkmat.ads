@@ -21,6 +21,7 @@ with Gtkada.Builder;
 package MAT.Targets.Gtkmat is
 
    type Target_Type is new MAT.Targets.Target_Type with private;
+   type Target_Type_Access is access all Target_Type'Class;
 
    --  Initialize the target instance.
    overriding
@@ -38,10 +39,15 @@ package MAT.Targets.Gtkmat is
                              Path    : in Ada.Strings.Unbounded.Unbounded_String;
                              Process : out Target_Process_Type_Access);
 
+   --  Enter in the interactive loop reading the commands from the standard input
+   --  and executing the commands.
+   overriding
+   procedure Interactive (Target : in out Target_Type);
+
 private
 
    task type Gtk_Loop is
-      entry Start (Widget : in Gtk.Widget.Gtk_Widget);
+      entry Start (Target : in Target_Type_Access);
    end Gtk_Loop;
 
    type Target_Type is new MAT.Targets.Target_Type with record
