@@ -31,6 +31,6 @@ begin
    Target.Initialize_Widget (Main);
    MAT.Commands.Initialize_Files (Target);
    Target.Start;
-   MAT.Commands.Interactive (Target);
+   Target.Interactive;
    Target.Stop;
 end GtkMatp;
