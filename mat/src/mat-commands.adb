@@ -271,8 +271,8 @@ package body MAT.Commands is
          begin
             MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Process.Symbols.Value.all,
                                                    Addr    => Func,
-                                                   Name    => Name,
-                                                   Func    => File_Name,
+                                                   Name    => File_Name,
+                                                   Func    => Name,
                                                    Line    => Line);
             Console.Start_Row;
             if Ada.Strings.Unbounded.Length (Name) = 0 then
