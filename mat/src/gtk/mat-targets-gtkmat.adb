@@ -48,7 +48,7 @@ package body MAT.Targets.Gtkmat is
          Gtk.Main.Init;
          Gtkada.Builder.Gtk_New (Target.Builder);
          Result := Target.Builder.Add_From_File ("mat.glade", Error'Access);
-         MAT.Callbacks.Initialize (Target.Builder);
+         MAT.Callbacks.Initialize (Target'Unchecked_Access, Target.Builder);
          Target.Builder.Do_Connect;
          Widget := Gtk.Widget.Gtk_Widget (Target.Builder.Get_Object ("main"));
       else
@@ -121,5 +121,24 @@ package body MAT.Targets.Gtkmat is
       MAT.Targets.Target_Type (Target).Create_Process (Pid, Path, Process);
       Target.Set_Label ("process_info", "Process:" & MAT.Types.Target_Process_Ref'Image (Pid));
    end Create_Process;
+
+   --  ------------------------------
+   --  Refresh the information about the current process.
+   --  ------------------------------
+   procedure Refresh_Process (Target  : in out Target_Type) is
+      use type MAT.Events.Targets.Target_Events_Access;
+
+      Counter : Integer;
+   begin
+      if Target.Current = null or else Target.Current.Events = null then
+         return;
+      end if;
+      Counter := Target.Current.Events.Get_Event_Counter;
+      if Counter = Target.Previous_Event_Counter then
+         return;
+      end if;
+      Target.Previous_Event_Counter := Counter;
+      Target.Set_Label ("event_info", "Events:" & Integer'Image (Counter));
+   end Refresh_Process;
 
 end MAT.Targets.Gtkmat;
