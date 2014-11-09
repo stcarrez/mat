@@ -89,6 +89,10 @@ package MAT.Targets is
                           Pid    : in MAT.Types.Target_Process_Ref)
                           return Target_Process_Type_Access;
 
+   --  Iterate over the list of connected processes and execute the <tt>Process</tt> procedure.
+   procedure Iterator (Target  : in Target_Type;
+                       Process : access procedure (Proc : in Target_Process_Type'Class));
+
    --  Parse the command line arguments and configure the target instance.
    procedure Initialize_Options (Target  : in out Target_Type);
 
