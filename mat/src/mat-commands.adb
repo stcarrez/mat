@@ -25,6 +25,8 @@ with Ada.IO_Exceptions;
 with Ada.Text_IO;
 with Ada.Strings.Unbounded;
 
+with GNAT.Command_Line;
+
 with Bfd;
 with Readline;
 
@@ -390,6 +392,58 @@ package body MAT.Commands is
          end;
       end loop;
    end Interactive;
+
+   --  ------------------------------
+   --  Convert the string to a socket address.  The string can have two forms:
+   --     port
+   --     host:port
+   --  ------------------------------
+   function To_Sock_Addr_Type (Param : in String) return GNAT.Sockets.Sock_Addr_Type is
+      Pos    : constant Natural := Util.Strings.Index (Param, ':');
+      Result : GNAT.Sockets.Sock_Addr_Type;
+   begin
+      if Pos > 0 then
+         Result.Port := GNAT.Sockets.Port_Type'Value (Param (Pos + 1 .. Param'Last));
+         Result.Addr := GNAT.Sockets.Inet_Addr (Param (Param'First .. Pos - 1));
+      else
+         Result.Port := GNAT.Sockets.Port_Type'Value (Param);
+         Result.Addr := GNAT.Sockets.Any_Inet_Addr;
+      end if;
+      return Result;
+   end To_Sock_Addr_Type;
+
+   --  ------------------------------
+   --  Parse the command line arguments and configure the target instance.
+   --  ------------------------------
+   procedure Initialize_Options (Target  : in out MAT.Targets.Target_Type'Class;
+                                 Options : in out Options_Type) is
+   begin
+      Util.Log.Loggers.Initialize ("matp.properties");
+      GNAT.Command_Line.Initialize_Option_Scan (Stop_At_First_Non_Switch => True,
+                                                Section_Delimiters       => "targs");
+      loop
+         case GNAT.Command_Line.Getopt ("* i nw b:") is
+            when ASCII.NUL =>
+               exit;
+
+            when 'i' =>
+               Options.Interactive := True;
+
+            when 'b' =>
+               Options.Address := To_Sock_Addr_Type (GNAT.Command_Line.Parameter);
+
+            when 'n' =>
+               Options.Graphical := False;
+
+            when '*' =>
+               exit;
+
+            when others =>
+               null;
+
+         end case;
+      end loop;
+   end Initialize_Options;
 
 begin
    Commands.Insert ("exit", Exit_Command'Access);
