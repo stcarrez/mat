@@ -170,6 +170,7 @@ package body MAT.Readers is
    procedure Dispatch_Message (Client : in out Manager_Base;
                                Msg    : in out Message) is
       use type MAT.Events.Attribute_Table_Ptr;
+      use type MAT.Events.Targets.Target_Events_Access;
 
       Event : constant MAT.Types.Uint16 := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
       Pos   : constant Handler_Maps.Cursor := Client.Handlers.Find (Event);
@@ -188,6 +189,9 @@ package body MAT.Readers is
          declare
             Handler : constant Message_Handler := Handler_Maps.Element (Pos);
          begin
+            if Client.Events /= null then
+               Client.Events.Insert (Event, Client.Frame.all);
+            end if;
             Dispatch (Handler.For_Servant.all, Handler.Id, Handler.Mapping.all'Access,
                       Client.Frame.all, Msg);
          end;
