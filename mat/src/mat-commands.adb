@@ -18,7 +18,6 @@
 with Util.Strings;
 with Util.Log.Loggers;
 
-with Ada.Command_Line;
 with Ada.Containers.Indefinite_Hashed_Maps;
 with Ada.Strings.Hash;
 with Ada.Exceptions;
@@ -77,7 +76,7 @@ package body MAT.Commands is
 
       Slots   : MAT.Memory.Allocation_Map;
       Iter    : MAT.Memory.Allocation_Cursor;
-      Symbols : MAT.Symbols.Targets.Target_Symbols_Ref := Target.Process.Symbols;
+      Symbols : constant MAT.Symbols.Targets.Target_Symbols_Ref := Target.Process.Symbols;
 
       procedure Print (Addr : in MAT.Types.Target_Addr;
                        Slot : in MAT.Memory.Allocation) is
