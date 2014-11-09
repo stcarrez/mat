@@ -90,6 +90,14 @@ package MAT.Readers is
    function Get_Target_Events (Client : in Manager_Base)
                                return MAT.Events.Targets.Target_Events_Access;
 
+   type Reader_List_Type is limited interface;
+   type Reader_List_Type_Access is access all Reader_List_Type'Class;
+
+   --  Initialize the target object to manage the memory slots, the stack frames
+   --  and setup the reader to analyze the memory and other events.
+   procedure Initialize (List   : in out Reader_List_Type;
+                         Reader : in out Manager_Base'Class) is abstract;
+
 private
 
    type Endian_Type is (BIG_ENDIAN, LITTLE_ENDIAN);
