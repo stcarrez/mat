@@ -18,6 +18,7 @@
 with Util.Strings;
 with Util.Log.Loggers;
 
+with Ada.Command_Line;
 with Ada.Containers.Indefinite_Hashed_Maps;
 with Ada.Strings.Hash;
 with Ada.Exceptions;
@@ -413,6 +414,19 @@ package body MAT.Commands is
    end To_Sock_Addr_Type;
 
    --  ------------------------------
+   --  Print the application usage.
+   --  ------------------------------
+   procedure Usage is
+      use Ada.Text_IO;
+   begin
+      Put_Line ("mat [-i] [-nw] [-b [ip:]port] [file.mat]");
+      Put_Line ("-i            Enable the interactive mode");
+      Put_Line ("-nw           Disable the graphical mode");
+      Put_Line ("-b [ip:]port  Define the port and local address to bind");
+      Ada.Command_Line.Set_Exit_Status (2);
+   end Usage;
+
+   --  ------------------------------
    --  Parse the command line arguments and configure the target instance.
    --  ------------------------------
    procedure Initialize_Options (Target  : in out MAT.Targets.Target_Type'Class;
@@ -439,7 +453,7 @@ package body MAT.Commands is
                exit;
 
             when others =>
-               null;
+               Usage;
 
          end case;
       end loop;
