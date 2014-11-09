@@ -186,4 +186,12 @@ package body MAT.Targets is
 
    end Initialize_Options;
 
+   --  ------------------------------
+   --  Start the server to listen to MAT event socket streams.
+   --  ------------------------------
+   procedure Start (Target : in out Target_Type) is
+   begin
+      Target.Server.Start (Target.Options.Address);
+   end Start;
+
 end MAT.Targets;
