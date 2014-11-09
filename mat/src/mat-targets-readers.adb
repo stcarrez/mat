@@ -124,7 +124,7 @@ package body MAT.Targets.Readers is
         := new Process_Servant;
    begin
       Process_Reader.Target := Target'Unrestricted_Access;
-      Reader.Set_Target_Events (Process_Reader.Events);
+      Process_Reader.Events := Reader.Get_Target_Events;
       Register (Reader, Process_Reader);
    end Initialize;
 
