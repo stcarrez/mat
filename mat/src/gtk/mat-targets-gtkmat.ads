@@ -22,6 +22,10 @@ package MAT.Targets.Gtkmat is
 
    type Target_Type is new MAT.Targets.Target_Type with private;
 
+   --  Initialize the target instance.
+   overriding
+   procedure Initialize (Target : in out Target_Type);
+
    --  Initialize the widgets and create the Gtk gui.
    procedure Initialize_Widget (Target : in out Target_Type;
                                 Widget : out Gtk.Widget.Gtk_Widget);
@@ -36,8 +40,13 @@ package MAT.Targets.Gtkmat is
 
 private
 
+   task type Gtk_Loop is
+      entry Start (Widget : in Gtk.Widget.Gtk_Widget);
+   end Gtk_Loop;
+
    type Target_Type is new MAT.Targets.Target_Type with record
-      Builder : Gtkada.Builder.Gtkada_Builder;
+      Builder  : Gtkada.Builder.Gtkada_Builder;
+      Gui_Task : Gtk_Loop;
    end record;
 
 end MAT.Targets.Gtkmat;
