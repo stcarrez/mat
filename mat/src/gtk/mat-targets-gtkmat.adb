@@ -119,7 +119,7 @@ package body MAT.Targets.Gtkmat is
                              Process : out Target_Process_Type_Access) is
    begin
       MAT.Targets.Target_Type (Target).Create_Process (Pid, Path, Process);
-      Target.Set_Label ("process_info", "Process:" & MAT.Types.Target_Process_Ref'Image (Pid));
+      Target.Set_Label ("process_info", "Pid:" & MAT.Types.Target_Process_Ref'Image (Pid));
    end Create_Process;
 
    --  ------------------------------
@@ -129,6 +129,7 @@ package body MAT.Targets.Gtkmat is
       use type MAT.Events.Targets.Target_Events_Access;
 
       Counter : Integer;
+      Stats   : MAT.Memory.Targets.Memory_Stat;
    begin
       if Target.Current = null or else Target.Current.Events = null then
          return;
@@ -139,6 +140,13 @@ package body MAT.Targets.Gtkmat is
       end if;
       Target.Previous_Event_Counter := Counter;
       Target.Set_Label ("event_info", "Events:" & Integer'Image (Counter));
+      Target.Current.Memory.Stat_Information (Stats);
+      Target.Set_Label ("thread_info", "Threads:"
+                        & Natural'Image (Stats.Thread_Count));
+      Target.Set_Label ("mem_used_info", "Used:"
+                        & MAT.Types.Target_Size'Image (Stats.Total_Alloc));
+      Target.Set_Label ("mem_free_info", "Free:"
+                        & MAT.Types.Target_Size'Image (Stats.Total_Free));
    end Refresh_Process;
 
 end MAT.Targets.Gtkmat;
