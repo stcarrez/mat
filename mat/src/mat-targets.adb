@@ -225,7 +225,7 @@ package body MAT.Targets is
    --  ------------------------------
    procedure Start (Target : in out Target_Type) is
    begin
-      Target.Server.Start (Target.Options.Address);
+      Target.Server.Start (Target'Unchecked_Access, Target.Options.Address);
    end Start;
 
    --  ------------------------------
