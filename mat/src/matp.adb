@@ -20,20 +20,18 @@ with Ada.IO_Exceptions;
 with MAT.Commands;
 with MAT.Targets;
 with MAT.Consoles.Text;
-with MAT.Readers.Streams.Sockets;
 procedure Matp is
    Target  : MAT.Targets.Target_Type;
    Console : aliased MAT.Consoles.Text.Console_Type;
-   Server  : MAT.Readers.Streams.Sockets.Socket_Listener_Type;
 begin
    Target.Console (Console'Unchecked_Access);
    Target.Initialize_Options;
    MAT.Commands.Initialize_Files (Target);
    Target.Start;
    MAT.Commands.Interactive (Target);
-   Server.Stop;
+   Target.Stop;
 
 exception
    when Ada.IO_Exceptions.End_Error | MAT.Targets.Usage_Error =>
-      Server.Stop;
+      Target.Stop;
 end Matp;
