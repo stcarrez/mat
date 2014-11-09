@@ -17,33 +17,23 @@
 -----------------------------------------------------------------------
 with Ada.IO_Exceptions;
 
-with Util.Log.Loggers;
-
-with Readline;
-
 with MAT.Commands;
 with MAT.Targets;
 with MAT.Consoles.Text;
-with MAT.Callbacks;
+with MAT.Targets.Gtkmat;
 
-with Glib.Error;
 with Gtk.Main;
 with Gtk.Widget;
-with Gtkada.Builder;
 procedure GtkMatp is
-
-   Builder : Gtkada.Builder.Gtkada_Builder;
-   Error   : aliased Glib.Error.GError;
-   Result  : Glib.Guint;
    Main    : Gtk.Widget.Gtk_Widget;
+   Target  : MAT.Targets.Gtkmat.Target_Type;
 begin
-   Gtk.Main.Init;
-   Util.Log.Loggers.Initialize ("matp.properties");
-   Gtkada.Builder.Gtk_New (Builder);
-   Result := Builder.Add_From_File ("mat.glade", Error'Access);
-   Builder.Do_Connect;
-   MAT.Callbacks.Initialize (Builder);
-   Main := Gtk.Widget.Gtk_Widget (Builder.Get_Object ("main"));
-   Main.Show_All;
+   Target.Initialize_Options;
+   Target.Initialize_Widget (Main);
+   MAT.Commands.Initialize_Files (Target);
+   Target.Start;
+   MAT.Commands.Interactive (Target);
+   Target.Stop;
+
    Gtk.Main.Main;
 end GtkMatp;
