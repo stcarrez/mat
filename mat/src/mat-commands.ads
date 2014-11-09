@@ -27,9 +27,17 @@ package MAT.Commands is
 
    --  The options that can be configured through the command line.
    type Options_Type is record
-      Interactive : Boolean := True;
-      Graphical   : Boolean := False;
-      Address     : GNAT.Sockets.Sock_Addr_Type := (Port => 4096, others => <>);
+      --  Enable and enter in the interactive TTY console mode.
+      Interactive  : Boolean := True;
+
+      --  Try to load the symbol file automatically when a new process is recieved.
+      Load_Symbols : Boolean := True;
+
+      --  Enable the graphical mode (when available).
+      Graphical    : Boolean := False;
+
+      --  Define the server listening address.
+      Address      : GNAT.Sockets.Sock_Addr_Type := (Port => 4096, others => <>);
    end record;
 
    --  Procedure that defines a command handler.
@@ -58,5 +66,10 @@ package MAT.Commands is
 
    --  Print the application usage.
    procedure Usage;
+
+   --  Symbol command.
+   --  Load the symbols from the binary file.
+   procedure Symbol_Command (Target : in out MAT.Targets.Target_Type'Class;
+                             Args   : in String);
 
 end MAT.Commands;
