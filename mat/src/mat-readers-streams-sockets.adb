@@ -48,10 +48,12 @@ package body MAT.Readers.Streams.Sockets is
    --  Open the socket to accept connections and start the listener task.
    --  ------------------------------
    procedure Start (Listener : in out Socket_Listener_Type;
+                    List     : in MAT.Readers.Reader_List_Type_Access;
                     Address  : in GNAT.Sockets.Sock_Addr_Type) is
    begin
       Log.Info ("Starting the listener socket task");
 
+      Listener.List := List;
       Listener.Listener.Start (Listener'Unchecked_Access, Address);
    end Start;
 
@@ -76,6 +78,7 @@ package body MAT.Readers.Streams.Sockets is
                                 Input  => Reader.Socket'Unchecked_Access,
                                 Output => null);
       Reader.Server.Start (Reader, Client);
+      Listener.List.Initialize (Reader.all);
       Listener.Clients.Append (Reader);
    end Create_Target;
 
@@ -113,7 +116,6 @@ package body MAT.Readers.Streams.Sockets is
          if Selector_Status = GNAT.Sockets.Completed then
             Instance.Create_Target (Client  => Client,
                                     Address => Peer);
-            GNAT.Sockets.Close_Socket (Client);
          end if;
       end loop;
       GNAT.Sockets.Close_Socket (Server);
@@ -148,7 +150,7 @@ package body MAT.Readers.Streams.Sockets is
 
    exception
       when E : others =>
-         Log.Error ("Exception", E);
+         Log.Error ("Exception", E, True);
          GNAT.Sockets.Close_Socket (Socket);
 
    end Socket_Reader_Task;
