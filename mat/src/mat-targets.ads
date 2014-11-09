@@ -90,6 +90,10 @@ package MAT.Targets is
    --  Parse the command line arguments and configure the target instance.
    procedure Initialize_Options (Target  : in out Target_Type);
 
+   --  Enter in the interactive loop reading the commands from the standard input
+   --  and executing the commands.
+   procedure Interactive (Target : in out MAT.Targets.Target_Type);
+
    --  Start the server to listen to MAT event socket streams.
    procedure Start (Target : in out Target_Type);
 
