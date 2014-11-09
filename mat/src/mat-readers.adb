@@ -115,6 +115,15 @@ package body MAT.Readers is
       Into.Readers.Insert (Name, Handler);
    end Register_Reader;
 
+   --  ------------------------------
+   --  Set the target events.
+   --  ------------------------------
+   procedure Set_Target_Events (Client : in out Manager_Base;
+                                Events : out MAT.Events.Targets.Target_Events_Access) is
+   begin
+      Events := Client.Events'Unchecked_Access;
+   end Set_Target_Events;
+
    procedure Read_Probe (Client : in out Manager_Base;
                          Msg    : in out Message) is
       use type Interfaces.Unsigned_64;
@@ -189,9 +198,7 @@ package body MAT.Readers is
          declare
             Handler : constant Message_Handler := Handler_Maps.Element (Pos);
          begin
-            if Client.Events /= null then
-               Client.Events.Insert (Event, Client.Frame.all);
-            end if;
+            Client.Events.Insert (Event, Client.Frame.all);
             Dispatch (Handler.For_Servant.all, Handler.Id, Handler.Mapping.all'Access,
                       Client.Frame.all, Msg);
          end;
