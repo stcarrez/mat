@@ -22,6 +22,15 @@ with MAT.Callbacks;
 package body MAT.Targets.Gtkmat is
 
    --  ------------------------------
+   --  Initialize the target instance.
+   --  ------------------------------
+   overriding
+   procedure Initialize (Target : in out Target_Type) is
+   begin
+      Target.Options.Graphical := True;
+   end Initialize;
+
+   --  ------------------------------
    --  Initialize the widgets and create the Gtk gui.
    --  ------------------------------
    procedure Initialize_Widget (Target : in out Target_Type;
@@ -37,10 +46,24 @@ package body MAT.Targets.Gtkmat is
          Target.Builder.Do_Connect;
          Widget := Gtk.Widget.Gtk_Widget (Target.Builder.Get_Object ("main"));
          Widget.Show_All;
+         Target.Gui_Task.Start (Widget);
       else
          Widget := null;
       end if;
    end Initialize_Widget;
+
+   task body Gtk_Loop is
+      Main : Gtk.Widget.Gtk_Widget;
+   begin
+      select
+         accept Start (Widget : in Gtk.Widget.Gtk_Widget) do
+            Main := Widget;
+         end Start;
+         Gtk.Main.Main;
+      or
+         terminate;
+      end select;
+   end Gtk_Loop;
 
    --  ------------------------------
    --  Create a process instance to hold and keep track of memory and other information about
