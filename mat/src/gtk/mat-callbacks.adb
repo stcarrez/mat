@@ -32,26 +32,22 @@ package body MAT.Callbacks is
    end record;
 
    package Timer_Callback is
-     new Glib.Main.Generic_Sources (Info);
+     new Glib.Main.Generic_Sources (MAT.Targets.Gtkmat.Target_Type_Access);
 
    Timer : Glib.Main.G_Source_Id;
    MemTotal : Natural := 1;
 
-   function Refresh_Timeout (Data : in Info) return Boolean is
-      Mem : constant Gtk.Label.Gtk_Label :=
-        Gtk.Label.Gtk_Label (Data.Builder.Get_Object ("memory_info"));
+   function Refresh_Timeout (Target : in MAT.Targets.Gtkmat.Target_Type_Access) return Boolean is
    begin
-      Log.Info ("Timeout callback");
-      MemTotal := MemTotal + 10;
-      Mem.Set_Label ("Memory " & Natural'Image (MemTotal));
+      Target.Refresh_Process;
       return True;
    end Refresh_Timeout;
 
    --  ------------------------------
    --  Initialize and register the callbacks.
    --  ------------------------------
-   procedure Initialize (Builder : in Gtkada.Builder.Gtkada_Builder) is
-      Data : Info;
+   procedure Initialize (Target  : in MAT.Targets.Gtkmat.Target_Type_Access;
+                         Builder : in Gtkada.Builder.Gtkada_Builder) is
    begin
       Builder.Register_Handler (Handler_Name => "quit",
                                 Handler      => MAT.Callbacks.On_Menu_Quit'Access);
@@ -59,8 +55,7 @@ package body MAT.Callbacks is
                                 Handler      => MAT.Callbacks.On_Menu_About'Access);
       Builder.Register_Handler (Handler_Name => "close-about",
                                 Handler      => MAT.Callbacks.On_Close_About'Access);
-      Data.Builder := Builder;
-      Timer := Timer_Callback.Timeout_Add (1000, Refresh_Timeout'Access, Data);
+      Timer := Timer_Callback.Timeout_Add (1000, Refresh_Timeout'Access, Target);
    end Initialize;
 
    --  ------------------------------
