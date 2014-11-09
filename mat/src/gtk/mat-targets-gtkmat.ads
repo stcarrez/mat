@@ -18,6 +18,8 @@
 
 with Gtk.Widget;
 with Gtkada.Builder;
+
+--  with MAT.Consoles.Gtkmat;
 package MAT.Targets.Gtkmat is
 
    type Target_Type is new MAT.Targets.Target_Type with private;
@@ -43,6 +45,11 @@ package MAT.Targets.Gtkmat is
    --  and executing the commands.
    overriding
    procedure Interactive (Target : in out Target_Type);
+
+   --  Set the UI label with the given value.
+   procedure Set_Label (Target : in Target_Type;
+                        Name   : in String;
+                        Value  : in String);
 
 private
 
