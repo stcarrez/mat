@@ -22,6 +22,9 @@ package MAT.Commands is
 
    Stop_Interp : exception;
 
+   --  Exception raised if some option is invalid.
+   Usage_Error : exception;
+
    --  The options that can be configured through the command line.
    type Options_Type is record
       Interactive : Boolean := True;
