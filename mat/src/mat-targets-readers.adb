@@ -48,6 +48,7 @@ package body MAT.Targets.Readers is
       For_Servant.Target.Create_Process (Pid     => Pid,
                                          Path    => Path,
                                          Process => For_Servant.Process);
+      For_Servant.Process.Events := For_Servant.Events;
       MAT.Memory.Targets.Initialize (Memory => For_Servant.Process.Memory,
                                      Reader => For_Servant.Reader.all);
    end Create_Process;
@@ -123,6 +124,7 @@ package body MAT.Targets.Readers is
         := new Process_Servant;
    begin
       Process_Reader.Target := Target'Unrestricted_Access;
+      Reader.Set_Target_Events (Process_Reader.Events);
       Register (Reader, Process_Reader);
    end Initialize;
 
