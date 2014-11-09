@@ -29,7 +29,7 @@ begin
    Target.Console (Console'Unchecked_Access);
    Target.Initialize_Options;
    MAT.Commands.Initialize_Files (Target);
-   Server.Start (Options.Address);
+   Target.Start;
    MAT.Commands.Interactive (Target);
    Server.Stop;
 
