@@ -16,10 +16,8 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.Unchecked_Deallocation;
-with Ada.Text_IO;
 
 with Util.Log.Loggers;
-with MAT.Frames.Print;
 package body MAT.Frames is
 
    use type MAT.Types.Target_Addr;
@@ -37,8 +35,11 @@ package body MAT.Frames is
                         Pc     : in Frame_Table;
                         Result : out Frame_Type);
 
+   --  Get the root frame object.
+   function Get_Root (Frame : in Frame_Type) return Frame_Type;
+   function Check (Frame : in Frame_Type) return Boolean;
+
    function Check (Frame : in Frame_Type) return Boolean is
-      Parent : Frame_Type;
       Child  : Frame_Type;
       Result : Boolean := True;
    begin
