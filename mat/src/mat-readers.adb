@@ -97,6 +97,15 @@ package body MAT.Readers is
    end Hash;
 
    --  ------------------------------
+   --  Initialize the manager instance.
+   --  ------------------------------
+   overriding
+   procedure Initialize (Manager : in out Manager_Base) is
+   begin
+      Manager.Events := new MAT.Events.Targets.Target_Events;
+   end Initialize;
+
+   --  ------------------------------
    --  Register the reader to handle the event identified by the given name.
    --  The event is mapped to the given id and the attributes table is used
    --  to setup the mapping from the data stream attributes.
@@ -116,13 +125,13 @@ package body MAT.Readers is
    end Register_Reader;
 
    --  ------------------------------
-   --  Set the target events.
+   --  Get the target events.
    --  ------------------------------
-   procedure Set_Target_Events (Client : in out Manager_Base;
-                                Events : out MAT.Events.Targets.Target_Events_Access) is
+   function Get_Target_Events (Client : in Manager_Base)
+                               return MAT.Events.Targets.Target_Events_Access is
    begin
-      Events := Client.Events'Unchecked_Access;
-   end Set_Target_Events;
+      return Client.Events;
+   end Get_Target_Events;
 
    procedure Read_Probe (Client : in out Manager_Base;
                          Msg    : in out Message) is
