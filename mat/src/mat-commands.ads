@@ -30,10 +30,6 @@ package MAT.Commands is
    procedure Execute (Target : in out MAT.Targets.Target_Type'Class;
                       Line   : in String);
 
-   --  Enter in the interactive loop reading the commands from the standard input
-   --  and executing the commands.
-   procedure Interactive (Target : in out MAT.Targets.Target_Type'Class);
-
    --  Initialize the process targets by loading the MAT files.
    procedure Initialize_Files (Target  : in out MAT.Targets.Target_Type'Class);
 
