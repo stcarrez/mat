@@ -84,12 +84,12 @@ package body MAT.Targets is
                                 "Process" & MAT.Types.Target_Process_Ref'Image (Pid) & " created");
          Target.Console.Notice (MAT.Consoles.N_PATH_INFO,
                                 "Path " & Path_String);
-         if Target.Options.Load_Symbols then
-            MAT.Commands.Symbol_Command (Target, Path_String);
-         end if;
       end if;
       if Target.Current = null then
          Target.Current := Process;
+      end if;
+      if Target.Options.Load_Symbols then
+         MAT.Commands.Symbol_Command (Target, Path_String);
       end if;
    end Create_Process;
 
@@ -193,5 +193,13 @@ package body MAT.Targets is
    begin
       Target.Server.Start (Target.Options.Address);
    end Start;
+
+   --  ------------------------------
+   --  Stop the server thread.
+   --  ------------------------------
+   procedure Stop (Target : in out Target_Type) is
+   begin
+      Target.Server.Stop;
+   end Stop;
 
 end MAT.Targets;
