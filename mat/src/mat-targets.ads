@@ -87,10 +87,13 @@ package MAT.Targets is
                           return Target_Process_Type_Access;
 
    --  Parse the command line arguments and configure the target instance.
-   procedure Initialize_Options (Target  : in out MAT.Targets.Target_Type);
+   procedure Initialize_Options (Target  : in out Target_Type);
 
    --  Start the server to listen to MAT event socket streams.
    procedure Start (Target : in out Target_Type);
+
+   --  Stop the server thread.
+   procedure Stop (Target : in out Target_Type);
 
    --  Convert the string to a socket address.  The string can have two forms:
    --     port
