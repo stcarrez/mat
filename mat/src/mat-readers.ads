@@ -27,6 +27,7 @@ with Util.Streams.Buffered;
 
 with MAT.Types;
 with MAT.Events;
+with MAT.Events.Targets;
 package MAT.Readers is
 
    type Buffer_Type is private;
@@ -51,13 +52,6 @@ package MAT.Readers is
                        Params      : in MAT.Events.Const_Attribute_Table_Access;
                        Frame       : in MAT.Events.Frame_Info;
                        Msg         : in out Message) is abstract;
-   --  Dispatch the message
-
---     procedure Bind (For_Servant : in out Reader_Base) is abstract;
-   --  Bind the servant with the object adapter to register the
-   --  events it recognizes.  This is called once we have all the
-   --  information about the structures of events that we can
-   --  receive.
 
    -----------------
    --  Ipc Client Manager
@@ -137,6 +131,7 @@ private
       Flags       : MAT.Types.Uint16;
       Probe       : MAT.Events.Attribute_Table_Ptr;
       Frame       : access MAT.Events.Frame_Info;
+      Events      : MAT.Events.Targets.Target_Events_Access;
    end record;
 
    --  Read the event data stream headers with the event description.
