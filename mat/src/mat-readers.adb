@@ -17,14 +17,15 @@
 -----------------------------------------------------------------------
 with Util.Log.Loggers;
 
-with MAT.Events;
-with MAT.Types;
 with MAT.Readers.Marshaller;
 with Interfaces;
 package body MAT.Readers is
 
    --  The logger
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Readers");
+
+   procedure Read_Probe (Client : in out Manager_Base;
+                         Msg    : in out Message);
 
    P_TIME_SEC         : constant MAT.Events.Internal_Reference := 0;
    P_TIME_USEC        : constant MAT.Events.Internal_Reference := 1;
@@ -140,7 +141,7 @@ package body MAT.Readers is
       Count     : Natural := 0;
       Time_Sec  : MAT.Types.Uint32  := 0;
       Time_Usec : MAT.Types.Uint32 := 0;
-      Frame     : access MAT.Events.Frame_Info := Client.Frame;
+      Frame     : constant access MAT.Events.Frame_Info := Client.Frame;
    begin
       Frame.Thread := 0;
       Frame.Stack  := 0;
@@ -167,7 +168,7 @@ package body MAT.Readers is
                                     Def.Kind));
 
                when P_FRAME_PC =>
-                  for I in 1 .. Natural (Count) loop
+                  for I in 1 .. Count loop
                      if Count < Frame.Depth then
                         Frame.Frame (I) := MAT.Readers.Marshaller.Get_Target_Addr (Msg.Buffer,
                                                                                    Def.Kind);
@@ -229,8 +230,12 @@ package body MAT.Readers is
       Pos   : constant Reader_Maps.Cursor := Client.Readers.Find (Name);
       Frame : Message_Handler;
 
-      procedure Add_Handler (Key : in String;
+      procedure Add_Handler (Key     : in String;
+                             Element : in out Message_Handler);
+
+      procedure Add_Handler (Key     : in String;
                              Element : in out Message_Handler) is
+         pragma Unreferenced (Key);
       begin
          Client.Handlers.Insert (Event, Element);
       end Add_Handler;
@@ -252,7 +257,11 @@ package body MAT.Readers is
             Size : constant MAT.Types.Uint16 := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
 
             procedure Read_Attribute (Key     : in String;
+                                      Element : in out Message_Handler);
+
+            procedure Read_Attribute (Key     : in String;
                                       Element : in out Message_Handler) is
+               pragma Unreferenced (Key);
                use type MAT.Events.Attribute_Table_Ptr;
             begin
                if Element.Mapping = null then
