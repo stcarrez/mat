@@ -23,18 +23,17 @@ with MAT.Consoles.Text;
 with MAT.Readers.Streams.Sockets;
 procedure Matp is
    Target  : MAT.Targets.Target_Type;
-   Options : MAT.Commands.Options_Type;
    Console : aliased MAT.Consoles.Text.Console_Type;
    Server  : MAT.Readers.Streams.Sockets.Socket_Listener_Type;
 begin
    Target.Console (Console'Unchecked_Access);
-   MAT.Commands.Initialize_Options (Target, Options);
+   Target.Initialize_Options;
    MAT.Commands.Initialize_Files (Target);
    Server.Start (Options.Address);
    MAT.Commands.Interactive (Target);
    Server.Stop;
 
 exception
-   when Ada.IO_Exceptions.End_Error | MAT.Commands.Usage_Error =>
+   when Ada.IO_Exceptions.End_Error | MAT.Targets.Usage_Error =>
       Server.Stop;
 end Matp;
