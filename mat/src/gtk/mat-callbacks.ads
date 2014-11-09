@@ -15,12 +15,14 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with MAT.Types;
 with Gtkada.Builder;
+
+with MAT.Targets.Gtkmat;
 package MAT.Callbacks is
 
    --  Initialize and register the callbacks.
-   procedure Initialize (Builder : in Gtkada.Builder.Gtkada_Builder);
+   procedure Initialize (Target  : in MAT.Targets.Gtkmat.Target_Type_Access;
+                         Builder : in Gtkada.Builder.Gtkada_Builder);
 
    --  Callback executed when the "quit" action is executed from the menu.
    procedure On_Menu_Quit (Object : access Gtkada.Builder.Gtkada_Builder_Record'Class);
