@@ -17,10 +17,6 @@
 -----------------------------------------------------------------------
 with Ada.IO_Exceptions;
 
-with Util.Log.Loggers;
-
-with GNAT.Sockets;
-
 with MAT.Commands;
 with MAT.Targets;
 with MAT.Consoles.Text;
@@ -30,9 +26,7 @@ procedure Matp is
    Options : MAT.Commands.Options_Type;
    Console : aliased MAT.Consoles.Text.Console_Type;
    Server  : MAT.Readers.Streams.Sockets.Socket_Listener_Type;
-   Address : GNAT.Sockets.Sock_Addr_Type;
 begin
-   Util.Log.Loggers.Initialize ("matp.properties");
    Target.Console (Console'Unchecked_Access);
    MAT.Commands.Initialize_Options (Target, Options);
    Server.Start (Options.Address);
@@ -40,6 +34,6 @@ begin
    Server.Stop;
 
 exception
-   when Ada.IO_Exceptions.End_Error =>
+   when Ada.IO_Exceptions.End_Error | MAT.Commands.Usage_Error =>
       Server.Stop;
 end Matp;
