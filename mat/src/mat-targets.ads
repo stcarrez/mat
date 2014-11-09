@@ -88,6 +88,14 @@ package MAT.Targets is
    --  Parse the command line arguments and configure the target instance.
    procedure Initialize_Options (Target  : in out MAT.Targets.Target_Type);
 
+   --  Convert the string to a socket address.  The string can have two forms:
+   --     port
+   --     host:port
+   function To_Sock_Addr_Type (Param : in String) return GNAT.Sockets.Sock_Addr_Type;
+
+   --  Print the application usage.
+   procedure Usage;
+
 private
 
    --  Define a map of <tt>Target_Process_Type_Access</tt> keyed by the process Id.
