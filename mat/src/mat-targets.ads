@@ -53,7 +53,7 @@ package MAT.Targets is
       Path    : Ada.Strings.Unbounded.Unbounded_String;
       Memory  : MAT.Memory.Targets.Target_Memory;
       Symbols : MAT.Symbols.Targets.Target_Symbols_Ref;
-      Events  : aliased MAT.Events.Targets.Target_Events;
+      Events  : MAT.Events.Targets.Target_Events_Access;
       Console : MAT.Consoles.Console_Access;
    end record;
    type Target_Process_Type_Access is access all Target_Process_Type'Class;
