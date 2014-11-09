@@ -19,6 +19,9 @@ with MAT.Types;
 with Gtkada.Builder;
 package MAT.Callbacks is
 
+   --  Initialize and register the callbacks.
+   procedure Initialize (Builder : in Gtkada.Builder.Gtkada_Builder);
+
    --  Callback executed when the "quit" action is executed from the menu.
    procedure On_Menu_Quit (Object : access Gtkada.Builder.Gtkada_Builder_Record'Class);
 
