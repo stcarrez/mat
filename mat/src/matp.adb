@@ -29,6 +29,7 @@ procedure Matp is
 begin
    Target.Console (Console'Unchecked_Access);
    MAT.Commands.Initialize_Options (Target, Options);
+   MAT.Commands.Initialize_Files (Target);
    Server.Start (Options.Address);
    MAT.Commands.Interactive (Target);
    Server.Stop;
