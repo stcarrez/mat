@@ -22,7 +22,6 @@ with MAT.Targets;
 with MAT.Consoles.Text;
 with MAT.Targets.Gtkmat;
 
-with Gtk.Main;
 with Gtk.Widget;
 procedure GtkMatp is
    Main    : Gtk.Widget.Gtk_Widget;
@@ -34,6 +33,4 @@ begin
    Target.Start;
    MAT.Commands.Interactive (Target);
    Target.Stop;
-
-   Gtk.Main.Main;
 end GtkMatp;
