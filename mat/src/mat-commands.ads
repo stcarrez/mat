@@ -15,10 +15,19 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with GNAT.Sockets;
+
 with MAT.Targets;
 package MAT.Commands is
 
    Stop_Interp : exception;
+
+   --  The options that can be configured through the command line.
+   type Options_Type is record
+      Interactive : Boolean := True;
+      Graphical   : Boolean := False;
+      Address     : GNAT.Sockets.Sock_Addr_Type := (Port => 4096, others => <>);
+   end record;
 
    --  Procedure that defines a command handler.
    type Command_Handler is access procedure (Target : in out MAT.Targets.Target_Type'Class;
@@ -31,5 +40,9 @@ package MAT.Commands is
    --  Enter in the interactive loop reading the commands from the standard input
    --  and executing the commands.
    procedure Interactive (Target : in out MAT.Targets.Target_Type'Class);
+
+   --  Parse the command line arguments and configure the target instance.
+   procedure Initialize_Options (Target  : in out MAT.Targets.Target_Type'Class;
+                                 Options : in out Options_Type);
 
 end MAT.Commands;
