@@ -20,6 +20,8 @@ with Ada.Command_Line;
 
 with GNAT.Command_Line;
 
+with Readline;
+
 with Util.Strings;
 with Util.Log.Loggers;
 
@@ -185,6 +187,25 @@ package body MAT.Targets is
          Usage;
 
    end Initialize_Options;
+
+   --  ------------------------------
+   --  Enter in the interactive loop reading the commands from the standard input
+   --  and executing the commands.
+   --  ------------------------------
+   procedure Interactive (Target : in out MAT.Targets.Target_Type) is
+   begin
+      loop
+         declare
+            Line : constant String := Readline.Get_Line ("matp>");
+         begin
+            MAT.Commands.Execute (Target, Line);
+
+         exception
+            when MAT.Commands.Stop_Interp =>
+               exit;
+         end;
+      end loop;
+   end Interactive;
 
    --  ------------------------------
    --  Start the server to listen to MAT event socket streams.
