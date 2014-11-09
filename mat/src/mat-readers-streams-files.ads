@@ -15,7 +15,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with Util.Streams.Buffered;
 with Util.Streams.Files;
 with MAT.Readers.Streams;
 package MAT.Readers.Streams.Files is
