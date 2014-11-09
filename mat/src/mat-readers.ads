@@ -19,6 +19,7 @@ with Ada.Containers;
 with Ada.Containers.Hashed_Maps;
 with Ada.Containers.Indefinite_Hashed_Maps;
 with Ada.Strings.Hash;
+with Ada.Finalization;
 
 with System;
 
@@ -58,8 +59,12 @@ package MAT.Readers is
    -----------------
    --  The Manager is a kind of object adapter. It registers a collection
    --  of servants and dispatches incomming messages to those servants.
-   type Manager_Base is abstract tagged limited private;
+   type Manager_Base is abstract new Ada.Finalization.Limited_Controlled with private;
    type Manager is access all Manager_Base'Class;
+
+   --  Initialize the manager instance.
+   overriding
+   procedure Initialize (Manager : in out Manager_Base);
 
    --  Register the reader to handle the event identified by the given name.
    --  The event is mapped to the given id and the attributes table is used
@@ -81,9 +86,9 @@ package MAT.Readers is
    procedure Read_Event_Definitions (Client : in out Manager_Base;
                                      Msg    : in out Message);
 
-   --  Set the target events.
-   procedure Set_Target_Events (Client : in out Manager_Base;
-                                Events : out MAT.Events.Targets.Target_Events_Access);
+   --  Get the target events.
+   function Get_Target_Events (Client : in Manager_Base)
+                               return MAT.Events.Targets.Target_Events_Access;
 
 private
 
@@ -128,14 +133,14 @@ private
                                      Hash         => Hash,
                                      Equivalent_Keys => "=");
 
-   type Manager_Base is abstract tagged limited record
+   type Manager_Base is abstract new Ada.Finalization.Limited_Controlled with record
       Readers     : Reader_Maps.Map;
       Handlers    : Handler_Maps.Map;
       Version     : MAT.Types.Uint16;
       Flags       : MAT.Types.Uint16;
       Probe       : MAT.Events.Attribute_Table_Ptr;
       Frame       : access MAT.Events.Frame_Info;
-      Events      : aliased MAT.Events.Targets.Target_Events;
+      Events      : MAT.Events.Targets.Target_Events_Access;
    end record;
 
    --  Read the event data stream headers with the event description.
