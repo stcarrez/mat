@@ -81,6 +81,10 @@ package MAT.Readers is
    procedure Read_Event_Definitions (Client : in out Manager_Base;
                                      Msg    : in out Message);
 
+   --  Set the target events.
+   procedure Set_Target_Events (Client : in out Manager_Base;
+                                Events : out MAT.Events.Targets.Target_Events_Access);
+
 private
 
    type Endian_Type is (BIG_ENDIAN, LITTLE_ENDIAN);
@@ -131,7 +135,7 @@ private
       Flags       : MAT.Types.Uint16;
       Probe       : MAT.Events.Attribute_Table_Ptr;
       Frame       : access MAT.Events.Frame_Info;
-      Events      : MAT.Events.Targets.Target_Events_Access;
+      Events      : aliased MAT.Events.Targets.Target_Events;
    end record;
 
    --  Read the event data stream headers with the event description.
