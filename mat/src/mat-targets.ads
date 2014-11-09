@@ -18,12 +18,32 @@
 with Ada.Strings.Unbounded;
 with Ada.Containers.Ordered_Maps;
 
+with GNAT.Sockets;
+
 with MAT.Types;
 with MAT.Memory.Targets;
 with MAT.Symbols.Targets;
 with MAT.Readers;
 with MAT.Consoles;
 package MAT.Targets is
+
+   --  Exception raised if some option is invalid.
+   Usage_Error : exception;
+
+   --  The options that can be configured through the command line.
+   type Options_Type is record
+      --  Enable and enter in the interactive TTY console mode.
+      Interactive  : Boolean := True;
+
+      --  Try to load the symbol file automatically when a new process is recieved.
+      Load_Symbols : Boolean := True;
+
+      --  Enable the graphical mode (when available).
+      Graphical    : Boolean := False;
+
+      --  Define the server listening address.
+      Address      : GNAT.Sockets.Sock_Addr_Type := (Port => 4096, others => <>);
+   end record;
 
    type Target_Process_Type is tagged limited record
       Pid     : MAT.Types.Target_Process_Ref;
@@ -65,6 +85,9 @@ package MAT.Targets is
                           Pid    : in MAT.Types.Target_Process_Ref)
                           return Target_Process_Type_Access;
 
+   --  Parse the command line arguments and configure the target instance.
+   procedure Initialize_Options (Target  : in out MAT.Targets.Target_Type);
+
 private
 
    --  Define a map of <tt>Target_Process_Type_Access</tt> keyed by the process Id.
@@ -81,6 +104,7 @@ private
       Current   : Target_Process_Type_Access;
       Processes : Process_Map;
       Console   : MAT.Consoles.Console_Access;
+      Options   : Options_Type;
    end record;
 
 end MAT.Targets;
