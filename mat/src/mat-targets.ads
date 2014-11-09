@@ -58,7 +58,8 @@ package MAT.Targets is
    end record;
    type Target_Process_Type_Access is access all Target_Process_Type'Class;
 
-   type Target_Type is new Ada.Finalization.Limited_Controlled with private;
+   type Target_Type is new Ada.Finalization.Limited_Controlled
+     and MAT.Readers.Reader_List_Type with private;
 
    type Target_Type_Access is access all Target_Type'Class;
 
@@ -74,6 +75,7 @@ package MAT.Targets is
 
    --  Initialize the target object to manage the memory slots, the stack frames
    --  and setup the reader to analyze the memory and other events.
+   overriding
    procedure Initialize (Target : in out Target_Type;
                          Reader : in out MAT.Readers.Manager_Base'Class);
 
@@ -126,7 +128,8 @@ private
    subtype Process_Map is Process_Maps.Map;
    subtype Process_Cursor is Process_Maps.Cursor;
 
-   type Target_Type is new Ada.Finalization.Limited_Controlled with record
+   type Target_Type is new Ada.Finalization.Limited_Controlled
+     and MAT.Readers.Reader_List_Type with record
       Current   : Target_Process_Type_Access;
       Processes : Process_Map;
       Console   : MAT.Consoles.Console_Access;
