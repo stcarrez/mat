@@ -23,6 +23,7 @@ with GNAT.Command_Line;
 with Util.Strings;
 with Util.Log.Loggers;
 
+with MAT.Commands;
 with MAT.Targets.Readers;
 package body MAT.Targets is
 
@@ -70,6 +71,7 @@ package body MAT.Targets is
                              Pid     : in MAT.Types.Target_Process_Ref;
                              Path    : in Ada.Strings.Unbounded.Unbounded_String;
                              Process : out Target_Process_Type_Access) is
+      Path_String : constant String := Ada.Strings.Unbounded.To_String (Path);
    begin
       Process := Target.Find_Process (Pid);
       if Process = null then
@@ -81,7 +83,10 @@ package body MAT.Targets is
          Target.Console.Notice (MAT.Consoles.N_PID_INFO,
                                 "Process" & MAT.Types.Target_Process_Ref'Image (Pid) & " created");
          Target.Console.Notice (MAT.Consoles.N_PATH_INFO,
-                                "Path " & Ada.Strings.Unbounded.To_String (Path));
+                                "Path " & Path_String);
+         if Target.Options.Load_Symbols then
+            MAT.Commands.Symbol_Command (Target, Path_String);
+         end if;
       end if;
       if Target.Current = null then
          Target.Current := Process;
