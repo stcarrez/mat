@@ -51,6 +51,9 @@ package MAT.Targets.Gtkmat is
                         Name   : in String;
                         Value  : in String);
 
+   --  Refresh the information about the current process.
+   procedure Refresh_Process (Target  : in out Target_Type);
+
 private
 
    task type Gtk_Loop is
@@ -60,6 +63,7 @@ private
    type Target_Type is new MAT.Targets.Target_Type with record
       Builder  : Gtkada.Builder.Gtkada_Builder;
       Gui_Task : Gtk_Loop;
+      Previous_Event_Counter : Integer := 0;
    end record;
 
 end MAT.Targets.Gtkmat;
