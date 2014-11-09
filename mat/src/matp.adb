@@ -27,15 +27,15 @@ with MAT.Consoles.Text;
 with MAT.Readers.Streams.Sockets;
 procedure Matp is
    Target  : MAT.Targets.Target_Type;
+   Options : MAT.Commands.Options_Type;
    Console : aliased MAT.Consoles.Text.Console_Type;
    Server  : MAT.Readers.Streams.Sockets.Socket_Listener_Type;
    Address : GNAT.Sockets.Sock_Addr_Type;
 begin
    Util.Log.Loggers.Initialize ("matp.properties");
    Target.Console (Console'Unchecked_Access);
-   Address.Addr := GNAT.Sockets.Any_Inet_Addr;
-   Address.Port := 4096;
-   Server.Start (Address);
+   MAT.Commands.Initialize_Options (Target, Options);
+   Server.Start (Options.Address);
    MAT.Commands.Interactive (Target);
    Server.Stop;
 
