@@ -29,6 +29,7 @@ NR_CPUS=`getconf _NPROCESSORS_CONF 2>/dev/null || getconf _NPROCESSORS_CONF 2>/d
 AC_MSG_RESULT($NR_CPUS)
 AC_SUBST(NR_CPUS)
 
+AC_CHECK_LIB([readline],[readline])
 
 ##########################################
 # Ada Util library
