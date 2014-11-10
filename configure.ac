@@ -27,7 +27,6 @@ MAT_VERSION=$MAT_MAJOR_VERSION.$MAT_MINOR_VERSION.$MAT_MICRO_VERSION
 AC_SUBST(MAT_VERSION)
 
 # checking for local tools
-AC_PROG_CC
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
 
@@ -38,14 +37,18 @@ AC_CONFIG_SUBDIRS(libgpmat)
 
 SUBDIRS="libgpmat"
 ac_enable_mat=yes
-AC_ARG_ENABLE(ahven,
+AC_ARG_ENABLE(mat,
 [  --enable-mat          Enable compilation of mat tool which requires GNAT Ada compiler (enabled)],
 [case "${enableval}" in
   no|none)  ac_enable_mat= ;;
   *)        ac_enable_mat=yes
             SUBDIRS="$DIRS mat"
-			AC_CONFIG_SUBDIRS(mat)
+			;;
 esac])dnl
+
+if test x$ac_enable_mat = 'xyes'; then
+  AC_CONFIG_SUBDIRS(mat)
+fi
 
 AC_SUBST(SUBDIRS)
 
