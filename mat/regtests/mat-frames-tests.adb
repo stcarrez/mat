@@ -21,7 +21,7 @@ with Ada.Directories;
 with Util.Test_Caller;
 
 with MAT.Frames.Print;
-with MAT.Readers.Files;
+with MAT.Readers.Streams.Files;
 package body MAT.Frames.Tests is
 
    use Util.Tests;
