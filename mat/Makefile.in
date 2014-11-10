@@ -50,7 +50,7 @@ autobuild:
 
 # Clean the root project of all build products.
 clean:
-	$(GNATCLEAN) -q -P "$(GPRPATH)"
+	-$(GNATCLEAN) -q -P "$(GPRPATH)"
 
 # Check *all* sources for errors, even those not changed.
 # Does not build executables.
