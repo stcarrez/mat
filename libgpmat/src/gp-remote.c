@@ -161,7 +161,7 @@ gp_buffered_server_initialize (struct gp_buffered_server* server)
 int
 gp_remote_initialize (void)
 {
-  char* p = getenv("GP_SERVER");
+  char* p = getenv("MAT_SERVER");
   if (p != NULL)
     {
       if (strncmp (p, "file://", 7) == 0)
