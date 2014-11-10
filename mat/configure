@@ -567,6 +567,7 @@ LIBOBJS
 GTKADA_DIR
 BFD_DIR
 UTIL_DIR
+MAT_GTKADA
 NR_CPUS
 MAT_LIBDIR
 EXEC_PREFIX
@@ -2987,6 +2988,9 @@ if test "${enable_gtk+set}" = set; then :
 esac
 fi
 
+MAT_GTKADA=$ac_enable_gtk
+
+
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for readline in -lreadline" >&5
 $as_echo_n "checking for readline in -lreadline... " >&6; }
@@ -3102,6 +3106,9 @@ rm -f t.gpr
 $as_echo "${BFD_DIR}" >&6; }
 
 
+GTKADA_DIR=
+if test x$ac_enable_gtk = 'xyes'; then
+
 ##########################################
 # GtkAda library
 ##########################################
@@ -3134,6 +3141,9 @@ if test $? -ne 0 ; then
 rm -f t.gpr
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${GTKADA_DIR}" >&5
 $as_echo "${GTKADA_DIR}" >&6; }
+
+fi
+
 
 
 ac_config_files="$ac_config_files Makefile mat.gpr gtkmat.gpr tests.gpr"
