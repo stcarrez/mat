@@ -38,7 +38,7 @@ MKDIR=mkdir
 CP=cp
 
 # Build executables for all mains defined by the project.
-build:
+all build:
 	$(GNATMAKE) -P "$(GPRPATH)" $(MAKE_ARGS)
 
 # Not intended for manual invocation.
