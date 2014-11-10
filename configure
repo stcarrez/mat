@@ -565,9 +565,9 @@ ac_unique_file="Makefile.in"
 enable_option_checking=no
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
+SUBDIRS
 subdirs
 EXEC_PREFIX
-RANLIB
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
@@ -579,6 +579,7 @@ CPPFLAGS
 LDFLAGS
 CFLAGS
 CC
+MAT_VERSION
 target_os
 target_vendor
 target_cpu
@@ -642,7 +643,8 @@ CFLAGS
 LDFLAGS
 LIBS
 CPPFLAGS'
-ac_subdirs_all='libgpmat mat'
+ac_subdirs_all='libgpmat
+mat'
 
 # Initialize some variables set by options.
 ac_init_help=
@@ -1880,10 +1882,11 @@ test -n "$target_alias" &&
 
 
 # Current release settings
-AWA_MAJOR_VERSION=1
-AWA_MINOR_VERSION=0
-AWA_MICRO_VERSION=0
-AWA_VERSION=$AWA_MAJOR_VERSION.$AWA_MINOR_VERSION.$AWA_MICRO_VERSION
+MAT_MAJOR_VERSION=1
+MAT_MINOR_VERSION=0
+MAT_MICRO_VERSION=0
+MAT_VERSION=$MAT_MAJOR_VERSION.$MAT_MINOR_VERSION.$MAT_MICRO_VERSION
+
 
 # checking for local tools
 ac_ext=c
@@ -2800,123 +2803,29 @@ test -z "$INSTALL_SCRIPT" && INSTALL_SCRIPT='${INSTALL}'
 
 test -z "$INSTALL_DATA" && INSTALL_DATA='${INSTALL} -m 644'
 
-if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
-set dummy ${ac_tool_prefix}ranlib; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_RANLIB+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$RANLIB"; then
-  ac_cv_prog_RANLIB="$RANLIB" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_RANLIB="${ac_tool_prefix}ranlib"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-RANLIB=$ac_cv_prog_RANLIB
-if test -n "$RANLIB"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $RANLIB" >&5
-$as_echo "$RANLIB" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-fi
-if test -z "$ac_cv_prog_RANLIB"; then
-  ac_ct_RANLIB=$RANLIB
-  # Extract the first word of "ranlib", so it can be a program name with args.
-set dummy ranlib; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_ac_ct_RANLIB+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$ac_ct_RANLIB"; then
-  ac_cv_prog_ac_ct_RANLIB="$ac_ct_RANLIB" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_ac_ct_RANLIB="ranlib"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-ac_ct_RANLIB=$ac_cv_prog_ac_ct_RANLIB
-if test -n "$ac_ct_RANLIB"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_RANLIB" >&5
-$as_echo "$ac_ct_RANLIB" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-  if test "x$ac_ct_RANLIB" = x; then
-    RANLIB=":"
-  else
-    case $cross_compiling:$ac_tool_warned in
-yes:)
-{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
-$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
-ac_tool_warned=yes ;;
-esac
-    RANLIB=$ac_ct_RANLIB
-  fi
-else
-  RANLIB="$ac_cv_prog_RANLIB"
-fi
-
 
 EXEC_PREFIX="$prefix"
 
 
+
+
+subdirs="$subdirs libgpmat"
+
+
+SUBDIRS="libgpmat"
 ac_enable_mat=yes
 # Check whether --enable-ahven was given.
 if test "${enable_ahven+set}" = set; then :
   enableval=$enable_ahven; case "${enableval}" in
   no|none)  ac_enable_mat= ;;
   *)        ac_enable_mat=yes
+            SUBDIRS="$DIRS mat"
+			subdirs="$subdirs mat"
+
 esac
 fi
 
-DIR=`pwd`
-ARGS="--prefix $prefix"
 
-
-
-subdirs="$subdirs libgpmat mat"
-
-# echo "Configuring ==== libgpmat ===="
-# (cd $DIR/libgpmat && ./configure $ARGS )
-
-# echo "Configuring ==== mat ===="
-# (cd $DIR/mat && ./configure $ARGS)
 
 ac_config_files="$ac_config_files Makefile"
 
