@@ -1,0 +1,82 @@
+# You may edit this makefile as long as you keep these original 
+# target names defined.
+GNATMAKE=gnatmake
+GNATCLEAN=gnatclean
+SVN=svn
+
+distdir=awa-all-@AWA_VERSION@
+
+DIST_FILE=awa-all-@AWA_VERSION@.tar.gz
+
+srcdir = .
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+top_builddir = .
+
+# Directories of sub-projects in the build order.
+SUBDIRS=libgpmat mat
+
+# Build executables for all mains defined by the project.
+all build test:
+	D=`pwd`; \
+	for i in $(SUBDIRS); do \
+	   cd "$$D/$$i" && \
+	   $(MAKE) $@ ; \
+	done
+
+# Clean the root project of all build products.
+clean:
+	D=`pwd`; \
+	for i in $(SUBDIRS); do \
+	   cd "$$D/$$i" && \
+	   $(MAKE) clean ; \
+	done
+
+# Clean the root project of all build products.
+install:
+	D=`pwd`; \
+	for i in $(SUBDIRS); do \
+	   cd "$$D/$$i" && \
+	   $(MAKE) install ; \
+	done
+
+force:
+
+# Clean, then build executables for all mains defined by the project.
+rebuild: clean build
+
+# Files to package in source distribution
+DISTFILES=README LICENSE.txt NOTICE.txt CHANGES ChangeLog config.guess configure config.sub \
+configure.in Makefile.in install-sh \
+distrib external support
+
+dist:
+	-rm -rf $(distdir)
+	mkdir $(distdir)
+	-chmod 777 $(distdir)
+	here=`cd $(top_builddir) && pwd`; \
+	top_distdir=`cd $(distdir) && pwd`; \
+	distdir=`cd $(distdir) && pwd`; \
+	for file in $(DISTFILES); do \
+	  d=$(srcdir); \
+	  if test -d $$d/$$file; then \
+	    cp -pr $$d/$$file $(distdir)/$$file; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	    || cp -p $$d/$$file $(distdir)/$$file || :; \
+	  fi; \
+	done
+	-rm -f $(distdir)/bin/*
+	tar --exclude=.svn --exclude="*~" --exclude="*.o" --exclude="*.ali" \
+	    --exclude="*.log" --exclude="*.a" \
+	    -cvzf $(DIST_FILE) $(distdir)
+
+# prepare before releasing a new version of the package
+# (collect information about changes and SVN repository)
+prepare-release:
+	${SVN} update
+	${SVN} info > CHANGES
+	${SVN} log -v > ChangeLog
