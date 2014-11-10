@@ -38,6 +38,9 @@ AC_ARG_ENABLE(gtk,
   *)        ac_enable_gtk=yes
 esac])dnl
 
+MAT_GTKADA=$ac_enable_gtk
+AC_SUBST(MAT_GTKADA)
+
 AC_CHECK_LIB([readline],[readline])
 
 ##########################################
@@ -96,6 +99,9 @@ rm -f t.gpr
 AC_MSG_RESULT(${BFD_DIR})
 AC_SUBST(BFD_DIR)
 
+GTKADA_DIR=
+if test x$ac_enable_gtk = 'xyes'; then
+
 ##########################################
 # GtkAda library
 ##########################################
@@ -122,6 +128,9 @@ if test $? -ne 0 ; then
  fi
 rm -f t.gpr
 AC_MSG_RESULT(${GTKADA_DIR})
+
+fi
+
 AC_SUBST(GTKADA_DIR)
 
 AC_OUTPUT(
