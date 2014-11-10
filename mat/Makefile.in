@@ -39,7 +39,7 @@ CP=cp
 
 # Build executables for all mains defined by the project.
 all build:
-	$(GNATMAKE) -P "$(GPRPATH)" $(MAKE_ARGS)
+	$(GNATMAKE) -p -P "$(GPRPATH)" $(MAKE_ARGS)
 
 # Not intended for manual invocation.
 # Invoked if automatic builds are enabled.
@@ -93,3 +93,6 @@ lexer:
 	cd src/parser; \
 	  rm mat-expressions-parser_io.a mat-expressions-lexer_io.a \
 	     mat-expressions-lexer.a mat-expressions-lexer_dfa.a
+
+install:
+	$(INSTALL_PROGRAM) bin/matp $(bindir)/
