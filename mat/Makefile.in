@@ -1,7 +1,7 @@
 MODE=debug
 GNATMAKE=@GNATMAKE@
 GNATCLEAN=@GNATCLEAN@
-GPRPATH=mat.gpr
+GPRPATH=@GPRPATH@
 SVN=svn
 
 INSTALL = @INSTALL@
@@ -34,6 +34,7 @@ config_dir=${datadir}/dynamo
 CPUS := @NR_CPUS@
 MAKE_ARGS=-XMODE=${MODE} -XPROCESSORS=$(CPUS)
 
+MAT_GTKADA=@MAT_GTKADA@
 MKDIR=mkdir
 CP=cp
 
@@ -66,6 +67,13 @@ bin/mat_harness:  bin/matp
 bin/matp:		Makefile $(GPRPATH)
 	$(GNATMAKE) -P "$(GPRPATH)" $(MAKE_ARGS)
 
+
+install:
+	$(INSTALL_PROGRAM) bin/matp $(bindir)/
+
+
+# Development targets that requires ayacc and aflex to be installed.
+# Do not call these unless you modify the lex/yacc grammar.
 parser:	
 	cd src/parser; \
 	ayacc mat-expressions-parser.y off off off off off .x ; \
@@ -93,6 +101,3 @@ lexer:
 	cd src/parser; \
 	  rm mat-expressions-parser_io.a mat-expressions-lexer_io.a \
 	     mat-expressions-lexer.a mat-expressions-lexer_dfa.a
-
-install:
-	$(INSTALL_PROGRAM) bin/matp $(bindir)/
