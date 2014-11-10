@@ -28,6 +28,7 @@
 
 static struct gp_server* server;
 
+#ifdef DEBUG
 static void
 to_hex (char* buf, unsigned byte)
 {
@@ -56,6 +57,15 @@ gp_dump (const char* title, int indent, const void* addr, size_t len)
   }
   write (STDERR_FILENO, " ", 1);
 }
+
+void
+gp_write (const char* title, int indent, const void* addr, size_t len)
+{
+  gp_dump (title, indent, addr, len);
+  gp_remote_send (addr, len);
+}
+
+#endif
 
 /**
  * @brief Send the content through an internal buffer.
@@ -100,13 +110,6 @@ void gp_buffered_send (struct gp_server* server, const void* ptr, size_t len)
 int gp_buffered_synchronize (struct gp_server* server)
 {
   return 0;
-}
-
-void
-gp_write (const char* title, int indent, const void* addr, size_t len)
-{
-  gp_dump (title, indent, addr, len);
-  gp_remote_send (addr, len);
 }
 
 void
