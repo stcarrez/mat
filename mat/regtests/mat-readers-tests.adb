@@ -19,7 +19,7 @@
 with Ada.Directories;
 with Util.Test_Caller;
 
-with MAT.Readers.Files;
+with MAT.Readers.Streams.Files;
 package body MAT.Readers.Tests is
 
    use Util.Tests;
@@ -38,7 +38,7 @@ package body MAT.Readers.Tests is
    --  ------------------------------
    procedure Test_Read_File (T : in out Test) is
       Path   : constant String := Util.Tests.Get_Test_Path ("regtests/files/file-v1.dat");
-      Reader : MAT.Readers.Files.File_Reader_Type;
+      Reader : MAT.Readers.Streams.Files.File_Reader_Type;
    begin
       Reader.Open (Path);
       Reader.Read_All;
