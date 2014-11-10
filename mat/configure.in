@@ -14,6 +14,7 @@ AC_PROG_MAKE_SET
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_CHECK_PROGS(GNATMAKE, gnatmake, "")
+AC_CHECK_PROGS(GNATCLEAN, gnatclean, "")
 # Set the version number of GtkAda
 AC_SUBST(MAT_VERSION)
 AC_SUBST(MAT_MAJOR_VERSION)
@@ -28,6 +29,14 @@ AC_MSG_CHECKING([number of processors])
 NR_CPUS=`getconf _NPROCESSORS_CONF 2>/dev/null || getconf _NPROCESSORS_CONF 2>/dev/null || echo 1`
 AC_MSG_RESULT($NR_CPUS)
 AC_SUBST(NR_CPUS)
+
+ac_enable_gtk=yes
+AC_ARG_ENABLE(gtk,
+[  --enable-gtk          Enable compilation of mat Gtk tool (enabled)],
+[case "${enableval}" in
+  no|none)  ac_enable_gtk= ;;
+  *)        ac_enable_gtk=yes
+esac])dnl
 
 AC_CHECK_LIB([readline],[readline])
 
@@ -58,12 +67,13 @@ fi
 rm -f t.gpr
 AC_MSG_RESULT(${UTIL_DIR})
 AC_SUBST(UTIL_DIR)
+
 ##########################################
 # GNU Bfd Ada library
 ##########################################
-AC_MSG_CHECKING([Ada Bfd library (code.google.com/p/bfdada)])
+AC_MSG_CHECKING([Ada Bfd library (code.google.com/p/ada-bfd)])
 AC_ARG_WITH(ada-bfd,
-AS_HELP_STRING([--with-ada-bfd=x], [Path for the Ada Bfd library (code.google.com/p/bfdada)]),
+AS_HELP_STRING([--with-ada-bfd=x], [Path for the Ada Bfd library (code.google.com/p/ada-bfd)]),
 [
   BFD_DIR=${withval}/
 ],
@@ -85,6 +95,35 @@ if test $? -ne 0 ; then
 rm -f t.gpr
 AC_MSG_RESULT(${BFD_DIR})
 AC_SUBST(BFD_DIR)
+
+##########################################
+# GtkAda library
+##########################################
+AC_MSG_CHECKING([GtkAda library (libre.adacore.com/tools/gtkada)])
+AC_ARG_WITH(gtkada,
+AS_HELP_STRING([--with-gtkada=x], [Path for the Gtk Ada library (libre.adacore.com/tools/gtkada)]),
+[
+  GTKADA_DIR=${withval}/
+],
+[
+  echo "with \"gtkada\"; project t is for Source_Dirs use (); end t;" > t.gpr
+  gnatmake -p -Pt >/dev/null 2>/dev/null
+  if test $? -eq 0; then
+    GTKADA_DIR=
+  else
+    GTKADA_DIR=../gtkada/
+  fi;
+])
+echo "with \"${GTKADA_DIR}gtkada\"; project t is for Source_Dirs use (); end t;" > t.gpr
+gnatmake -p -Pt >/dev/null 2>/dev/null
+if test $? -ne 0 ; then
+   rm -f t.gpr
+   AC_MSG_ERROR([GtkAda library not found in ${GTKADA_DIR}])
+ fi
+rm -f t.gpr
+AC_MSG_RESULT(${GTKADA_DIR})
+AC_SUBST(GTKADA_DIR)
+
 AC_OUTPUT(
-Makefile mat.gpr tests.gpr
+Makefile mat.gpr gtkmat.gpr tests.gpr
 )
