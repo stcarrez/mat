@@ -19,7 +19,7 @@ top_builddir = .
 SUBDIRS=libgpmat mat
 
 # Build executables for all mains defined by the project.
-all build test:
+all build install test:
 	D=`pwd`; \
 	for i in $(SUBDIRS); do \
 	   cd "$$D/$$i" && \
