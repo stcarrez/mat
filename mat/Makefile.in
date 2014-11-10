@@ -1,6 +1,6 @@
 MODE=debug
-GNATMAKE=gprbuild
-GNATCLEAN=gprclean
+GNATMAKE=@GNATMAKE@
+GNATCLEAN=@GNATCLEAN@
 GPRPATH=mat.gpr
 SVN=svn
 
