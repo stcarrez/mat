@@ -41,7 +41,8 @@ LD = @LD@
 LDFLAGS = @LDFLAGS@ -shared
 RANLIB = @RANLIB@
 
-CPPFLAGS = -I$(top_builddir)/src -I$(top_srcdir)/src
+CPPFLAGS += -I$(top_builddir)/src -I$(top_srcdir)/src
+CPPFLAGS += @MAT_DEBUG@
 
 HEADERS = src/gp-events.h \
  src/gp-probe.h
