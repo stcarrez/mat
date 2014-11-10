@@ -565,6 +565,7 @@ ac_unique_file="src/mat.ads"
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
 GTKADA_DIR
+GPRPATH
 BFD_DIR
 UTIL_DIR
 MAT_GTKADA
@@ -3136,13 +3137,22 @@ echo "with \"${GTKADA_DIR}gtkada\"; project t is for Source_Dirs use (); end t;"
 gnatmake -p -Pt >/dev/null 2>/dev/null
 if test $? -ne 0 ; then
    rm -f t.gpr
-   as_fn_error $? "GtkAda library not found in ${GTKADA_DIR}" "$LINENO" 5
+   ac_enable_gtk=
+   # AC_MSG_ERROR([GtkAda library not found in ${GTKADA_DIR}])
  fi
 rm -f t.gpr
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${GTKADA_DIR}" >&5
 $as_echo "${GTKADA_DIR}" >&6; }
 
 fi
+
+
+if test x$ac_enable_gtk = 'xyes'; then
+  GPRPATH=gtkmat.gpr
+else
+  GPRPATH=mat.gpr
+fi
+
 
 
 
