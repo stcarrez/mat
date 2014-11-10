@@ -124,13 +124,22 @@ echo "with \"${GTKADA_DIR}gtkada\"; project t is for Source_Dirs use (); end t;"
 gnatmake -p -Pt >/dev/null 2>/dev/null
 if test $? -ne 0 ; then
    rm -f t.gpr
-   AC_MSG_ERROR([GtkAda library not found in ${GTKADA_DIR}])
+   ac_enable_gtk=
+   # AC_MSG_ERROR([GtkAda library not found in ${GTKADA_DIR}])
  fi
 rm -f t.gpr
 AC_MSG_RESULT(${GTKADA_DIR})
 
 fi
 
+
+if test x$ac_enable_gtk = 'xyes'; then
+  GPRPATH=gtkmat.gpr
+else
+  GPRPATH=mat.gpr
+fi
+
+AC_SUBST(GPRPATH)
 AC_SUBST(GTKADA_DIR)
 
 AC_OUTPUT(
