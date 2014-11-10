@@ -37,6 +37,19 @@ AC_PROG_CPP
 AC_LANG(C)
 AC_PROG_INSTALL
 
+MAT_DEBUG=
+ac_enable_debug=
+AC_ARG_ENABLE(debug,
+[  --enable-debug          Enable debug mode (disable)],
+[case "${enableval}" in
+  no|none)  ac_enable_debug= ;;
+  *)        ac_enable_debug=yes
+            MAT_DEBUG=-DDEBUG
+			;;
+esac])dnl
+
+AC_SUBST(MAT_DEBUG)
+
 test_CFLAGS=${CFLAGS+set}
 
 dnl If compiler is gcc, then use some specific flags.
