@@ -70,6 +70,7 @@ bin/matp:		Makefile $(GPRPATH)
 
 install:
 	$(INSTALL_PROGRAM) bin/matp $(bindir)/
+	$(INSTALL) man/mat.1 $(mandir)/man1/mat.1
 
 
 # Development targets that requires ayacc and aflex to be installed.
