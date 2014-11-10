@@ -21,6 +21,9 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 
+bindir=${prefix}/bin
+libdir=${prefix}/lib
+
 AR = @AR@
 AS = @AS@
 CC = @CC@
@@ -77,6 +80,9 @@ clean:
 
 $(LIBNAME):		$(OBJS)
 	$(CC) -o $(LIBNAME) $(LDFLAGS) $(OBJS) $(LIBS)
+
+install:
+	$(INSTALL) $(LIBNAME) ${libdir}/
 
 .c.o:
 	$(COMPILE) -c $<
