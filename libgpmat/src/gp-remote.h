@@ -19,6 +19,10 @@
 
 #define GP_VERSION 1
 
+#ifndef PATH_MAX
+# define PATH_MAX 256
+#endif
+
 #define DEFAULT_TCP_PORT 4096
 
 struct gp_server;
@@ -48,9 +52,14 @@ struct gp_buffered_server
   unsigned char     buffer[4096];
 };
 
+#ifdef DEBUG
 extern void gp_dump (const char* title, int indent, const void* addr, size_t len);
-
 extern void gp_write (const char* title, int indent, const void* addr, size_t len);
+#else
+# define gp_dump(TITLE, INDENT, ADDR, LEN)
+# define gp_write(TITLE, INDENT, ADDR, LEN) gp_remote_send(ADDR, LEN)
+#endif
+
 
 extern void gp_remote_send (const void *addr, size_t len);
 
