@@ -92,7 +92,7 @@ struct gp_file_server* gp_file_open (const char* param)
       *s++ = *param++;
     }
   *s++ = '-';
-  for (i = 1000; i > 0; i = i / 10)
+  for (i = 10000; i > 0; i = i / 10)
     {
       *s++ = "0123456789"[(pid / i) % 10];
     }
