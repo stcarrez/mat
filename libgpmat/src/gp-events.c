@@ -147,21 +147,22 @@ gp_event_send (struct gp_probe *gp, int size,
 
 static const struct gp_attr_def gp_malloc_attrs[] = {
   { "pointer", GP_TYPE_POINTER, sizeof (void*) },
-  { "size",    GP_TYPE_SIZE_T,  sizeof (size_t) }
+  { "size",    GP_TYPE_SIZE_T,  sizeof (size_t) },
+  { "curbrk",  GP_TYPE_POINTER, sizeof (void*) }
 };
 
 static const struct gp_event_def gp_event_malloc_def = {
   "malloc",
   GP_EVENT_MALLOC,
-  sizeof (void*) + sizeof (size_t),
+  sizeof (void*) + sizeof (size_t) + sizeof (void*),
   GP_TABLE_SIZE (gp_malloc_attrs),
   gp_malloc_attrs
 };
 
 void
-gp_event_malloc (struct gp_probe *gp, void *p, size_t size)
+gp_event_malloc (struct gp_probe *gp, void *p, size_t size, void* cbrk)
 {
-   gp_event_send (gp, 0, &gp_event_malloc_def, p, size);
+  gp_event_send (gp, 0, &gp_event_malloc_def, p, size, cbrk);
 }
 
 static const struct gp_attr_def gp_free_attrs[] = {
@@ -185,21 +186,22 @@ gp_event_free (struct gp_probe *gp, void *p)
 static const struct gp_attr_def gp_realloc_attrs[] = {
   { "pointer", GP_TYPE_POINTER, sizeof (void*) },
   { "old-pointer", GP_TYPE_POINTER, sizeof (void*) },
-  { "size",    GP_TYPE_SIZE_T, sizeof (size_t) }
+  { "size",    GP_TYPE_SIZE_T, sizeof (size_t) },
+  { "curbrk",  GP_TYPE_POINTER, sizeof (void*) }
 };
 
 static const struct gp_event_def gp_event_realloc_def = {
   "realloc",
   GP_EVENT_REALLOC,
-  sizeof (void*) + sizeof (void*) + sizeof (size_t),
+  sizeof (void*) + sizeof (void*) + sizeof (size_t) + sizeof (void*),
   GP_TABLE_SIZE (gp_realloc_attrs),
   gp_realloc_attrs
 };
 
 void
-gp_event_realloc (struct gp_probe *gp, void *p, void *old, size_t size)
+gp_event_realloc (struct gp_probe *gp, void *p, void *old, size_t size, void* cbrk)
 {
-  gp_event_send (gp, 0, &gp_event_realloc_def, p, old, size);
+  gp_event_send (gp, 0, &gp_event_realloc_def, p, old, size, cbrk);
 }
 
 static const struct gp_attr_def gp_frame_attrs[] = {
