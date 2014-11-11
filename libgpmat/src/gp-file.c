@@ -15,7 +15,7 @@
 --  limitations under the License.
 */
 #include "gp-config.h"
-#idef HAVE_SYS_TYPES_H
+#ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif
 #ifdef HAVE_UNISTD_H
