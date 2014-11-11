@@ -56,6 +56,45 @@ struct gp_buffered_server
   unsigned char     buffer[4096];
 };
 
+/**
+ * @brief Send the raw data to the file or socket.
+ *
+ * @param addr the data to send.
+ * @param len the number of bytes to send.
+ */
+extern void gp_remote_send (const void *addr, size_t len);
+
+/**
+ * @brief Close the event probe stream.
+ */
+extern void gp_remote_close (void);
+
+/**
+ * @brief Synchronize the event probe stream (if enabled).
+ */
+extern void gp_remote_sync (void);
+
+/**
+ * @brief Initialize the connection to the server.
+ *
+ * file://<pattern>[?sync]     Write the probe stream in a file.
+ * tcp://host:port[?sync]      Send the probe stream to the TCP/IP server.
+ *
+ * The optional <tt>sync</tt> flag enables the synchronous mode which flushes
+ * the event probe stream after each operation.
+ *
+ * @return 0
+ */
+extern int gp_remote_initialize (void);
+
+/**
+ * @brief Initialize the buffered server instance.
+ *
+ * @param server the server instance.
+ * @param param the configuration parameter.
+ */
+extern void gp_buffered_server_initialize (struct gp_buffered_server* server, const char* param);
+
 #ifdef DEBUG
 extern void gp_dump (const char* title, int indent, const void* addr, size_t len);
 extern void gp_write (const char* title, int indent, const void* addr, size_t len);
@@ -63,21 +102,5 @@ extern void gp_write (const char* title, int indent, const void* addr, size_t le
 # define gp_dump(TITLE, INDENT, ADDR, LEN)
 # define gp_write(TITLE, INDENT, ADDR, LEN) gp_remote_send(ADDR, LEN)
 #endif
-
-
-extern void gp_remote_send (const void *addr, size_t len);
-
-extern void gp_remote_sync (void);
-
-extern void gp_remote_close (void);
-
-extern int gp_remote_initialize (void);
-
-/**
- * @brief Initialize the buffered server instance.
- *
- * @param server the server instance.
- */
-extern void gp_buffered_server_initialize (struct gp_buffered_server* server);
 
 #endif
