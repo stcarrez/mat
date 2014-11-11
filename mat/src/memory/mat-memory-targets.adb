@@ -140,6 +140,14 @@ package body MAT.Memory.Targets is
    protected body Memory_Allocator is
 
       --  ------------------------------
+      --  Add the memory region from the list of memory region managed by the program.
+      --  ------------------------------
+      procedure Add_Region (Region : in Region_Info) is
+      begin
+         Regions.Insert (Region.Start_Addr, Region);
+      end Add_Region;
+
+      --  ------------------------------
       --  Remove the memory region [Addr .. Addr + Size] from the free list.
       --  ------------------------------
       procedure Remove_Free (Addr : in MAT.Types.Target_Addr;
