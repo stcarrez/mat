@@ -64,7 +64,7 @@ fi
 AC_C_CONST
 AC_C_VOLATILE
 
-AC_CHECK_HEADERS(sys/shm.h sys/ipc.h sys/sem.h sys/syscall.h sys/time.h time.h stdlib.h signal.h setjmp.h unwind.h)
+AC_CHECK_HEADERS(sys/shm.h sys/ipc.h sys/sem.h sys/syscall.h sys/time.h time.h stdlib.h signal.h setjmp.h unwind.h pthread.h)
 AC_CHECK_FUNCS(sigaction)
 AC_CHECK_FUNCS(backtrace)
 
