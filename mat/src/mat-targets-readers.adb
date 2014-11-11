@@ -28,15 +28,27 @@ package body MAT.Targets.Readers is
 
    M_PID      : constant MAT.Events.Internal_Reference := 1;
    M_EXE      : constant MAT.Events.Internal_Reference := 2;
+   M_ETEXT    : constant MAT.Events.Internal_Reference := 3;
+   M_EDATA    : constant MAT.Events.Internal_Reference := 4;
+   M_END      : constant MAT.Events.Internal_Reference := 5;
 
    PID_NAME   : aliased constant String := "pid";
    EXE_NAME   : aliased constant String := "exe";
+   ETEXT_NAME : aliased constant String := "etext";
+   EDATA_NAME : aliased constant String := "edata";
+   END_NAME   : aliased constant String := "end";
 
    Process_Attributes : aliased constant MAT.Events.Attribute_Table :=
      (1 => (Name => PID_NAME'Access, Size => 0,
             Kind => MAT.Events.T_SIZE_T, Ref => M_PID),
       2 => (Name => EXE_NAME'Access, Size => 0,
-            Kind => MAT.Events.T_FRAME, Ref => M_EXE));
+            Kind => MAT.Events.T_FRAME, Ref => M_EXE),
+      3 => (Name => ETEXT_NAME'Access, Size => 0,
+            Kind => MAT.Events.T_FRAME, Ref => M_ETEXT),
+      4 => (Name => EDATA_NAME'Access, Size => 0,
+            Kind => MAT.Events.T_FRAME, Ref => M_EDATA),
+      5 => (Name => END_NAME'Access, Size => 0,
+            Kind => MAT.Events.T_FRAME, Ref => M_END));
 
    --  ------------------------------
    --  Create a new process after the begin event is received from the event stream.
