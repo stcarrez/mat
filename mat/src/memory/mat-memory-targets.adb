@@ -43,6 +43,8 @@ package body MAT.Memory.Targets is
    procedure Add_Region (Memory : in out Target_Memory;
                          Region : in Region_Info) is
    begin
+      Log.Info ("Add region [" & MAT.Types.Hex_Image (Region.Start_Addr) & "-"
+                  & MAT.Types.Hex_Image (Region.End_Addr) & "]");
       Memory.Memory.Add_Region (Region);
    end Add_Region;
 
