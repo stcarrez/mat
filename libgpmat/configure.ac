@@ -67,6 +67,7 @@ AC_C_VOLATILE
 AC_CHECK_HEADERS(sys/types.h sys/shm.h sys/ipc.h sys/sem.h sys/syscall.h sys/time.h time.h stdlib.h signal.h setjmp.h unwind.h pthread.h unistd.h)
 AC_CHECK_FUNCS(sigaction)
 AC_CHECK_FUNCS(backtrace)
+AC_CHECK_FUNCS(__curbrk)
 
 case "$target" in
   i386-*|i486-*|i586-*|i686-*)
