@@ -43,4 +43,9 @@ package MAT.Commands is
    procedure Sizes_Command (Target : in out MAT.Targets.Target_Type'Class;
                             Args   : in String);
 
+   --  Threads command.
+   --  Collect statistics about the threads and their allocation.
+   procedure Threads_Command (Target : in out MAT.Targets.Target_Type'Class;
+                              Args   : in String);
+
 end MAT.Commands;
