@@ -17,16 +17,23 @@
 #ifndef _GP_SOCKET_H
 #define _GP_SOCKET_H
 
+struct gp_socket_server 
+{
+  struct gp_buffered_server root;
+  int fd;
+};
+
 /**
  * @brief Open the socket and prepare for probe monitoring to a remote TCP/IP port.
  *
  * The parameter string has the following format:
  *
- * tcp://host:port
+ * tcp://host:port[?sync]
  *
+ * @param server the socket server instance to initialize.
  * @param param the TCP/IP server to connect.
  * @return the GP server instance.
  */
-extern struct gp_socket_server* gp_socket_open (const char* param);
+extern struct gp_socket_server* gp_socket_open (struct gp_socket_server* server, const char* param);
 
 #endif
