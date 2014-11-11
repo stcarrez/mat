@@ -62,6 +62,8 @@ package body MAT.Callbacks is
                                 Handler      => MAT.Callbacks.On_Close_About'Access);
       Builder.Register_Handler (Handler_Name => "cmd-sizes",
                                 Handler      => MAT.Callbacks.On_Btn_Sizes'Access);
+      Builder.Register_Handler (Handler_Name => "cmd-threads",
+                                Handler      => MAT.Callbacks.On_Btn_Threads'Access);
       Timer := Timer_Callback.Timeout_Add (1000, Refresh_Timeout'Access, Target);
    end Initialize;
 
@@ -101,5 +103,14 @@ package body MAT.Callbacks is
    begin
       MAT.Commands.Sizes_Command (Target.all, "");
    end On_Btn_Sizes;
+
+   --  ------------------------------
+   --  Callback executed when the "cmd-threads" action is executed from the "Threads" action.
+   --  ------------------------------
+   procedure On_Btn_Threads (Object : access Gtkada.Builder.Gtkada_Builder_Record'Class) is
+      pragma Unreferenced (Object);
+   begin
+      MAT.Commands.Threads_Command (Target.all, "");
+   end On_Btn_Threads;
 
 end MAT.Callbacks;
