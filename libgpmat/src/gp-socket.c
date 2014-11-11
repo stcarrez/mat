@@ -100,11 +100,17 @@ struct gp_socket_server* gp_socket_open (const char* param)
   if (s != NULL)
     {
       *s = 0;
-      port = strtol (s + 1, NULL, 10);
+      port = strtol (s + 1, &s, 10);
     }
   else
     {
       port = DEFAULT_TCP_PORT;
+      s = host;
+    }
+  s = strchr (s, '?');
+  if (s != NULL)
+    {
+      *s = 0;
     }
 
   if (inet_aton (host, &ip) == 0)
