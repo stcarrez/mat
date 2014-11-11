@@ -22,6 +22,8 @@ with Gtk.List_Store;
 with Gtk.Tree_Model;
 with Gtk.Cell_Renderer_Text;
 with Gtk.Tree_View;
+with Gtk.Scrolled_Window;
+
 package MAT.Consoles.Gtkmat is
 
    type Console_Type is new MAT.Consoles.Console_Type with private;
@@ -82,7 +84,7 @@ private
 
    type Console_Type is new MAT.Consoles.Console_Type with record
       Frame       : Gtk.Frame.Gtk_Frame;
---        Model       : Gtk.Tree_Model.Gtk_Tree_Model;
+      Scrolled    : Gtk.Scrolled_Window.Gtk_Scrolled_Window;
       List        : Gtk.List_Store.Gtk_List_Store;
       Current_Row : Gtk.Tree_Model.Gtk_Tree_Iter;
       File        : Ada.Text_IO.File_Type;
