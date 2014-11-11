@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.Containers.Ordered_Maps;
+with Ada.Strings.Unbounded;
 
 with MAT.Types;
 with MAT.Frames;
@@ -38,6 +39,14 @@ package MAT.Memory is
       Max_Slot_Size : MAT.Types.Target_Size := 0;
       Min_Addr      : MAT.Types.Target_Addr := 0;
       Max_Addr      : MAT.Types.Target_Addr := 0;
+   end record;
+
+   --  Description of a memory region.
+   type Region_Info is record
+      Start_Addr : MAT.Types.Target_Addr := 0;
+      End_Addr   : MAT.Types.Target_Addr := 0;
+      Size       : MAT.Types.Target_Size := 0;
+      Path       : Ada.Strings.Unbounded.Unbounded_String;
    end record;
 
    use type MAT.Types.Target_Addr;
@@ -71,6 +80,13 @@ package MAT.Memory is
 
    subtype Frame_Info_Map is Frame_Info_Maps.Map;
    subtype Frame_Info_Cursor is Frame_Info_Maps.Cursor;
+
+   package Region_Info_Maps is
+     new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Addr,
+                                      Element_TYpe => Region_Info);
+
+   subtype Region_Info_Map is Region_Info_Maps.Map;
+   subtype Region_Info_Cursor is Region_Info_Maps.Cursor;
 
 private
 
