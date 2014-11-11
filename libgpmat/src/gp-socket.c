@@ -17,7 +17,9 @@
 #include "gp-config.h"
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdlib.h>
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#endif
 #include <string.h>
 #include <limits.h>
 #include <sys/socket.h>
