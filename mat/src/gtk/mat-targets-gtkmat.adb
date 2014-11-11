@@ -20,9 +20,11 @@ with Glib.Object;
 
 with Gtk.Main;
 with Gtk.Label;
+with Gtk.Frame;
 
 with MAT.Callbacks;
 with MAT.Consoles.Text;
+with MAT.Consoles.Gtkmat;
 package body MAT.Targets.Gtkmat is
 
    --  ------------------------------
@@ -51,6 +53,10 @@ package body MAT.Targets.Gtkmat is
          MAT.Callbacks.Initialize (Target'Unchecked_Access, Target.Builder);
          Target.Builder.Do_Connect;
          Widget := Gtk.Widget.Gtk_Widget (Target.Builder.Get_Object ("main"));
+         Target.Gtk_Console := new MAT.Consoles.Gtkmat.Console_Type;
+         Target.Gtk_Console.Initialize
+           (Gtk.Frame.Gtk_Frame (Target.Builder.Get_Object ("consoleFrame")));
+         Target.Console := Target.Gtk_Console.all'Access;
       else
          Widget := null;
       end if;
