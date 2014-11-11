@@ -1,5 +1,5 @@
 /* gp-events.c -- Event operations
---  Copyright (C) 2011, 2012, 2013 Stephane Carrez
+--  Copyright (C) 2011, 2012, 2013, 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,10 +20,11 @@
 #include <unistd.h>
 #include <limits.h>
 #include <stdio.h>
+#include "gp-remote.h"
 #include "gp-probe.h"
 #include "gp-events.h"
 
-void
+static void
 gp_send_attributes (const struct gp_event_def *type)
 {
   gp_uint16 len = strlen (type->name);
