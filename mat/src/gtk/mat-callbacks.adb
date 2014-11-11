@@ -22,6 +22,8 @@ with Gtk.Widget;
 with Gtk.Label;
 
 with Util.Log.Loggers;
+
+with MAT.Commands;
 package body MAT.Callbacks is
 
    --  The logger
@@ -37,6 +39,8 @@ package body MAT.Callbacks is
    Timer : Glib.Main.G_Source_Id;
    MemTotal : Natural := 1;
 
+   Target : MAT.Targets.Gtkmat.Target_Type_Access;
+
    function Refresh_Timeout (Target : in MAT.Targets.Gtkmat.Target_Type_Access) return Boolean is
    begin
       Target.Refresh_Process;
@@ -49,12 +53,15 @@ package body MAT.Callbacks is
    procedure Initialize (Target  : in MAT.Targets.Gtkmat.Target_Type_Access;
                          Builder : in Gtkada.Builder.Gtkada_Builder) is
    begin
+      MAT.Callbacks.Target := Target;
       Builder.Register_Handler (Handler_Name => "quit",
                                 Handler      => MAT.Callbacks.On_Menu_Quit'Access);
       Builder.Register_Handler (Handler_Name => "about",
                                 Handler      => MAT.Callbacks.On_Menu_About'Access);
       Builder.Register_Handler (Handler_Name => "close-about",
                                 Handler      => MAT.Callbacks.On_Close_About'Access);
+      Builder.Register_Handler (Handler_Name => "cmd-sizes",
+                                Handler      => MAT.Callbacks.On_Btn_Sizes'Access);
       Timer := Timer_Callback.Timeout_Add (1000, Refresh_Timeout'Access, Target);
    end Initialize;
 
@@ -85,5 +92,14 @@ package body MAT.Callbacks is
    begin
       About.Hide;
    end On_Close_About;
+
+   --  ------------------------------
+   --  Callback executed when the "cmd-sizes" action is executed from the "Sizes" action.
+   --  ------------------------------
+   procedure On_Btn_Sizes (Object : access Gtkada.Builder.Gtkada_Builder_Record'Class) is
+      pragma Unreferenced (Object);
+   begin
+      MAT.Commands.Sizes_Command (Target.all, "");
+   end On_Btn_Sizes;
 
 end MAT.Callbacks;
