@@ -1,5 +1,5 @@
 /*  gp-unix.h -- Unix specific information
---  Copyright (C) 2011, 2012, 2013 Stephane Carrez
+--  Copyright (C) 2011, 2012, 2013, 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,12 +20,9 @@
 
 #include <stddef.h>
 #include <sys/time.h>
-#include <pthread.h>
 
-#include "gp-remote.h"
-
-#ifdef __cplusplus
-/*extern "C" {*/
+#ifdef HAVE_PTHREAD_H
+# include <pthread.h>
 #endif
 
 #ifdef HAVE_BACKTRACE
@@ -58,11 +55,12 @@ static inline gp_uint32 gp_get_thread_id (void)
 
 struct proc_info
 {
-  long	pid;
-  long	etext;
-  long	edata;
-  long	ebss;
-  long	bss;
+  gp_uint32	pid;
+  gp_addr	etext;
+  gp_addr	edata;
+  gp_addr	ebss;
+  gp_addr	bss;
+  gp_uint16 exe_length;
 };
 
 struct thread_info
@@ -163,11 +161,5 @@ gp_remote_sizeof_probe (struct gp_probe *gp)
 }
 
 extern int gp_fetch_stack_frame (void** table, int size, int skip);
-
-/*@}*/
-
-#ifdef __cplusplus
-/*};*/
-#endif
 
 #endif
