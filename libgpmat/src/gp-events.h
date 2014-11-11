@@ -1,5 +1,5 @@
 /*  gp-events.h -- Event operations
---  Copyright (C) 2011, 2012, 2013 Stephane Carrez
+--  Copyright (C) 2011, 2012, 2013, 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,9 @@ typedef enum
   GP_CPU_MIPS
 } gp_cpu_id;
     
+/**
+ * @brief Basic data types which can be sent to the event probe stream.
+ */
 typedef enum
 {
   GP_TYPE_UINT8,
@@ -42,6 +45,9 @@ typedef enum
 #define GP_TYPE_SIZE_T  GP_TYPE_UINT32
 #define GP_TYPE_POINTER GP_TYPE_UINT32
 
+/**
+ * @brief The list of probe events which can be sent in the event probe  stream.
+ */
 typedef enum
 {
   GP_EVENT_BEGIN,
@@ -51,6 +57,12 @@ typedef enum
   GP_EVENT_FREE
 } gp_event_type;
 
+
+/**
+ * @brief Attribute description.
+ *
+ * Each attribute description describes a value that is sent in the event data stream.
+ */
 struct gp_attr_def
 {
   const char *name;
@@ -58,6 +70,12 @@ struct gp_attr_def
   int        size;
 };
 
+/**
+ * @brief Event description.
+ *
+ * The event description describes the values that are sent in the event data
+ * stream for a given event probe.
+ */
 struct gp_event_def
 {
   const char *name;
@@ -70,20 +88,15 @@ struct gp_event_def
 extern void gp_event_send (struct gp_probe *gp, int size,
                            const struct gp_event_def *type, ...);
 
-// extern const struct gp_event_def gp_event_malloc_def;
 extern void gp_event_malloc (struct gp_probe *gp, void *p, size_t size);
 
-// extern const struct gp_event_def gp_event_free_def;
 extern void gp_event_free (struct gp_probe *gp, void *p);
 
-// extern const struct gp_event_def gp_event_realloc_def;
 extern void gp_event_realloc (struct gp_probe *gp, void *p,
                               void *old, size_t size);
 
-// extern const struct gp_event_def gp_event_begin_def;
 extern void gp_event_begin (struct gp_probe *gp);
 
-// extern const struct gp_event_def gp_event_end_def;
 extern void gp_event_end (struct gp_probe *gp);
 
 extern void gp_event_begin (struct gp_probe *gp);
