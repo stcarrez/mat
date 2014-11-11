@@ -21,7 +21,9 @@
 # include <stdlib.h>
 #endif
 #include <string.h>
-#include <unistd.h>
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
 #include "gp-remote.h"
 #include "gp-probe.h"
 #include "gp-events.h"
