@@ -38,6 +38,15 @@ package body MAT.Memory.Targets is
    end Initialize;
 
    --  ------------------------------
+   --  Add the memory region from the list of memory region managed by the program.
+   --  ------------------------------
+   procedure Add_Region (Memory : in out Target_Memory;
+                         Region : in Region_Info) is
+   begin
+      Memory.Memory.Add_Region (Region);
+   end Add_Region;
+
+   --  ------------------------------
    --  Take into account a malloc probe.  The memory slot [Addr .. Slot.Size] is inserted
    --  in the used slots map.  The freed slots that intersect the malloc'ed region are
    --  removed from the freed map.
