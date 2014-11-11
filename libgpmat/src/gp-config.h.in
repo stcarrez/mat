@@ -44,6 +44,9 @@
 
 #undef HAVE_BACKTRACE
 
+/* Define if the __curbrk symbol is available.  */
+#undef HAVE___CURBRK
+
 /* Name of package */
 #undef PACKAGE
 
