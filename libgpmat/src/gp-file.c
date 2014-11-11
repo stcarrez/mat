@@ -17,7 +17,6 @@
 #include "gp-config.h"
 #include <unistd.h>
 #include <fcntl.h>
-#include <stdlib.h>
 #include <string.h>
 #include <limits.h>
 #include "gp-remote.h"
