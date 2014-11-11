@@ -24,7 +24,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "gp-remote.h"
-#include "gp-file.h"
+#include "gp-socket.h"
 
 #ifndef SOCK_CLOEXEC
 # define SOCK_CLOEXEC 0
@@ -32,14 +32,6 @@
 #else
 # define SET_CLOEXEC(fd)
 #endif
-
-struct gp_socket_server 
-{
-  struct gp_buffered_server root;
-  int fd;
-};
-
-static struct gp_socket_server server;
 
 /**
  * @brief Flush the data stored in the buffer.
@@ -84,12 +76,13 @@ void gp_socket_close (struct gp_server* server)
  *
  * The parameter string has the following format:
  *
- * tcp://host:port
+ * tcp://host:port[?sync]
  *
+ * @param server the socket server instance to initialize.
  * @param param the TCP/IP server to connect.
  * @return the GP server instance.
  */
-struct gp_socket_server* gp_socket_open (const char* param)
+struct gp_socket_server* gp_socket_open (struct gp_socket_server* server, const char* param)
 {
   char host[PATH_MAX];
   char* s;
@@ -114,6 +107,7 @@ struct gp_socket_server* gp_socket_open (const char* param)
   if (s != NULL)
     {
       *s = 0;
+      s++;
     }
 
   if (inet_aton (host, &ip) == 0)
@@ -121,8 +115,8 @@ struct gp_socket_server* gp_socket_open (const char* param)
       return NULL;
     }
   
-  server.fd = socket (PF_INET, SOCK_STREAM, SOCK_CLOEXEC);
-  if (server.fd < 0)
+  server->fd = socket (PF_INET, SOCK_STREAM, SOCK_CLOEXEC);
+  if (server->fd < 0)
     {
       return NULL;
     }
@@ -131,17 +125,17 @@ struct gp_socket_server* gp_socket_open (const char* param)
   sinaddr.sin_family = AF_INET;
   sinaddr.sin_port = htons (port);
   sinaddr.sin_addr = ip;
-  if (connect (server.fd, (struct sockaddr *) &sinaddr, sizeof (struct sockaddr_in)) < 0)
+  if (connect (server->fd, (struct sockaddr *) &sinaddr, sizeof (struct sockaddr_in)) < 0)
     {
-      close (server.fd);
+      close (server->fd);
       return NULL;
     }
-  setsockopt (server.fd, SOL_SOCKET, SO_KEEPALIVE, &on, sizeof(on));
-  SET_CLOEXEC (server.fd);
+  setsockopt (server->fd, SOL_SOCKET, SO_KEEPALIVE, &on, sizeof(on));
+  SET_CLOEXEC (server->fd);
 
-  gp_buffered_server_initialize (&server.root);
-  server.root.to_flush = gp_socket_flush;
-  server.root.root.to_close = gp_socket_close;
-  unsetenv ("GP_SERVER");
-  return &server;
+  gp_buffered_server_initialize (&server->root, s);
+  server->root.to_flush = gp_socket_flush;
+  server->root.root.to_close = gp_socket_close;
+  unsetenv ("MAT_SERVER");
+  return server;
 }
