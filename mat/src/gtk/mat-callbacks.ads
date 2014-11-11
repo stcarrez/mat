@@ -36,4 +36,7 @@ package MAT.Callbacks is
    --  Callback executed when the "cmd-sizes" action is executed from the "Sizes" action.
    procedure On_Btn_Sizes (Object : access Gtkada.Builder.Gtkada_Builder_Record'Class);
 
+   --  Callback executed when the "cmd-threads" action is executed from the "Threads" action.
+   procedure On_Btn_Threads (Object : access Gtkada.Builder.Gtkada_Builder_Record'Class);
+
 end MAT.Callbacks;
