@@ -26,8 +26,11 @@
 #include "gp-remote.h"
 #include "gp-file.h"
 
-#ifndef O_CLOEXEC
-# define O_CLOEXEC 0
+#ifndef SOCK_CLOEXEC
+# define SOCK_CLOEXEC 0
+# define SET_CLOEXEC(fd) fcntl (fd, F_SETFD, FD_CLOEXEC);
+#else
+# define SET_CLOEXEC(fd)
 #endif
 
 struct gp_socket_server 
@@ -118,7 +121,7 @@ struct gp_socket_server* gp_socket_open (const char* param)
       return NULL;
     }
   
-  server.fd = socket (PF_INET, SOCK_STREAM, 0);
+  server.fd = socket (PF_INET, SOCK_STREAM, SOCK_CLOEXEC);
   if (server.fd < 0)
     {
       return NULL;
@@ -134,6 +137,8 @@ struct gp_socket_server* gp_socket_open (const char* param)
       return NULL;
     }
   setsockopt (server.fd, SOL_SOCKET, SO_KEEPALIVE, &on, sizeof(on));
+  SET_CLOEXEC (server.fd);
+
   gp_buffered_server_initialize (&server.root);
   server.root.to_flush = gp_socket_flush;
   server.root.root.to_close = gp_socket_close;
