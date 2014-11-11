@@ -23,10 +23,6 @@
 #include "gp-remote.h"
 #include "gp-file.h"
 
-#ifndef O_CLOEXEC
-# define O_CLOEXEC 0
-#endif
-
 struct gp_file_server 
 {
   struct gp_buffered_server root;
@@ -87,7 +83,7 @@ struct gp_file_server* gp_file_open (const char* param)
   int i;
 
   s = path;
-  while ((s < &path[PATH_MAX - 10]) && (*param != 0))
+  while ((s < &path[PATH_MAX - 10]) && (*param != 0) && (*param != '?'))
     {
       *s++ = *param++;
     }
