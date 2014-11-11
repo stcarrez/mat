@@ -17,7 +17,9 @@
 #include "gp-config.h"
 #include <stdarg.h>
 #include <string.h>
-#include <unistd.h>
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
 #include <limits.h>
 #include <stdio.h>
 #include "gp-remote.h"
