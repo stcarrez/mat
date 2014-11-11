@@ -37,4 +37,10 @@ package MAT.Commands is
    procedure Symbol_Command (Target : in out MAT.Targets.Target_Type'Class;
                              Args   : in String);
 
+   --  Sizes command.
+   --  Collect statistics about the used memory slots and report the different slot
+   --  sizes with count.
+   procedure Sizes_Command (Target : in out MAT.Targets.Target_Type'Class;
+                            Args   : in String);
+
 end MAT.Commands;
