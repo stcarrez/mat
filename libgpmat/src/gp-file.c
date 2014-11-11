@@ -23,14 +23,6 @@
 #include "gp-remote.h"
 #include "gp-file.h"
 
-struct gp_file_server 
-{
-  struct gp_buffered_server root;
-  int fd;
-};
-
-static struct gp_file_server server;
-
 /**
  * @brief Flush the data stored in the buffer.
  *
@@ -72,10 +64,11 @@ void gp_file_close (struct gp_server* server)
 /**
  * @brief Open the file and prepare for probe monitoring on a file.
  *
+ * @param server the file server instance to initialize.
  * @param param the file pattern to create.
  * @return the GP server instance.
  */
-struct gp_file_server* gp_file_open (const char* param)
+struct gp_file_server* gp_file_open (struct gp_file_server* server, const char* param)
 {
   char path[PATH_MAX];
   char* s;
@@ -94,14 +87,19 @@ struct gp_file_server* gp_file_open (const char* param)
     }
   strcpy (s, ".mat");
 
-  server.fd = open (path, O_CREAT | O_WRONLY | O_TRUNC | O_CLOEXEC, 0644);
-  if (server.fd <= 0) 
+  server->fd = open (path, O_CREAT | O_WRONLY | O_TRUNC | O_CLOEXEC, 0644);
+  if (server->fd <= 0) 
     {
       return NULL;
     }
-  gp_buffered_server_initialize (&server.root);
-  server.root.root.to_close       = gp_file_close;
-  server.root.to_flush            = gp_file_flush;
+  if (*param == '?')
+    {
+      param++;
+    }
+
+  gp_buffered_server_initialize (&server->root, param);
+  server->root.root.to_close       = gp_file_close;
+  server->root.to_flush            = gp_file_flush;
    
-  return &server;
+  return server;
 }
