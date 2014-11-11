@@ -40,6 +40,10 @@ package MAT.Memory.Targets is
    procedure Initialize (Memory : in out Target_Memory;
                          Reader : in out MAT.Readers.Manager_Base'Class);
 
+   --  Add the memory region from the list of memory region managed by the program.
+   procedure Add_Region (Memory : in out Target_Memory;
+                         Region : in Region_Info);
+
    --  Take into account a malloc probe.  The memory slot [Addr .. Slot.Size] is inserted
    --  in the used slots map.  The freed slots that intersect the malloc'ed region are
    --  removed from the freed map.
