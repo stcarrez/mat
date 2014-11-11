@@ -17,12 +17,19 @@
 #ifndef _GP_FILE_H
 #define _GP_FILE_H
 
+struct gp_file_server 
+{
+  struct gp_buffered_server root;
+  int fd;
+};
+
 /**
  * @brief Open the file and prepare for probe monitoring on a file.
  *
+ * @param server the file server instance to initialize.
  * @param param the file pattern to create.
  * @return the GP server instance.
  */
-extern struct gp_file_server* gp_file_open (const char* param);
+extern struct gp_file_server* gp_file_open (struct gp_file_server* server, const char* param);
 
 #endif
