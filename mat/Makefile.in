@@ -67,6 +67,8 @@ bin/mat_harness:  bin/matp
 bin/matp:		Makefile $(GPRPATH)
 	$(GNATMAKE) -P "$(GPRPATH)" $(MAKE_ARGS)
 
+test:			bin/mat_harness
+	bin/mat_harness
 
 install:
 	$(INSTALL_PROGRAM) bin/matp $(bindir)/
