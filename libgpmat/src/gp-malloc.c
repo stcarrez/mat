@@ -25,6 +25,13 @@
 # define RTLD_NEXT      ((void *) -1l)
 #endif
 
+#ifdef HAVE___CURBRK
+extern void* __curbrk;
+# define CURBRK __curbrk
+#else
+# define CURBRK (void*) 0
+#endif
+
 typedef void* (*gp_malloc_t) (size_t);
 typedef void* (*gp_realloc_t) (void*, size_t);
 typedef void (*gp_free_t) (void*);
@@ -39,7 +46,6 @@ static void __attribute__ ((constructor)) init (void)
   _realloc = (gp_realloc_t) dlsym(RTLD_NEXT, "__libc_realloc");
   _free = (gp_free_t) dlsym(RTLD_NEXT, "__libc_free");
 }
-
 
 /**
  * @brief Overrides the libc malloc.
@@ -71,7 +77,7 @@ __libc_malloc (size_t size)
   if (has_probe) 
     {
       gp_frame_add_skip (&probe, 2);
-      gp_event_malloc (&probe, p, size);
+      gp_event_malloc (&probe, p, size, CURBRK);
       gp_free_probe (&probe);
     }
 
@@ -99,7 +105,7 @@ __libc_realloc (void *ptr, size_t size)
   if (has_probe)
     {
       gp_frame_add_skip (&probe, 2);
-      gp_event_realloc (&probe, p, ptr, size);
+      gp_event_realloc (&probe, p, ptr, size, CURBRK);
       gp_free_probe (&probe);
     }
 
