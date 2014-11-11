@@ -1,5 +1,5 @@
 /*  gp-remote.c -- Remote access
---  Copyright (C) 2011, 2012, 2013 Stephane Carrez
+--  Copyright (C) 2011, 2012, 2013, 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -102,14 +102,16 @@ void gp_buffered_send (struct gp_server* server, const void* ptr, size_t len)
 /**
  * @brief Synchronize with the GP server.
  *
- * For a file, do nothing.
+ * Flush the pending data.
  *
  * @param server the GP server instance.
  * @return 0 if the operation succeeded or an error code.
  */
 int gp_buffered_synchronize (struct gp_server* server)
 {
-  return 0;
+  struct gp_buffered_server* buffer = (struct gp_buffered_server*) server;
+
+  return buffer->to_flush (buffer);
 }
 
 void
@@ -133,7 +135,7 @@ gp_remote_close (void)
 void
 gp_remote_sync (void)
 {
-  if (server)
+  if (server && server->to_synchronize)
     {
       server->to_synchronize (server);
     }
