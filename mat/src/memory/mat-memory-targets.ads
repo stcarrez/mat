@@ -99,6 +99,9 @@ private
 
    protected type Memory_Allocator is
 
+      --  Add the memory region from the list of memory region managed by the program.
+      procedure Add_Region (Region : in Region_Info);
+
       --  Take into account a malloc probe.  The memory slot [Addr .. Slot.Size] is inserted
       --  in the used slots map.  The freed slots that intersect the malloc'ed region are
       --  removed from the freed map.
@@ -148,6 +151,7 @@ private
    private
       Used_Slots    : Allocation_Map;
       Freed_Slots   : Allocation_Map;
+      Regions       : Region_Info_Map;
       Stats         : Memory_Stat;
       Frames        : MAT.Frames.Frame_Type := MAT.Frames.Create_Root;
    end Memory_Allocator;
