@@ -26,6 +26,12 @@
 #include "gp-socket.h"
 #include "shm-channel.h"
 
+static union 
+{
+  struct gp_file_server   file;
+  struct gp_socket_server socket;
+} server_data;
+
 static struct gp_server* server;
 
 #ifdef DEBUG
@@ -114,6 +120,12 @@ int gp_buffered_synchronize (struct gp_server* server)
   return buffer->to_flush (buffer);
 }
 
+/**
+ * @brief Send the raw data to the file or socket.
+ *
+ * @param addr the data to send.
+ * @param len the number of bytes to send.
+ */
 void
 gp_remote_send (const void *addr, size_t len)
 {
@@ -123,6 +135,9 @@ gp_remote_send (const void *addr, size_t len)
     }
 }
 
+/**
+ * @brief Close the event probe stream.
+ */
 void
 gp_remote_close (void)
 {
@@ -132,6 +147,9 @@ gp_remote_close (void)
     }
 }
 
+/**
+ * @brief Synchronize the event probe stream (if enabled).
+ */
 void
 gp_remote_sync (void)
 {
@@ -145,21 +163,27 @@ gp_remote_sync (void)
  * @brief Initialize the buffered server instance.
  *
  * @param server the server instance.
+ * @param param the configuration parameter.
  */
 void
-gp_buffered_server_initialize (struct gp_buffered_server* server)
+gp_buffered_server_initialize (struct gp_buffered_server* server, const char* param)
 {
   server->write_ptr = server->buffer;
   server->last_ptr  = &server->buffer[sizeof (server->buffer)];
   server->root.to_send        = gp_buffered_send;
-  server->root.to_synchronize = gp_buffered_synchronize;
+  server->root.to_synchronize = NULL;
+  if (param != NULL && strcmp (param, "sync") == 0)
+    server->root.to_synchronize = gp_buffered_synchronize;
 }
 
 /**
  * @brief Initialize the connection to the server.
  *
- * file://<pattern>     Write the probe stream in a file.
- * tcp://host:port      Send the probe stream to the TCP/IP server.
+ * file://<pattern>[?sync]     Write the probe stream in a file.
+ * tcp://host:port[?sync]      Send the probe stream to the TCP/IP server.
+ *
+ * The optional <tt>sync</tt> flag enables the synchronous mode which flushes
+ * the event probe stream after each operation.
  *
  * @return 0
  */
@@ -171,11 +195,11 @@ gp_remote_initialize (void)
     {
       if (strncmp (p, "file://", 7) == 0)
         {
-          server = (struct gp_server*) gp_file_open (&p[7]);
+          server = (struct gp_server*) gp_file_open (&server_data.file, &p[7]);
         }
       else if (strncmp (p, "tcp://", 6) == 0)
         {
-          server = (struct gp_server*) gp_socket_open (&p[6]);
+          server = (struct gp_server*) gp_socket_open (&server_data.socket, &p[6]);
         }
     }
   return 0;
