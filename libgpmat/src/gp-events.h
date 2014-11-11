@@ -88,12 +88,12 @@ struct gp_event_def
 extern void gp_event_send (struct gp_probe *gp, int size,
                            const struct gp_event_def *type, ...);
 
-extern void gp_event_malloc (struct gp_probe *gp, void *p, size_t size);
+extern void gp_event_malloc (struct gp_probe *gp, void *p, size_t size, void* curbrk);
 
 extern void gp_event_free (struct gp_probe *gp, void *p);
 
 extern void gp_event_realloc (struct gp_probe *gp, void *p,
-                              void *old, size_t size);
+                              void *old, size_t size, void* curbrk);
 
 extern void gp_event_begin (struct gp_probe *gp);
 
