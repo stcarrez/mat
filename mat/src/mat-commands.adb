@@ -47,8 +47,6 @@ package body MAT.Commands is
                            Args   : in String);
    procedure Frames_Command (Target : in out MAT.Targets.Target_Type'Class;
                              Args   : in String);
-   procedure Threads_Command (Target : in out MAT.Targets.Target_Type'Class;
-                              Args   : in String);
    procedure Exit_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String);
    procedure Open_Command (Target : in out MAT.Targets.Target_Type'Class;
