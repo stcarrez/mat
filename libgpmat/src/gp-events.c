@@ -26,6 +26,8 @@
 #include "gp-probe.h"
 #include "gp-events.h"
 
+extern char etext, edata, end;
+
 static void
 gp_send_attributes (const struct gp_event_def *type)
 {
@@ -228,8 +230,11 @@ static const struct gp_event_def gp_event_begin_frame_def = {
 };
 
 static const struct gp_attr_def gp_begin_attrs[] = {
-  { "pid",   GP_TYPE_UINT32, sizeof (gp_uint32) },
-  { "exe",   GP_TYPE_STRING, sizeof (gp_uint16) },
+  { "pid",   GP_TYPE_UINT32,  sizeof (gp_uint32) },
+  { "exe",   GP_TYPE_STRING,  sizeof (gp_uint16) },
+  { "etext", GP_TYPE_POINTER, sizeof (char*) },
+  { "edata", GP_TYPE_POINTER, sizeof (char*) },
+  { "end",   GP_TYPE_POINTER, sizeof (char*) }
 };
 
 static const struct gp_event_def gp_event_begin_def = {
@@ -326,7 +331,7 @@ gp_event_begin (struct gp_probe *gp)
       path[size] = 0;
     }
 
-  gp_event_send (gp, size, &gp_event_begin_def, pid, size, path);
+  gp_event_send (gp, size, &gp_event_begin_def, pid, size, path, &etext, &edata, &end);
   gp_send_attribute_list (events, GP_TABLE_SIZE (events));
 }
 
