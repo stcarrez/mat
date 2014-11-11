@@ -19,7 +19,7 @@
 with Gtk.Widget;
 with Gtkada.Builder;
 
---  with MAT.Consoles.Gtkmat;
+with MAT.Consoles.Gtkmat;
 package MAT.Targets.Gtkmat is
 
    type Target_Type is new MAT.Targets.Target_Type with private;
@@ -61,9 +61,10 @@ private
    end Gtk_Loop;
 
    type Target_Type is new MAT.Targets.Target_Type with record
-      Builder  : Gtkada.Builder.Gtkada_Builder;
-      Gui_Task : Gtk_Loop;
+      Builder     : Gtkada.Builder.Gtkada_Builder;
+      Gui_Task    : Gtk_Loop;
       Previous_Event_Counter : Integer := 0;
+      Gtk_Console : MAT.Consoles.Gtkmat.Console_Type_Access;
    end record;
 
 end MAT.Targets.Gtkmat;
