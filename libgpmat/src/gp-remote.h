@@ -23,6 +23,10 @@
 # define PATH_MAX 256
 #endif
 
+#ifndef O_CLOEXEC
+# define O_CLOEXEC 0
+#endif
+
 #define DEFAULT_TCP_PORT 4096
 
 struct gp_server;
