@@ -1,5 +1,5 @@
 /*  gp-probe.c --  Probe implementation
---  Copyright (C) 2011, 2012, 2013 Stephane Carrez
+--  Copyright (C) 2011, 2012, 2013, 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,18 @@
 */
 
 #include "gp-config.h"
+#include <stdio.h>
+#ifdef HAVE_PTHREAD_H
+# include <pthread.h>
+#endif
+#include "gp-remote.h"
 #include "gp-probe.h"
 #include "gp-events.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <pthread.h>
+
+#ifndef HAVE_PTHREAD_H
+# define pthread_mutex_lock(L)
+# define pthread_mutex_unlock(L)
+#endif
 
 int _gp_initialize (void);
 
@@ -41,10 +48,12 @@ enum gp_probe_state
 static enum gp_probe_state gp_is_initialized = GP_NOT_INITIALIZED;
 
 static __thread int gp_recursive = 0;
+#ifdef HAVE_PTHREAD_H
 static pthread_mutex_t gp_lock;
+#endif
 
 int
-gp_probe_lock ()
+gp_probe_lock (void)
 {
   if (gp_recursive != 0)
     return -1;
@@ -55,7 +64,7 @@ gp_probe_lock ()
 }
 
 void
-gp_probe_unlock ()
+gp_probe_unlock (void)
 {
   gp_recursive--;
   if (gp_recursive == 0)
@@ -104,6 +113,7 @@ gp_get_probe (struct gp_probe *gp)
 void
 gp_free_probe (struct gp_probe *gp)
 {
+  gp_remote_sync ();
   gp_probe_unlock ();
 }
 
@@ -143,8 +153,6 @@ _gp_initialize (void)
   gp_is_initialized = GP_CONNECTED;
   (void) gp_get_probe (&probe);
   gp_event_begin (&probe);
-
-  // atexit (gp_exit);
 
   gp_free_probe (&probe);
 
