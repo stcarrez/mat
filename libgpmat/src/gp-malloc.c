@@ -1,5 +1,5 @@
 /*  gp-malloc.c -- Malloc operations
---  Copyright (C) 2011, 2012, 2013 Stephane Carrez
+--  Copyright (C) 2011, 2012, 2013, 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
 */
 
 #include "gp-config.h"
+#include <dlfcn.h>
+#include "gp-remote.h"
 #include "gp-probe.h"
 #include "gp-events.h"
-#include <stdlib.h>
-#include <dlfcn.h>
 
 #ifndef RTLD_NEXT
 # define RTLD_NEXT      ((void *) -1l)
