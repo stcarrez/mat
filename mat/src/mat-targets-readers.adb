@@ -23,30 +23,30 @@ package body MAT.Targets.Readers is
    --  The logger
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Targets.Readers");
 
-   MSG_BEGIN  : constant MAT.Events.Internal_Reference := 0;
-   MSG_END    : constant MAT.Events.Internal_Reference := 1;
+   MSG_BEGIN     : constant MAT.Events.Internal_Reference := 0;
+   MSG_END       : constant MAT.Events.Internal_Reference := 1;
 
-   M_PID      : constant MAT.Events.Internal_Reference := 1;
-   M_EXE      : constant MAT.Events.Internal_Reference := 2;
-   M_ETEXT    : constant MAT.Events.Internal_Reference := 3;
-   M_EDATA    : constant MAT.Events.Internal_Reference := 4;
-   M_END      : constant MAT.Events.Internal_Reference := 5;
+   M_PID         : constant MAT.Events.Internal_Reference := 1;
+   M_EXE         : constant MAT.Events.Internal_Reference := 2;
+   M_HEAP_START  : constant MAT.Events.Internal_Reference := 3;
+   M_HEAP_END    : constant MAT.Events.Internal_Reference := 4;
+   M_END         : constant MAT.Events.Internal_Reference := 5;
 
-   PID_NAME   : aliased constant String := "pid";
-   EXE_NAME   : aliased constant String := "exe";
-   ETEXT_NAME : aliased constant String := "etext";
-   EDATA_NAME : aliased constant String := "edata";
-   END_NAME   : aliased constant String := "end";
+   PID_NAME      : aliased constant String := "pid";
+   EXE_NAME      : aliased constant String := "exe";
+   HP_START_NAME : aliased constant String := "hp_start";
+   HP_END_NAME   : aliased constant String := "hp_end";
+   END_NAME      : aliased constant String := "end";
 
    Process_Attributes : aliased constant MAT.Events.Attribute_Table :=
      (1 => (Name => PID_NAME'Access, Size => 0,
             Kind => MAT.Events.T_SIZE_T, Ref => M_PID),
       2 => (Name => EXE_NAME'Access, Size => 0,
             Kind => MAT.Events.T_FRAME, Ref => M_EXE),
-      3 => (Name => ETEXT_NAME'Access, Size => 0,
-            Kind => MAT.Events.T_FRAME, Ref => M_ETEXT),
-      4 => (Name => EDATA_NAME'Access, Size => 0,
-            Kind => MAT.Events.T_FRAME, Ref => M_EDATA),
+      3 => (Name => HP_START_NAME'Access, Size => 0,
+            Kind => MAT.Events.T_FRAME, Ref => M_HEAP_START),
+      4 => (Name => HP_END_NAME'Access, Size => 0,
+            Kind => MAT.Events.T_FRAME, Ref => M_HEAP_END),
       5 => (Name => END_NAME'Access, Size => 0,
             Kind => MAT.Events.T_FRAME, Ref => M_END));
 
@@ -72,6 +72,7 @@ package body MAT.Targets.Readers is
                           Msg         : in out MAT.Readers.Message) is
       Pid  : MAT.Types.Target_Process_Ref := 0;
       Path : Ada.Strings.Unbounded.Unbounded_String;
+      Heap : MAT.Memory.Region_Info;
    begin
       for I in Defs'Range loop
          declare
@@ -84,14 +85,23 @@ package body MAT.Targets.Readers is
                when M_EXE =>
                   Path := MAT.Readers.Marshaller.Get_String (Msg.Buffer);
 
+               when M_HEAP_START =>
+                  Heap.Start_Addr := MAT.Readers.Marshaller.Get_Target_Addr (Msg.Buffer, Def.Kind);
+
+               when M_HEAP_END =>
+                  Heap.End_Addr := MAT.Readers.Marshaller.Get_Target_Addr (Msg.Buffer, Def.Kind);
+
                when others =>
                   MAT.Readers.Marshaller.Skip (Msg.Buffer, Def.Size);
             end case;
          end;
       end loop;
+      Heap.Size       := Heap.End_Addr - Heap.Start_Addr;
+      Heap.Path       := Ada.Strings.Unbounded.To_Unbounded_String ("[heap]");
       For_Servant.Create_Process (Pid, Path);
       For_Servant.Reader.Read_Message (Msg);
       For_Servant.Reader.Read_Event_Definitions (Msg);
+      For_Servant.Process.Memory.Add_Region (Heap);
    end Probe_Begin;
 
    overriding
