@@ -19,7 +19,6 @@ with Ada.Text_IO;
 
 with Gtk.Enums;
 with Gtk.Tree_View_Column;
-with Gtk.Scrolled_Window;
 
 with Util.Log.Loggers;
 package body MAT.Consoles.Gtkmat is
@@ -33,7 +32,11 @@ package body MAT.Consoles.Gtkmat is
    procedure Initialize (Console : in out Console_Type;
                          Frame   : in Gtk.Frame.Gtk_Frame) is
    begin
+      Gtk.Scrolled_Window.Gtk_New (Console.Scrolled);
+      Console.Scrolled.Set_Policy (Gtk.Enums.Policy_Always, Gtk.Enums.Policy_Always);
       Console.Frame := Frame;
+      Console.Frame.Add (Console.Scrolled);
+--        Console.Frame.Show_All;
    end Initialize;
 
    --  Report a notice message.
@@ -93,12 +96,8 @@ package body MAT.Consoles.Gtkmat is
         := (others => Glib.GType_String);
       Col      : Gtk.Tree_View_Column.Gtk_Tree_View_Column;
       Num : Glib.Gint;
-      Scrolled : Gtk.Scrolled_Window.Gtk_Scrolled_Window;
    begin
       Gtk.List_Store.Gtk_New (Console.List, Types);
-
-      Gtk.Scrolled_Window.Gtk_New (Scrolled);
-      Scrolled.Set_Policy (Gtk.Enums.Policy_Always, Gtk.Enums.Policy_Always);
 
       Gtk.Tree_View.Gtk_New (Console.Tree);
       for I in 1 .. Console.Field_Count loop
@@ -110,12 +109,10 @@ package body MAT.Consoles.Gtkmat is
          Col.Set_Sizing (Gtk.Tree_View_Column.Tree_View_Column_Autosize);
          Col.Add_Attribute (Console.Col_Text, "text", Glib.Gint (I) - 1);
       end loop;
-      Scrolled.Add (Console.Tree);
-      Scrolled.Show_All;
+      Console.Scrolled.Add (Console.Tree);
+      Console.Scrolled.Show_All;
 
       Console.Tree.Set_Model (+Console.List);
-      Console.Frame.Add (Scrolled);
-      Console.Frame.Show_All;
    end End_Title;
 
    --  Start a new row in a report.
