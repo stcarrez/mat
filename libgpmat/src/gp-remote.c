@@ -17,9 +17,12 @@
 
 #include "gp-config.h"
 #include <stdarg.h>
-#include <stdlib.h>
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#endif
 #include <string.h>
 #include <unistd.h>
+#include "gp-remote.h"
 #include "gp-probe.h"
 #include "gp-events.h"
 #include "gp-file.h"
