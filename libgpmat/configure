@@ -4706,10 +4706,53 @@ fi
 done
 
 
+if test "x$ac_cv_func_backtrace" = xyes; then
+   cpu_files="src/frame-backtrace.c"
+   cpu_obj_files="frame-backtrace.o"
+else
+ for ac_func in _Unwind_Backtrace
+do :
+  ac_fn_c_check_func "$LINENO" "_Unwind_Backtrace" "ac_cv_func__Unwind_Backtrace"
+if test "x$ac_cv_func__Unwind_Backtrace" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE__UNWIND_BACKTRACE 1
+_ACEOF
+
+fi
+done
+
+ for ac_func in _Unwind_GetIP
+do :
+  ac_fn_c_check_func "$LINENO" "_Unwind_GetIP" "ac_cv_func__Unwind_GetIP"
+if test "x$ac_cv_func__Unwind_GetIP" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE__UNWIND_GETIP 1
+_ACEOF
+
+fi
+done
+
+ for ac_func in _Unwind_GetCFA
+do :
+  ac_fn_c_check_func "$LINENO" "_Unwind_GetCFA" "ac_cv_func__Unwind_GetCFA"
+if test "x$ac_cv_func__Unwind_GetCFA" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE__UNWIND_GETCFA 1
+_ACEOF
+
+fi
+done
+
+
+ if test "x$ac_cv_func_backtrace" = xyes; then
+   cpu_files="src/frame-backtrace.c"
+   cpu_obj_files="frame-backtrace.o"
+ fi
+
+fi
+
 case "$target" in
   i386-*|i486-*|i586-*|i686-*)
-	cpu_files="src/frame-unix.c"
-	cpu_obj_files="frame-unix.o"
 	;;
 
   *)
