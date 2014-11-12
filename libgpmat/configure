@@ -4694,6 +4694,17 @@ _ACEOF
 fi
 done
 
+for ac_func in __libc_malloc
+do :
+  ac_fn_c_check_func "$LINENO" "__libc_malloc" "ac_cv_func___libc_malloc"
+if test "x$ac_cv_func___libc_malloc" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE___LIBC_MALLOC 1
+_ACEOF
+
+fi
+done
+
 
 case "$target" in
   i386-*|i486-*|i586-*|i686-*)
