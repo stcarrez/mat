@@ -68,6 +68,7 @@ AC_CHECK_HEADERS(sys/types.h sys/shm.h sys/ipc.h sys/sem.h sys/syscall.h sys/tim
 AC_CHECK_FUNCS(sigaction)
 AC_CHECK_FUNCS(backtrace)
 AC_CHECK_FUNCS(__curbrk)
+AC_CHECK_FUNCS(__libc_malloc)
 
 case "$target" in
   i386-*|i486-*|i586-*|i686-*)
