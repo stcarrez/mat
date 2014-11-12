@@ -40,11 +40,21 @@ static gp_malloc_t _malloc;
 static gp_realloc_t _realloc;
 static gp_free_t _free;
 
+#ifdef HAVE___LIBC_MALLOC
+# define LIBC_MALLOC_SYM   "__libc_malloc"
+# define LIBC_REALLOC_SYM  "__libc_realloc"
+# define LIBC_FREE_SYM     "__libc_free"
+#else
+# define LIBC_MALLOC_SYM   "malloc"
+# define LIBC_REALLOC_SYM  "realloc"
+# define LIBC_FREE_SYM     "free"
+#endif
+
 static void __attribute__ ((constructor)) init (void)
 {
-  _malloc = (gp_malloc_t) dlsym(RTLD_NEXT, "__libc_malloc");
-  _realloc = (gp_realloc_t) dlsym(RTLD_NEXT, "__libc_realloc");
-  _free = (gp_free_t) dlsym(RTLD_NEXT, "__libc_free");
+  _malloc = (gp_malloc_t) dlsym(RTLD_NEXT, LIBC_MALLOC_SYM);
+  _realloc = (gp_realloc_t) dlsym(RTLD_NEXT, LIBC_REALLOC_SYM);
+  _free = (gp_free_t) dlsym(RTLD_NEXT, LIBC_FREE_SYM);
 }
 
 /**
@@ -65,7 +75,7 @@ __libc_malloc (size_t size)
 
   if (_malloc == 0)
     {
-      _malloc = (gp_malloc_t) dlsym (RTLD_NEXT, "__libc_malloc");
+      _malloc = (gp_malloc_t) dlsym (RTLD_NEXT, LIBC_MALLOC_SYM);
     }
   
   /* Call the real memory allocator.  */
