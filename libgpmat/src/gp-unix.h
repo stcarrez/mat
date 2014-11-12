@@ -163,6 +163,8 @@ gp_remote_sizeof_probe (struct gp_probe *gp)
   return result;
 }
 
+#ifdef HAVE_FRAME
 extern int gp_fetch_stack_frame (void** table, int size, int skip);
+#endif
 
 #endif
