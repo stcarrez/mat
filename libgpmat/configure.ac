@@ -70,15 +70,20 @@ AC_CHECK_FUNCS(backtrace)
 AC_CHECK_FUNCS(__curbrk)
 AC_CHECK_FUNCS(__libc_malloc)
 
-case "$target" in
-  i386-*|i486-*|i586-*|i686-*)
-	cpu_files="src/frame-unix.c"
-	cpu_obj_files="frame-unix.o"
-	;;
+if test "x$ac_cv_func_backtrace" = xyes; then
+   cpu_files="src/frame-backtrace.c"
+   cpu_obj_files="frame-backtrace.o"
+else
+ AC_CHECK_FUNCS(_Unwind_Backtrace)
+ AC_CHECK_FUNCS(_Unwind_GetIP)
+ AC_CHECK_FUNCS(_Unwind_GetCFA)
 
-  *)
-	;;
-esac
+ if test "x$ac_cv_func__Unwind_Backtrace" = xyes; then
+   cpu_files="src/frame-unwind.c"
+   cpu_obj_files="frame-unwind.o"
+ fi
+
+fi
 
 CPU_FILES=$cpu_files
 CPU_OBJS=$cpu_obj_files
