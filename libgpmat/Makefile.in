@@ -54,6 +54,7 @@ SOURCES = \
 	src/gp-file.c \
 	src/gp-socket.c \
 	src/gp-malloc.c \
+	src/gp-proc.c \
 	src/shm-channel.c \
 	src/shm-ops.c \
 	@CPU_FILES@
@@ -64,6 +65,7 @@ OBJS=gp-events.o \
 	gp-file.o \
 	gp-malloc.o \
 	gp-socket.o \
+	gp-proc.o \
 	shm-channel.o \
 	shm-ops.o \
 	@CPU_OBJS@
