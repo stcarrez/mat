@@ -47,6 +47,9 @@
 /* Define if the __curbrk symbol is available.  */
 #undef HAVE___CURBRK
 
+/* Define if the libc defines __libc_malloc.  */
+#undef HAVE___LIBC_MALLOC
+
 /* Name of package */
 #undef PACKAGE
 
