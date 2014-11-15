@@ -33,10 +33,14 @@ package body MAT.Consoles.Gtkmat is
                          Frame   : in Gtk.Frame.Gtk_Frame) is
    begin
       Gtk.Scrolled_Window.Gtk_New (Console.Scrolled);
+      Gtk.Cell_Renderer_Text.Gtk_New (Console.Col_Text);
+      Gtk.Tree_View.Gtk_New (Console.Tree);
       Console.Scrolled.Set_Policy (Gtk.Enums.Policy_Always, Gtk.Enums.Policy_Always);
       Console.Frame := Frame;
       Console.Frame.Add (Console.Scrolled);
---        Console.Frame.Show_All;
+      Console.Scrolled.Add (Console.Tree);
+      Console.Scrolled.Show_All;
+      --        Console.Frame.Show_All;
    end Initialize;
 
    --  Report a notice message.
@@ -82,7 +86,9 @@ package body MAT.Consoles.Gtkmat is
    overriding
    procedure Start_Title (Console : in out Console_Type) is
    begin
-      Gtk.Cell_Renderer_Text.Gtk_New (Console.Col_Text);
+      Console.Field_Count := 0;
+      Console.Sizes := (others => 0);
+      Console.Cols := (others => 1);
       Console.Indexes := (others => 0);
    end Start_Title;
 
@@ -99,7 +105,6 @@ package body MAT.Consoles.Gtkmat is
    begin
       Gtk.List_Store.Gtk_New (Console.List, Types);
 
-      Gtk.Tree_View.Gtk_New (Console.Tree);
       for I in 1 .. Console.Field_Count loop
          Gtk.Tree_View_Column.Gtk_New (Col);
          Num := Console.Tree.Append_Column (Col);
@@ -109,8 +114,6 @@ package body MAT.Consoles.Gtkmat is
          Col.Set_Sizing (Gtk.Tree_View_Column.Tree_View_Column_Autosize);
          Col.Add_Attribute (Console.Col_Text, "text", Glib.Gint (I) - 1);
       end loop;
-      Console.Scrolled.Add (Console.Tree);
-      Console.Scrolled.Show_All;
 
       Console.Tree.Set_Model (+Console.List);
    end End_Title;
