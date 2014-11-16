@@ -39,6 +39,20 @@ package body MAT.Targets.Gtkmat is
    end Initialize;
 
    --  ------------------------------
+   --  Release the storage.
+   --  ------------------------------
+   overriding
+   procedure Finalize (Target : in out Target_Type) is
+      use type Gtk.Widget.Gtk_Widget;
+   begin
+      if Target.Main /= null then
+         Target.Main.Destroy;
+         Target.About.Destroy;
+         Target.Chooser.Destroy;
+      end if;
+   end Finalize;
+
+   --  ------------------------------
    --  Initialize the widgets and create the Gtk gui.
    --  ------------------------------
    procedure Initialize_Widget (Target : in out Target_Type;
@@ -53,6 +67,10 @@ package body MAT.Targets.Gtkmat is
          MAT.Callbacks.Initialize (Target'Unchecked_Access, Target.Builder);
          Target.Builder.Do_Connect;
          Widget := Gtk.Widget.Gtk_Widget (Target.Builder.Get_Object ("main"));
+         Target.Main := Widget;
+         Target.About := Gtk.Widget.Gtk_Widget (Target.Builder.Get_Object ("about"));
+         Target.Chooser := Gtk.Widget.Gtk_Widget (Target.Builder.Get_Object ("filechooser"));
+
          Target.Gtk_Console := new MAT.Consoles.Gtkmat.Console_Type;
          Target.Gtk_Console.Initialize
            (Gtk.Frame.Gtk_Frame (Target.Builder.Get_Object ("consoleFrame")));
