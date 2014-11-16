@@ -34,12 +34,10 @@ package body MAT.Consoles.Gtkmat is
    begin
       Gtk.Scrolled_Window.Gtk_New (Console.Scrolled);
       Gtk.Cell_Renderer_Text.Gtk_New (Console.Col_Text);
-      Gtk.Tree_View.Gtk_New (Console.Tree);
       Console.Scrolled.Set_Policy (Gtk.Enums.Policy_Always, Gtk.Enums.Policy_Always);
       Console.Frame := Frame;
       Console.Frame.Add (Console.Scrolled);
-      Console.Scrolled.Add (Console.Tree);
-      Console.Scrolled.Show_All;
+      Console.Col_Text.Ref;
       --        Console.Frame.Show_All;
    end Initialize;
 
@@ -96,6 +94,7 @@ package body MAT.Consoles.Gtkmat is
    procedure End_Title (Console : in out Console_Type) is
       use type Glib.Guint;
       use type Glib.Gint;
+      use type Gtk.Tree_View.Gtk_Tree_View;
       use Gtk.List_Store;
 
       Types : Glib.GType_Array (0 .. Glib.Guint (Console.Field_Count) - 1)
@@ -104,6 +103,11 @@ package body MAT.Consoles.Gtkmat is
       Num : Glib.Gint;
    begin
       Gtk.List_Store.Gtk_New (Console.List, Types);
+
+      if Console.Tree /= null then
+         Console.Tree.Destroy;
+      end if;
+      Gtk.Tree_View.Gtk_New (Console.Tree);
 
       for I in 1 .. Console.Field_Count loop
          Gtk.Tree_View_Column.Gtk_New (Col);
@@ -114,8 +118,9 @@ package body MAT.Consoles.Gtkmat is
          Col.Set_Sizing (Gtk.Tree_View_Column.Tree_View_Column_Autosize);
          Col.Add_Attribute (Console.Col_Text, "text", Glib.Gint (I) - 1);
       end loop;
-
       Console.Tree.Set_Model (+Console.List);
+      Console.Scrolled.Add (Console.Tree);
+      Console.Scrolled.Show_All;
    end End_Title;
 
    --  Start a new row in a report.
