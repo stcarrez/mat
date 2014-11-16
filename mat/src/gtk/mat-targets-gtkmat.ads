@@ -29,6 +29,10 @@ package MAT.Targets.Gtkmat is
    overriding
    procedure Initialize (Target : in out Target_Type);
 
+   --  Release the storage.
+   overriding
+   procedure Finalize (Target : in out Target_Type);
+
    --  Initialize the widgets and create the Gtk gui.
    procedure Initialize_Widget (Target : in out Target_Type;
                                 Widget : out Gtk.Widget.Gtk_Widget);
@@ -65,6 +69,9 @@ private
       Gui_Task    : Gtk_Loop;
       Previous_Event_Counter : Integer := 0;
       Gtk_Console : MAT.Consoles.Gtkmat.Console_Type_Access;
+      Main        : Gtk.Widget.Gtk_Widget;
+      About       : Gtk.Widget.Gtk_Widget;
+      Chooser     : Gtk.Widget.Gtk_Widget;
    end record;
 
 end MAT.Targets.Gtkmat;
