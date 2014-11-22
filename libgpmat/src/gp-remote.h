@@ -96,9 +96,11 @@ extern int gp_remote_initialize (void);
 extern void gp_buffered_server_initialize (struct gp_buffered_server* server, const char* param);
 
 #ifdef DEBUG
+extern void gp_debug_msg (const char* msg);
 extern void gp_dump (const char* title, int indent, const void* addr, size_t len);
 extern void gp_write (const char* title, int indent, const void* addr, size_t len);
 #else
+# define gp_debug_msg(MSG)
 # define gp_dump(TITLE, INDENT, ADDR, LEN)
 # define gp_write(TITLE, INDENT, ADDR, LEN) gp_remote_send(ADDR, LEN)
 #endif
