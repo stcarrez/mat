@@ -14,19 +14,33 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 */
+#define _GNU_SOURCE
+#include <link.h>
 #include "gp-config.h"
 #include <stdarg.h>
 #include <string.h>
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#endif
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
+#include <fcntl.h>
 #include <limits.h>
 #include <stdio.h>
 #include "gp-remote.h"
 #include "gp-probe.h"
 #include "gp-events.h"
+#include "gp-proc.h"
+#define _GNU_SOURCE
+#include <dlfcn.h>
 
-extern char etext, edata, end;
+#ifndef RTLD_NEXT
+# define RTLD_NEXT      ((void *) -1l)
+#endif
+
+extern char etext, edata, end, _start;
+
 
 static void
 gp_send_attributes (const struct gp_event_def *type)
@@ -42,7 +56,7 @@ gp_send_attributes (const struct gp_event_def *type)
 
   len = type->nr_attrs;
   gp_write ("COUNT", 2, &len, sizeof (len));
-  write (STDERR_FILENO, "\n", 1);
+  gp_debug_msg ("\n");
 
   attr = type->attributes;
   for (i = type->nr_attrs; --i >= 0; attr++)
@@ -52,7 +66,7 @@ gp_send_attributes (const struct gp_event_def *type)
       gp_write ("A-LEN", 4, &len, sizeof (len));
       gp_write ("A-NAME", 4, attr->name, len);
       gp_write ("A-SIZE", 4, &val, sizeof (val));
-      write (STDERR_FILENO, "\n", 1);
+      gp_debug_msg ("\n");
     }
 }
 
@@ -144,7 +158,7 @@ gp_event_send (struct gp_probe *gp, int size,
         }
     }
   va_end (argp);
-  write (STDERR_FILENO, "\n", 1);
+  gp_debug_msg ("\n");
 }
 
 static const struct gp_attr_def gp_malloc_attrs[] = {
@@ -230,17 +244,18 @@ static const struct gp_event_def gp_event_begin_frame_def = {
 };
 
 static const struct gp_attr_def gp_begin_attrs[] = {
-  { "pid",   GP_TYPE_UINT32,  sizeof (gp_uint32) },
-  { "exe",   GP_TYPE_STRING,  sizeof (gp_uint16) },
-  { "etext", GP_TYPE_POINTER, sizeof (char*) },
-  { "edata", GP_TYPE_POINTER, sizeof (char*) },
-  { "end",   GP_TYPE_POINTER, sizeof (char*) }
+  { "pid",      GP_TYPE_UINT32,  sizeof (gp_uint32) },
+  { "exe",      GP_TYPE_STRING,  sizeof (gp_uint16) },
+  { "hp_start", GP_TYPE_POINTER, sizeof (char*) },
+  { "hp_end",   GP_TYPE_POINTER, sizeof (char*) },
+  { "edata",    GP_TYPE_POINTER, sizeof (char*) },
+  { "end",      GP_TYPE_POINTER, sizeof (char*) }
 };
 
 static const struct gp_event_def gp_event_begin_def = {
   "begin",
   GP_EVENT_BEGIN,
-  sizeof (gp_uint32) + sizeof (gp_uint16),
+  sizeof (gp_uint32) + sizeof (gp_uint16) + sizeof (char*) * 4,
   GP_TABLE_SIZE (gp_begin_attrs),
   gp_begin_attrs
 };
@@ -288,13 +303,35 @@ gp_send_attribute_list (const struct gp_event_def** events, size_t count)
 
   len = count;
   gp_write ("E-CNT", 0, &len, sizeof (len));
-  write (STDERR_FILENO, "\n", 1);
+  gp_debug_msg ("\n");
   
   for (i = 0; i < count; i++)
     {
       gp_send_attributes (events[i]);
     }
-  write (STDERR_FILENO, "\n", 1);
+  gp_debug_msg ("\n");
+}
+
+static int dl_callback (struct dl_phdr_info* info, size_t size, void* data)
+{
+  printf ("%s   0x%08lx \n", info->dlpi_name, (long) info->dlpi_addr);
+  return 0;
+  
+}
+
+static void
+gp_identify_heap (map_info_t* map, void* data)
+{
+  map_info_t* result;
+  
+  if (strcmp (map->name, "[heap]") == 0)
+    {
+      result = (map_info_t*) data;
+
+      result->start = map->start;
+      result->end   = map->end;
+      result->flags = map->flags;
+    }
 }
 
 void
@@ -305,6 +342,7 @@ gp_event_begin (struct gp_probe *gp)
   char path[PATH_MAX];
   gp_uint32 pid;
   ssize_t size;
+  map_info_t heap;
 
   i = 1;
   if (((unsigned char*) &i)[0] == 1)
@@ -319,7 +357,9 @@ gp_event_begin (struct gp_probe *gp)
   gp_send_attribute_list (start_events, GP_TABLE_SIZE (start_events));
 
   pid = getpid ();
+  gp_read_proc_maps ((int) pid, gp_identify_heap, &heap);
   snprintf (path, sizeof (path), "/proc/%d/exe", (int) pid);
+
   size = readlink (path, path, sizeof (path));
   if (size < 0)
     {
@@ -331,7 +371,9 @@ gp_event_begin (struct gp_probe *gp)
       path[size] = 0;
     }
 
-  gp_event_send (gp, size, &gp_event_begin_def, pid, size, path, &etext, &edata, &end);
+  dl_iterate_phdr (dl_callback, NULL);
+
+  gp_event_send (gp, size, &gp_event_begin_def, pid, size, path, heap.start, heap.end, &edata, &end);
   gp_send_attribute_list (events, GP_TABLE_SIZE (events));
 }
 
