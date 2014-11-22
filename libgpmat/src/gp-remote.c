@@ -40,6 +40,8 @@ static union
 static struct gp_server* server;
 
 #ifdef DEBUG
+static int gp_debug = 0;
+
 static void
 to_hex (char* buf, unsigned byte)
 {
@@ -72,8 +74,16 @@ gp_dump (const char* title, int indent, const void* addr, size_t len)
 void
 gp_write (const char* title, int indent, const void* addr, size_t len)
 {
-  gp_dump (title, indent, addr, len);
+  if (gp_debug)
+    gp_dump (title, indent, addr, len);
   gp_remote_send (addr, len);
+}
+
+void
+gp_debug_msg (const char*  msg)
+{
+  if (gp_debug)
+    write (STDERR_FILENO, msg, strlen (msg));
 }
 
 #endif
@@ -206,6 +216,12 @@ gp_remote_initialize (void)
         {
           server = (struct gp_server*) gp_socket_open (&server_data.socket, &p[6]);
         }
+#ifdef DEBUG
+      if ((server != NULL) && (getenv("MAT_DEBUG") != NULL))
+        {
+          gp_debug = 1;
+        }
+#endif
     }
   return 0;
   
