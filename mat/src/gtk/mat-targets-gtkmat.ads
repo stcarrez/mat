@@ -19,6 +19,7 @@
 with Gtk.Widget;
 with Gtkada.Builder;
 
+with MAT.Events.Gtkmat;
 with MAT.Consoles.Gtkmat;
 package MAT.Targets.Gtkmat is
 
@@ -72,6 +73,9 @@ private
       Main        : Gtk.Widget.Gtk_Widget;
       About       : Gtk.Widget.Gtk_Widget;
       Chooser     : Gtk.Widget.Gtk_Widget;
+      Events      : MAT.Events.Gtkmat.Event_Drawing_Type;
    end record;
+
+   procedure Refresh_Events (Target : in out Target_Type);
 
 end MAT.Targets.Gtkmat;
