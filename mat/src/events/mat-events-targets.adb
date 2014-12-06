@@ -29,6 +29,14 @@ package body MAT.Events.Targets is
       Util.Concurrent.Counters.Increment (Target.Event_Count);
    end Insert;
 
+   procedure Get_Events (Target : in out Target_Events;
+                         Start  : in MAT.Types.Target_Time;
+                         Finish : in MAT.Types.Target_Time;
+                         Into   : in out Target_Event_Vector) is
+   begin
+      Target.Events.Get_Events (Start, Finish, Into);
+   end Get_Events;
+
    --  ------------------------------
    --  Get the current event counter.
    --  ------------------------------
@@ -44,9 +52,24 @@ package body MAT.Events.Targets is
       --  ------------------------------
       procedure Insert (Event  : in MAT.Types.Uint16;
                         Frame  : in MAT.Events.Frame_Info) is
+         Info : Target_Event;
       begin
-         null;
+         Info.Event  := Event;
+         Info.Time   := Frame.Time;
+         Info.Thread := Frame.Thread;
+         Events.Insert (Frame.Time, Info);
       end Insert;
+
+      procedure Get_Events (Start  : in MAT.Types.Target_Time;
+                            Finish : in MAT.Types.Target_Time;
+                            Into   : in out Target_Event_Vector) is
+         Iter : Event_Cursor := Events.First;
+      begin
+         while Event_Maps.Has_Element (Iter) loop
+            Into.Append (Event_Maps.Element (Iter));
+            Event_Maps.Next (Iter);
+         end loop;
+      end Get_Events;
 
    end Event_Collector;
 
