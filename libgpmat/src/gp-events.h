@@ -54,7 +54,10 @@ typedef enum
   GP_EVENT_END,
   GP_EVENT_MALLOC,
   GP_EVENT_REALLOC,
-  GP_EVENT_FREE
+  GP_EVENT_FREE,
+  GP_EVENT_MUTEX_LOCK,
+  GP_EVENT_MUTEX_TRYLOCK,
+  GP_EVENT_MUTEX_UNLOCK
 } gp_event_type;
 
 
@@ -103,5 +106,8 @@ extern void gp_event_begin (struct gp_probe *gp);
 
 extern void gp_event_end (struct gp_probe *gp);
 
+extern void gp_event_mutex_lock (struct gp_probe *gp, void* mutex);
+extern void gp_event_mutex_unlock (struct gp_probe *gp, void* mutex);
+extern void gp_event_mutex_trylock (struct gp_probe *gp, void* mutex);
 
 #endif
