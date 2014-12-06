@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.Containers.Ordered_Maps;
+with Ada.Containers.Vectors;
 
 with Util.Concurrent.Counters;
 
@@ -23,9 +24,17 @@ with MAT.Frames;
 package MAT.Events.Targets is
 
    type Target_Event is record
-      Event : MAT.Types.Uint16;
-      Frame : MAT.Frames.Frame_Type;
+      Event  : MAT.Types.Uint16;
+      Time   : MAT.Types.Target_Time;
+      Thread : MAT.Types.Target_Thread_Ref;
+      Frame  : MAT.Frames.Frame_Type;
    end record;
+
+   package Target_Event_Vectors is
+     new Ada.Containers.Vectors (Positive, Target_Event);
+
+   subtype Target_Event_Vector is Target_Event_Vectors.Vector;
+   subtype Target_Event_Cursor is Target_Event_Vectors.Cursor;
 
    type Target_Events is tagged limited private;
    type Target_Events_Access is access all Target_Events'Class;
@@ -34,6 +43,11 @@ package MAT.Events.Targets is
    procedure Insert (Target : in out Target_Events;
                      Event  : in MAT.Types.Uint16;
                      Frame  : in MAT.Events.Frame_Info);
+
+   procedure Get_Events (Target : in out Target_Events;
+                         Start  : in MAT.Types.Target_Time;
+                         Finish : in MAT.Types.Target_Time;
+                         Into   : in out Target_Event_Vector);
 
    --  Get the current event counter.
    function Get_Event_Counter (Target : in Target_Events) return Integer;
@@ -53,6 +67,10 @@ private
       --  Add the event in the list of events.
       procedure Insert (Event  : in MAT.Types.Uint16;
                         Frame  : in MAT.Events.Frame_Info);
+
+      procedure Get_Events (Start  : in MAT.Types.Target_Time;
+                            Finish : in MAT.Types.Target_Time;
+                            Into   : in out Target_Event_Vector);
 
    private
       Events        : Event_Map;
