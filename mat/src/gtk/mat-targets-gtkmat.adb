@@ -21,6 +21,8 @@ with Glib.Object;
 with Gtk.Main;
 with Gtk.Label;
 with Gtk.Frame;
+with Gtk.Scrolled_Window;
+with Gtk.Viewport;
 
 with MAT.Callbacks;
 with MAT.Consoles.Text;
@@ -57,8 +59,11 @@ package body MAT.Targets.Gtkmat is
    --  ------------------------------
    procedure Initialize_Widget (Target : in out Target_Type;
                                 Widget : out Gtk.Widget.Gtk_Widget) is
-      Error   : aliased Glib.Error.GError;
-      Result  : Glib.Guint;
+      Error    : aliased Glib.Error.GError;
+      Result   : Glib.Guint;
+      Timeline : Gtk.Widget.Gtk_Widget;
+      Scrolled : Gtk.Scrolled_Window.Gtk_Scrolled_Window;
+      Viewport : Gtk.Viewport.Gtk_Viewport;
    begin
       if Target.Options.Graphical then
          Gtk.Main.Init;
@@ -75,6 +80,12 @@ package body MAT.Targets.Gtkmat is
          Target.Gtk_Console.Initialize
            (Gtk.Frame.Gtk_Frame (Target.Builder.Get_Object ("consoleFrame")));
          Target.Console := Target.Gtk_Console.all'Access;
+         MAT.Events.Gtkmat.Create (Target.Events);
+         Timeline := Gtk.Widget.Gtk_Widget (Target.Builder.Get_Object ("scrolledTimeline"));
+         Scrolled := Gtk.Scrolled_Window.Gtk_Scrolled_Window (Timeline);
+         Timeline := Gtk.Widget.Gtk_Widget (Target.Builder.Get_Object ("viewport1"));
+         Viewport := Gtk.Viewport.Gtk_Viewport (Timeline);
+         Viewport.Add (Target.Events.Drawing);
       else
          Widget := null;
       end if;
@@ -171,6 +182,13 @@ package body MAT.Targets.Gtkmat is
                         & MAT.Types.Target_Size'Image (Stats.Total_Alloc));
       Target.Set_Label ("mem_free_info", "Free:"
                         & MAT.Types.Target_Size'Image (Stats.Total_Free));
+      Target.Refresh_Events;
    end Refresh_Process;
+
+   procedure Refresh_Events (Target : in out Target_Type) is
+   begin
+      Target.Events.List.Clear;
+      MAT.Events.Targets.Get_Events (Target.Current.Events.all, 0, 0, Target.Events.List);
+   end Refresh_Events;
 
 end MAT.Targets.Gtkmat;
