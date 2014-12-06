@@ -15,17 +15,14 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with Ada.IO_Exceptions;
-
 with MAT.Commands;
 with MAT.Targets;
-with MAT.Consoles.Text;
 with MAT.Targets.Gtkmat;
 
 with Gtk.Widget;
 procedure GtkMatp is
    Main    : Gtk.Widget.Gtk_Widget;
-   Target  : MAT.Targets.Gtkmat.Target_Type;
+   Target  : aliased MAT.Targets.Gtkmat.Target_Type;
 begin
    Target.Initialize_Options;
    Target.Initialize_Widget (Main);
