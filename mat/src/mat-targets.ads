@@ -38,11 +38,14 @@ package MAT.Targets is
       --  Enable and enter in the interactive TTY console mode.
       Interactive  : Boolean := True;
 
-      --  Try to load the symbol file automatically when a new process is recieved.
+      --  Try to load the symbol file automatically when a new process is received.
       Load_Symbols : Boolean := True;
 
       --  Enable the graphical mode (when available).
       Graphical    : Boolean := False;
+
+      --  Print the events as they are received.
+      Print_Events : Boolean := False;
 
       --  Define the server listening address.
       Address      : GNAT.Sockets.Sock_Addr_Type := (Port => 4096, others => <>);
