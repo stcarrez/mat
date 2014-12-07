@@ -220,6 +220,52 @@ gp_event_realloc (struct gp_probe *gp, void *p, void *old, size_t size, void* cb
   gp_event_send (gp, 0, &gp_event_realloc_def, p, old, size, cbrk);
 }
 
+static const struct gp_attr_def gp_mutex_attrs[] = {
+  { "pointer", GP_TYPE_POINTER, sizeof (void*) }
+};
+  
+static const struct gp_event_def gp_event_mutex_lock_def = {
+  "pthread_mutex_lock",
+  GP_EVENT_MUTEX_LOCK,
+  sizeof (void*),
+  GP_TABLE_SIZE (gp_mutex_attrs),
+  gp_mutex_attrs
+};
+
+void
+gp_event_mutex_lock (struct gp_probe *gp, void *p)
+{
+  gp_event_send (gp, 0, &gp_event_mutex_lock_def, p);
+}
+
+static const struct gp_event_def gp_event_mutex_unlock_def = {
+  "pthread_mutex_unlock",
+  GP_EVENT_MUTEX_UNLOCK,
+  sizeof (void*),
+  GP_TABLE_SIZE (gp_mutex_attrs),
+  gp_mutex_attrs
+};
+
+void
+gp_event_mutex_unlock (struct gp_probe *gp, void *p)
+{
+  gp_event_send (gp, 0, &gp_event_mutex_unlock_def, p);
+}
+
+static const struct gp_event_def gp_event_mutex_trylock_def = {
+  "pthread_mutex_trylock",
+  GP_EVENT_MUTEX_TRYLOCK,
+  sizeof (void*),
+  GP_TABLE_SIZE (gp_mutex_attrs),
+  gp_mutex_attrs
+};
+
+void
+gp_event_mutex_trylock (struct gp_probe *gp, void *p)
+{
+  gp_event_send (gp, 0, &gp_event_mutex_trylock_def, p);
+}
+
 static const struct gp_attr_def gp_frame_attrs[] = {
   { "time-sec",  GP_TYPE_UINT32, sizeof (gp_uint32) },
   { "time-usec", GP_TYPE_UINT32, sizeof (gp_uint32) },
@@ -277,6 +323,9 @@ static const struct gp_event_def* events[] = {
   &gp_event_malloc_def,
   &gp_event_free_def,
   &gp_event_realloc_def,
+  &gp_event_mutex_lock_def,
+  &gp_event_mutex_unlock_def,
+  &gp_event_mutex_trylock_def,
   &gp_event_end_def
 };
 
