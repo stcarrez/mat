@@ -194,9 +194,11 @@ package body MAT.Readers is
       Event : constant MAT.Types.Uint16 := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
       Pos   : constant Handler_Maps.Cursor := Client.Handlers.Find (Event);
    begin
-      Log.Debug ("Dispatch message {0} - size {1}",
-                 MAT.Types.Uint16'Image (Event),
-                 Natural'Image (Msg.Size));
+      if Log.Get_Level = Util.Log.DEBUG_LEVEL then
+         Log.Debug ("Dispatch message {0} - size {1}",
+                    MAT.Types.Uint16'Image (Event),
+                    Natural'Image (Msg.Size));
+      end if;
 
       if not Handler_Maps.Has_Element (Pos) then
          --  Message is not handled, skip it.
