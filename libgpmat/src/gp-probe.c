@@ -16,6 +16,7 @@
 */
 
 #include "gp-config.h"
+#include <dlfcn.h>
 #include <stdio.h>
 #ifdef HAVE_PTHREAD_H
 # include <pthread.h>
@@ -29,6 +30,10 @@
 # define pthread_mutex_unlock(L)
 #endif
 
+#ifndef RTLD_NEXT
+# define RTLD_NEXT      ((void *) -1l)
+#endif
+
 int _gp_initialize (void);
 
 #ifdef HAVE_FRAME
@@ -36,6 +41,10 @@ int _gp_initialize (void);
 
 static void* gp_stack_frame_buffer [GP_STACK_FRAME_MAX];
 #endif
+
+#define LIBC_PTHREAD_MUTEX_LOCK    "pthread_mutex_lock"
+#define LIBC_PTHREAD_MUTEX_UNLOCK  "pthread_mutex_unlock"
+#define LIBC_PTHREAD_MUTEX_TRYLOCK "pthread_mutex_trylock"
 
 enum gp_probe_state
 {
@@ -52,6 +61,14 @@ static __thread int gp_recursive = 0;
 static pthread_mutex_t gp_lock;
 #endif
 
+typedef int (* gp_mutex_lock_t) (pthread_mutex_t* m);
+typedef int (* gp_mutex_unlock_t) (pthread_mutex_t* m);
+typedef int (* gp_mutex_trylock_t) (pthread_mutex_t* m);
+
+static gp_mutex_lock_t _lock;
+static gp_mutex_unlock_t _unlock;
+static gp_mutex_trylock_t _trylock;
+
 int
 gp_probe_lock (void)
 {
@@ -59,7 +76,10 @@ gp_probe_lock (void)
     return -1;
 
   gp_recursive++;
-  pthread_mutex_lock (&gp_lock);
+  if (_lock != NULL)
+    {
+      _lock (&gp_lock);
+    }
   return 0;
 }
 
@@ -67,8 +87,62 @@ void
 gp_probe_unlock (void)
 {
   gp_recursive--;
-  if (gp_recursive == 0)
-    pthread_mutex_unlock (&gp_lock);
+  if (gp_recursive == 0 && _unlock)
+    _unlock (&gp_lock);
+}
+
+int
+pthread_mutex_lock (pthread_mutex_t* mutex)
+{
+  struct gp_probe probe;
+  int has_probe;
+
+  /* Get the probe information.  */
+  has_probe = gp_get_probe (&probe);
+
+  if (has_probe) 
+    {
+      gp_frame_add_skip (&probe, 2);
+      gp_event_mutex_lock (&probe, mutex);
+      gp_free_probe (&probe);
+    }
+
+  if (_lock != NULL)
+    {
+      return _lock (mutex);
+    }
+
+  return 0;
+}
+
+int
+pthread_mutex_unlock (pthread_mutex_t* mutex)
+{
+  struct gp_probe probe;
+  int has_probe;
+
+  /* Get the probe information.  */
+  has_probe = gp_get_probe (&probe);
+
+  if (has_probe) 
+    {
+      gp_frame_add_skip (&probe, 2);
+      gp_event_mutex_lock (&probe, mutex);
+      gp_free_probe (&probe);
+    }
+
+  if (_unlock != NULL)
+    {
+      return _unlock (mutex);
+    }
+
+  return 0;
+}
+
+int
+pthread_mutex_trylock (pthread_mutex_t* mutex)
+{
+    return _trylock(mutex)    ;
 }
 
 int
@@ -150,6 +224,10 @@ _gp_initialize (void)
       return result;
     }
 
+  _lock = (gp_mutex_lock_t) dlsym (RTLD_NEXT, LIBC_PTHREAD_MUTEX_LOCK);
+  _unlock = (gp_mutex_unlock_t) dlsym (RTLD_NEXT, LIBC_PTHREAD_MUTEX_UNLOCK);
+  _trylock = (gp_mutex_trylock_t) dlsym (RTLD_NEXT, LIBC_PTHREAD_MUTEX_TRYLOCK);
+  
   gp_is_initialized = GP_CONNECTED;
   (void) gp_get_probe (&probe);
   gp_event_begin (&probe);
