@@ -61,7 +61,7 @@ package body MAT.Memory.Readers is
             Kind => MAT.Events.T_TIME, Ref => M_TIME));
 
    procedure Unmarshall_Allocation (Msg      : in out MAT.Readers.Message;
-                                    Slot     : in out Allocation;
+                                    Size     : in out MAT.Types.Target_Size;
                                     Addr     : in out MAT.Types.Target_Addr;
                                     Old_Addr : in out MAT.Types.Target_Addr;
                                     Defs     : in MAT.Events.Attribute_Table);
@@ -85,7 +85,7 @@ package body MAT.Memory.Readers is
    --  The data is described by the Defs table.
    ----------------------
    procedure Unmarshall_Allocation (Msg      : in out MAT.Readers.Message;
-                                    Slot     : in out Allocation;
+                                    Size     : in out MAT.Types.Target_Size;
                                     Addr     : in out MAT.Types.Target_Addr;
                                     Old_Addr : in out MAT.Types.Target_Addr;
                                     Defs     : in MAT.Events.Attribute_Table) is
@@ -96,7 +96,7 @@ package body MAT.Memory.Readers is
          begin
             case Def.Ref is
                when M_SIZE =>
-                  Slot.Size := MAT.Readers.Marshaller.Get_Target_Size (Msg.Buffer, Def.Kind);
+                  Size := MAT.Readers.Marshaller.Get_Target_Size (Msg.Buffer, Def.Kind);
 
                when M_ADDR =>
                   Addr := MAT.Readers.Marshaller.Get_Target_Addr (Msg.Buffer, Def.Kind);
@@ -115,6 +115,29 @@ package body MAT.Memory.Readers is
    end Unmarshall_Allocation;
 
    overriding
+   procedure Extract (For_Servant : in out Memory_Servant;
+                      Event       : in out MAT.Events.Targets.Target_Event;
+                      Id          : in MAT.Events.Internal_Reference;
+                      Params      : in MAT.Events.Const_Attribute_Table_Access;
+                      Msg         : in out MAT.Readers.Message) is
+   begin
+      case Id is
+         when MSG_MALLOC =>
+            Unmarshall_Allocation (Msg, Event.Size, Event.Addr, Event.Old_Addr, Params.all);
+
+         when MSG_FREE =>
+            Unmarshall_Allocation (Msg, Event.Size, Event.Addr, Event.Old_Addr, Params.all);
+
+         when MSG_REALLOC =>
+            Unmarshall_Allocation (Msg, Event.Size, Event.Addr, Event.Old_Addr, Params.all);
+
+         when others =>
+            raise Program_Error;
+
+      end case;
+   end Extract;
+
+   overriding
    procedure Dispatch (For_Servant : in out Memory_Servant;
                        Id          : in MAT.Events.Internal_Reference;
                        Params      : in MAT.Events.Const_Attribute_Table_Access;
@@ -128,17 +151,17 @@ package body MAT.Memory.Readers is
       Slot.Time   := Frame.Time;
       case Id is
          when MSG_MALLOC =>
-            Unmarshall_Allocation (Msg, Slot, Addr, Old_Addr, Params.all);
+            Unmarshall_Allocation (Msg, Slot.Size, Addr, Old_Addr, Params.all);
             For_Servant.Data.Create_Frame (Pc     => Frame.Frame (1 .. Frame.Cur_Depth),
                                            Result => Slot.Frame);
             For_Servant.Data.Probe_Malloc (Addr, Slot);
 
          when MSG_FREE =>
-            Unmarshall_Allocation (Msg, Slot, Addr, Old_Addr, Params.all);
+            Unmarshall_Allocation (Msg, Slot.Size, Addr, Old_Addr, Params.all);
             For_Servant.Data.Probe_Free (Addr, Slot);
 
          when MSG_REALLOC =>
-            Unmarshall_Allocation (Msg, Slot, Addr, Old_Addr, Params.all);
+            Unmarshall_Allocation (Msg, Slot.Size, Addr, Old_Addr, Params.all);
             For_Servant.Data.Create_Frame (Pc     => Frame.Frame (1 .. Frame.Cur_Depth),
                                            Result => Slot.Frame);
             For_Servant.Data.Probe_Realloc (Addr, Old_Addr, Slot);
