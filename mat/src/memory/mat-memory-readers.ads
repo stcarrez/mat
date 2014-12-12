@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 with MAT.Events;
 with MAT.Readers;
+with MAT.Events.Targets;
 with MAT.Memory.Targets;
 package MAT.Memory.Readers is
 
@@ -26,6 +27,13 @@ package MAT.Memory.Readers is
    type Memory_Reader_Access is access all Memory_Servant'Class;
    --  The memory servant is a proxy for the generic communication
    --  channel to process incomming events (such as memory allocations).
+
+   overriding
+   procedure Extract (For_Servant : in out Memory_Servant;
+                      Event       : in out MAT.Events.Targets.Target_Event;
+                      Id          : in MAT.Events.Internal_Reference;
+                      Params      : in MAT.Events.Const_Attribute_Table_Access;
+                      Msg         : in out MAT.Readers.Message);
 
    overriding
    procedure Dispatch (For_Servant : in out Memory_Servant;
