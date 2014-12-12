@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------
---  Memory Events - Definition and Analysis of memory events
+--  mat-memory-probes - Definition and Analysis of memory events
 --  Copyright (C) 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
@@ -19,7 +19,7 @@ with MAT.Events;
 with MAT.Readers;
 with MAT.Events.Targets;
 with MAT.Memory.Targets;
-package MAT.Memory.Readers is
+package MAT.Memory.Probes is
 
    type Memory_Servant is new MAT.Readers.Reader_Base with record
       Data  : access MAT.Memory.Targets.Target_Memory;
@@ -46,4 +46,4 @@ package MAT.Memory.Readers is
    procedure Register (Into   : in out MAT.Readers.Manager_Base'Class;
                        Reader : in Memory_Reader_Access);
 
-end MAT.Memory.Readers;
+end MAT.Memory.Probes;
