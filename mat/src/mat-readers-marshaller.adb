@@ -114,21 +114,21 @@ package body MAT.Readers.Marshaller is
       return Interfaces.Shift_Left (MAT.Types.Uint64 (High), 32) + MAT.Types.Uint64 (Low);
    end Get_Uint64;
 
-   function Get_Target_Value (Msg  : in Buffer_Ptr;
+   function Get_Target_Value (Msg  : in Message_Type;
                               Kind : in MAT.Events.Attribute_Type) return Target_Type is
    begin
       case Kind is
          when MAT.Events.T_UINT8 =>
-            return Target_Type (Get_Uint8 (Msg));
+            return Target_Type (Get_Uint8 (Msg.Buffer));
 
          when MAT.Events.T_UINT16 =>
-            return Target_Type (Get_Uint16 (Msg));
+            return Target_Type (Get_Uint16 (Msg.Buffer));
 
          when MAT.Events.T_UINT32 =>
-            return Target_Type (Get_Uint32 (Msg));
+            return Target_Type (Get_Uint32 (Msg.Buffer));
 
          when MAT.Events.T_UINT64 =>
-            return Target_Type (Get_Uint64 (Msg));
+            return Target_Type (Get_Uint64 (Msg.Buffer));
 
          when others =>
             Log.Error ("Invalid attribute type {0}",
@@ -141,12 +141,12 @@ package body MAT.Readers.Marshaller is
    --  Extract a string from the buffer.  The string starts with a byte that
    --  indicates the string length.
    --  ------------------------------
-   function Get_String (Buffer : in Buffer_Ptr) return String is
-      Len    : constant MAT.Types.Uint16 := Get_Uint16 (Buffer);
+   function Get_String (Buffer : in Message_Type) return String is
+      Len    : constant MAT.Types.Uint16 := Get_Uint16 (Buffer.Buffer);
       Result : String (1 .. Natural (Len));
    begin
       for I in Result'Range loop
-         Result (I) := Character'Val (Get_Uint8 (Buffer));
+         Result (I) := Character'Val (Get_Uint8 (Buffer.Buffer));
       end loop;
       return Result;
    end Get_String;
@@ -155,7 +155,7 @@ package body MAT.Readers.Marshaller is
    --  Extract a string from the buffer.  The string starts with a byte that
    --  indicates the string length.
    --  ------------------------------
-   function Get_String (Msg : in Buffer_Ptr) return Ada.Strings.Unbounded.Unbounded_String is
+   function Get_String (Msg : in Message_Type) return Ada.Strings.Unbounded.Unbounded_String is
    begin
       return Ada.Strings.Unbounded.To_Unbounded_String (Get_String (Msg));
    end Get_String;
@@ -163,28 +163,28 @@ package body MAT.Readers.Marshaller is
    --  ------------------------------
    --  Skip the given number of bytes from the message.
    --  ------------------------------
-   procedure Skip (Buffer : in Buffer_Ptr;
+   procedure Skip (Buffer : in Message_Type;
                    Size   : in Natural) is
    begin
-      Buffer.Size := Buffer.Size - Size;
-      Buffer.Current := Buffer.Current + System.Storage_Elements.Storage_Offset (Size);
+      Buffer.Buffer.Size := Buffer.Buffer.Size - Size;
+      Buffer.Buffer.Current := Buffer.Buffer.Current + System.Storage_Elements.Storage_Offset (Size);
    end Skip;
 
-   function Get_Target_Size (Msg  : in Buffer_Ptr;
+   function Get_Target_Size (Msg  : in Message_Type;
                              Kind : in MAT.Events.Attribute_Type) return MAT.Types.Target_Size is
          function Get_Value is new Get_Target_Value (MAT.Types.Target_Size);
    begin
       return Get_Value (Msg, Kind);
    end Get_Target_Size;
 
-   function Get_Target_Addr (Msg  : in Buffer_Ptr;
+   function Get_Target_Addr (Msg  : in Message_Type;
                              Kind : in MAT.Events.Attribute_Type) return MAT.Types.Target_Addr is
          function Get_Value is new Get_Target_Value (MAT.Types.Target_Addr);
    begin
       return Get_Value (Msg, Kind);
    end Get_Target_Addr;
 
-   function Get_Target_Uint32 (Msg  : in Buffer_Ptr;
+   function Get_Target_Uint32 (Msg  : in Message_Type;
                                Kind : in MAT.Events.Attribute_Type) return MAT.Types.Uint32 is
       function Get_Value is new Get_Target_Value (MAT.Types.Target_Addr);
    begin
