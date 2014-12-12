@@ -25,7 +25,18 @@ with MAT.Types;
 with MAT.Events;
 with MAT.Events.Targets;
 with MAT.Readers;
+with MAT.Frames;
 package MAT.Events.Probes is
+
+   type Probe_Event_Type is record
+      Event    : MAT.Events.Internal_Reference;
+      Time     : MAT.Types.Target_Time;
+      Thread   : MAT.Types.Target_Thread_Ref;
+      Frame    : MAT.Frames.Frame_Type;
+      Addr     : MAT.Types.Target_Addr;
+      Size     : MAT.Types.Target_Size;
+      Old_Addr : MAT.Types.Target_Addr;
+   end record;
 
    -----------------
    --  Abstract probe definition
@@ -36,8 +47,8 @@ package MAT.Events.Probes is
    --  Extract the probe information from the message.
    procedure Extract (Probe  : in Probe_Type;
                       Params : in MAT.Events.Const_Attribute_Table_Access;
-                      Msg    : in out MAT.Readers.Message;
-                      Event  : in out MAT.Events.Targets.Target_Event) is abstract;
+                      Msg    : in out MAT.Readers.Message_Type;
+                      Event  : in out Probe_Event_Type) is abstract;
 
    procedure Execute (Probe : in Probe_Type;
                       Event : in MAT.Events.Targets.Target_Event) is abstract;
@@ -62,11 +73,11 @@ package MAT.Events.Probes is
                              Model  : in MAT.Events.Const_Attribute_Table_Access);
 
    procedure Dispatch_Message (Client : in out Probe_Manager_Type;
-                               Msg    : in out MAT.Readers.Message);
+                               Msg    : in out MAT.Readers.Message_Type);
 
    --  Read a list of event definitions from the stream and configure the reader.
    procedure Read_Event_Definitions (Client : in out Probe_Manager_Type;
-                                     Msg    : in out MAT.Readers.Message);
+                                     Msg    : in out MAT.Readers.Message_Type);
 
 private
 
@@ -107,6 +118,7 @@ private
       Probe       : MAT.Events.Attribute_Table_Ptr;
       Frame       : access MAT.Events.Frame_Info;
       Events      : MAT.Events.Targets.Target_Events_Access;
+      Event       : Probe_Event_Type;
    end record;
 
    --  Read an event definition from the stream and configure the reader.
