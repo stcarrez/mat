@@ -38,28 +38,28 @@ package MAT.Readers.Marshaller is
 
    --  Extract a string from the buffer.  The string starts with a byte that
    --  indicates the string length.
-   function Get_String (Buffer : in Buffer_Ptr) return String;
+   function Get_String (Buffer : in Message_Type) return String;
 
    --  Extract a string from the buffer.  The string starts with a byte that
    --  indicates the string length.
-   function Get_String (Msg : in Buffer_Ptr) return Ada.Strings.Unbounded.Unbounded_String;
+   function Get_String (Msg : in Message_Type) return Ada.Strings.Unbounded.Unbounded_String;
 
    generic
       type Target_Type is mod <>;
-   function Get_Target_Value (Msg  : in Buffer_Ptr;
+   function Get_Target_Value (Msg  : in Message_Type;
                               Kind : in MAT.Events.Attribute_Type) return Target_Type;
 
-   function Get_Target_Size (Msg  : in Buffer_Ptr;
+   function Get_Target_Size (Msg  : in Message_Type;
                              Kind : in MAT.Events.Attribute_Type) return MAT.Types.Target_Size;
 
-   function Get_Target_Addr (Msg  : in Buffer_Ptr;
+   function Get_Target_Addr (Msg  : in Message_Type;
                              Kind : in MAT.Events.Attribute_Type) return MAT.Types.Target_Addr;
 
-   function Get_Target_Uint32 (Msg  : in Buffer_Ptr;
+   function Get_Target_Uint32 (Msg  : in Message_Type;
                                Kind : in MAT.Events.Attribute_Type) return MAT.Types.Uint32;
 
    --  Skip the given number of bytes from the message.
-   procedure Skip (Buffer : in Buffer_Ptr;
+   procedure Skip (Buffer : in Message_Type;
                    Size   : in Natural);
 
 end MAT.Readers.Marshaller;
