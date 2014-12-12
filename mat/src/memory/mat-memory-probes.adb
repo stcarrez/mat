@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------
---  Memory Events - Definition and Analysis of memory events
+--  mat-memory-probes - Definition and Analysis of memory events
 --  Copyright (C) 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
@@ -20,10 +20,10 @@ with Util.Log.Loggers;
 with MAT.Types;
 with MAT.Readers.Marshaller;
 with MAT.Memory;
-package body MAT.Memory.Readers is
+package body MAT.Memory.Probes is
 
    --  The logger
-   Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Memory.Readers");
+   Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Memory.Probes");
 
    MSG_MALLOC  : constant MAT.Events.Internal_Reference := 0;
    MSG_FREE    : constant MAT.Events.Internal_Reference := 1;
@@ -172,4 +172,4 @@ package body MAT.Memory.Readers is
       end case;
    end Dispatch;
 
-end MAT.Memory.Readers;
+end MAT.Memory.Probes;
