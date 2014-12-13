@@ -53,7 +53,7 @@ package body MAT.Targets.Probes is
    --  ------------------------------
    --  Create a new process after the begin event is received from the event stream.
    --  ------------------------------
-   procedure Create_Process (For_Servant : in out Process_Servant;
+   procedure Create_Process (For_Servant : in out Process_Probe_Type;
                              Pid         : in MAT.Types.Target_Process_Ref;
                              Path        : in Ada.Strings.Unbounded.Unbounded_String) is
    begin
@@ -65,7 +65,7 @@ package body MAT.Targets.Probes is
                                      Reader => For_Servant.Reader.all);
    end Create_Process;
 
-   procedure Probe_Begin (For_Servant : in out Process_Servant;
+   procedure Probe_Begin (Probe : in out Process_Probe_Type;
                           Id          : in MAT.Events.Internal_Reference;
                           Defs        : in MAT.Events.Attribute_Table;
                           Frame       : in MAT.Events.Frame_Info;
@@ -105,49 +105,44 @@ package body MAT.Targets.Probes is
    end Probe_Begin;
 
    overriding
-   procedure Dispatch (For_Servant : in out Process_Servant;
-                       Id          : in MAT.Events.Internal_Reference;
-                       Params      : in MAT.Events.Const_Attribute_Table_Access;
-                       Frame       : in MAT.Events.Frame_Info;
-                       Msg         : in out MAT.Readers.Message) is
+   procedure Extract (Probe  : in Process_Probe_Type;
+                      Params : in MAT.Events.Const_Attribute_Table_Access;
+                      Msg    : in out MAT.Readers.Message_Type;
+                      Event  : in out MAT.Events.Targets.Probe_Event_Type) is
    begin
-      case Id is
-         when MSG_BEGIN =>
-            For_Servant.Probe_Begin (Id, Params.all, Frame, Msg);
+      null;
+   end Extract;
 
-         when MSG_END =>
-            null;
-
-         when others =>
-            null;
-
-      end case;
-   end Dispatch;
+   procedure Execute (Probe : in Process_Probe_Type;
+                      Event : in MAT.Events.Targets.Probe_Event_Type) is
+   begin
+      null;
+   end Execute;
 
    --  ------------------------------
    --  Register the reader to extract and analyze process events.
    --  ------------------------------
-   procedure Register (Into   : in out MAT.Readers.Manager_Base'Class;
-                       Reader : in Process_Reader_Access) is
+   procedure Register (Into  : in out MAT.Events.Probes.Probe_Manager_Type'Class;
+                       Probe : in Process_Probe_Type_Access) is
    begin
-      Reader.Reader := Into'Unchecked_Access;
-      Into.Register_Reader (Reader.all'Access, "begin", MSG_BEGIN,
-                            Process_Attributes'Access);
-      Into.Register_Reader (Reader.all'Access, "end", MSG_END,
-                            Process_Attributes'Access);
+      Probe.Manager := Into'Unchecked_Access;
+      Into.Register_Probe (Probe.all'Access, "begin", MSG_BEGIN,
+                           Process_Attributes'Access);
+      Into.Register_Probe (Probe.all'Access, "end", MSG_END,
+                           Process_Attributes'Access);
    end Register;
 
    --  ------------------------------
    --  Initialize the target object to prepare for reading process events.
    --  ------------------------------
    procedure Initialize (Target : in out Target_Type;
-                         Reader : in out MAT.Readers.Manager_Base'Class) is
-      Process_Reader : constant Process_Reader_Access
-        := new Process_Servant;
+                         Manager : in out MAT.Events.Probes.Probe_Manager_Type_Access) is
+      Process_Probe : constant Process_Probe_Type_Access
+        := new Process_Probe_Type;
    begin
-      Process_Reader.Target := Target'Unrestricted_Access;
-      Process_Reader.Events := Reader.Get_Target_Events;
-      Register (Reader, Process_Reader);
+      Process_Probe.Target := Target'Unrestricted_Access;
+      Process_Probe.Events := Manager.Get_Target_Events;
+      Register (Manager.all, Process_Probe);
    end Initialize;
 
 end MAT.Targets.Probes;
