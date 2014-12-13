@@ -72,6 +72,17 @@ package body MAT.Consoles is
    end Print_Thread;
 
    --  ------------------------------
+   --  Format the time tick as a duration and print it for the given field.
+   --  ------------------------------
+   procedure Print_Duration (Console  : in out Console_Type;
+                             Field    : in Field_Type;
+                             Duration : in MAT.Types.Target_Tick_Ref) is
+      Value : constant String := MAT.Types.Tick_Image (Duration);
+   begin
+      Console_Type'Class (Console).Print_Field (Field, Value);
+   end Print_Duration;
+
+   --  ------------------------------
    --  Format the integer and print it for the given field.
    --  ------------------------------
    procedure Print_Field (Console : in out Console_Type;
