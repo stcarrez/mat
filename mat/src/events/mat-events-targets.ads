@@ -91,6 +91,10 @@ private
                             Finish : in MAT.Types.Target_Time;
                             Into   : in out Target_Event_Vector);
 
+      --  Get the start and finish time for the events that have been received.
+      procedure Get_Time_Range (Start  : out MAT.Types.Target_Time;
+                                Finish : out MAT.Types.Target_Time);
+
    private
       Current       : Event_Block_Access := null;
       Events        : Event_Map;
