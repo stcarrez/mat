@@ -61,7 +61,7 @@ package MAT.Events.Probes is
    procedure Register_Probe (Into   : in out Probe_Manager_Type;
                              Probe  : in Probe_Type_Access;
                              Name   : in String;
-                             Id     : in MAT.Events.Internal_Reference;
+                             Id     : in MAT.Events.Targets.Probe_Index_Type;
                              Model  : in MAT.Events.Const_Attribute_Table_Access);
 
    procedure Dispatch_Message (Client : in out Probe_Manager_Type;
@@ -70,6 +70,21 @@ package MAT.Events.Probes is
    --  Read a list of event definitions from the stream and configure the reader.
    procedure Read_Event_Definitions (Client : in out Probe_Manager_Type;
                                      Msg    : in out MAT.Readers.Message_Type);
+
+   --  Get the target events.
+   function Get_Target_Events (Client : in Probe_Manager_Type)
+                               return MAT.Events.Targets.Target_Events_Access;
+   --  Read a message from the stream.
+   procedure Read_Message (Reader : in out Probe_Manager_Type;
+                           Msg    : in out MAT.Readers.Message_Type) is abstract;
+
+   type Reader_List_Type is limited interface;
+   type Reader_List_Type_Access is access all Reader_List_Type'Class;
+
+   --  Initialize the target object to manage the memory slots, the stack frames
+   --  and setup the reader to analyze the memory and other events.
+   procedure Initialize (List    : in out Reader_List_Type;
+                         Manager : in out Probe_Manager_Type'Class) is abstract;
 
 private
 
@@ -80,7 +95,7 @@ private
    --  Record a probe
    type Probe_Handler is record
       Probe       : Probe_Type_Access;
-      Id          : MAT.Events.Internal_Reference;
+      Id          : MAT.Events.Targets.Probe_Index_Type;
       Attributes  : MAT.Events.Const_Attribute_Table_Access;
       Mapping     : MAT.Events.Attribute_Table_Ptr;
    end record;
