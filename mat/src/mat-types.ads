@@ -46,4 +46,7 @@ package MAT.Types is
    function Hex_Image (Value : in Uint32;
                        Length : in Positive := 8) return String;
 
+   --  Format the target time to a printable representation.
+   function Tick_Image (Value : in Target_Tick_Ref) return String;
+
 end MAT.Types;
