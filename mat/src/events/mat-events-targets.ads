@@ -37,15 +37,7 @@ package MAT.Events.Targets is
       Old_Addr : MAT.Types.Target_Addr;
    end record;
 
-   type Target_Event is record
-      Event    : MAT.Types.Uint16;
-      Time     : MAT.Types.Target_Time;
-      Thread   : MAT.Types.Target_Thread_Ref;
-      Frame    : MAT.Frames.Frame_Type;
-      Addr     : MAT.Types.Target_Addr;
-      Size     : MAT.Types.Target_Size;
-      Old_Addr : MAT.Types.Target_Addr;
-   end record;
+   subtype Target_Event is Probe_Event_Type;
 
    package Target_Event_Vectors is
      new Ada.Containers.Vectors (Positive, Target_Event);
@@ -55,11 +47,6 @@ package MAT.Events.Targets is
 
    type Target_Events is tagged limited private;
    type Target_Events_Access is access all Target_Events'Class;
-
-   --  Add the event in the list of events and increment the event counter.
-   procedure Insert (Target : in out Target_Events;
-                     Event  : in MAT.Types.Uint16;
-                     Frame  : in MAT.Events.Frame_Info);
 
    --  Add the event in the list of events and increment the event counter.
    procedure Insert (Target : in out Target_Events;
@@ -75,10 +62,22 @@ package MAT.Events.Targets is
 
 private
 
+   EVENT_BLOCK_SIZE : constant Positive := 1024;
+
+   type Probe_Event_Array is array (1 .. EVENT_BLOCK_SIZE) of Probe_Event_Type;
+
+   type Event_Block is record
+      Start  : MAT.Types.Target_Time;
+      Finish : MAT.Types.Target_Time;
+      Count  : Natural := 0;
+      Events : Probe_Event_Array;
+   end record;
+   type Event_Block_Access is access all Event_Block;
+
    use type MAT.Types.Target_Time;
    package Event_Maps is
      new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Time,
-                                      Element_Type => Target_Event);
+                                      Element_Type => Event_Block_Access);
 
    subtype Event_Map is Event_Maps.Map;
    subtype Event_Cursor is Event_Maps.Cursor;
@@ -86,14 +85,14 @@ private
    protected type Event_Collector is
 
       --  Add the event in the list of events.
-      procedure Insert (Event  : in MAT.Types.Uint16;
-                        Frame  : in MAT.Events.Frame_Info);
+      procedure Insert (Event  : in Probe_Event_Type);
 
       procedure Get_Events (Start  : in MAT.Types.Target_Time;
                             Finish : in MAT.Types.Target_Time;
                             Into   : in out Target_Event_Vector);
 
    private
+      Current       : Event_Block_Access := null;
       Events        : Event_Map;
    end Event_Collector;
 
