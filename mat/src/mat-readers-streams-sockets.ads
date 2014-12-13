@@ -34,7 +34,7 @@ package MAT.Readers.Streams.Sockets is
 
    --  Open the socket to accept connections and start the listener task.
    procedure Start (Listener : in out Socket_Listener_Type;
-                    List     : in MAT.Readers.Reader_List_Type_Access;
+                    List     : in MAT.Events.Probes.Reader_List_Type_Access;
                     Address  : in GNAT.Sockets.Sock_Addr_Type);
 
    --  Stop the listener socket.
@@ -75,7 +75,7 @@ private
      new Ada.Containers.Doubly_Linked_Lists (Element_Type => Socket_Reader_Type_Access);
 
    type Socket_Listener_Type is new Ada.Finalization.Limited_Controlled with record
-      List            : MAT.Readers.Reader_List_Type_Access;
+      List            : MAT.Events.Probes.Reader_List_Type_Access;
       Accept_Selector : aliased GNAT.Sockets.Selector_Type;
       Listener        : Socket_Listener_Task;
       Clients         : Socket_Client_Lists.List;
