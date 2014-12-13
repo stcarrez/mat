@@ -47,7 +47,7 @@ package body MAT.Readers.Streams.Sockets is
    --  Open the socket to accept connections and start the listener task.
    --  ------------------------------
    procedure Start (Listener : in out Socket_Listener_Type;
-                    List     : in MAT.Readers.Reader_List_Type_Access;
+                    List     : in MAT.Events.Probes.Reader_List_Type_Access;
                     Address  : in GNAT.Sockets.Sock_Addr_Type) is
    begin
       Log.Info ("Starting the listener socket task");
