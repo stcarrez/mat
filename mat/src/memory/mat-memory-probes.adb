@@ -25,9 +25,9 @@ package body MAT.Memory.Probes is
    --  The logger
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Memory.Probes");
 
-   MSG_MALLOC  : constant MAT.Events.Internal_Reference := 0;
-   MSG_FREE    : constant MAT.Events.Internal_Reference := 1;
-   MSG_REALLOC : constant MAT.Events.Internal_Reference := 2;
+   MSG_MALLOC  : constant MAT.Events.Targets.Probe_Index_Type := 0;
+   MSG_FREE    : constant MAT.Events.Targets.Probe_Index_Type := 1;
+   MSG_REALLOC : constant MAT.Events.Targets.Probe_Index_Type := 2;
 
    M_SIZE     : constant MAT.Events.Internal_Reference := 1;
    M_FRAME    : constant MAT.Events.Internal_Reference := 2;
@@ -122,7 +122,7 @@ package body MAT.Memory.Probes is
                       Msg     : in out MAT.Readers.Message_Type;
                       Event   : in out MAT.Events.Targets.Probe_Event_Type) is
    begin
-      case Event.Event is
+      case Event.Index is
          when MSG_MALLOC =>
             Unmarshall_Allocation (Msg, Event.Size, Event.Addr, Event.Old_Addr, Params.all);
 
@@ -145,7 +145,7 @@ package body MAT.Memory.Probes is
       Slot.Size   := Event.Size;
       Slot.Thread := Event.Thread;
       Slot.Time   := Event.Time;
-      case Event.Event is
+      case Event.Index is
          when MSG_MALLOC =>
             Probe.Data.Probe_Malloc (Event.Addr, Slot);
 
