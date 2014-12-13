@@ -47,6 +47,15 @@ package body MAT.Events.Targets is
    end Get_Time_Range;
 
    --  ------------------------------
+   --  Get the probe event with the given allocated unique id.
+   --  ------------------------------
+   function Get_Event (Target : in Target_Events;
+                       Id     : in Event_Id_Type) return Probe_Event_Type is
+   begin
+      return Target.Events.Get_Event (Id);
+   end Get_Event;
+
+   --  ------------------------------
    --  Get the current event counter.
    --  ------------------------------
    function Get_Event_Counter (Target : in Target_Events) return Integer is
