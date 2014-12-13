@@ -103,6 +103,9 @@ private
       procedure Get_Time_Range (Start  : out MAT.Types.Target_Time;
                                 Finish : out MAT.Types.Target_Time);
 
+      --  Get the probe event with the given allocated unique id.
+      function Get_Event (Id : in Event_Id_Type) return Probe_Event_Type;
+
    private
       Current       : Event_Block_Access := null;
       Events        : Event_Map;
