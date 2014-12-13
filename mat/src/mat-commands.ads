@@ -48,4 +48,9 @@ package MAT.Commands is
    procedure Threads_Command (Target : in out MAT.Targets.Target_Type'Class;
                               Args   : in String);
 
+   --  Events command.
+   --  Print the probe events.
+   procedure Events_Command (Target : in out MAT.Targets.Target_Type'Class;
+                             Args   : in String);
+
 end MAT.Commands;
