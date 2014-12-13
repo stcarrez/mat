@@ -41,26 +41,6 @@ package MAT.Readers is
    subtype Message is Message_Type;
 
    -----------------
-   --  Abstract servant definition
-   -----------------
-   --  The Servant is a small proxy that binds the specific message
-   --  handlers to the client specific dispatcher.
-   type Reader_Base is abstract tagged limited private;
-   type Reader_Access is access all Reader_Base'Class;
-
-   procedure Extract (For_Servant : in out Reader_Base;
-                      Event       : in out MAT.Events.Targets.Target_Event;
-                      Id          : in MAT.Events.Internal_Reference;
-                      Params      : in MAT.Events.Const_Attribute_Table_Access;
-                      Msg         : in out Message) is null;
-
-   procedure Dispatch (For_Servant : in out Reader_Base;
-                       Id          : in MAT.Events.Internal_Reference;
-                       Params      : in MAT.Events.Const_Attribute_Table_Access;
-                       Frame       : in MAT.Events.Frame_Info;
-                       Msg         : in out Message) is abstract;
-
-   -----------------
    --  Ipc Client Manager
    -----------------
    --  The Manager is a kind of object adapter. It registers a collection
