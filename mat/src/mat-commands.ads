@@ -53,4 +53,9 @@ package MAT.Commands is
    procedure Events_Command (Target : in out MAT.Targets.Target_Type'Class;
                              Args   : in String);
 
+   --  Event command.
+   --  Print the probe event with the stack frame.
+   procedure Event_Command (Target : in out MAT.Targets.Target_Type'Class;
+                            Args   : in String);
+
 end MAT.Commands;
