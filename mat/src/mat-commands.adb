@@ -317,11 +317,19 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Open_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String) is
-      Reader : MAT.Readers.Streams.Files.File_Reader_Type;
+      use type MAT.Types.Target_Tick_Ref;
+
+      Reader        : MAT.Readers.Streams.Files.File_Reader_Type;
+      Start, Finish : MAT.Types.Target_Tick_Ref;
+      Duration      : MAT.Types.Target_Tick_Ref;
    begin
       Target.Initialize (Reader);
       Reader.Open (Args);
       Reader.Read_All;
+      Target.Process.Events.Get_Time_Range (Start, Finish);
+      Duration := Finish - Start;
+      Target.Console.Notice (MAT.Consoles.N_DURATION,
+                             "Loaded events, duration " & MAT.Types.Tick_Image (Duration));
 
    exception
       when E : Ada.IO_Exceptions.Name_Error =>
