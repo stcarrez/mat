@@ -16,9 +16,11 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Util.Streams.Buffered;
+with MAT.Events.Probes;
+with MAT.Events.Targets;
 package MAT.Readers.Streams is
 
-   type Stream_Reader_Type is new Manager_Base with private;
+   type Stream_Reader_Type is new MAT.Events.Probes.Probe_Manager_Type with private;
 
    --  Read the events from the stream and stop when the end of the stream is reached.
    procedure Read_All (Reader : in out Stream_Reader_Type);
@@ -26,11 +28,11 @@ package MAT.Readers.Streams is
    --  Read a message from the stream.
    overriding
    procedure Read_Message (Reader : in out Stream_Reader_Type;
-                           Msg    : in out Message);
+                           Msg    : in out Message_Type);
 
 private
 
-   type Stream_Reader_Type is new Manager_Base with record
+   type Stream_Reader_Type is new MAT.Events.Probes.Probe_Manager_Type with record
       Stream : Util.Streams.Buffered.Buffered_Stream;
       Data   : Util.Streams.Buffered.Buffer_Access;
    end record;
