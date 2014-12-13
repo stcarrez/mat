@@ -55,6 +55,7 @@ package body MAT.Readers.Marshaller is
    --  ------------------------------
    function Get_Uint16 (Buffer : in Buffer_Ptr) return MAT.Types.Uint16 is
       use Uint8_Access;
+      use type Interfaces.Unsigned_16;
 
       High : Object_Pointer;
       Low  : Object_Pointer;
