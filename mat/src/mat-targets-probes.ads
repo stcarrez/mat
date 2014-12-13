@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------
---  mat-targets-readers - Definition and Analysis of process start events
+--  mat-targets-probes - Definition and Analysis of process start events
 --  Copyright (C) 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
@@ -16,10 +16,10 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with MAT.Events;
-with MAT.Readers;
-package MAT.Targets.Readers is
+with MAT.Events.Probes;
+package MAT.Targets.Probes is
 
-   type Process_Servant is new MAT.Readers.Reader_Base with record
+   type Process_Servant is new MAT.Events.Probes.Probe_Type with record
       Target  : Target_Type_Access;
       Reader  : MAT.Readers.Manager;
       Process : Target_Process_Type_Access;
@@ -55,4 +55,4 @@ private
                           Frame       : in MAT.Events.Frame_Info;
                           Msg         : in out MAT.Readers.Message);
 
-end MAT.Targets.Readers;
+end MAT.Targets.Probes;
