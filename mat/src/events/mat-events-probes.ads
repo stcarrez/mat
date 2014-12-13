@@ -28,15 +28,7 @@ with MAT.Readers;
 with MAT.Frames;
 package MAT.Events.Probes is
 
-   type Probe_Event_Type is record
-      Event    : MAT.Events.Internal_Reference;
-      Time     : MAT.Types.Target_Time;
-      Thread   : MAT.Types.Target_Thread_Ref;
-      Frame    : MAT.Frames.Frame_Type;
-      Addr     : MAT.Types.Target_Addr;
-      Size     : MAT.Types.Target_Size;
-      Old_Addr : MAT.Types.Target_Addr;
-   end record;
+   subtype Probe_Event_Type is MAT.Events.Targets.Probe_Event_Type;
 
    -----------------
    --  Abstract probe definition
@@ -51,7 +43,7 @@ package MAT.Events.Probes is
                       Event  : in out Probe_Event_Type) is abstract;
 
    procedure Execute (Probe : in Probe_Type;
-                      Event : in MAT.Events.Targets.Target_Event) is abstract;
+                      Event : in Probe_Event_Type) is abstract;
 
    -----------------
    --  Probe Manager
@@ -119,6 +111,7 @@ private
       Frame       : access MAT.Events.Frame_Info;
       Events      : MAT.Events.Targets.Target_Events_Access;
       Event       : Probe_Event_Type;
+      Frames      : MAT.Frames.Frame_Type;
    end record;
 
    --  Read an event definition from the stream and configure the reader.
