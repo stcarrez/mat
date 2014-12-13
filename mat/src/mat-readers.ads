@@ -40,42 +40,6 @@ package MAT.Readers is
    end record;
    subtype Message is Message_Type;
 
-   -----------------
-   --  Ipc Client Manager
-   -----------------
-   --  The Manager is a kind of object adapter. It registers a collection
-   --  of servants and dispatches incomming messages to those servants.
-   type Manager_Base is abstract new Ada.Finalization.Limited_Controlled with private;
-   type Manager is access all Manager_Base'Class;
-
-   --  Initialize the manager instance.
-   overriding
-   procedure Initialize (Manager : in out Manager_Base);
-
-   --  Register the reader to handle the event identified by the given name.
-   --  The event is mapped to the given id and the attributes table is used
-   --  to setup the mapping from the data stream attributes.
-   procedure Register_Reader (Into   : in out Manager_Base;
-                              Reader : in Reader_Access;
-                              Name   : in String;
-                              Id     : in MAT.Events.Internal_Reference;
-                              Model  : in MAT.Events.Const_Attribute_Table_Access);
-
-   procedure Dispatch_Message (Client : in out Manager_Base;
-                               Msg    : in out Message);
-
-   --  Read a message from the stream.
-   procedure Read_Message (Client : in out Manager_Base;
-                           Msg    : in out Message) is abstract;
-
-   --  Read a list of event definitions from the stream and configure the reader.
-   procedure Read_Event_Definitions (Client : in out Manager_Base;
-                                     Msg    : in out Message);
-
-   --  Get the target events.
-   function Get_Target_Events (Client : in Manager_Base)
-                               return MAT.Events.Targets.Target_Events_Access;
-
    type Reader_List_Type is limited interface;
    type Reader_List_Type_Access is access all Reader_List_Type'Class;
 
