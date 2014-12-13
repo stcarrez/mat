@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------
---  mat-targets-readers - Definition and Analysis of process start events
+--  mat-targets-probes - Definition and Analysis of process start events
 --  Copyright (C) 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
@@ -18,10 +18,10 @@
 with Util.Log.Loggers;
 
 with MAT.Readers.Marshaller;
-package body MAT.Targets.Readers is
+package body MAT.Targets.Probes is
 
    --  The logger
-   Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Targets.Readers");
+   Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Targets.Probes");
 
    MSG_BEGIN     : constant MAT.Events.Internal_Reference := 0;
    MSG_END       : constant MAT.Events.Internal_Reference := 1;
@@ -150,4 +150,4 @@ package body MAT.Targets.Readers is
       Register (Reader, Process_Reader);
    end Initialize;
 
-end MAT.Targets.Readers;
+end MAT.Targets.Probes;
