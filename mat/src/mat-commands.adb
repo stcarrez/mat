@@ -322,6 +322,7 @@ package body MAT.Commands is
             Time  : MAT.Types.Target_Tick_Ref := Event.Time - Start;
          begin
             Console.Start_Row;
+            Console.Print_Field (MAT.Consoles.F_ID, MAT.Events.Targets.Event_Id_Type'Image (Event.Id));
             Console.Print_Duration (MAT.Consoles.F_TIME, Time);
             Console.Print_Field (MAT.Consoles.F_EVENT, MAT.Types.Uint16'Image (Event.Event));
             Console.Print_Field (MAT.Consoles.F_ADDR, Event.Addr);
