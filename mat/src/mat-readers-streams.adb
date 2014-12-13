@@ -32,7 +32,7 @@ package body MAT.Readers.Streams is
    --  ------------------------------
    overriding
    procedure Read_Message (Reader : in out Stream_Reader_Type;
-                           Msg    : in out Message) is
+                           Msg    : in out Message_Type) is
       use type Ada.Streams.Stream_Element_Offset;
 
       Buffer : constant Util.Streams.Buffered.Buffer_Access := Msg.Buffer.Buffer;
@@ -88,7 +88,7 @@ package body MAT.Readers.Streams is
          Log.Debug ("Data stream is big endian");
       end if;
       Reader.Read_Message (Msg);
-      Reader.Read_Headers (Msg);
+      Reader.Read_Event_Definitions (Msg);
       while not Reader.Stream.Is_Eof loop
          Reader.Read_Message (Msg);
          Reader.Dispatch_Message (Msg);
