@@ -114,7 +114,7 @@ package body MAT.Events.Probes is
    procedure Register_Probe (Into   : in out Probe_Manager_Type;
                               Probe  : in Probe_Type_Access;
                               Name   : in String;
-                              Id     : in MAT.Events.Internal_Reference;
+                              Id     : in MAT.Events.Targets.Probe_Index_Type;
                               Model  : in MAT.Events.Const_Attribute_Table_Access) is
       Handler : Probe_Handler;
    begin
@@ -210,8 +210,9 @@ package body MAT.Events.Probes is
          declare
             Handler : constant Probe_Handler := Handler_Maps.Element (Pos);
          begin
-            Client.Event.Event := Handler.Id;
-            Extract (Handler.Probe.all, Handler.Mapping.all'Access, Msg, Client.Event);
+            Client.Event.Event := Event;
+            Client.Event.Index := Handler.Id;
+            Handler.Probe.Extract (Handler.Mapping.all'Access, Msg, Client.Event);
             MAT.Frames.Insert (Frame  => Client.Frames,
                                Pc     => Client.Frame.Frame (1 .. Client.Frame.Cur_Depth),
                                Result => Client.Event.Frame);
@@ -312,6 +313,9 @@ package body MAT.Events.Probes is
                                      Msg    : in out MAT.Readers.Message) is
       Count : MAT.Types.Uint16;
    begin
+      if Client.Frame = null then
+         Client.Frame := new MAT.Events.Frame_Info (512);
+      end if;
       Client.Version := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
       Count := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
 
