@@ -26,7 +26,10 @@ package MAT.Events.Targets is
    type Event_Type is mod 16;
    type Probe_Index_Type is mod 16;
 
+   type Event_Id_Type is new Natural;
+
    type Probe_Event_Type is record
+      Id       : Event_Id_Type;
       Event    : MAT.Types.Uint16;
       Index    : Probe_Index_Type;
       Time     : MAT.Types.Target_Time;
@@ -103,6 +106,7 @@ private
    private
       Current       : Event_Block_Access := null;
       Events        : Event_Map;
+      Last_Id       : Event_Id_Type := 0;
    end Event_Collector;
 
    type Target_Events is tagged limited record
