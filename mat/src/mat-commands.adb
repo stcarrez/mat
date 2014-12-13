@@ -36,6 +36,7 @@ with MAT.Memory.Targets;
 with MAT.Symbols.Targets;
 with MAT.Expressions;
 with MAT.Frames;
+with MAT.Events.Targets;
 with MAT.Consoles;
 package body MAT.Commands is
 
@@ -289,6 +290,49 @@ package body MAT.Commands is
    end Frames_Command;
 
    --  ------------------------------
+   --  Events command.
+   --  Print the probe events.
+   --  ------------------------------
+   procedure Events_Command (Target : in out MAT.Targets.Target_Type'Class;
+                             Args   : in String) is
+      Console : constant MAT.Consoles.Console_Access := Target.Console;
+      Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
+      Start, Finish : MAT.Types.Target_Tick_Ref;
+      Events  : MAT.Events.Targets.Target_Event_Vector;
+      Iter    : MAT.Events.Targets.Target_Event_Cursor;
+   begin
+      Console.Start_Title;
+      Console.Print_Title (MAT.Consoles.F_ID, "Id", 10);
+      Console.Print_Title (MAT.Consoles.F_TIME, "Time", 10);
+      Console.Print_Title (MAT.Consoles.F_EVENT, "Event", 10);
+      Console.Print_Title (MAT.Consoles.F_ADDR, "Addr", 10);
+      Console.Print_Title (MAT.Consoles.F_OLD_ADDR, "Old Addr", 10);
+      Console.Print_Title (MAT.Consoles.F_SIZE, "Size", 10);
+      Console.End_Title;
+
+      Process.Events.Get_Time_Range (Start, Finish);
+      Process.Events.Get_Events (Start, Finish, Events);
+      Iter := Events.First;
+      while MAT.Events.Targets.Target_Event_Vectors.Has_Element (Iter) loop
+         declare
+            use type MAT.Types.Target_Tick_Ref;
+
+            Event : MAT.Events.Targets.Probe_Event_Type
+              := MAT.Events.Targets.Target_Event_Vectors.Element (Iter);
+            Time  : MAT.Types.Target_Tick_Ref := Event.Time - Start;
+         begin
+            Console.Start_Row;
+            Console.Print_Duration (MAT.Consoles.F_TIME, Time);
+            Console.Print_Field (MAT.Consoles.F_EVENT, MAT.Types.Uint16'Image (Event.Event));
+            Console.Print_Field (MAT.Consoles.F_ADDR, Event.Addr);
+            Console.Print_Size (MAT.Consoles.F_SIZE, Event.Size);
+            Console.End_Row;
+         end;
+         MAT.Events.Targets.Target_Event_Vectors.Next (Iter);
+      end loop;
+   end Events_Command;
+
+   --  ------------------------------
    --  Symbol command.
    --  Load the symbols from the binary file.
    --  ------------------------------
@@ -399,4 +443,5 @@ begin
    Commands.Insert ("slots", Slot_Command'Access);
    Commands.Insert ("threads", Threads_Command'Access);
    Commands.Insert ("frames", Frames_Command'Access);
+   Commands.Insert ("events", Events_Command'Access);
 end MAT.Commands;
