@@ -66,6 +66,7 @@ package body MAT.Events.Targets is
             Current := new Event_Block;
             Current.Start := Event.Time;
             Events.Insert (Event.Time, Current);
+            Ids.Insert (Last_Id + 1, Current);
          end if;
          Current.Count := Current.Count + 1;
          Current.Events (Current.Count) := Event;
@@ -107,6 +108,26 @@ package body MAT.Events.Targets is
          Start  := First.Events (First.Events'First).Time;
          Finish := Last.Events (Last.Count).Time;
       end Get_Time_Range;
+
+      --  ------------------------------
+      --  Get the probe event with the given allocated unique id.
+      --  ------------------------------
+      function Get_Event (Id : in Event_Id_Type) return Probe_Event_Type is
+         Iter  : Event_Id_Cursor := Ids.Floor (Id);
+         Block : Event_Block_Access;
+         Pos   : Event_Id_Type;
+      begin
+         while not Event_Id_Maps.Has_Element (Iter) loop
+            Block := Event_Id_Maps.Element (Iter);
+            exit when Id < Block.Events (Block.Events'First).Id;
+            Pos := Id - Block.Events (Block.Events'First).Id;
+            if Pos < Block.Count then
+               return Block.Events (Pos);
+            end if;
+            Event_Id_Maps.Next (Iter);
+         end loop;
+         raise Not_Found;
+      end Get_Event;
 
    end Event_Collector;
 
