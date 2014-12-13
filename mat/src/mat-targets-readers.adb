@@ -80,19 +80,19 @@ package body MAT.Targets.Readers is
          begin
             case Def.Ref is
                when M_PID =>
-                  Pid := MAT.Readers.Marshaller.Get_Target_Size (Msg.Buffer, Def.Kind);
+                  Pid := MAT.Readers.Marshaller.Get_Target_Size (Msg, Def.Kind);
 
                when M_EXE =>
-                  Path := MAT.Readers.Marshaller.Get_String (Msg.Buffer);
+                  Path := MAT.Readers.Marshaller.Get_String (Msg);
 
                when M_HEAP_START =>
-                  Heap.Start_Addr := MAT.Readers.Marshaller.Get_Target_Addr (Msg.Buffer, Def.Kind);
+                  Heap.Start_Addr := MAT.Readers.Marshaller.Get_Target_Addr (Msg, Def.Kind);
 
                when M_HEAP_END =>
-                  Heap.End_Addr := MAT.Readers.Marshaller.Get_Target_Addr (Msg.Buffer, Def.Kind);
+                  Heap.End_Addr := MAT.Readers.Marshaller.Get_Target_Addr (Msg, Def.Kind);
 
                when others =>
-                  MAT.Readers.Marshaller.Skip (Msg.Buffer, Def.Size);
+                  MAT.Readers.Marshaller.Skip (Msg, Def.Size);
             end case;
          end;
       end loop;
