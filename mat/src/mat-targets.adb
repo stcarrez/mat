@@ -26,7 +26,7 @@ with Util.Strings;
 with Util.Log.Loggers;
 
 with MAT.Commands;
-with MAT.Targets.Readers;
+with MAT.Targets.Probes;
 package body MAT.Targets is
 
    --  ------------------------------
@@ -59,10 +59,10 @@ package body MAT.Targets is
    --  and setup the reader to analyze the memory and other events.
    --  ------------------------------
    procedure Initialize (Target : in out Target_Type;
-                         Reader : in out MAT.Readers.Manager_Base'Class) is
+                         Reader : in out MAT.Events.Probes.Probe_Manager_Type'Class) is
    begin
-      MAT.Targets.Readers.Initialize (Target => Target,
-                                      Reader => Reader);
+      MAT.Targets.Probes.Initialize (Target  => Target,
+                                     Manager => Reader);
    end Initialize;
 
    --  ------------------------------
