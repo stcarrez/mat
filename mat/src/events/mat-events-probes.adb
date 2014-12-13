@@ -104,6 +104,7 @@ package body MAT.Events.Probes is
    procedure Initialize (Manager : in out Probe_Manager_Type) is
    begin
       Manager.Events := new MAT.Events.Targets.Target_Events;
+      Manager.Frames := MAT.Frames.Create_Root;
    end Initialize;
 
    --  ------------------------------
