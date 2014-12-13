@@ -49,7 +49,7 @@ package MAT.Targets.Probes is
 
    --  Initialize the target object to prepare for reading process events.
    procedure Initialize (Target  : in out Target_Type;
-                         Manager : in out MAT.Events.Probes.Probe_Manager_Type_Access);
+                         Manager : in out MAT.Events.Probes.Probe_Manager_Type'Class);
 
 private
 
