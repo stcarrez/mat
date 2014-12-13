@@ -15,6 +15,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with Interfaces;
 package body MAT.Types is
 
    --  ------------------------------
@@ -39,5 +40,17 @@ package body MAT.Types is
       end loop;
       return S;
    end Hex_Image;
+
+   --  ------------------------------
+   --  Format the target time to a printable representation.
+   --  ------------------------------
+   function Tick_Image (Value : in Target_Tick_Ref) return String is
+      use type Interfaces.Unsigned_64;
+
+      Sec  : Interfaces.Unsigned_32 := Interfaces.Unsigned_32 (Interfaces.Shift_Right (Value, 32));
+      Usec : Interfaces.Unsigned_32 := Interfaces.Unsigned_32 (Value and 16#0ffffffff#);
+   begin
+      return Interfaces.Unsigned_32'Image (Sec) & "." & Interfaces.Unsigned_32'Image (Usec);
+   end Tick_Image;
 
 end MAT.Types;
