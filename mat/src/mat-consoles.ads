@@ -34,6 +34,7 @@ package MAT.Consoles is
                        F_LINE_NUMBER);
 
    type Notice_Type is (N_PID_INFO,
+                        N_DURATION,
                         N_PATH_INFO);
 
    type Console_Type is abstract tagged limited private;
