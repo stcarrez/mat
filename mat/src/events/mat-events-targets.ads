@@ -57,6 +57,11 @@ package MAT.Events.Targets is
                          Finish : in MAT.Types.Target_Time;
                          Into   : in out Target_Event_Vector);
 
+   --  Get the start and finish time for the events that have been received.
+   procedure Get_Time_Range (Target : in out Target_Events;
+                             Start  : out MAT.Types.Target_Time;
+                             Finish : out MAT.Types.Target_Time);
+
    --  Get the current event counter.
    function Get_Event_Counter (Target : in Target_Events) return Integer;
 
