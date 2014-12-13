@@ -25,8 +25,10 @@ with MAT.Types;
 with MAT.Memory.Targets;
 with MAT.Symbols.Targets;
 with MAT.Events.Targets;
-with MAT.Readers.Streams.Sockets;
+with MAT.Events.Probes;
 with MAT.Readers;
+with MAT.Readers.Streams;
+with MAT.Readers.Streams.Sockets;
 with MAT.Consoles;
 package MAT.Targets is
 
@@ -62,7 +64,7 @@ package MAT.Targets is
    type Target_Process_Type_Access is access all Target_Process_Type'Class;
 
    type Target_Type is new Ada.Finalization.Limited_Controlled
-     and MAT.Readers.Reader_List_Type with private;
+     and MAT.Events.Probes.Reader_List_Type with private;
 
    type Target_Type_Access is access all Target_Type'Class;
 
@@ -80,7 +82,7 @@ package MAT.Targets is
    --  and setup the reader to analyze the memory and other events.
    overriding
    procedure Initialize (Target : in out Target_Type;
-                         Reader : in out MAT.Readers.Manager_Base'Class);
+                         Reader : in out MAT.Events.Probes.Probe_Manager_Type'Class);
 
    --  Create a process instance to hold and keep track of memory and other information about
    --  the given process ID.
@@ -132,7 +134,7 @@ private
    subtype Process_Cursor is Process_Maps.Cursor;
 
    type Target_Type is new Ada.Finalization.Limited_Controlled
-     and MAT.Readers.Reader_List_Type with record
+     and MAT.Events.Probes.Reader_List_Type with record
       Current   : Target_Process_Type_Access;
       Processes : Process_Map;
       Console   : MAT.Consoles.Console_Access;
