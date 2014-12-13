@@ -69,22 +69,22 @@ package body MAT.Memory.Probes is
    ----------------------
    --  Register the reader to extract and analyze memory events.
    ----------------------
-   procedure Register (Into   : in out MAT.Readers.Manager_Base'Class;
-                       Reader : in Memory_Reader_Access) is
+   procedure Register (Into  : in out MAT.Events.Probes.Probe_Manager_Type'Class;
+                       Probe : in Memory_Probe_Type_Access) is
    begin
-      Into.Register_Reader (Reader.all'Access, "malloc", MSG_MALLOC,
-                            Memory_Attributes'Access);
-      Into.Register_Reader (Reader.all'Access, "free", MSG_FREE,
-                            Memory_Attributes'Access);
-      Into.Register_Reader (Reader.all'Access, "realloc", MSG_REALLOC,
-                            Memory_Attributes'Access);
+      Into.Register_Probe (Probe.all'Access, "malloc", MSG_MALLOC,
+                           Memory_Attributes'Access);
+      Into.Register_Probe (Probe.all'Access, "free", MSG_FREE,
+                           Memory_Attributes'Access);
+      Into.Register_Probe (Probe.all'Access, "realloc", MSG_REALLOC,
+                           Memory_Attributes'Access);
    end Register;
 
    ----------------------
    --  Unmarshall from the message the memory slot information.
    --  The data is described by the Defs table.
    ----------------------
-   procedure Unmarshall_Allocation (Msg      : in out MAT.Readers.Message;
+   procedure Unmarshall_Allocation (Msg      : in out MAT.Readers.Message_Type;
                                     Size     : in out MAT.Types.Target_Size;
                                     Addr     : in out MAT.Types.Target_Addr;
                                     Old_Addr : in out MAT.Types.Target_Addr;
@@ -96,32 +96,33 @@ package body MAT.Memory.Probes is
          begin
             case Def.Ref is
                when M_SIZE =>
-                  Size := MAT.Readers.Marshaller.Get_Target_Size (Msg.Buffer, Def.Kind);
+                  Size := MAT.Readers.Marshaller.Get_Target_Size (Msg, Def.Kind);
 
                when M_ADDR =>
-                  Addr := MAT.Readers.Marshaller.Get_Target_Addr (Msg.Buffer, Def.Kind);
+                  Addr := MAT.Readers.Marshaller.Get_Target_Addr (Msg, Def.Kind);
 
                when M_OLD_ADDR =>
-                  Old_Addr := MAT.Readers.Marshaller.Get_Target_Addr (Msg.Buffer, Def.Kind);
+                  Old_Addr := MAT.Readers.Marshaller.Get_Target_Addr (Msg, Def.Kind);
 
                when M_UNKNOWN =>
-                  MAT.Readers.Marshaller.Skip (Msg.Buffer, Def.Size);
+                  MAT.Readers.Marshaller.Skip (Msg, Def.Size);
 
                when others =>
-                  MAT.Readers.Marshaller.Skip (Msg.Buffer, Def.Size);
+                  MAT.Readers.Marshaller.Skip (Msg, Def.Size);
+
             end case;
          end;
       end loop;
    end Unmarshall_Allocation;
 
+   --  Extract the probe information from the message.
    overriding
-   procedure Extract (For_Servant : in out Memory_Servant;
-                      Event       : in out MAT.Events.Targets.Target_Event;
-                      Id          : in MAT.Events.Internal_Reference;
-                      Params      : in MAT.Events.Const_Attribute_Table_Access;
-                      Msg         : in out MAT.Readers.Message) is
+   procedure Extract (Probe   : in Memory_Probe_Type;
+                      Params  : in MAT.Events.Const_Attribute_Table_Access;
+                      Msg     : in out MAT.Readers.Message_Type;
+                      Event   : in out MAT.Events.Targets.Probe_Event_Type) is
    begin
-      case Id is
+      case Event.Event is
          when MSG_MALLOC =>
             Unmarshall_Allocation (Msg, Event.Size, Event.Addr, Event.Old_Addr, Params.all);
 
@@ -137,39 +138,27 @@ package body MAT.Memory.Probes is
       end case;
    end Extract;
 
-   overriding
-   procedure Dispatch (For_Servant : in out Memory_Servant;
-                       Id          : in MAT.Events.Internal_Reference;
-                       Params      : in MAT.Events.Const_Attribute_Table_Access;
-                       Frame       : in MAT.Events.Frame_Info;
-                       Msg         : in out MAT.Readers.Message) is
+   procedure Execute (Probe : in Memory_Probe_Type;
+                      Event : in MAT.Events.Targets.Probe_Event_Type) is
       Slot     : Allocation;
-      Addr     : MAT.Types.Target_Addr := 0;
-      Old_Addr : MAT.Types.Target_Addr := 0;
    begin
-      Slot.Thread := Frame.Thread;
-      Slot.Time   := Frame.Time;
-      case Id is
+      Slot.Size   := Event.Size;
+      Slot.Thread := Event.Thread;
+      Slot.Time   := Event.Time;
+      case Event.Event is
          when MSG_MALLOC =>
-            Unmarshall_Allocation (Msg, Slot.Size, Addr, Old_Addr, Params.all);
-            For_Servant.Data.Create_Frame (Pc     => Frame.Frame (1 .. Frame.Cur_Depth),
-                                           Result => Slot.Frame);
-            For_Servant.Data.Probe_Malloc (Addr, Slot);
+            Probe.Data.Probe_Malloc (Event.Addr, Slot);
 
          when MSG_FREE =>
-            Unmarshall_Allocation (Msg, Slot.Size, Addr, Old_Addr, Params.all);
-            For_Servant.Data.Probe_Free (Addr, Slot);
+            Probe.Data.Probe_Free (Event.Addr, Slot);
 
          when MSG_REALLOC =>
-            Unmarshall_Allocation (Msg, Slot.Size, Addr, Old_Addr, Params.all);
-            For_Servant.Data.Create_Frame (Pc     => Frame.Frame (1 .. Frame.Cur_Depth),
-                                           Result => Slot.Frame);
-            For_Servant.Data.Probe_Realloc (Addr, Old_Addr, Slot);
+            Probe.Data.Probe_Realloc (Event.Addr, Event.Old_Addr, Slot);
 
          when others =>
             raise Program_Error;
 
       end case;
-   end Dispatch;
+   end Execute;
 
 end MAT.Memory.Probes;
