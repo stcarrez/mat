@@ -23,8 +23,8 @@ package body MAT.Targets.Probes is
    --  The logger
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Targets.Probes");
 
-   MSG_BEGIN     : constant MAT.Events.Internal_Reference := 0;
-   MSG_END       : constant MAT.Events.Internal_Reference := 1;
+   MSG_BEGIN     : constant MAT.Events.Targets.Probe_Index_Type := 0;
+   MSG_END       : constant MAT.Events.Targets.Probe_Index_Type := 1;
 
    M_PID         : constant MAT.Events.Internal_Reference := 1;
    M_EXE         : constant MAT.Events.Internal_Reference := 2;
@@ -53,16 +53,16 @@ package body MAT.Targets.Probes is
    --  ------------------------------
    --  Create a new process after the begin event is received from the event stream.
    --  ------------------------------
-   procedure Create_Process (For_Servant : in out Process_Probe_Type;
+   procedure Create_Process (Probe : in out Process_Probe_Type;
                              Pid         : in MAT.Types.Target_Process_Ref;
                              Path        : in Ada.Strings.Unbounded.Unbounded_String) is
    begin
-      For_Servant.Target.Create_Process (Pid     => Pid,
-                                         Path    => Path,
-                                         Process => For_Servant.Process);
-      For_Servant.Process.Events := For_Servant.Events;
-      MAT.Memory.Targets.Initialize (Memory => For_Servant.Process.Memory,
-                                     Reader => For_Servant.Reader.all);
+--        Probe.Target.Create_Process (Pid     => Pid,
+--                                           Path    => Path,
+--                                           Process => Probe.Process);
+      Probe.Process.Events := Probe.Events;
+      MAT.Memory.Targets.Initialize (Memory  => Probe.Process.Memory,
+                                     Manager => Probe.Manager.all);
    end Create_Process;
 
    procedure Probe_Begin (Probe : in out Process_Probe_Type;
@@ -98,10 +98,10 @@ package body MAT.Targets.Probes is
       end loop;
       Heap.Size       := Heap.End_Addr - Heap.Start_Addr;
       Heap.Path       := Ada.Strings.Unbounded.To_Unbounded_String ("[heap]");
-      For_Servant.Create_Process (Pid, Path);
-      For_Servant.Reader.Read_Message (Msg);
-      For_Servant.Reader.Read_Event_Definitions (Msg);
-      For_Servant.Process.Memory.Add_Region (Heap);
+      Probe.Create_Process (Pid, Path);
+      Probe.Manager.Read_Message (Msg);
+      Probe.Manager.Read_Event_Definitions (Msg);
+      Probe.Process.Memory.Add_Region (Heap);
    end Probe_Begin;
 
    overriding
@@ -135,14 +135,14 @@ package body MAT.Targets.Probes is
    --  ------------------------------
    --  Initialize the target object to prepare for reading process events.
    --  ------------------------------
-   procedure Initialize (Target : in out Target_Type;
-                         Manager : in out MAT.Events.Probes.Probe_Manager_Type_Access) is
+   procedure Initialize (Target  : in out Target_Type;
+                         Manager : in out MAT.Events.Probes.Probe_Manager_Type'Class) is
       Process_Probe : constant Process_Probe_Type_Access
         := new Process_Probe_Type;
    begin
       Process_Probe.Target := Target'Unrestricted_Access;
       Process_Probe.Events := Manager.Get_Target_Events;
-      Register (Manager.all, Process_Probe);
+      Register (Manager, Process_Probe);
    end Initialize;
 
 end MAT.Targets.Probes;
