@@ -23,13 +23,12 @@ package MAT.Targets.Probes is
    type Process_Probe_Type is new MAT.Events.Probes.Probe_Type with record
       Target  : Target_Type_Access;
       Manager : MAT.Events.Probes.Probe_Manager_Type_Access;
-      Process : Target_Process_Type_Access;
       Events  : MAT.Events.Targets.Target_Events_Access;
    end record;
    type Process_Probe_Type_Access is access all Process_Probe_Type'Class;
 
    --  Create a new process after the begin event is received from the event stream.
-   procedure Create_Process (Probe : in out Process_Probe_Type;
+   procedure Create_Process (Probe : in Process_Probe_Type;
                              Pid   : in MAT.Types.Target_Process_Ref;
                              Path  : in Ada.Strings.Unbounded.Unbounded_String);
 
@@ -53,10 +52,9 @@ package MAT.Targets.Probes is
 
 private
 
-   procedure Probe_Begin (Probe : in out Process_Probe_Type;
-                          Id          : in MAT.Events.Internal_Reference;
+   procedure Probe_Begin (Probe : in Process_Probe_Type;
+                          Id          : in MAT.Events.Targets.Probe_Index_Type;
                           Defs        : in MAT.Events.Attribute_Table;
-                          Frame       : in MAT.Events.Frame_Info;
                           Msg         : in out MAT.Readers.Message);
 
 end MAT.Targets.Probes;
