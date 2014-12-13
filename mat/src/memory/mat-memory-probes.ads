@@ -18,32 +18,27 @@
 with MAT.Events;
 with MAT.Readers;
 with MAT.Events.Targets;
+with MAT.Events.Probes;
 with MAT.Memory.Targets;
 package MAT.Memory.Probes is
 
-   type Memory_Servant is new MAT.Readers.Reader_Base with record
+   type Memory_Probe_Type is new MAT.Events.Probes.Probe_Type with record
       Data  : access MAT.Memory.Targets.Target_Memory;
    end record;
-   type Memory_Reader_Access is access all Memory_Servant'Class;
-   --  The memory servant is a proxy for the generic communication
-   --  channel to process incomming events (such as memory allocations).
+   type Memory_Probe_Type_Access is access all Memory_Probe_Type'Class;
 
+   --  Extract the probe information from the message.
    overriding
-   procedure Extract (For_Servant : in out Memory_Servant;
-                      Event       : in out MAT.Events.Targets.Target_Event;
-                      Id          : in MAT.Events.Internal_Reference;
-                      Params      : in MAT.Events.Const_Attribute_Table_Access;
-                      Msg         : in out MAT.Readers.Message);
+   procedure Extract (Probe   : in Memory_Probe_Type;
+                      Params  : in MAT.Events.Const_Attribute_Table_Access;
+                      Msg     : in out MAT.Readers.Message_Type;
+                      Event   : in out MAT.Events.Targets.Probe_Event_Type);
 
-   overriding
-   procedure Dispatch (For_Servant : in out Memory_Servant;
-                       Id          : in MAT.Events.Internal_Reference;
-                       Params      : in MAT.Events.Const_Attribute_Table_Access;
-                       Frame       : in MAT.Events.Frame_Info;
-                       Msg         : in out MAT.Readers.Message);
+   procedure Execute (Probe : in Memory_Probe_Type;
+                      Event : in MAT.Events.Targets.Probe_Event_Type);
 
    --  Register the reader to extract and analyze memory events.
-   procedure Register (Into   : in out MAT.Readers.Manager_Base'Class;
-                       Reader : in Memory_Reader_Access);
+   procedure Register (Into   : in out MAT.Events.Probes.Probe_Manager_Type'Class;
+                       Probe : in Memory_Probe_Type_Access);
 
 end MAT.Memory.Probes;
