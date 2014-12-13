@@ -144,7 +144,7 @@ package body MAT.Events.Probes is
       Time_Usec : MAT.Types.Uint32 := 0;
       Frame     : constant access MAT.Events.Frame_Info := Client.Frame;
    begin
-      Frame.Thread := 0;
+      Client.Event.Thread := 0;
       Frame.Stack  := 0;
       Frame.Cur_Depth := 0;
       for I in Client.Probe'Range loop
@@ -159,7 +159,7 @@ package body MAT.Events.Probes is
                   Time_Usec := MAT.Readers.Marshaller.Get_Target_Uint32 (Msg, Def.Kind);
 
                when P_THREAD_ID =>
-                  Frame.Thread := MAT.Readers.Marshaller.Get_Target_Uint32 (Msg, Def.Kind);
+                  Client.Event.Thread := MAT.Readers.Marshaller.Get_Target_Uint32 (Msg, Def.Kind);
 
                when P_THREAD_SP =>
                   Frame.Stack := MAT.Readers.Marshaller.Get_Target_Addr (Msg, Def.Kind);
@@ -182,8 +182,8 @@ package body MAT.Events.Probes is
             end case;
          end;
       end loop;
-      Frame.Time := Interfaces.Shift_Left (Interfaces.Unsigned_64 (Time_Sec), 32);
-      Frame.Time := Frame.Time or Interfaces.Unsigned_64 (Time_Usec);
+      Client.Event.Time := Interfaces.Shift_Left (Interfaces.Unsigned_64 (Time_Sec), 32);
+      Client.Event.Time := Client.Event.Time or Interfaces.Unsigned_64 (Time_Usec);
       Frame.Cur_Depth := Count;
    end Read_Probe;
 
@@ -218,6 +218,7 @@ package body MAT.Events.Probes is
                                Pc     => Client.Frame.Frame (1 .. Client.Frame.Cur_Depth),
                                Result => Client.Event.Frame);
             Client.Events.Insert (Client.Event);
+            Handler.Probe.Execute (Client.Event);
          end;
       end if;
 
