@@ -33,11 +33,12 @@ package MAT.Readers is
    type Buffer_Type is private;
    type Buffer_Ptr is access all Buffer_Type;
 
-   type Message is record
+   type Message_Type is record
       Kind   : MAT.Events.Event_Type;
       Size   : Natural;
       Buffer : Buffer_Ptr;
    end record;
+   subtype Message is Message_Type;
 
    -----------------
    --  Abstract servant definition
@@ -46,6 +47,12 @@ package MAT.Readers is
    --  handlers to the client specific dispatcher.
    type Reader_Base is abstract tagged limited private;
    type Reader_Access is access all Reader_Base'Class;
+
+   procedure Extract (For_Servant : in out Reader_Base;
+                      Event       : in out MAT.Events.Targets.Target_Event;
+                      Id          : in MAT.Events.Internal_Reference;
+                      Params      : in MAT.Events.Const_Attribute_Table_Access;
+                      Msg         : in out Message) is null;
 
    procedure Dispatch (For_Servant : in out Reader_Base;
                        Id          : in MAT.Events.Internal_Reference;
