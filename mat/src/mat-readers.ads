@@ -16,9 +16,6 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.Containers;
-with Ada.Containers.Hashed_Maps;
-with Ada.Containers.Indefinite_Hashed_Maps;
-with Ada.Strings.Hash;
 with Ada.Finalization;
 
 with System;
@@ -61,53 +58,5 @@ private
       Total   : Natural;
       Endian  : Endian_Type := LITTLE_ENDIAN;
    end record;
-
-   type Reader_Base is abstract tagged limited record
-      Owner : Manager := null;
-   end record;
-
-   --  Record a servant
-   type Message_Handler is record
-      For_Servant : Reader_Access;
-      Id          : MAT.Events.Internal_Reference;
-      Attributes  : MAT.Events.Const_Attribute_Table_Access;
-      Mapping     : MAT.Events.Attribute_Table_Ptr;
-   end record;
-
-   function Hash (Key : in MAT.Types.Uint16) return Ada.Containers.Hash_Type;
-
-   use type MAT.Types.Uint16;
-
-   package Reader_Maps is
-     new Ada.Containers.Indefinite_Hashed_Maps (Key_Type        => String,
-                                                Element_Type    => Message_Handler,
-                                                Hash            => Ada.Strings.Hash,
-                                                Equivalent_Keys => "=");
-
-   --  Runtime handlers associated with the events.
-   package Handler_Maps is
-     new Ada.Containers.Hashed_Maps (Key_Type     => MAT.Types.Uint16,
-                                     Element_Type => Message_Handler,
-                                     Hash         => Hash,
-                                     Equivalent_Keys => "=");
-
-   type Manager_Base is abstract new Ada.Finalization.Limited_Controlled with record
-      Readers     : Reader_Maps.Map;
-      Handlers    : Handler_Maps.Map;
-      Version     : MAT.Types.Uint16;
-      Flags       : MAT.Types.Uint16;
-      Probe       : MAT.Events.Attribute_Table_Ptr;
-      Frame       : access MAT.Events.Frame_Info;
-      Events      : MAT.Events.Targets.Target_Events_Access;
-   end record;
-
-   --  Read the event data stream headers with the event description.
-   --  Configure the reader to analyze the data stream according to the event descriptions.
-   procedure Read_Headers (Client : in out Manager_Base;
-                           Msg    : in out Message);
-
-   --  Read an event definition from the stream and configure the reader.
-   procedure Read_Definition (Client : in out Manager_Base;
-                              Msg    : in out Message);
 
 end MAT.Readers;
