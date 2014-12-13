@@ -17,7 +17,7 @@
 -----------------------------------------------------------------------
 with Util.Log.Loggers;
 
-with MAT.Memory.Readers;
+with MAT.Memory.Probes;
 package body MAT.Memory.Targets is
 
    --  The logger
@@ -27,14 +27,14 @@ package body MAT.Memory.Targets is
    --  Initialize the target memory object to manage the memory slots, the stack frames
    --  and setup the reader to analyze the memory events.
    --  ------------------------------
-   procedure Initialize (Memory : in out Target_Memory;
-                         Reader : in out MAT.Readers.Manager_Base'Class) is
-      Memory_Reader : constant MAT.Memory.Readers.Memory_Reader_Access
-        := new MAT.Memory.Readers.Memory_Servant;
+   procedure Initialize (Memory  : in out Target_Memory;
+                         Manager : in out MAT.Events.Probes.Probe_Manager_Type'Class) is
+      Memory_Probe : constant MAT.Memory.Probes.Memory_Probe_Type_Access
+        := new MAT.Memory.Probes.Memory_Probe_Type;
    begin
-      Memory.Reader := Memory_Reader.all'Access;
-      Memory_Reader.Data := Memory'Unrestricted_Access;
-      MAT.Memory.Readers.Register (Reader, Memory_Reader);
+--        Memory.Manager    := Memory_Probe.all'Access;
+      Memory_Probe.Data := Memory'Unrestricted_Access;
+      MAT.Memory.Probes.Register (Manager, Memory_Probe);
    end Initialize;
 
    --  ------------------------------
