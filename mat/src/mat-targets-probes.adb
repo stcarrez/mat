@@ -53,22 +53,21 @@ package body MAT.Targets.Probes is
    --  ------------------------------
    --  Create a new process after the begin event is received from the event stream.
    --  ------------------------------
-   procedure Create_Process (Probe : in out Process_Probe_Type;
+   procedure Create_Process (Probe : in Process_Probe_Type;
                              Pid         : in MAT.Types.Target_Process_Ref;
                              Path        : in Ada.Strings.Unbounded.Unbounded_String) is
    begin
---        Probe.Target.Create_Process (Pid     => Pid,
---                                           Path    => Path,
---                                           Process => Probe.Process);
-      Probe.Process.Events := Probe.Events;
-      MAT.Memory.Targets.Initialize (Memory  => Probe.Process.Memory,
+      Probe.Target.Create_Process (Pid     => Pid,
+                                   Path    => Path,
+                                   Process => Probe.Target.Current);
+      Probe.Target.Process.Events := Probe.Events;
+      MAT.Memory.Targets.Initialize (Memory  => Probe.Target.Process.Memory,
                                      Manager => Probe.Manager.all);
    end Create_Process;
 
-   procedure Probe_Begin (Probe : in out Process_Probe_Type;
-                          Id          : in MAT.Events.Internal_Reference;
+   procedure Probe_Begin (Probe : in Process_Probe_Type;
+                          Id          : in MAT.Events.Targets.Probe_Index_Type;
                           Defs        : in MAT.Events.Attribute_Table;
-                          Frame       : in MAT.Events.Frame_Info;
                           Msg         : in out MAT.Readers.Message) is
       Pid  : MAT.Types.Target_Process_Ref := 0;
       Path : Ada.Strings.Unbounded.Unbounded_String;
@@ -101,7 +100,7 @@ package body MAT.Targets.Probes is
       Probe.Create_Process (Pid, Path);
       Probe.Manager.Read_Message (Msg);
       Probe.Manager.Read_Event_Definitions (Msg);
-      Probe.Process.Memory.Add_Region (Heap);
+      Probe.Target.Process.Memory.Add_Region (Heap);
    end Probe_Begin;
 
    overriding
@@ -109,8 +108,11 @@ package body MAT.Targets.Probes is
                       Params : in MAT.Events.Const_Attribute_Table_Access;
                       Msg    : in out MAT.Readers.Message_Type;
                       Event  : in out MAT.Events.Targets.Probe_Event_Type) is
+      use type MAT.Events.Targets.Probe_Index_Type;
    begin
-      null;
+      if Event.Index = MSG_BEGIN then
+         Probe.Probe_Begin (Event.Index, Params.all, Msg);
+      end if;
    end Extract;
 
    procedure Execute (Probe : in Process_Probe_Type;
