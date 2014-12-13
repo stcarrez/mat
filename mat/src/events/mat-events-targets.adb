@@ -42,7 +42,7 @@ package body MAT.Events.Targets is
    function Get_Event_Counter (Target : in Target_Events) return Integer is
    begin
       return Util.Concurrent.Counters.Value (Target.Event_Count);
-   end Get_EVent_Counter;
+   end Get_Event_Counter;
 
    protected body Event_Collector is
 
@@ -83,6 +83,18 @@ package body MAT.Events.Targets is
             Event_Maps.Next (Iter);
          end loop;
       end Get_Events;
+
+      --  ------------------------------
+      --  Get the start and finish time for the events that have been received.
+      --  ------------------------------
+      procedure Get_Time_Range (Start  : out MAT.Types.Target_Time;
+                                Finish : out MAT.Types.Target_Time) is
+         First : constant Event_Block_Access := Events.First_Element;
+         Last  : constant Event_Block_Access := Events.Last_Element;
+      begin
+         Start  := First.Events (First.Events'First).Time;
+         Finish := Last.Events (Last.Count).Time;
+      end Get_Time_Range;
 
    end Event_Collector;
 
