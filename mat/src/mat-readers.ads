@@ -24,7 +24,6 @@ with Util.Streams.Buffered;
 
 with MAT.Types;
 with MAT.Events;
-with MAT.Events.Targets;
 package MAT.Readers is
 
    type Buffer_Type is private;
@@ -36,14 +35,6 @@ package MAT.Readers is
       Buffer : Buffer_Ptr;
    end record;
    subtype Message is Message_Type;
-
-   type Reader_List_Type is limited interface;
-   type Reader_List_Type_Access is access all Reader_List_Type'Class;
-
-   --  Initialize the target object to manage the memory slots, the stack frames
-   --  and setup the reader to analyze the memory and other events.
-   procedure Initialize (List   : in out Reader_List_Type;
-                         Reader : in out Manager_Base'Class) is abstract;
 
 private
 
