@@ -53,6 +53,11 @@ package body MAT.Commands is
    procedure Open_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String);
 
+   --  Print the stack frame description in the console.
+   procedure Print_Frame (Console : in MAT.Consoles.Console_Access;
+                          Frame   : in MAT.Frames.Frame_Type;
+                          Symbols : in MAT.Symbols.Targets.Target_Symbols_Ref);
+
    package Command_Map is
      new Ada.Containers.Indefinite_Hashed_Maps (Key_Type        => String,
                                                 Element_Type    => Command_Handler,
@@ -60,6 +65,38 @@ package body MAT.Commands is
                                                 Hash            => Ada.Strings.Hash);
 
    Commands : Command_Map.Map;
+
+   --  ------------------------------
+   --  Print the stack frame description in the console.
+   --  ------------------------------
+   procedure Print_Frame (Console : in MAT.Consoles.Console_Access;
+                          Frame   : in MAT.Frames.Frame_Type;
+                          Symbols : in MAT.Symbols.Targets.Target_Symbols_Ref) is
+      Backtrace : constant MAT.Frames.Frame_Table := MAT.Frames.Backtrace (Frame);
+
+      File_Name : Ada.Strings.Unbounded.Unbounded_String;
+      Func      : Ada.Strings.Unbounded.Unbounded_String;
+      Line      : Natural;
+   begin
+      for I in Backtrace'Range loop
+         Console.Start_Row;
+         Console.Print_Field (MAT.Consoles.F_FRAME_ID, I);
+         Console.Print_Field (MAT.Consoles.F_FRAME_ADDR, Backtrace (I));
+         MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Symbols.Value.all,
+                                                Addr    => Backtrace (I),
+                                                Name    => File_Name,
+                                                Func    => Func,
+                                                Line    => Line);
+         if Ada.Strings.Unbounded.Length (File_Name) = 0 then
+            Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME, Func);
+         else
+            Console.Print_Field (MAT.Consoles.F_FILE_NAME, File_Name);
+            Console.Print_Field (MAT.Consoles.F_LINE_NUMBER, Line);
+            Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME, Func);
+         end if;
+         Console.End_Row;
+      end loop;
+   end Print_Frame;
 
    --  ------------------------------
    --  Sizes command.
