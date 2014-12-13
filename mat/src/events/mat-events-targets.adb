@@ -126,7 +126,7 @@ package body MAT.Events.Targets is
          Block : Event_Block_Access;
          Pos   : Event_Id_Type;
       begin
-         while not Event_Id_Maps.Has_Element (Iter) loop
+         while Event_Id_Maps.Has_Element (Iter) loop
             Block := Event_Id_Maps.Element (Iter);
             exit when Id < Block.Events (Block.Events'First).Id;
             Pos := Id - Block.Events (Block.Events'First).Id;
