@@ -56,7 +56,8 @@ package MAT.Events is
       Kind : Event_Type;
       Def  : Attribute_Table (1 .. Nb_Attributes);
    end record;
-   type Event_Description_Ptr is access all Event_Description;
+   type Event_Description_Access is access all Event_Description;
+
    subtype Addr is MAT.Types.Uint32;
    type Frame_Table is array (Natural range <>) of Addr;
 
