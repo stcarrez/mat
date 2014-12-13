@@ -137,8 +137,6 @@ package body MAT.Events.Probes is
 
    procedure Read_Probe (Client : in out Probe_Manager_Type;
                          Msg    : in out MAT.Readers.Message) is
-      use type Interfaces.Unsigned_64;
-
       Count     : Natural := 0;
       Time_Sec  : MAT.Types.Uint32  := 0;
       Time_Usec : MAT.Types.Uint32 := 0;
@@ -333,20 +331,5 @@ package body MAT.Events.Probes is
          Log.Error ("Not enough data in the message", E, True);
 
    end Read_Event_Definitions;
-
-   --  ------------------------------
-   --  Read the event data stream headers with the event description.
-   --  Configure the reader to analyze the data stream according to the event descriptions.
-   --  ------------------------------
-   procedure Read_Headers (Client : in out Probe_Manager_Type;
-                           Msg    : in out MAT.Readers.Message_Type) is
-   begin
-      Client.Read_Event_Definitions (Msg);
-
-      Client.Frame := new MAT.Events.Frame_Info (512);
-   exception
-         when E : others =>
-         Log.Error ("Exception while reading headers ", E);
-   end Read_Headers;
 
 end MAT.Events.Probes;
