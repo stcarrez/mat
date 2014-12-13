@@ -90,9 +90,9 @@ package body MAT.Commands is
          if Ada.Strings.Unbounded.Length (File_Name) = 0 then
             Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME, Func);
          else
+            Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME, Func);
             Console.Print_Field (MAT.Consoles.F_FILE_NAME, File_Name);
             Console.Print_Field (MAT.Consoles.F_LINE_NUMBER, Line);
-            Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME, Func);
          end if;
          Console.End_Row;
       end loop;
@@ -371,6 +371,36 @@ package body MAT.Commands is
    end Events_Command;
 
    --  ------------------------------
+   --  Event command.
+   --  Print the probe event with the stack frame.
+   --  ------------------------------
+   procedure Event_Command (Target : in out MAT.Targets.Target_Type'Class;
+                            Args   : in String) is
+      Console : constant MAT.Consoles.Console_Access := Target.Console;
+      Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
+      Id      : MAT.Events.Targets.Event_Id_Type;
+      Event   : MAT.Events.Targets.Probe_Event_Type;
+   begin
+      Id := MAT.Events.Targets.Event_Id_Type'Value (Args);
+      Event := Process.Events.Get_Event (Id);
+
+      Console.Start_Title;
+      Console.Print_Title (MAT.Consoles.F_FRAME_ID, "Id", 3);
+      Console.Print_Title (MAT.Consoles.F_FRAME_ADDR, "Frame Addr", 10);
+      Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 30);
+      Console.Print_Title (MAT.Consoles.F_FILE_NAME, "File", 40);
+      Console.Print_Title (MAT.Consoles.F_LINE_NUMBER, "Line", 5);
+      Console.End_Title;
+
+      Print_Frame (Console, Event.Frame, Process.Symbols);
+
+   exception
+      when MAT.Events.Targets.Not_Found =>
+         Console.Error ("Event " & Args & " not found");
+
+   end Event_Command;
+
+   --  ------------------------------
    --  Symbol command.
    --  Load the symbols from the binary file.
    --  ------------------------------
@@ -482,4 +512,5 @@ begin
    Commands.Insert ("threads", Threads_Command'Access);
    Commands.Insert ("frames", Frames_Command'Access);
    Commands.Insert ("events", Events_Command'Access);
+   Commands.Insert ("event", Event_Command'Access);
 end MAT.Commands;
