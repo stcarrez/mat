@@ -102,8 +102,6 @@ private
 
    function Hash (Key : in MAT.Types.Uint16) return Ada.Containers.Hash_Type;
 
-   use type MAT.Types.Uint16;
-
    package Probe_Maps is
      new Ada.Containers.Indefinite_Hashed_Maps (Key_Type        => String,
                                                 Element_Type    => Probe_Handler,
