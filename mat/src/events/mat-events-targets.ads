@@ -27,7 +27,7 @@ package MAT.Events.Targets is
    type Probe_Index_Type is mod 16;
 
    type Probe_Event_Type is record
-      Event    : MAT.Events.Internal_Reference;
+      Event    : MAT.Types.Uint16;
       Index    : Probe_Index_Type;
       Time     : MAT.Types.Target_Time;
       Thread   : MAT.Types.Target_Thread_Ref;
