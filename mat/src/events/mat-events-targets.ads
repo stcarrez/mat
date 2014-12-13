@@ -23,6 +23,8 @@ with Util.Concurrent.Counters;
 with MAT.Frames;
 package MAT.Events.Targets is
 
+   Not_Found : exception;
+
    type Event_Type is mod 16;
    type Probe_Index_Type is mod 16;
 
@@ -70,14 +72,14 @@ package MAT.Events.Targets is
 
 private
 
-   EVENT_BLOCK_SIZE : constant Positive := 1024;
+   EVENT_BLOCK_SIZE : constant Event_Id_Type := 1024;
 
    type Probe_Event_Array is array (1 .. EVENT_BLOCK_SIZE) of Probe_Event_Type;
 
    type Event_Block is record
       Start  : MAT.Types.Target_Time;
       Finish : MAT.Types.Target_Time;
-      Count  : Natural := 0;
+      Count  : Event_Id_Type := 0;
       Events : Probe_Event_Array;
    end record;
    type Event_Block_Access is access all Event_Block;
@@ -89,6 +91,13 @@ private
 
    subtype Event_Map is Event_Maps.Map;
    subtype Event_Cursor is Event_Maps.Cursor;
+
+   package Event_Id_Maps is
+     new Ada.Containers.Ordered_Maps (Key_Type     => Event_Id_Type,
+                                      Element_Type => Event_Block_Access);
+
+   subtype Event_Id_Map is Event_Id_Maps.Map;
+   subtype Event_Id_Cursor is Event_Id_Maps.Cursor;
 
    protected type Event_Collector is
 
@@ -109,6 +118,7 @@ private
    private
       Current       : Event_Block_Access := null;
       Events        : Event_Map;
+      Ids           : Event_Id_Map;
       Last_Id       : Event_Id_Type := 0;
    end Event_Collector;
 
