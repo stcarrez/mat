@@ -23,11 +23,28 @@ with Util.Concurrent.Counters;
 with MAT.Frames;
 package MAT.Events.Targets is
 
+   type Event_Type is mod 16;
+   type Probe_Index_Type is mod 16;
+
+   type Probe_Event_Type is record
+      Event    : MAT.Events.Internal_Reference;
+      Index    : Probe_Index_Type;
+      Time     : MAT.Types.Target_Time;
+      Thread   : MAT.Types.Target_Thread_Ref;
+      Frame    : MAT.Frames.Frame_Type;
+      Addr     : MAT.Types.Target_Addr;
+      Size     : MAT.Types.Target_Size;
+      Old_Addr : MAT.Types.Target_Addr;
+   end record;
+
    type Target_Event is record
-      Event  : MAT.Types.Uint16;
-      Time   : MAT.Types.Target_Time;
-      Thread : MAT.Types.Target_Thread_Ref;
-      Frame  : MAT.Frames.Frame_Type;
+      Event    : MAT.Types.Uint16;
+      Time     : MAT.Types.Target_Time;
+      Thread   : MAT.Types.Target_Thread_Ref;
+      Frame    : MAT.Frames.Frame_Type;
+      Addr     : MAT.Types.Target_Addr;
+      Size     : MAT.Types.Target_Size;
+      Old_Addr : MAT.Types.Target_Addr;
    end record;
 
    package Target_Event_Vectors is
@@ -43,6 +60,10 @@ package MAT.Events.Targets is
    procedure Insert (Target : in out Target_Events;
                      Event  : in MAT.Types.Uint16;
                      Frame  : in MAT.Events.Frame_Info);
+
+   --  Add the event in the list of events and increment the event counter.
+   procedure Insert (Target : in out Target_Events;
+                     Event  : in Probe_Event_Type);
 
    procedure Get_Events (Target : in out Target_Events;
                          Start  : in MAT.Types.Target_Time;
