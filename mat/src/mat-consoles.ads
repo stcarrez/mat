@@ -31,7 +31,11 @@ package MAT.Consoles is
                        F_COUNT,
                        F_FILE_NAME,
                        F_FUNCTION_NAME,
-                       F_LINE_NUMBER);
+                       F_LINE_NUMBER,
+                       F_ID,
+                       F_OLD_ADDR,
+                       F_TIME,
+                       F_EVENT);
 
    type Notice_Type is (N_PID_INFO,
                         N_DURATION,
@@ -91,6 +95,11 @@ package MAT.Consoles is
    procedure Print_Thread (Console : in out Console_Type;
                            Field   : in Field_Type;
                            Thread  : in MAT.Types.Target_Thread_Ref);
+
+   --  Format the time tick as a duration and print it for the given field.
+   procedure Print_Duration (Console  : in out Console_Type;
+                             Field    : in Field_Type;
+                             Duration : in MAT.Types.Target_Tick_Ref);
 
    --  Format the integer and print it for the given field.
    procedure Print_Field (Console : in out Console_Type;
