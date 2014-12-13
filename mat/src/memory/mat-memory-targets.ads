@@ -17,7 +17,7 @@
 -----------------------------------------------------------------------
 
 with MAT.Frames;
-with MAT.Readers;
+with MAT.Events.Probes;
 with MAT.Memory.Tools;
 with MAT.Expressions;
 package MAT.Memory.Targets is
@@ -37,8 +37,8 @@ package MAT.Memory.Targets is
 
    --  Initialize the target memory object to manage the memory slots, the stack frames
    --  and setup the reader to analyze the memory events.
-   procedure Initialize (Memory : in out Target_Memory;
-                         Reader : in out MAT.Readers.Manager_Base'Class);
+   procedure Initialize (Memory  : in out Target_Memory;
+                         Manager : in out MAT.Events.Probes.Probe_Manager_Type'Class);
 
    --  Add the memory region from the list of memory region managed by the program.
    procedure Add_Region (Memory : in out Target_Memory;
@@ -161,7 +161,7 @@ private
    end Memory_Allocator;
 
    type Target_Memory is tagged limited record
-      Reader        : MAT.Readers.Reader_Access;
+      Manager       : MAT.Events.Probes.Probe_Manager_Type_Access;
       Memory        : Memory_Allocator;
    end record;
 
