@@ -196,6 +196,45 @@ package body MAT.Expressions is
    end Is_Selected;
 
    --  ------------------------------
+   --  Evaluate the expression to check if the event described by the
+   --  context is selected.  Returns True if the event is selected.
+   --  ------------------------------
+   function Is_Selected (Node       : in Node_Type;
+                         Event      : in MAT.Events.Targets.Probe_Event_Type) return Boolean is
+      use type MAT.Types.Target_Size;
+      use type MAT.Types.Target_Tick_Ref;
+   begin
+      case Node.Kind is
+         when N_NOT =>
+            return not Is_Selected (Node.Expr.all, Event);
+
+         when N_AND =>
+            return Is_Selected (Node.Left.all, Event)
+              and then Is_Selected (Node.Right.all, Event);
+
+         when N_OR =>
+            return Is_Selected (Node.Left.all, Event)
+              or else Is_Selected (Node.Right.all, Event);
+
+         when N_RANGE_SIZE =>
+            return Event.Size >= Node.Min_Size
+              and Event.Size <= Node.Max_Size;
+
+         when N_RANGE_ADDR =>
+            return Event.Addr >= Node.Min_Addr
+              and Event.Addr <= Node.Max_Addr;
+
+         when N_RANGE_TIME =>
+            return Event.Time >= Node.Min_Time
+              and Event.Time <= Node.Max_Time;
+
+         when others =>
+            return False;
+
+      end case;
+   end Is_Selected;
+
+   --  ------------------------------
    --  Parse the string and return the expression tree.
    --  ------------------------------
    function Parse (Expr : in String) return Expression_Type is
