@@ -47,22 +47,53 @@ package body MAT.Consoles.Text is
    overriding
    procedure Print_Field (Console : in out Console_Type;
                           Field   : in Field_Type;
-                          Value   : in String) is
+                          Value   : in String;
+                          Justify : in Justify_Type := J_LEFT) is
       use type Ada.Text_IO.Count;
 
-      Pos : Ada.Text_IO.Count := Ada.Text_IO.Count (Console.Cols (Field));
+      Pos   : Ada.Text_IO.Count := Ada.Text_IO.Count (Console.Cols (Field));
+      Size  : constant Natural := Console.Sizes (Field);
+      Start : Natural := Value'First;
+      Last  : Natural := Value'Last;
+      Pad   : Natural := 0;
+      Fill  : Natural := 0;
    begin
-      if Pos > 1 then
-         Pos := Pos + Ada.Text_IO.Count (Console.Sizes (Field));
-         if Pos > Value'Length then
-            Ada.Text_IO.Set_Col (Pos - Value'Length);
-         else
-            Ada.Text_IO.Set_Col (Ada.Text_IO.Count (Console.Cols (Field)));
-            Ada.Text_IO.Put (Value (Value'Last - Console.Sizes (Field) .. Value'Last));
-            return;
-         end if;
+      case Justify is
+         when J_LEFT =>
+            if Value'Length < Size then
+               Pad := Size - Value'Length;
+            else
+               Start := Last - Size + 1;
+            end if;
+
+         when J_RIGHT =>
+            if Value'Length < Size then
+               Fill := Size - Value'Length;
+            else
+               Start := Last - Size + 1;
+            end if;
+
+         when J_CENTER =>
+            if Value'Length < Size then
+               Pad  := (Size - Value'Length) / 2;
+               Fill := Size - Value'Length - Pad;
+            else
+               Start := Last - Size + 1;
+            end if;
+
+         when J_RIGHT_NO_FILL =>
+            if Value'Length >= Size then
+               Start := Last - Size + 1;
+            end if;
+
+      end case;
+      if Pad > 0 then
+         Ada.Text_IO.Set_Col (Pos + Ada.Text_IO.Count (Pad));
       end if;
-      Ada.Text_IO.Put (Value);
+      Ada.Text_IO.Put (Value (Start .. Last));
+      if Fill > 0 then
+         Ada.Text_IO.Set_Col (Pos + Ada.Text_IO.Count (Pad + Fill + Last - Start));
+      end if;
    end Print_Field;
 
    --  ------------------------------
