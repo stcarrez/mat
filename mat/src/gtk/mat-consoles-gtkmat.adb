@@ -62,7 +62,8 @@ package body MAT.Consoles.Gtkmat is
    overriding
    procedure Print_Field (Console : in out Console_Type;
                           Field   : in Field_Type;
-                          Value   : in String) is
+                          Value   : in String;
+                          Justify : in Justify_Type := J_LEFT) is
    begin
       Log.Debug ("Field {0} - {1}", Field_Type'Image (Field), Value);
       Gtk.List_Store.Set (Console.List, Console.Current_Row, Console.Indexes (Field), Value);
