@@ -87,10 +87,11 @@ package body MAT.Consoles is
    --  ------------------------------
    procedure Print_Field (Console : in out Console_Type;
                           Field   : in Field_Type;
-                          Value   : in Integer) is
+                          Value   : in Integer;
+                          Justify : in Justify_Type := J_LEFT) is
       Val : constant String := Integer'Image (Value);
    begin
-      Console_Type'Class (Console).Print_Field (Field, Val);
+      Console_Type'Class (Console).Print_Field (Field, Val, Justify);
    end Print_Field;
 
    --  ------------------------------
@@ -98,9 +99,17 @@ package body MAT.Consoles is
    --  ------------------------------
    procedure Print_Field (Console : in out Console_Type;
                           Field   : in Field_Type;
-                          Value   : in Ada.Strings.Unbounded.Unbounded_String) is
+                          Value   : in Ada.Strings.Unbounded.Unbounded_String;
+                          Justify : in Justify_Type := J_LEFT) is
+      Item : String := Ada.Strings.Unbounded.To_String (Value);
+      Size : constant Natural := Console.Sizes (Field);
    begin
-      Console_Type'Class (Console).Print_Field (Field, Ada.Strings.Unbounded.To_String (Value));
+      if Size <= Item'Length then
+         Item (Item'Last - Size + 2 .. Item'Last - Size + 4) := "...";
+         Console_Type'Class (Console).Print_Field (Field, Item (Item'Last - Size + 2 .. Item'Last));
+      else
+         Console_Type'Class (Console).Print_Field (Field, Item, Justify);
+      end if;
    end Print_Field;
 
 end MAT.Consoles;
