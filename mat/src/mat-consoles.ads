@@ -64,7 +64,8 @@ package MAT.Consoles is
    --  Print the field value for the given field.
    procedure Print_Field (Console : in out Console_Type;
                           Field   : in Field_Type;
-                          Value   : in String) is abstract;
+                          Value   : in String;
+                          Justify : in Justify_Type := J_LEFT) is abstract;
 
    --  Print the title for the given field.
    procedure Print_Title (Console : in out Console_Type;
@@ -112,7 +113,8 @@ package MAT.Consoles is
    --  Format the integer and print it for the given field.
    procedure Print_Field (Console : in out Console_Type;
                           Field   : in Field_Type;
-                          Value   : in Integer);
+                          Value   : in Integer;
+                          Justify : in Justify_Type := J_LEFT);
 
    --  Format the integer and print it for the given field.
    procedure Print_Field (Console : in out Console_Type;
