@@ -35,7 +35,8 @@ package MAT.Consoles.Text is
    overriding
    procedure Print_Field (Console : in out Console_Type;
                           Field   : in Field_Type;
-                          Value   : in String);
+                          Value   : in String;
+                          Justify : in Justify_Type := J_LEFT);
 
    --  Print the title for the given field.
    overriding
