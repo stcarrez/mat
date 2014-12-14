@@ -22,6 +22,7 @@ private with Util.Concurrent.Counters;
 
 with MAT.Types;
 with MAT.Memory;
+with MAT.Events.Targets;
 package MAT.Expressions is
 
    type Context_Type is record
@@ -68,6 +69,11 @@ package MAT.Expressions is
    function Is_Selected (Node       : in Expression_Type;
                          Addr       : in MAT.Types.Target_Addr;
                          Allocation : in MAT.Memory.Allocation) return Boolean;
+
+   --  Evaluate the expression to check if the event described by the
+   --  context is selected.  Returns True if the event is selected.
+   function Is_Selected (Node       : in Expression_Type;
+                         Event      : in MAT.Events.Targets.Probe_Event_Type) return Boolean;
 
    --  Parse the string and return the expression tree.
    function Parse (Expr : in String) return Expression_Type;
