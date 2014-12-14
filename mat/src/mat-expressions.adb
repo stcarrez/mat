@@ -146,6 +146,16 @@ package body MAT.Expressions is
    end Is_Selected;
 
    --  ------------------------------
+   --  Evaluate the expression to check if the event described by the
+   --  context is selected.  Returns True if the event is selected.
+   --  ------------------------------
+   function Is_Selected (Node       : in Expression_Type;
+                         Event      : in MAT.Events.Targets.Probe_Event_Type) return Boolean is
+   begin
+      return Is_Selected (Node.Node.all, Event);
+   end Is_Selected;
+
+   --  ------------------------------
    --  Evaluate the node against the context.  Returns True if the node expression
    --  selects the memory slot defined by the context.
    --  ------------------------------
