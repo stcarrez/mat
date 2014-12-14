@@ -133,6 +133,11 @@ private
                          Addr       : in MAT.Types.Target_Addr;
                          Allocation : in MAT.Memory.Allocation) return Boolean;
 
+   --  Evaluate the expression to check if the event described by the
+   --  context is selected.  Returns True if the event is selected.
+   function Is_Selected (Node       : in Node_Type;
+                         Event      : in MAT.Events.Targets.Probe_Event_Type) return Boolean;
+
    type Expression_Type is new Ada.Finalization.Controlled with record
       Node : Node_Type_Access;
    end record;
