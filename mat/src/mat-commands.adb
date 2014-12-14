@@ -434,14 +434,17 @@ package body MAT.Commands is
       Reader        : MAT.Readers.Streams.Files.File_Reader_Type;
       Start, Finish : MAT.Types.Target_Tick_Ref;
       Duration      : MAT.Types.Target_Tick_Ref;
+      Count         : Integer;
    begin
       Target.Initialize (Reader);
       Reader.Open (Args);
       Reader.Read_All;
       Target.Process.Events.Get_Time_Range (Start, Finish);
+      Count := Target.Process.Events.Get_Event_Counter;
       Duration := Finish - Start;
       Target.Console.Notice (MAT.Consoles.N_DURATION,
-                             "Loaded events, duration " & MAT.Types.Tick_Image (Duration));
+                             "Loaded" & Integer'Image (Count) & " events, duration "
+                             & MAT.Types.Tick_Image (Duration));
 
    exception
       when E : Ada.IO_Exceptions.Name_Error =>
