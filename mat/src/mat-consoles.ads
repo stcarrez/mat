@@ -43,6 +43,12 @@ package MAT.Consoles is
                         N_DURATION,
                         N_PATH_INFO);
 
+   type Justify_Type is (J_LEFT,           --  Justify left   |item    |
+                         J_RIGHT,          --  Justify right  |    item|
+                         J_CENTER,         --  Justify center |  item  |
+                         J_RIGHT_NO_FILL   --  Justify right  |item|
+                        );
+
    type Console_Type is abstract tagged limited private;
    type Console_Access is access all Console_Type'Class;
 
@@ -111,7 +117,8 @@ package MAT.Consoles is
    --  Format the integer and print it for the given field.
    procedure Print_Field (Console : in out Console_Type;
                           Field   : in Field_Type;
-                          Value   : in Ada.Strings.Unbounded.Unbounded_String);
+                          Value   : in Ada.Strings.Unbounded.Unbounded_String;
+                          Justify : in Justify_Type := J_LEFT);
 
 private
 
