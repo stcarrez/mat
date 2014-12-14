@@ -80,7 +80,7 @@ package body MAT.Commands is
    begin
       for I in Backtrace'Range loop
          Console.Start_Row;
-         Console.Print_Field (MAT.Consoles.F_FRAME_ID, I);
+         Console.Print_Field (MAT.Consoles.F_FRAME_ID, I, MAT.Consoles.J_RIGHT);
          Console.Print_Field (MAT.Consoles.F_FRAME_ADDR, Backtrace (I));
          MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Symbols.Value.all,
                                                 Addr    => Backtrace (I),
@@ -88,11 +88,14 @@ package body MAT.Commands is
                                                 Func    => Func,
                                                 Line    => Line);
          if Ada.Strings.Unbounded.Length (File_Name) = 0 then
-            Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME, Func);
+            Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME, Func, MAT.Consoles.J_RIGHT);
          else
-            Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME, Func);
-            Console.Print_Field (MAT.Consoles.F_FILE_NAME, File_Name);
-            Console.Print_Field (MAT.Consoles.F_LINE_NUMBER, Line);
+            Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME, Func, MAT.Consoles.J_RIGHT);
+            Console.Print_Field (MAT.Consoles.F_FILE_NAME, File_Name,
+                                 MAT.Consoles.J_RIGHT_NO_FILL);
+            if Line > 0 then
+               Console.Print_Field (MAT.Consoles.F_LINE_NUMBER, Line);
+            end if;
          end if;
          Console.End_Row;
       end loop;
