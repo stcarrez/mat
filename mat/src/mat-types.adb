@@ -45,12 +45,30 @@ package body MAT.Types is
    --  Format the target time to a printable representation.
    --  ------------------------------
    function Tick_Image (Value : in Target_Tick_Ref) return String is
-      use type Interfaces.Unsigned_64;
+      use Interfaces;
 
-      Sec  : Interfaces.Unsigned_32 := Interfaces.Unsigned_32 (Interfaces.Shift_Right (Value, 32));
-      Usec : Interfaces.Unsigned_32 := Interfaces.Unsigned_32 (Value and 16#0ffffffff#);
+      Sec  : constant Unsigned_32 := Unsigned_32 (Interfaces.Shift_Right (Uint64 (Value), 32));
+      Usec : constant Unsigned_32 := Interfaces.Unsigned_32 (Value and 16#0ffffffff#);
+      Frac : constant String := Interfaces.Unsigned_32'Image (Usec);
+      Img  : String (1 .. 6) := (others => '0');
    begin
-      return Interfaces.Unsigned_32'Image (Sec) & "." & Interfaces.Unsigned_32'Image (Usec);
+      Img (Img'Last - Frac'Length + 2 .. Img'Last) := Frac (Frac'First + 1 .. Frac'Last);
+      return Interfaces.Unsigned_32'Image (Sec) & "." & Img;
    end Tick_Image;
+
+   function "-" (Left, Right : in Target_Tick_Ref) return Target_Tick_Ref is
+      use Interfaces;
+
+      Res   : Target_Tick_Ref := Target_Tick_Ref (Uint64 (Left) - Uint64 (Right));
+      Usec1 : constant Unsigned_32 := Interfaces.Unsigned_32 (Left and 16#0ffffffff#);
+      Usec2 : constant Unsigned_32 := Interfaces.Unsigned_32 (Right and 16#0ffffffff#);
+   begin
+      if Usec1 < Usec2 then
+         Res := Res and 16#ffffffff00000000#;
+         Res := Target_Tick_Ref (Uint64 (Res) - 16#100000000#);
+         Res := Res or Target_Tick_Ref (Usec2 - Usec1);
+      end if;
+      return Res;
+   end "-";
 
 end MAT.Types;
