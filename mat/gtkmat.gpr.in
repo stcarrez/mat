@@ -14,6 +14,12 @@ project gtkmat is
 						"@srcdir@/src/symbols", "@srcdir@/src/parser",
 						"@srcdir@/src/gtk");
 
+   package Naming is
+      for Implementation ("MAT.Targets.Gtkmat.Load_UI")
+	     use "mat-events-gtkmat-load_ui_gtk2.adb";
+
+   end Naming;
+
    for Object_Dir use "./" & Config'Object_Dir & "/obj";
    for Exec_Dir use "./" & Config'Exec_Dir & "/bin";
 
