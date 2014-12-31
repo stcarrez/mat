@@ -45,6 +45,7 @@ static void* gp_stack_frame_buffer [GP_STACK_FRAME_MAX];
 #define LIBC_PTHREAD_MUTEX_LOCK    "pthread_mutex_lock"
 #define LIBC_PTHREAD_MUTEX_UNLOCK  "pthread_mutex_unlock"
 #define LIBC_PTHREAD_MUTEX_TRYLOCK "pthread_mutex_trylock"
+#define LIBGCC_UNWIND_FIND_FDE     "_Unwind_Find_FDE"
 
 enum gp_probe_state
 {
@@ -64,10 +65,12 @@ static pthread_mutex_t gp_lock;
 typedef int (* gp_mutex_lock_t) (pthread_mutex_t* m);
 typedef int (* gp_mutex_unlock_t) (pthread_mutex_t* m);
 typedef int (* gp_mutex_trylock_t) (pthread_mutex_t* m);
+typedef void* (* gp_unwind_find_fde_t) (void* pc, void* bases);
 
 static gp_mutex_lock_t _lock;
 static gp_mutex_unlock_t _unlock;
 static gp_mutex_trylock_t _trylock;
+static gp_unwind_find_fde_t _unwind_find_fde;
 
 int
 gp_probe_lock (void)
@@ -89,6 +92,23 @@ gp_probe_unlock (void)
   gp_recursive--;
   if (gp_recursive == 0 && _unlock)
     _unlock (&gp_lock);
+}
+
+void*
+_Unwind_Find_FDE (void* pc, void* bases)
+{
+    void* result;
+
+    /* The real _Unwind_Find_FDE will pthread_mutex_lock to protect some global
+     * variable.  Since the GCC unwinder is used for exceptions as well as from
+     * within this library, this creates a deadlock when we try to instrument
+     * the pthread_mutex_lock.  Increment the per-thread recursion variable to
+     * avoid monitoring these mutex calls.
+     */
+    gp_recursive++;
+    result = _unwind_find_fde (pc, bases);
+    gp_recursive--;
+    return result;
 }
 
 int
@@ -227,6 +247,7 @@ _gp_initialize (void)
   _lock = (gp_mutex_lock_t) dlsym (RTLD_NEXT, LIBC_PTHREAD_MUTEX_LOCK);
   _unlock = (gp_mutex_unlock_t) dlsym (RTLD_NEXT, LIBC_PTHREAD_MUTEX_UNLOCK);
   _trylock = (gp_mutex_trylock_t) dlsym (RTLD_NEXT, LIBC_PTHREAD_MUTEX_TRYLOCK);
+  _unwind_find_fde = (gp_unwind_find_fde_t) dlsym (RTLD_NEXT, LIBGCC_UNWIND_FIND_FDE);
   
   gp_is_initialized = GP_CONNECTED;
   (void) gp_get_probe (&probe);
