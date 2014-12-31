@@ -43,7 +43,7 @@ package body MAT.Events is
             Ada.Text_IO.Put (MAT.Types.Uint64'Image (Value.U64));
 
          when T_PROBE =>
-            Ada.Text_IO.Put_Line ("Th " & MAT.Types.Uint32'Image (Value.Probe.Thread));
+            Ada.Text_IO.Put_Line ("Th " & MAT.Types.Target_Thread_Ref'Image (Value.Probe.Thread));
             Ada.Text_IO.Set_Col (29);
             for I in 1 .. Value.Probe.Cur_Depth loop
                exit when I > Value.Probe.Frame'Last;
