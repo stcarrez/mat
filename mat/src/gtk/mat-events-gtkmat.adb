@@ -42,8 +42,8 @@ package body MAT.Events.Gtkmat is
    begin
       Target := Drawing'Unrestricted_Access;
       Gtk.Drawing_Area.Gtk_New (Drawing.Drawing);
-      Event_Cb.Connect (Drawing.Drawing, Gtk.Widget.Signal_Draw,
-                        Event_Cb.To_Marshaller (Redraw'Access)); --  , Drawing'Unrestricted_Access);
+--        Event_Cb.Connect (Drawing.Drawing, Gtk.Widget.Signal_Draw,
+--                          Event_Cb.To_Marshaller (Redraw'Access)); --  , Drawing'Unrestricted_Access);
    end Create;
 
    procedure Draw (Onto    : in Event_Drawing_Type;
@@ -99,8 +99,8 @@ package body MAT.Events.Gtkmat is
          return;
       end if;
 
-      Width  := Onto.Drawing.Get_Allocated_Width;
-      Height := Onto.Drawing.Get_Allocated_Height;
+      Width  := 1000; --  Onto.Drawing.Get_Allocated_Width;
+      Height := 128; --  Onto.Drawing.Get_Allocated_Height;
       Start  := Onto.List.First_Element.Time;
       Finish := Onto.List.Last_Element.Time;
       if Start = Finish then
