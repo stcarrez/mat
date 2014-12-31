@@ -137,6 +137,8 @@ package body MAT.Events.Probes is
 
    procedure Read_Probe (Client : in out Probe_Manager_Type;
                          Msg    : in out MAT.Readers.Message) is
+      use type MAT.Types.Target_Tick_Ref;
+
       Count     : Natural := 0;
       Time_Sec  : MAT.Types.Uint32  := 0;
       Time_Usec : MAT.Types.Uint32 := 0;
@@ -157,7 +159,7 @@ package body MAT.Events.Probes is
                   Time_Usec := MAT.Readers.Marshaller.Get_Target_Uint32 (Msg, Def.Kind);
 
                when P_THREAD_ID =>
-                  Client.Event.Thread := MAT.Readers.Marshaller.Get_Target_Uint32 (Msg, Def.Kind);
+                  Client.Event.Thread := MAT.Types.Target_Thread_Ref (MAT.Readers.Marshaller.Get_Target_Uint32 (Msg, Def.Kind));
 
                when P_THREAD_SP =>
                   Frame.Stack := MAT.Readers.Marshaller.Get_Target_Addr (Msg, Def.Kind);
@@ -180,8 +182,8 @@ package body MAT.Events.Probes is
             end case;
          end;
       end loop;
-      Client.Event.Time := Interfaces.Shift_Left (Interfaces.Unsigned_64 (Time_Sec), 32);
-      Client.Event.Time := Client.Event.Time or Interfaces.Unsigned_64 (Time_Usec);
+      Client.Event.Time := MAT.Types.Target_Tick_Ref (Interfaces.Shift_Left (Interfaces.Unsigned_64 (Time_Sec), 32));
+      Client.Event.Time := Client.Event.Time or MAT.Types.Target_Tick_Ref (Time_Usec);
       Frame.Cur_Depth := Count;
    end Read_Probe;
 
