@@ -34,13 +34,13 @@ package MAT.Types is
 
    subtype Target_Offset is Interfaces.Unsigned_32;
 
-   subtype Target_Tick_Ref is Uint64;
+   type Target_Tick_Ref is new Uint64;
 
-   subtype Target_Thread_Ref is Uint32;
+   type Target_Thread_Ref is new Uint32;
 
    subtype Target_Process_Ref is Uint32;
 
-   subtype Target_Time is Uint64;
+   subtype Target_Time is Target_Tick_Ref;
 
    --  Return an hexadecimal string representation of the value.
    function Hex_Image (Value : in Uint32;
@@ -48,5 +48,7 @@ package MAT.Types is
 
    --  Format the target time to a printable representation.
    function Tick_Image (Value : in Target_Tick_Ref) return String;
+
+   function "-" (Left, Right : in Target_Tick_Ref) return Target_Tick_Ref;
 
 end MAT.Types;
