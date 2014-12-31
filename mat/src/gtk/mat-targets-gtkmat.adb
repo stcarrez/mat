@@ -54,6 +54,9 @@ package body MAT.Targets.Gtkmat is
       end if;
    end Finalize;
 
+   --  Load the glade XML definition.
+   procedure Load_UI (Target : in out Target_Type) is separate;
+
    --  ------------------------------
    --  Initialize the widgets and create the Gtk gui.
    --  ------------------------------
@@ -68,7 +71,8 @@ package body MAT.Targets.Gtkmat is
       if Target.Options.Graphical then
          Gtk.Main.Init;
          Gtkada.Builder.Gtk_New (Target.Builder);
-         Result := Target.Builder.Add_From_File ("mat.glade", Error'Access);
+         --           Result := Target.Builder.Add_From_File ("mat.glade", Error'Access);
+         Load_UI (Target);
          MAT.Callbacks.Initialize (Target'Unchecked_Access, Target.Builder);
          Target.Builder.Do_Connect;
          Widget := Gtk.Widget.Gtk_Widget (Target.Builder.Get_Object ("main"));
