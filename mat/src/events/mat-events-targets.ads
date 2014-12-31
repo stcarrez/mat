@@ -34,7 +34,7 @@ package MAT.Events.Targets is
       Id       : Event_Id_Type;
       Event    : MAT.Types.Uint16;
       Index    : Probe_Index_Type;
-      Time     : MAT.Types.Target_Time;
+      Time     : MAT.Types.Target_Tick_Ref;
       Thread   : MAT.Types.Target_Thread_Ref;
       Frame    : MAT.Frames.Frame_Type;
       Addr     : MAT.Types.Target_Addr;
