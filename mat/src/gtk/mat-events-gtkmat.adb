@@ -49,6 +49,8 @@ package body MAT.Events.Gtkmat is
    procedure Draw (Onto    : in Event_Drawing_Type;
                    Cr : in Cairo.Cairo_Context) is
       use type Glib.Gdouble;
+      use type MAT.Types.Target_Tick_Ref;
+      use type MAT.Types.Target_Thread_Ref;
 
       type Thread_Ref_Array is array (1 .. 10) of MAT.Types.Target_Thread_Ref;
 
