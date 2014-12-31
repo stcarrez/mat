@@ -61,6 +61,9 @@ package MAT.Targets.Gtkmat is
 
 private
 
+   --  Load the glade XML definition.
+   procedure Load_UI (Target : in out Target_Type);
+
    task type Gtk_Loop is
       entry Start (Target : in Target_Type_Access);
    end Gtk_Loop;
