@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-consoles-text - Text console interface
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -93,6 +93,8 @@ package body MAT.Consoles.Text is
       Ada.Text_IO.Put (Value (Start .. Last));
       if Fill > 0 then
          Ada.Text_IO.Set_Col (Pos + Ada.Text_IO.Count (Pad + Fill + Last - Start));
+      else
+         Ada.Text_IO.Put (" ");
       end if;
    end Print_Field;
 
