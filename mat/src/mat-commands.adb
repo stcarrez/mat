@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-interp -- Command interpreter
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -340,7 +340,9 @@ package body MAT.Commands is
       Start, Finish : MAT.Types.Target_Tick_Ref;
       Events  : MAT.Events.Targets.Target_Event_Vector;
       Iter    : MAT.Events.Targets.Target_Event_Cursor;
+      Filter  : MAT.Expressions.Expression_Type;
    begin
+      Filter := MAT.Expressions.Parse (Args);
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_ID, "Id", 10);
       Console.Print_Title (MAT.Consoles.F_TIME, "Time", 10);
@@ -361,16 +363,23 @@ package body MAT.Commands is
               := MAT.Events.Targets.Target_Event_Vectors.Element (Iter);
             Time  : MAT.Types.Target_Tick_Ref := Event.Time - Start;
          begin
-            Console.Start_Row;
-            Console.Print_Field (MAT.Consoles.F_ID, MAT.Events.Targets.Event_Id_Type'Image (Event.Id));
-            Console.Print_Duration (MAT.Consoles.F_TIME, Time);
-            Console.Print_Field (MAT.Consoles.F_EVENT, MAT.Types.Uint16'Image (Event.Event));
-            Console.Print_Field (MAT.Consoles.F_ADDR, Event.Addr);
-            Console.Print_Size (MAT.Consoles.F_SIZE, Event.Size);
-            Console.End_Row;
+            if Filter.Is_Selected (Event) then
+               Console.Start_Row;
+               Console.Print_Field (MAT.Consoles.F_ID, MAT.Events.Targets.Event_Id_Type'Image (Event.Id));
+               Console.Print_Duration (MAT.Consoles.F_TIME, Time);
+               Console.Print_Field (MAT.Consoles.F_EVENT, MAT.Types.Uint16'Image (Event.Event));
+               Console.Print_Field (MAT.Consoles.F_ADDR, Event.Addr);
+               Console.Print_Size (MAT.Consoles.F_SIZE, Event.Size);
+               Console.End_Row;
+            end if;
          end;
          MAT.Events.Targets.Target_Event_Vectors.Next (Iter);
       end loop;
+
+   exception
+      when E : others =>
+         Log.Error ("Exception when evaluating " & Args, E);
+         Target.Console.Error ("Invalid selection");
    end Events_Command;
 
    --  ------------------------------
