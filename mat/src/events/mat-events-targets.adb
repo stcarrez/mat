@@ -63,6 +63,19 @@ package body MAT.Events.Targets is
       return Util.Concurrent.Counters.Value (Target.Event_Count);
    end Get_Event_Counter;
 
+   --  ------------------------------
+   --  Iterate over the events starting from the <tt>Start</tt> event and until the
+   --  <tt>Finish</tt> event is found (inclusive).  Execute the <tt>Process</tt> procedure
+   --  with each event instance.
+   --  ------------------------------
+   procedure Iterate (Target  : in out Target_Events;
+                      Start   : in Event_Id_Type;
+                      Finish  : in Event_Id_Type;
+                      Process : access procedure (Event : in Probe_Event_Type)) is
+   begin
+      Target.Events.Iterate (Start, Finish, Process);
+   end Iterate;
+
    protected body Event_Collector is
 
       --  ------------------------------
