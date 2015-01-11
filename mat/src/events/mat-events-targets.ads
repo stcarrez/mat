@@ -120,6 +120,10 @@ private
                             Finish : in MAT.Types.Target_Time;
                             Into   : in out Target_Event_Vector);
 
+      --  Get the first and last event that have been received.
+      procedure Get_Limits (First : out Probe_Event_Type;
+                            Last  : out Probe_Event_Type);
+
       --  Get the start and finish time for the events that have been received.
       procedure Get_Time_Range (Start  : out MAT.Types.Target_Time;
                                 Finish : out MAT.Types.Target_Time);
