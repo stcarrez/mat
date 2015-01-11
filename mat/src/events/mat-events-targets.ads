@@ -74,6 +74,14 @@ package MAT.Events.Targets is
    --  Get the current event counter.
    function Get_Event_Counter (Target : in Target_Events) return Integer;
 
+   --  Iterate over the events starting from the <tt>Start</tt> event and until the
+   --  <tt>Finish</tt> event is found (inclusive).  Execute the <tt>Process</tt> procedure
+   --  with each event instance.
+   procedure Iterate (Target  : in out Target_Events;
+                      Start   : in Event_Id_Type;
+                      Finish  : in Event_Id_Type;
+                      Process : access procedure (Event : in Probe_Event_Type));
+
 private
 
    EVENT_BLOCK_SIZE : constant Event_Id_Type := 1024;
