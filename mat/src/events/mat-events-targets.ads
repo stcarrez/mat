@@ -71,6 +71,11 @@ package MAT.Events.Targets is
    function Get_Event (Target : in Target_Events;
                        Id     : in Event_Id_Type) return Probe_Event_Type;
 
+   --  Get the first and last event that have been received.
+   procedure Get_Limits (Target : in out Target_Events;
+                         First  : out Probe_Event_Type;
+                         Last   : out Probe_Event_Type);
+
    --  Get the current event counter.
    function Get_Event_Counter (Target : in Target_Events) return Integer;
 
