@@ -132,6 +132,18 @@ package body MAT.Events.Targets is
       end Get_Time_Range;
 
       --  ------------------------------
+      --  Get the first and last event that have been received.
+      --  ------------------------------
+      procedure Get_Limits (First : out Probe_Event_Type;
+                            Last  : out Probe_Event_Type) is
+         First_Block : constant Event_Block_Access := Events.First_Element;
+         Last_Block  : constant Event_Block_Access := Events.Last_Element;
+      begin
+         First := First_Block.Events (First_Block.Events'First);
+         Last  := Last_Block.Events (Last_Block.Count);
+      end Get_Limits;
+
+      --  ------------------------------
       --  Get the probe event with the given allocated unique id.
       --  ------------------------------
       function Get_Event (Id : in Event_Id_Type) return Probe_Event_Type is
