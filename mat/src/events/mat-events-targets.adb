@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-events-targets - Events received and collected from a target
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -137,6 +137,45 @@ package body MAT.Events.Targets is
          end loop;
          raise Not_Found;
       end Get_Event;
+
+      --  ------------------------------
+      --  Iterate over the events starting from the <tt>Start</tt> event and until the
+      --  <tt>Finish</tt> event is found (inclusive).  Execute the <tt>Process</tt> procedure
+      --  with each event instance.
+      --  ------------------------------
+      procedure Iterate (Start   : in Event_Id_Type;
+                         Finish  : in Event_Id_Type;
+                         Process : access procedure (Event : in Probe_Event_Type)) is
+         Iter  : Event_Id_Cursor := Ids.Floor (Start);
+         Block : Event_Block_Access;
+         Pos   : Event_Id_Type;
+         Id    : Event_Id_Type := Start;
+      begin
+         --  First, find the block and position of the first event.
+         while Event_Id_Maps.Has_Element (Iter) loop
+            Block := Event_Id_Maps.Element (Iter);
+            exit when Id < Block.Events (Block.Events'First).Id;
+            Pos := Id - Block.Events (Block.Events'First).Id;
+            if Pos < Block.Count then
+
+               --  Second, iterate over the events moving to the next event block
+               --  until we reach the last event.
+               loop
+                  Process (Block.Events (Pos));
+                  exit when Id > Finish;
+                  Pos := Pos + 1;
+                  Id := Id + 1;
+                  if Pos = Block.Count then
+                     Event_Id_Maps.Next (Iter);
+                     exit when not Event_Id_Maps.Has_Element (Iter);
+                     Block := Event_Id_Maps.Element (Iter);
+                     Pos := Block.Events'First;
+                  end if;
+               end loop;
+            end if;
+            Event_Id_Maps.Next (Iter);
+         end loop;
+      end Iterate;
 
    end Event_Collector;
 
