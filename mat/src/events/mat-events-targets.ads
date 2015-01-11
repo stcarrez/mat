@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-events-targets - Events received and collected from a target
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -118,6 +118,13 @@ private
 
       --  Get the probe event with the given allocated unique id.
       function Get_Event (Id : in Event_Id_Type) return Probe_Event_Type;
+
+      --  Iterate over the events starting from the <tt>Start</tt> event and until the
+      --  <tt>Finish</tt> event is found (inclusive).  Execute the <tt>Process</tt> procedure
+      --  with each event instance.
+      procedure Iterate (Start   : in Event_Id_Type;
+                         Finish  : in Event_Id_Type;
+                         Process : access procedure (Event : in Probe_Event_Type));
 
    private
       Current       : Event_Block_Access := null;
