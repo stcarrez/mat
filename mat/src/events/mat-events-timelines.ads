@@ -25,17 +25,23 @@ package MAT.Events.Timelines is
    --  The timeline section gives the duration and some statistics about memory
    --  allocation made in the section.
    type Timeline_Info is record
-      Start_Id       : MAT.Events.Targets.Event_Id_Type;
-      Start_Time     : MAT.Types.Target_Tick_Ref;
-      End_Id         : MAT.Events.Targets.Event_Id_Type;
-      End_Time       : MAT.Types.Target_Tick_Ref;
-      Duration       : MAT.Types.Target_Time;
-      Malloc_Count   : Natural;
-      Realloc_Count  : Natural;
-      Free_Count     : Natural;
+      Start_Id       : MAT.Events.Targets.Event_Id_Type := 0;
+      Start_Time     : MAT.Types.Target_Tick_Ref := 0;
+      End_Id         : MAT.Events.Targets.Event_Id_Type := 0;
+      End_Time       : MAT.Types.Target_Tick_Ref := 0;
+      Duration       : MAT.Types.Target_Time := 0;
+      Malloc_Count   : Natural := 0;
+      Realloc_Count  : Natural := 0;
+      Free_Count     : Natural := 0;
    end record;
 
    package Timeline_Info_Vectors is
      new Ada.Containers.Vectors (Positive, Timeline_Info);
+
+   subtype Timeline_Info_Vector is Timeline_Info_Vectors.Vector;
+   subtype Timeline_Info_Cursor is Timeline_Info_Vectors.Cursor;
+
+   procedure Extract (Target : in out MAT.Events.Targets.Target_Events;
+                      Into   : in out Timeline_Info_Vector);
 
 end MAT.Events.Timelines;
