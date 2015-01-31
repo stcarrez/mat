@@ -30,6 +30,8 @@ NR_CPUS=`getconf _NPROCESSORS_CONF 2>/dev/null || getconf _NPROCESSORS_CONF 2>/d
 AC_MSG_RESULT($NR_CPUS)
 AC_SUBST(NR_CPUS)
 
+AC_CHECK_PROGS(GNATMAKE, gnatmake, "")
+
 ac_enable_gtk=yes
 AC_ARG_ENABLE(gtk,
 [  --enable-gtk          Enable compilation of mat Gtk tool (enabled)],
@@ -46,57 +48,23 @@ AC_CHECK_LIB([readline],[readline])
 ##########################################
 # Ada Util library
 ##########################################
-AC_MSG_CHECKING([Ada Util library (code.google.com/p/ada-util)])
-AC_ARG_WITH(ada-util,
-AS_HELP_STRING([--with-ada-util=x], [Path for the Ada Util library (code.google.com/p/ada-util)]),
-[
-  UTIL_DIR=${withval}/
-],
-[
-  echo "with \"util\"; project t is for Source_Dirs use (); end t;" > t.gpr
-  gnatmake -p -Pt >/dev/null 2>/dev/null
-  if test $? -eq 0; then
-    UTIL_DIR=
-  else
-    UTIL_DIR=../util/
-  fi;
-])
-echo "with \"${UTIL_DIR}util\"; project t is for Source_Dirs use (); end t;" > t.gpr
-gnatmake -p -Pt >/dev/null 2>/dev/null
-if test $? -ne 0 ; then
-   rm -f t.gpr
-   AC_MSG_ERROR([Ada Util Library not found in ${UTIL_DIR}])
-fi
-rm -f t.gpr
-AC_MSG_RESULT(${UTIL_DIR})
+AM_GNAT_FIND_PROJECT([ada-util],[Ada Utility Library],[util],
+  [git@github.com:stcarrez/ada-util.git],
+  [Building Ada EL requires the Ada Utility Library.],
+  [
+    UTIL_DIR=${gnat_project_dir_util}
+  ])
 AC_SUBST(UTIL_DIR)
 
 ##########################################
 # GNU Bfd Ada library
 ##########################################
-AC_MSG_CHECKING([Ada Bfd library (code.google.com/p/ada-bfd)])
-AC_ARG_WITH(ada-bfd,
-AS_HELP_STRING([--with-ada-bfd=x], [Path for the Ada Bfd library (code.google.com/p/ada-bfd)]),
-[
-  BFD_DIR=${withval}/
-],
-[
-  echo "with \"bfdada\"; project t is for Source_Dirs use (); end t;" > t.gpr
-  gnatmake -p -Pt >/dev/null 2>/dev/null
-  if test $? -eq 0; then
-    BFD_DIR=
-  else
-    BFD_DIR=../bfdada/
-  fi;
-])
-echo "with \"${BFD_DIR}bfdada\"; project t is for Source_Dirs use (); end t;" > t.gpr
-gnatmake -p -Pt >/dev/null 2>/dev/null
-if test $? -ne 0 ; then
-   rm -f t.gpr
-   AC_MSG_ERROR([Ada Bfd library not found in ${BFD_DIR}])
- fi
-rm -f t.gpr
-AC_MSG_RESULT(${BFD_DIR})
+AM_GNAT_FIND_PROJECT([ada-bfd],[Ada Bfd Library],[bfdada],
+  [git@github.com:stcarrez/ada-bfd.git],
+  [Building NAT requires the Ada Bfd Library.],
+  [
+    BFD_DIR=${gnat_project_dir_bfdada}
+  ])
 AC_SUBST(BFD_DIR)
 
 GTKADA_DIR=
