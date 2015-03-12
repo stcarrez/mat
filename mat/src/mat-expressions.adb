@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-expressions -- Expressions for memory slot selection
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -129,6 +129,20 @@ package body MAT.Expressions is
                                     Max_Time    => Max);
       return Result;
    end Create_Time;
+
+   --  ------------------------------
+   --  Create an event ID range expression node.
+   --  ------------------------------
+   function Create_Event (Min : in MAT.Events.Targets.Event_Id_Type;
+                          Max : in MAT.Events.Targets.Event_Id_Type) return Expression_Type is
+      Result : Expression_Type;
+   begin
+      Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
+                                    Kind        => N_EVENT,
+                                    Min_Event   => Min,
+                                    Max_Event   => Max);
+      return Result;
+   end Create_Event;
 
    --  ------------------------------
    --  Evaluate the expression to check if the memory slot described by the
