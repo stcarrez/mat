@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-expressions -- Expressions for memory slot selection
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -88,7 +88,7 @@ private
                       N_CALL_ADDR, N_CALL_ADDR_DIRECT,
                       N_IN_FUNC, N_IN_FUNC_DIRECT,
                       N_RANGE_SIZE, N_RANGE_ADDR,
-                      N_RANGE_TIME,
+                      N_RANGE_TIME, N_EVENT,
                       N_CONDITION, N_THREAD);
 
    type Node_Type;
@@ -121,6 +121,10 @@ private
 
          when N_THREAD =>
             Thread : MAT.Types.Target_Thread_Ref;
+
+         when N_EVENT =>
+            Min_Event : MAT.Events.Targets.Event_Id_Type;
+            Max_Event : MAT.Events.Targets.Event_Id_Type;
 
          when others =>
             null;
