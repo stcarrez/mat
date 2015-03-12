@@ -242,6 +242,10 @@ package body MAT.Expressions is
             return Event.Time >= Node.Min_Time
               and Event.Time <= Node.Max_Time;
 
+         when N_EVENT =>
+            return Event.Id >= Node.Min_Event
+              and Event.Id <= Node.Max_Event;
+
          when others =>
             return False;
 
