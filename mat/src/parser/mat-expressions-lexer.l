@@ -1,3 +1,4 @@
+%unit MAT.Expressions.Lexer
 %%
 
 [ \t]+			{ null; }
@@ -47,8 +48,6 @@ direct		    return T_DIRECT;
 '\n'    { Line_Number := Line_Number + 1;  }
 .		{  null;  } 
 %%
-with MAT.Types;
-with MAT.Expressions;
 with MAT.Expressions.Parser_Tokens;
 package MAT.Expressions.Lexer is
 
@@ -58,8 +57,19 @@ package MAT.Expressions.Lexer is
 
 end MAT.Expressions.Lexer;
 
+with MAT.Types;
+with MAT.Expressions;
+with Ada.Text_IO;
+with MAT.Expressions.Lexer_dfa;
+with MAT.Expressions.Lexer_io;
+
 pragma Style_Checks (Off);
 package body MAT.Expressions.Lexer is
+
+   use Ada.Text_IO;
+   use Ada;
+   use MAT.Expressions.Lexer_dfa;
+   use MAT.Expressions.Lexer_io;
 
    lval : MAT.Types.Uint64;
    Line_Number : Natural := 0;
