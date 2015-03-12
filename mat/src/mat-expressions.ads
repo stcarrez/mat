@@ -64,6 +64,10 @@ package MAT.Expressions is
    function Create_Time (Min : in MAT.Types.Target_Tick_Ref;
                          Max : in MAT.Types.Target_Tick_Ref) return Expression_Type;
 
+   --  Create an event ID range expression node.
+   function Create_Event (Min : in MAT.Events.Targets.Event_Id_Type;
+                          Max : in MAT.Events.Targets.Event_Id_Type) return Expression_Type;
+
    --  Evaluate the expression to check if the memory slot described by the
    --  context is selected.  Returns True if the memory slot is selected.
    function Is_Selected (Node       : in Expression_Type;
