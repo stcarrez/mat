@@ -42,7 +42,14 @@
 /* Define if the sigaction is available.  */
 #undef HAVE_SIGACTION
 
+/* Define if the backtrace() is available.  */
 #undef HAVE_BACKTRACE
+
+/* Define if uou have the <unwind.h> header file.  */
+#undef HAVE_UNWIND_H
+
+/* Define if uou have the _Unwind_Backtrace function.  */
+#undef HAVE__UNWIND_BACKTRACE
 
 /* Define if the __curbrk symbol is available.  */
 #undef HAVE___CURBRK
