@@ -50,6 +50,7 @@
 */
 #include "gp-config.h"
 #include <stdio.h>
+#include "gp-remote.h"
 #include "gp-probe.h"
 
 #ifdef HAVE_BACKTRACE
@@ -70,6 +71,10 @@
 
 #ifdef sun3
 #  include <sun3/frame.h>
+#endif
+
+#ifdef HAVE_UNWIND_H
+# include <unwind.h>
 #endif
 
 #define	OVERHEAD_FRAME_COUNT	1
