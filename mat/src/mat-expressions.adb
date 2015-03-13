@@ -217,6 +217,7 @@ package body MAT.Expressions is
                          Event      : in MAT.Events.Targets.Probe_Event_Type) return Boolean is
       use type MAT.Types.Target_Size;
       use type MAT.Types.Target_Tick_Ref;
+      use type MAT.Events.Targets.Event_Id_Type;
    begin
       case Node.Kind is
          when N_NOT =>
