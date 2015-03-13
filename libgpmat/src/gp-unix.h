@@ -1,5 +1,5 @@
 /*  gp-unix.h -- Unix specific information
---  Copyright (C) 2011, 2012, 2013, 2014 Stephane Carrez
+--  Copyright (C) 2011, 2012, 2013, 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,6 +26,10 @@
 #endif
 
 #ifdef HAVE_BACKTRACE
+# define HAVE_FRAME 1
+#endif
+
+#ifdef HAVE__UNWIND_BACKTRACE
 # define HAVE_FRAME 1
 #endif
 
