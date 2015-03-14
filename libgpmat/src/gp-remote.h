@@ -83,9 +83,23 @@ extern void gp_remote_sync (void);
  * The optional <tt>sync</tt> flag enables the synchronous mode which flushes
  * the event probe stream after each operation.
  *
+ * @param p the connection string.
  * @return 0
  */
-extern int gp_remote_initialize (void);
+extern int gp_initialize (const char* p);
+
+/**
+ * @brief Initialize the connection to the server.
+ *
+ * file://<pattern>[?sync]     Write the probe stream in a file.
+ * tcp://host:port[?sync]      Send the probe stream to the TCP/IP server.
+ *
+ * The optional <tt>sync</tt> flag enables the synchronous mode which flushes
+ * the event probe stream after each operation.
+ *
+ * @return 0
+ */
+extern int gp_remote_initialize (const char* p);
 
 /**
  * @brief Initialize the buffered server instance.
