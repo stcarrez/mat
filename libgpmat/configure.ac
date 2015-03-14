@@ -50,6 +50,38 @@ esac])dnl
 
 AC_SUBST(MAT_DEBUG)
 
+if test "$GCC" = yes; then
+  mach_cflags=
+  AC_MSG_CHECKING([for specific compilation flags for ${target}])
+  case "${target}" in
+    mips*)
+      mach_cflags="-funwind-tables"
+	  mach_result="using $mach_cflags"
+      ;;
+
+    *)
+      mach_result=no
+      ;;
+
+  esac
+  AC_MSG_RESULT($mach_result)
+
+  CFLAGS="${CFLAGS} ${mach_results}"
+fi
+
+MAT_TLS=
+ac_enable_tls=
+AC_ARG_ENABLE(tls,
+[  --enable-tls            Enable or disable use of tls code (disable)],
+[case "${enableval}" in
+  no|none)  ac_enable_tls= ;;
+  *)        ac_enable_tls=yes
+            MAT_TLS=-DTLS
+			;;
+esac])dnl
+
+AC_SUBST(MAT_TLS)
+
 test_CFLAGS=${CFLAGS+set}
 
 dnl If compiler is gcc, then use some specific flags.
