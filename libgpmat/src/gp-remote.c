@@ -1,5 +1,5 @@
 /*  gp-remote.c -- Remote access
---  Copyright (C) 2011, 2012, 2013, 2014 Stephane Carrez
+--  Copyright (C) 2011, 2012, 2013, 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -203,9 +203,8 @@ gp_buffered_server_initialize (struct gp_buffered_server* server, const char* pa
  * @return 0
  */
 int
-gp_remote_initialize (void)
+gp_remote_initialize (const char* p)
 {
-  char* p = getenv("MAT_SERVER");
   if (p != NULL)
     {
       if (strncmp (p, "file://", 7) == 0)
