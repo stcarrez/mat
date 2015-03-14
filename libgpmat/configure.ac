@@ -15,7 +15,7 @@ dnl  limitations under the License.
 dnl 
 
 AC_PREREQ(2.59)
-AC_INIT(mat, 1.0,gprofiler@vacs.fr,libgpmat)
+AC_INIT(mat, 1.0,Stephane.Carrez@gmail.com,libgpmat)
 
 AC_CANONICAL_SYSTEM
 
