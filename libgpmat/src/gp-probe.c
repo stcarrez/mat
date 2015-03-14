@@ -1,5 +1,5 @@
 /*  gp-probe.c --  Probe implementation
---  Copyright (C) 2011, 2012, 2013, 2014 Stephane Carrez
+--  Copyright (C) 2011, 2012, 2013, 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@
 #include "gp-config.h"
 #include <dlfcn.h>
 #include <stdio.h>
+#include <stdlib.h>
 #ifdef HAVE_PTHREAD_H
 # include <pthread.h>
 #endif
@@ -56,10 +57,23 @@ enum gp_probe_state
 };
 
 static enum gp_probe_state gp_is_initialized = GP_NOT_INITIALIZED;
+static void* gp_libgcc_s;
+
+#ifdef HAVE_TLS
 
 static __thread int gp_recursive = 0;
+
+#elif defined(HAVE_PTHREAD_H)
+static int gp_recursive = 0;
+static pthread_t gp_recursive_thread = -1;
+static pthread_mutex_t gp_recursive_lock = PTHREAD_MUTEX_INITIALIZER;
+
+#else
+static int gp_recursive = 0;
+#endif
+
 #ifdef HAVE_PTHREAD_H
-static pthread_mutex_t gp_lock;
+static pthread_mutex_t gp_lock = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 typedef int (* gp_mutex_lock_t) (pthread_mutex_t* m);
@@ -72,26 +86,91 @@ static gp_mutex_unlock_t _unlock;
 static gp_mutex_trylock_t _trylock;
 static gp_unwind_find_fde_t _unwind_find_fde;
 
+static inline int mat_lock (pthread_mutex_t* m)
+{
+  if (_lock != NULL)
+    return _lock (m);
+  else
+    return 0;
+}
+
+static inline int mat_unlock (pthread_mutex_t* m)
+{
+  if (_unlock != NULL)
+    return _unlock (m);
+  else
+    return 0;
+}
+
 int
 gp_probe_lock (void)
 {
+#ifdef HAVE_TLS
   if (gp_recursive != 0)
     return -1;
 
   gp_recursive++;
-  if (_lock != NULL)
+  return mat_lock (&gp_lock);
+
+#elif defined(HAVE_PTHREAD_H)
+  pthread_t self = pthread_self ();
+
+  mat_lock (&gp_recursive_lock);
+  if (self == gp_recursive_thread)
     {
-      _lock (&gp_lock);
+      mat_unlock (&gp_recursive_lock);
+
+      /* We already have the lock.  */
+      return -1;
     }
+  mat_unlock (&gp_recursive_lock);
+
+  /* Get the probe lock and mark the thread as owner.  */
+  mat_lock (&gp_lock);
+
+  mat_lock (&gp_recursive_lock);
+  gp_recursive_thread = self;
+  gp_recursive++;
+  mat_unlock (&gp_recursive_lock);
   return 0;
+
+#else
+  if (gp_recursive != 0)
+    return -1;
+
+  gp_recursive++;  
+  return 0;
+#endif
 }
 
 void
 gp_probe_unlock (void)
 {
+#ifdef HAVE_TLS
   gp_recursive--;
-  if (gp_recursive == 0 && _unlock)
-    _unlock (&gp_lock);
+  if (gp_recursive == 0)
+    mat_unlock (&gp_lock);
+
+#elif defined(HAVE_PTHREAD_H)
+  int count;
+
+  mat_lock (&gp_recursive_lock);
+  count = --gp_recursive;
+  if (count == 0)
+      gp_recursive_thread = -1;
+
+  mat_unlock (&gp_recursive_lock);
+
+  /* Release the lock when the counter reaches 0.  */
+  if (count == 0)
+    mat_unlock (&gp_lock);
+
+#else
+  gp_recursive--;
+  if (gp_recursive == 0)
+    mat_unlock (&gp_lock);
+
+#endif
 }
 
 void*
@@ -127,12 +206,7 @@ pthread_mutex_lock (pthread_mutex_t* mutex)
       gp_free_probe (&probe);
     }
 
-  if (_lock != NULL)
-    {
-      return _lock (mutex);
-    }
-
-  return 0;
+  return mat_lock (mutex);
 }
 
 int
@@ -151,18 +225,13 @@ pthread_mutex_unlock (pthread_mutex_t* mutex)
       gp_free_probe (&probe);
     }
 
-  if (_unlock != NULL)
-    {
-      return _unlock (mutex);
-    }
-
-  return 0;
+  return mat_unlock (mutex);
 }
 
 int
 pthread_mutex_trylock (pthread_mutex_t* mutex)
 {
-    return _trylock(mutex)    ;
+  return _trylock(mutex);
 }
 
 int
@@ -232,23 +301,58 @@ gp_exit (void)
 int
 _gp_initialize (void)
 {
+  return gp_initialize (getenv("MAT_SERVER"));
+}
+
+/**
+ * @brief Initialize the connection to the server.
+ *
+ * file://<pattern>[?sync]     Write the probe stream in a file.
+ * tcp://host:port[?sync]      Send the probe stream to the TCP/IP server.
+ *
+ * The optional <tt>sync</tt> flag enables the synchronous mode which flushes
+ * the event probe stream after each operation.
+ *
+ * @param p the connection string.
+ * @return 0
+ */
+int
+gp_initialize (const char* p)
+{
   struct gp_probe probe;
   int result;
+  gp_mutex_lock_t lock;
+  gp_mutex_unlock_t unlock;
+  gp_mutex_trylock_t trylock;
+  gp_unwind_find_fde_t find_fde;
 
   gp_is_initialized = GP_NOT_CONNECTED;
 
   /* Initialize the communication channel.  */
-  result = gp_remote_initialize ();
+  result = gp_remote_initialize (p);
   if (result < 0)
     {
       return result;
     }
 
-  _lock = (gp_mutex_lock_t) dlsym (RTLD_NEXT, LIBC_PTHREAD_MUTEX_LOCK);
-  _unlock = (gp_mutex_unlock_t) dlsym (RTLD_NEXT, LIBC_PTHREAD_MUTEX_UNLOCK);
-  _trylock = (gp_mutex_trylock_t) dlsym (RTLD_NEXT, LIBC_PTHREAD_MUTEX_TRYLOCK);
-  _unwind_find_fde = (gp_unwind_find_fde_t) dlsym (RTLD_NEXT, LIBGCC_UNWIND_FIND_FDE);
-  
+  /* The dlsym may call malloc.  Set the global variables
+     only when we have everything.  */
+  lock = (gp_mutex_lock_t) dlsym (RTLD_NEXT, LIBC_PTHREAD_MUTEX_LOCK);
+  unlock = (gp_mutex_unlock_t) dlsym (RTLD_NEXT, LIBC_PTHREAD_MUTEX_UNLOCK);
+  trylock = (gp_mutex_trylock_t) dlsym (RTLD_NEXT, LIBC_PTHREAD_MUTEX_TRYLOCK);
+  find_fde = (gp_unwind_find_fde_t) dlsym (RTLD_NEXT, LIBGCC_UNWIND_FIND_FDE);
+  if (find_fde == NULL)
+    {
+      gp_libgcc_s = dlopen ("libgcc_s.so.1", RTLD_LAZY);
+      if (gp_libgcc_s != NULL)
+        find_fde = (gp_unwind_find_fde_t) dlsym (gp_libgcc_s, LIBGCC_UNWIND_FIND_FDE);
+    }
+
+  _lock = lock;
+  _unlock = unlock;
+  _trylock = trylock;
+  _unwind_find_fde = find_fde;
+
   gp_is_initialized = GP_CONNECTED;
   (void) gp_get_probe (&probe);
   gp_event_begin (&probe);
