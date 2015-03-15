@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  gprofiler-events - Profiler Events Description
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -58,8 +58,8 @@ package MAT.Events is
    end record;
    type Event_Description_Access is access all Event_Description;
 
-   subtype Addr is MAT.Types.Uint32;
-   type Frame_Table is array (Natural range <>) of Addr;
+--     subtype Addr is MAT.Types.Uint32;
+   type Frame_Table is array (Natural range <>) of MAT.Types.Target_Addr;
 
    type Rusage_Info is record
       Minflt : Unsigned_32;
