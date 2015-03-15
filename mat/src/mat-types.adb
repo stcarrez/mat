@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-types -- Global types
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,6 +42,29 @@ package body MAT.Types is
    end Hex_Image;
 
    --  ------------------------------
+   --  Return an hexadecimal string representation of the value.
+   --  ------------------------------
+   function Hex_Image (Value  : in Uint64;
+                       Length : in Positive := 16) return String is
+      use type Interfaces.Unsigned_64;
+
+      Conversion : constant String (1 .. 16) := "0123456789ABCDEF";
+      S : String (1 .. Length) := (others => '0');
+      P : Uint64 := Value;
+      N : Uint64;
+      I : Positive := Length;
+   begin
+      while P /= 0 loop
+         N := P mod 16;
+         P := P / 16;
+         S (I) := Conversion (Natural (N + 1));
+         exit when I = 1;
+         I := I - 1;
+      end loop;
+      return S;
+   end Hex_Image;
+
+   --  ------------------------------
    --  Format the target time to a printable representation.
    --  ------------------------------
    function Tick_Image (Value : in Target_Tick_Ref) return String is
@@ -66,7 +89,7 @@ package body MAT.Types is
       if Usec1 < Usec2 then
          Res := Res and 16#ffffffff00000000#;
          Res := Target_Tick_Ref (Uint64 (Res) - 16#100000000#);
-         Res := Res or Target_Tick_Ref (Usec2 - Usec1);
+         Res := Res or Target_Tick_Ref (1000000 - (Usec2 - Usec1));
       end if;
       return Res;
    end "-";
