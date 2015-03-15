@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-readers-marshaller -- Marshalling of data in communication buffer
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -187,9 +187,17 @@ package body MAT.Readers.Marshaller is
 
    function Get_Target_Uint32 (Msg  : in Message_Type;
                                Kind : in MAT.Events.Attribute_Type) return MAT.Types.Uint32 is
-      function Get_Value is new Get_Target_Value (MAT.Types.Target_Addr);
+      function Get_Value is new Get_Target_Value (MAT.Types.Uint32);
    begin
       return Get_Value (Msg, Kind);
    end Get_Target_Uint32;
+
+   function Get_Target_Process_Ref (Msg  : in Message_Type;
+                                    Kind : in MAT.Events.Attribute_Type)
+                                    return MAT.Types.Target_Process_Ref is
+      function Get_Value is new Get_Target_Value (MAT.Types.Target_Process_Ref);
+   begin
+      return Get_Value (Msg, Kind);
+   end Get_Target_Process_Ref;
 
 end MAT.Readers.Marshaller;
