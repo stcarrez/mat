@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  Memory Events - Definition and Analysis of memory events
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -205,9 +205,11 @@ package body MAT.Memory.Targets is
                        MAT.Types.Target_Size'Image (Slot.Size));
          end if;
          Stats.Malloc_Count := Stats.Malloc_Count + 1;
-         Stats.Total_Alloc := Stats.Total_Alloc + Slot.Size;
-         Remove_Free (Addr, Slot.Size);
-         Used_Slots.Insert (Addr, Slot);
+         if Addr /= 0 then
+            Stats.Total_Alloc := Stats.Total_Alloc + Slot.Size;
+            Remove_Free (Addr, Slot.Size);
+            Used_Slots.Insert (Addr, Slot);
+         end if;
       end Probe_Malloc;
 
       --  ------------------------------
