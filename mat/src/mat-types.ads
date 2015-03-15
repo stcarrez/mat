@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-types -- Global types
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,11 +28,11 @@ package MAT.Types is
 
    subtype Uint64 is Interfaces.Unsigned_64;
 
-   subtype Target_Addr is Interfaces.Unsigned_32;
+   subtype Target_Addr is Interfaces.Unsigned_64;
 
-   subtype Target_Size is Interfaces.Unsigned_32;
+   subtype Target_Size is Interfaces.Unsigned_64;
 
-   subtype Target_Offset is Interfaces.Unsigned_32;
+   subtype Target_Offset is Interfaces.Unsigned_64;
 
    type Target_Tick_Ref is new Uint64;
 
@@ -45,6 +45,10 @@ package MAT.Types is
    --  Return an hexadecimal string representation of the value.
    function Hex_Image (Value : in Uint32;
                        Length : in Positive := 8) return String;
+
+   --  Return an hexadecimal string representation of the value.
+   function Hex_Image (Value  : in Uint64;
+                       Length : in Positive := 16) return String;
 
    --  Format the target time to a printable representation.
    function Tick_Image (Value : in Target_Tick_Ref) return String;
