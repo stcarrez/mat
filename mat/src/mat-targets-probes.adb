@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-targets-probes - Definition and Analysis of process start events
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -69,6 +69,8 @@ package body MAT.Targets.Probes is
                           Id          : in MAT.Events.Targets.Probe_Index_Type;
                           Defs        : in MAT.Events.Attribute_Table;
                           Msg         : in out MAT.Readers.Message) is
+      use type MAT.Types.Target_Addr;
+
       Pid  : MAT.Types.Target_Process_Ref := 0;
       Path : Ada.Strings.Unbounded.Unbounded_String;
       Heap : MAT.Memory.Region_Info;
@@ -79,7 +81,7 @@ package body MAT.Targets.Probes is
          begin
             case Def.Ref is
                when M_PID =>
-                  Pid := MAT.Readers.Marshaller.Get_Target_Size (Msg, Def.Kind);
+                  Pid := MAT.Readers.Marshaller.Get_Target_Process_Ref (Msg, Def.Kind);
 
                when M_EXE =>
                   Path := MAT.Readers.Marshaller.Get_String (Msg);
