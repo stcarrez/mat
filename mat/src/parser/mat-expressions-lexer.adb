@@ -3,7 +3,7 @@ with MAT.Types;
 with MAT.Expressions;
 with Ada.Text_IO;
 with MAT.Expressions.Lexer_dfa;
-with MAT.Expressions.Lexer_io;
+with MAT.Expressions.Parser_io;
 
 pragma Style_Checks (Off);
 package body MAT.Expressions.Lexer is
@@ -11,7 +11,7 @@ package body MAT.Expressions.Lexer is
    use Ada.Text_IO;
    use Ada;
    use MAT.Expressions.Lexer_dfa;
-   use MAT.Expressions.Lexer_io;
+   use MAT.Expressions.Parser_io;
 
    lval : MAT.Types.Uint64;
    Line_Number : Natural := 0;
