@@ -269,7 +269,8 @@ package body MAT.Expressions is
    begin
       if Node /= null then
          Util.Concurrent.Counters.Decrement (Node.Ref_Counter, Release);
-         case Node.Kind is
+         if Release then
+            case Node.Kind is
             when N_NOT =>
                Destroy (Node.Expr);
 
@@ -279,8 +280,7 @@ package body MAT.Expressions is
 
             when others =>
                null;
-         end case;
-         if Release then
+            end case;
             Free (Node);
          else
             Node := null;
