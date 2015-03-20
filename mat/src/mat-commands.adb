@@ -52,6 +52,8 @@ package body MAT.Commands is
                            Args   : in String);
    procedure Open_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String);
+   procedure Help_Command (Target : in out MAT.Targets.Target_Type'Class;
+                           Args   : in String);
 
    --  Print the stack frame description in the console.
    procedure Print_Frame (Console : in MAT.Consoles.Console_Access;
@@ -467,6 +469,27 @@ package body MAT.Commands is
 
    end Open_Command;
 
+   --  ------------------------------
+   --  Print some help for available commands.
+   --  ------------------------------
+   procedure Help_Command (Target : in out MAT.Targets.Target_Type'Class;
+                           Args   : in String) is
+      use MAT.Consoles;
+
+      Console : constant MAT.Consoles.Console_Access := Target.Console;
+   begin
+      Console.Notice (N_HELP, "Available commands");
+      Console.Notice (N_HELP, "exit                --  Exit the tool");
+      Console.Notice (N_HELP, "events <selection>  --  List the events filtered by the selection");
+      Console.Notice (N_HELP, "event id            --  Print the event ID");
+      Console.Notice (N_HELP, "threads             --  List the threads");
+      Console.Notice (N_HELP, "slots <selection>   --  List the memory slots filtered by the selection");
+      Console.Notice (N_HELP, "sizes               --  ");
+      Console.Notice (N_HELP, "frames <level>      --  Print the stack frames up to the given level");
+      Console.Notice (N_HELP, "open file           --  Load the mat file to analyze");
+      Console.Notice (N_HELP, "symbol file         --  Load the executable symbol file");
+   end Help_Command;
+
    function Get_Command (Line : in String) return String is
       Pos : constant Natural := Util.Strings.Index (Line, ' ');
    begin
@@ -528,4 +551,5 @@ begin
    Commands.Insert ("frames", Frames_Command'Access);
    Commands.Insert ("events", Events_Command'Access);
    Commands.Insert ("event", Event_Command'Access);
+   Commands.Insert ("help", Help_Command'Access);
 end MAT.Commands;
