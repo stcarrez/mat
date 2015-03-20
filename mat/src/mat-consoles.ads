@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-consoles - Console interface
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,7 +39,8 @@ package MAT.Consoles is
                        F_FRAME_ID,
                        F_FRAME_ADDR);
 
-   type Notice_Type is (N_PID_INFO,
+   type Notice_Type is (N_HELP,
+                        N_PID_INFO,
                         N_DURATION,
                         N_PATH_INFO);
 
