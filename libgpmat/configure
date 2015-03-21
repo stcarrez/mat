@@ -4301,7 +4301,7 @@ $as_echo_n "checking for specific compilation flags for ${target}... " >&6; }
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $mach_result" >&5
 $as_echo "$mach_result" >&6; }
 
-  CFLAGS="${CFLAGS} ${mach_results}"
+  CFLAGS="${CFLAGS} ${mach_cflags}"
 fi
 
 MAT_TLS=
