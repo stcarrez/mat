@@ -1,5 +1,5 @@
 /*  gp-events.h -- Event operations
---  Copyright (C) 2011, 2012, 2013, 2014 Stephane Carrez
+--  Copyright (C) 2011, 2012, 2013, 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,6 +45,8 @@ typedef enum
 #define GP_TYPE_SIZE_T  GP_TYPE_UINT32
 #define GP_TYPE_POINTER GP_TYPE_UINT32
 
+typedef gp_uint32 gp_pointer;
+
 /**
  * @brief The list of probe events which can be sent in the event probe  stream.
  */
@@ -57,7 +59,8 @@ typedef enum
   GP_EVENT_FREE,
   GP_EVENT_MUTEX_LOCK,
   GP_EVENT_MUTEX_TRYLOCK,
-  GP_EVENT_MUTEX_UNLOCK
+  GP_EVENT_MUTEX_UNLOCK,
+  GP_EVENT_SHLIB
 } gp_event_type;
 
 
