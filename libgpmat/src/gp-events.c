@@ -1,5 +1,5 @@
 /* gp-events.c -- Event operations
---  Copyright (C) 2011, 2012, 2013, 2014 Stephane Carrez
+--  Copyright (C) 2011, 2012, 2013, 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -89,6 +89,62 @@ gp_get_attribute_size (const struct gp_event_def *type)
     }
   
   return result;
+}
+
+static void
+gp_event_send_attr (const struct gp_attr_def *attr, va_list* argp)
+{
+  union u
+  {
+    gp_uint8 u8;
+    gp_uint16 u16;
+    gp_uint32 u32;
+    gp_uint64 u64;
+  } u;
+  const char* data;
+
+  switch (attr->type)
+    {
+    case GP_TYPE_UINT8:
+      u.u8 = va_arg (*argp, gp_uint8_varg);
+      gp_write (attr->name, 4, &u.u8, sizeof (gp_uint8));
+      break;
+
+    case GP_TYPE_UINT16:
+      u.u16 = va_arg (*argp, gp_uint16_varg);
+      gp_write (attr->name, 4, &u.u16, sizeof (gp_uint16));
+      break;
+
+    case GP_TYPE_UINT32:
+      u.u32 = va_arg (argp, gp_uint32);
+      gp_write (attr->name, 4, &u.u32, sizeof (gp_uint32));
+      break;
+
+    case GP_TYPE_UINT64:
+      u.u64 = va_arg (argp, gp_uint64);
+      gp_write (attr->name, 4, &u.u64, sizeof (gp_uint64));
+      break;
+
+    case GP_TYPE_STRING:
+      u.u16 = va_arg (argp, gp_uint16_varg);
+      gp_write (attr->name, 4, &u.u16, sizeof (gp_uint16));
+      data = va_arg (argp, const char*);
+      gp_write (attr->name, 4, data, (size_t) u.u16);
+      break;
+
+    default:
+      break;
+    }
+}
+
+static void
+gp_event_send_vattr (const struct gp_attr_def *attr, ...)
+{
+  va_list argp;
+
+  va_start (argp, attr);
+  gp_event_send_attr (attr, &argp);
+  va_end (argp);
 }
 
 void
@@ -266,6 +322,23 @@ gp_event_mutex_trylock (struct gp_probe *gp, void *p)
   gp_event_send (gp, 0, &gp_event_mutex_trylock_def, p);
 }
 
+static const struct gp_attr_def gp_shlib_attrs[] = {
+  { "libname", GP_TYPE_STRING, sizeof (gp_uint16) },
+  { "laddr",   GP_TYPE_POINTER, sizeof (char*) },
+  { "count",   GP_TYPE_UINT16, sizeof (gp_uint16) },
+  { "type",    GP_TYPE_UINT32, sizeof (gp_uint32) },
+  { "vaddr",   GP_TYPE_POINTER, sizeof (char*) },
+  { "size",    GP_TYPE_SIZE_T, sizeof (size_t) },
+};
+
+static const struct gp_event_def gp_event_shlib_def = {
+  "shlib",
+  GP_EVENT_SHLIB,
+  sizeof (gp_uint32) + sizeof (void*) + sizeof (size_t),
+  GP_TABLE_SIZE (gp_shlib_attrs),
+  gp_shlib_attrs
+};
+
 static const struct gp_attr_def gp_frame_attrs[] = {
   { "time-sec",  GP_TYPE_UINT32, sizeof (gp_uint32) },
   { "time-usec", GP_TYPE_UINT32, sizeof (gp_uint32) },
@@ -326,7 +399,8 @@ static const struct gp_event_def* events[] = {
   &gp_event_mutex_lock_def,
   &gp_event_mutex_unlock_def,
   &gp_event_mutex_trylock_def,
-  &gp_event_end_def
+  &gp_event_end_def,
+  &gp_event_shlib_def
 };
 
 /**
@@ -363,9 +437,39 @@ gp_send_attribute_list (const struct gp_event_def** events, size_t count)
 
 static int dl_callback (struct dl_phdr_info* info, size_t size, void* data)
 {
-  printf ("%s   0x%08lx \n", info->dlpi_name, (long) info->dlpi_addr);
-  return 0;
-  
+  gp_uint16 len;
+  size_t slen;
+  int count;
+  struct gp_probe* gp;
+  gp_uint16 val;
+  int i;
+
+  gp = (struct gp_probe*) data;
+  slen = strlen (info->dlpi_name);
+  count = info->dlpi_phnum;
+  len = sizeof (gp_uint16)
+    + sizeof (gp_pointer)
+    + sizeof (gp_uint16)
+    + sizeof (gp_uint16)
+    + slen
+    + gp_remote_sizeof_probe (gp)
+    + count * gp_event_shlib_def.size;
+
+  val = gp_event_shlib_def.type;
+  gp_write ("PROBE", 0, &len, sizeof (len));
+  gp_write (gp_shlib_attrs[0].name, 2, &val, sizeof (val));
+  gp_remote_send_probe (gp);
+
+  gp_event_send_vattr (&gp_shlib_attrs[0], (gp_uint16) slen, info->dlpi_name);
+  gp_event_send_vattr (&gp_shlib_attrs[1], (gp_pointer) info->dlpi_addr);
+  gp_event_send_vattr (&gp_shlib_attrs[2], (gp_uint16) count);
+  for (i = 0; i < count; i++)
+    {
+      gp_event_send_vattr (&gp_shlib_attrs[3], (gp_uint32) info->dlpi_phdr[i].p_type);
+      gp_event_send_vattr (&gp_shlib_attrs[4], (gp_pointer) info->dlpi_phdr[i].p_vaddr);
+      gp_event_send_vattr (&gp_shlib_attrs[5], (gp_pointer) info->dlpi_phdr[i].p_memsz);
+    }
+  return 0;  
 }
 
 static void
@@ -420,10 +524,9 @@ gp_event_begin (struct gp_probe *gp)
       path[size] = 0;
     }
 
-  dl_iterate_phdr (dl_callback, NULL);
-
   gp_event_send (gp, size, &gp_event_begin_def, pid, size, path, heap.start, heap.end, &edata, &end);
   gp_send_attribute_list (events, GP_TABLE_SIZE (events));
+  dl_iterate_phdr (dl_callback, gp);
 }
 
 void
