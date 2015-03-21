@@ -92,7 +92,7 @@ gp_get_attribute_size (const struct gp_event_def *type)
 }
 
 static void
-gp_event_send_attr (const struct gp_attr_def *attr, va_list* argp)
+gp_event_send_attr (const struct gp_attr_def *attr, va_list* pargp)
 {
   union u
   {
@@ -102,16 +102,17 @@ gp_event_send_attr (const struct gp_attr_def *attr, va_list* argp)
     gp_uint64 u64;
   } u;
   const char* data;
+  va_list argp = *pargp;
 
   switch (attr->type)
     {
     case GP_TYPE_UINT8:
-      u.u8 = va_arg (*argp, gp_uint8_varg);
+      u.u8 = va_arg (argp, gp_uint8_varg);
       gp_write (attr->name, 4, &u.u8, sizeof (gp_uint8));
       break;
 
     case GP_TYPE_UINT16:
-      u.u16 = va_arg (*argp, gp_uint16_varg);
+      u.u16 = va_arg (argp, gp_uint16_varg);
       gp_write (attr->name, 4, &u.u16, sizeof (gp_uint16));
       break;
 
@@ -135,6 +136,7 @@ gp_event_send_attr (const struct gp_attr_def *attr, va_list* argp)
     default:
       break;
     }
+   *pargp = argp;
 }
 
 static void
