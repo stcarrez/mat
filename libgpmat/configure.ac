@@ -66,7 +66,7 @@ if test "$GCC" = yes; then
   esac
   AC_MSG_RESULT($mach_result)
 
-  CFLAGS="${CFLAGS} ${mach_results}"
+  CFLAGS="${CFLAGS} ${mach_cflags}"
 fi
 
 MAT_TLS=
