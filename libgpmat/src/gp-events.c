@@ -329,6 +329,7 @@ static const struct gp_attr_def gp_shlib_attrs[] = {
   { "laddr",   GP_TYPE_POINTER, sizeof (char*) },
   { "count",   GP_TYPE_UINT16, sizeof (gp_uint16) },
   { "type",    GP_TYPE_UINT32, sizeof (gp_uint32) },
+  { "flags",   GP_TYPE_UINT32, sizeof (gp_uint32) },
   { "vaddr",   GP_TYPE_POINTER, sizeof (char*) },
   { "size",    GP_TYPE_SIZE_T, sizeof (size_t) },
 };
@@ -336,7 +337,7 @@ static const struct gp_attr_def gp_shlib_attrs[] = {
 static const struct gp_event_def gp_event_shlib_def = {
   "shlib",
   GP_EVENT_SHLIB,
-  sizeof (gp_uint32) + sizeof (void*) + sizeof (size_t),
+  sizeof (gp_uint32) + sizeof (gp_uint32) + sizeof (void*) + sizeof (size_t),
   GP_TABLE_SIZE (gp_shlib_attrs),
   gp_shlib_attrs
 };
@@ -468,6 +469,7 @@ static int dl_callback (struct dl_phdr_info* info, size_t size, void* data)
   for (i = 0; i < count; i++)
     {
       gp_event_send_vattr (&gp_shlib_attrs[3], (gp_uint32) info->dlpi_phdr[i].p_type);
+      gp_event_send_vattr (&gp_shlib_attrs[3], (gp_uint32) info->dlpi_phdr[i].p_flags);
       gp_event_send_vattr (&gp_shlib_attrs[4], (gp_pointer) info->dlpi_phdr[i].p_vaddr);
       gp_event_send_vattr (&gp_shlib_attrs[5], (gp_pointer) info->dlpi_phdr[i].p_memsz);
     }
