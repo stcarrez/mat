@@ -29,6 +29,7 @@ with GNAT.Command_Line;
 
 with Bfd;
 
+with ELF;
 with MAT.Types;
 with MAT.Readers.Streams.Files;
 with MAT.Memory.Tools;
@@ -53,6 +54,10 @@ package body MAT.Commands is
    procedure Open_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String);
    procedure Help_Command (Target : in out MAT.Targets.Target_Type'Class;
+                           Args   : in String);
+
+   --  Maps command to dump the memory maps of the program.
+   procedure Maps_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String);
 
    --  Print the stack frame description in the console.
@@ -415,6 +420,55 @@ package body MAT.Commands is
    end Event_Command;
 
    --  ------------------------------
+   --  Maps command to dump the memory maps of the program.
+   --  ------------------------------
+   procedure Maps_Command (Target : in out MAT.Targets.Target_Type'Class;
+                           Args   : in String) is
+      use type ELF.Elf32_Word;
+
+      Console : constant MAT.Consoles.Console_Access := Target.Console;
+      Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
+      Maps    : MAT.Memory.Region_Info_Map;
+      Iter    : MAT.Memory.Region_Info_Cursor;
+      Id      : MAT.Events.Targets.Event_Id_Type;
+      Event   : MAT.Events.Targets.Probe_Event_Type;
+   begin
+      MAT.Memory.Targets.Find (Memory => Process.Memory,
+                               From   => MAT.Types.Target_Addr'First,
+                               To     => MAT.Types.Target_Addr'Last,
+                               Into   => Maps);
+      Console.Start_Title;
+      Console.Print_Title (MAT.Consoles.F_RANGE_ADDR, "Range", 34);
+      Console.Print_Title (MAT.Consoles.F_MODE, "Flags", 4);
+      Console.Print_Title (MAT.Consoles.F_FILE_NAME, "Path", 40);
+      Console.End_Title;
+
+      Iter := Maps.First;
+      while MAT.Memory.Region_Info_Maps.Has_Element (iter) loop
+         declare
+            Region : constant MAT.Memory.Region_Info := MAT.Memory.Region_Info_Maps.Element (Iter);
+            Flags  : String (1 .. 3) := "---";
+         begin
+            if (Region.Flags and ELF.PF_R) /= 0 then
+               Flags (1) := 'r';
+            end if;
+            if (Region.Flags and ELF.PF_W) /= 0 then
+               Flags (2) := 'w';
+            end if;
+            if (Region.Flags and ELF.PF_X) /= 0 then
+               Flags (3) := 'x';
+            end if;
+            Console.Start_Row;
+            Console.Print_Field (MAT.Consoles.F_RANGE_ADDR, Region.Start_Addr, Region.End_Addr);
+            Console.Print_Field (MAT.Consoles.F_MODE, Flags);
+            Console.Print_Field (MAT.Consoles.F_FILE_NAME, Region.Path);
+            Console.End_Row;
+            MAT.Memory.Region_Info_Maps.Next (Iter);
+         end;
+      end loop;
+   end Maps_Command;
+
+   --  ------------------------------
    --  Symbol command.
    --  Load the symbols from the binary file.
    --  ------------------------------
@@ -552,4 +606,5 @@ begin
    Commands.Insert ("events", Events_Command'Access);
    Commands.Insert ("event", Event_Command'Access);
    Commands.Insert ("help", Help_Command'Access);
+   Commands.Insert ("maps", Maps_Command'Access);
 end MAT.Commands;
