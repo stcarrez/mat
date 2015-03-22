@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  Memory - Memory slot
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@
 with Ada.Containers.Ordered_Maps;
 with Ada.Strings.Unbounded;
 
+with ELF;
 with MAT.Types;
 with MAT.Frames;
 
@@ -46,6 +47,7 @@ package MAT.Memory is
       Start_Addr : MAT.Types.Target_Addr := 0;
       End_Addr   : MAT.Types.Target_Addr := 0;
       Size       : MAT.Types.Target_Size := 0;
+      Flags      : ELF.Elf32_Word := 0;
       Path       : Ada.Strings.Unbounded.Unbounded_String;
    end record;
 
