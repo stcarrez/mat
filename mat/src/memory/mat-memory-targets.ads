@@ -44,6 +44,14 @@ package MAT.Memory.Targets is
    procedure Add_Region (Memory : in out Target_Memory;
                          Region : in Region_Info);
 
+   --  Find the memory region that intersect the given section described by <tt>From</tt>
+   --  and <tt>To</tt>.  Each memory region that intersects is added to the <tt>Into</tt>
+   --  map.
+   procedure Find (Memory : in out Target_Memory;
+                   From   : in MAT.Types.Target_Addr;
+                   To     : in MAT.Types.Target_Addr;
+                   Into   : in out MAT.Memory.Region_Info_Map);
+
    --  Take into account a malloc probe.  The memory slot [Addr .. Slot.Size] is inserted
    --  in the used slots map.  The freed slots that intersect the malloc'ed region are
    --  removed from the freed map.
