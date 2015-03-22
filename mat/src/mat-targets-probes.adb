@@ -25,18 +25,31 @@ package body MAT.Targets.Probes is
 
    MSG_BEGIN     : constant MAT.Events.Targets.Probe_Index_Type := 0;
    MSG_END       : constant MAT.Events.Targets.Probe_Index_Type := 1;
+   MSG_LIBRARY   : constant MAT.Events.Targets.Probe_Index_Type := 2;
 
    M_PID         : constant MAT.Events.Internal_Reference := 1;
    M_EXE         : constant MAT.Events.Internal_Reference := 2;
    M_HEAP_START  : constant MAT.Events.Internal_Reference := 3;
    M_HEAP_END    : constant MAT.Events.Internal_Reference := 4;
    M_END         : constant MAT.Events.Internal_Reference := 5;
+   M_LIBNAME     : constant MAT.Events.Internal_Reference := 6;
+   M_LADDR       : constant MAT.Events.Internal_Reference := 7;
+   M_COUNT       : constant MAT.Events.Internal_Reference := 8;
+   M_TYPE        : constant MAT.Events.Internal_Reference := 9;
+   M_VADDR       : constant MAT.Events.Internal_Reference := 10;
+   M_SIZE        : constant MAT.Events.Internal_Reference := 11;
 
    PID_NAME      : aliased constant String := "pid";
    EXE_NAME      : aliased constant String := "exe";
    HP_START_NAME : aliased constant String := "hp_start";
    HP_END_NAME   : aliased constant String := "hp_end";
    END_NAME      : aliased constant String := "end";
+   LIBNAME_NAME  : aliased constant String := "libname";
+   LADDR_NAME    : aliased constant String := "laddr";
+   COUNT_NAME    : aliased constant String := "count";
+   TYPE_NAME     : aliased constant String := "type";
+   VADDR_NAME    : aliased constant String := "vaddr";
+   SIZE_NAME     : aliased constant String := "size";
 
    Process_Attributes : aliased constant MAT.Events.Attribute_Table :=
      (1 => (Name => PID_NAME'Access, Size => 0,
@@ -49,6 +62,20 @@ package body MAT.Targets.Probes is
             Kind => MAT.Events.T_FRAME, Ref => M_HEAP_END),
       5 => (Name => END_NAME'Access, Size => 0,
             Kind => MAT.Events.T_FRAME, Ref => M_END));
+
+   Library_Attributes : aliased constant MAT.Events.Attribute_Table :=
+     (1 => (Name => LIBNAME_NAME'Access, Size => 0,
+            Kind => MAT.Events.T_SIZE_T, Ref => M_LIBNAME),
+      2 => (Name => LADDR_NAME'Access, Size => 0,
+            Kind => MAT.Events.T_FRAME, Ref => M_LADDR),
+      3 => (Name => COUNT_NAME'Access, Size => 0,
+            Kind => MAT.Events.T_FRAME, Ref => M_COUNT),
+      4 => (Name => TYPE_NAME'Access, Size => 0,
+            Kind => MAT.Events.T_FRAME, Ref => M_TYPE),
+      5 => (Name => VADDR_NAME'Access, Size => 0,
+            Kind => MAT.Events.T_FRAME, Ref => M_VADDR),
+      6 => (Name => SIZE_NAME'Access, Size => 0,
+            Kind => MAT.Events.T_FRAME, Ref => M_SIZE));
 
    --  ------------------------------
    --  Create a new process after the begin event is received from the event stream.
@@ -134,6 +161,8 @@ package body MAT.Targets.Probes is
                            Process_Attributes'Access);
       Into.Register_Probe (Probe.all'Access, "end", MSG_END,
                            Process_Attributes'Access);
+      Into.Register_Probe (Probe.all'Access, "shlib", MSG_LIBRARY,
+                           Library_Attributes'Access);
    end Register;
 
    --  ------------------------------
