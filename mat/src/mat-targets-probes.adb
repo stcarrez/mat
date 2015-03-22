@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 with Util.Log.Loggers;
 
+with ELF;
 with MAT.Readers.Marshaller;
 package body MAT.Targets.Probes is
 
@@ -38,6 +39,7 @@ package body MAT.Targets.Probes is
    M_TYPE        : constant MAT.Events.Internal_Reference := 9;
    M_VADDR       : constant MAT.Events.Internal_Reference := 10;
    M_SIZE        : constant MAT.Events.Internal_Reference := 11;
+   M_FLAGS       : constant MAT.Events.Internal_Reference := 12;
 
    PID_NAME      : aliased constant String := "pid";
    EXE_NAME      : aliased constant String := "exe";
@@ -50,6 +52,7 @@ package body MAT.Targets.Probes is
    TYPE_NAME     : aliased constant String := "type";
    VADDR_NAME    : aliased constant String := "vaddr";
    SIZE_NAME     : aliased constant String := "size";
+   FLAGS_NAME    : aliased constant String := "flags";
 
    Process_Attributes : aliased constant MAT.Events.Attribute_Table :=
      (1 => (Name => PID_NAME'Access, Size => 0,
@@ -75,7 +78,9 @@ package body MAT.Targets.Probes is
       5 => (Name => VADDR_NAME'Access, Size => 0,
             Kind => MAT.Events.T_FRAME, Ref => M_VADDR),
       6 => (Name => SIZE_NAME'Access, Size => 0,
-            Kind => MAT.Events.T_FRAME, Ref => M_SIZE));
+            Kind => MAT.Events.T_FRAME, Ref => M_SIZE),
+      7 => (Name => FLAGS_NAME'Access, Size => 0,
+            Kind => MAT.Events.T_FRAME, Ref => M_FLAGS));
 
    --  ------------------------------
    --  Create a new process after the begin event is received from the event stream.
@@ -132,6 +137,79 @@ package body MAT.Targets.Probes is
       Probe.Target.Process.Memory.Add_Region (Heap);
    end Probe_Begin;
 
+   --  ------------------------------
+   --  Extract the information from the 'library' event.
+   --  ------------------------------
+   procedure Probe_Library (Probe : in Process_Probe_Type;
+                            Id    : in MAT.Events.Targets.Probe_Index_Type;
+                            Defs  : in MAT.Events.Attribute_Table;
+                            Msg   : in out MAT.Readers.Message) is
+      use type MAT.Types.Target_Addr;
+
+      Count : MAT.Types.Target_Size := 0;
+      Path  : Ada.Strings.Unbounded.Unbounded_String;
+      Heap  : MAT.Memory.Region_Info;
+      Addr  : MAT.Types.Target_Addr;
+      Pos   : Natural := Defs'Last + 1;
+   begin
+      for I in Defs'Range loop
+         declare
+            Def : MAT.Events.Attribute renames Defs (I);
+         begin
+            case Def.Ref is
+               when M_COUNT =>
+                  Count := MAT.Readers.Marshaller.Get_Target_Size (Msg, Def.Kind);
+                  Pos := I + 1;
+                  exit;
+
+               when M_LIBNAME =>
+                  Path := MAT.Readers.Marshaller.Get_String (Msg);
+
+               when M_LADDR =>
+                  Addr := MAT.Readers.Marshaller.Get_Target_Addr (Msg, Def.Kind);
+
+               when others =>
+                  MAT.Readers.Marshaller.Skip (Msg, Def.Size);
+            end case;
+         end;
+      end loop;
+      for Region in 1 .. Count loop
+         declare
+            Region : MAT.Memory.Region_Info;
+            Kind   : ELF.Elf32_Word := 0;
+         begin
+            for I in Pos .. Defs'Last loop
+               declare
+                  Def : MAT.Events.Attribute renames Defs (I);
+               begin
+                  case Def.Ref is
+                  when M_SIZE =>
+                     Region.Size := MAT.Readers.Marshaller.Get_Target_Size (Msg, Def.Kind);
+
+                  when M_VADDR =>
+                     Region.Start_Addr := MAT.Readers.Marshaller.Get_Target_Addr (Msg, Def.Kind);
+
+                  when M_TYPE =>
+                     Kind := MAT.Readers.Marshaller.Get_Target_Uint32 (Msg, Def.Kind);
+
+                  when M_FLAGS =>
+                     Region.Flags := MAT.Readers.Marshaller.Get_Target_Uint32 (Msg, Def.Kind);
+
+                  when others =>
+                     MAT.Readers.Marshaller.Skip (Msg, Def.Size);
+                  end case;
+               end;
+            end loop;
+            if Kind = ELF.PT_LOAD then
+               Region.Start_Addr := Addr + Region.Start_Addr;
+               Region.End_Addr   := Region.Start_Addr + Region.Size;
+               Region.Path := Path;
+               Probe.Target.Process.Memory.Add_Region (Region);
+            end if;
+         end;
+      end loop;
+   end Probe_Library;
+
    overriding
    procedure Extract (Probe  : in Process_Probe_Type;
                       Params : in MAT.Events.Const_Attribute_Table_Access;
@@ -141,6 +219,8 @@ package body MAT.Targets.Probes is
    begin
       if Event.Index = MSG_BEGIN then
          Probe.Probe_Begin (Event.Index, Params.all, Msg);
+      elsif Event.Index = MSG_LIBRARY then
+         Probe.Probe_Library (Event.Index, Params.all, Msg);
       end if;
    end Extract;
 
