@@ -32,7 +32,6 @@ package body MAT.Memory.Targets is
       Memory_Probe : constant MAT.Memory.Probes.Memory_Probe_Type_Access
         := new MAT.Memory.Probes.Memory_Probe_Type;
    begin
---        Memory.Manager    := Memory_Probe.all'Access;
       Memory_Probe.Data := Memory'Unrestricted_Access;
       MAT.Memory.Probes.Register (Manager, Memory_Probe);
    end Initialize;
@@ -47,6 +46,19 @@ package body MAT.Memory.Targets is
                   & MAT.Types.Hex_Image (Region.End_Addr) & "] - {0}", Region.Path);
       Memory.Memory.Add_Region (Region);
    end Add_Region;
+
+   --  ------------------------------
+   --  Find the memory region that intersect the given section described by <tt>From</tt>
+   --  and <tt>To</tt>.  Each memory region that intersects is added to the <tt>Into</tt>
+   --  map.
+   --  ------------------------------
+   procedure Find (Memory : in out Target_Memory;
+                   From   : in MAT.Types.Target_Addr;
+                   To     : in MAT.Types.Target_Addr;
+                   Into   : in out MAT.Memory.Region_Info_Map) is
+   begin
+      Memory.Memory.Find (From, To, Into);
+   end Find;
 
    --  ------------------------------
    --  Take into account a malloc probe.  The memory slot [Addr .. Slot.Size] is inserted
