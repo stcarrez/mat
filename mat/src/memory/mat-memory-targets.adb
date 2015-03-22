@@ -159,6 +159,35 @@ package body MAT.Memory.Targets is
       end Add_Region;
 
       --  ------------------------------
+      --  Find the memory region that intersect the given section described by <tt>From</tt>
+      --  and <tt>To</tt>.  Each memory region that intersects is added to the <tt>Into</tt>
+      --  map.
+      --  ------------------------------
+      procedure Find (From : in MAT.Types.Target_Addr;
+                      To   : in MAT.Types.Target_Addr;
+                      Into : in out MAT.Memory.Region_Info_Map) is
+         Iter : Region_Info_Cursor;
+      begin
+         Iter := Regions.Floor (From);
+         while Region_Info_Maps.Has_Element (Iter) loop
+            declare
+               Start  : constant MAT.Types.Target_Addr := Region_Info_Maps.Key (Iter);
+               Region : Region_Info;
+            begin
+               exit when Start > To;
+
+               Region := Region_Info_Maps.Element (Iter);
+               if Region.End_Addr >= From then
+                  if not Into.Contains (Start) then
+                     Into.Insert (Start, Region);
+                  end if;
+               end if;
+               Region_Info_Maps.Next (Iter);
+            end;
+         end loop;
+      end Find;
+
+      --  ------------------------------
       --  Remove the memory region [Addr .. Addr + Size] from the free list.
       --  ------------------------------
       procedure Remove_Free (Addr : in MAT.Types.Target_Addr;
