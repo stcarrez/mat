@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  Memory clients - Client info related to its memory
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -105,6 +105,13 @@ private
 
       --  Add the memory region from the list of memory region managed by the program.
       procedure Add_Region (Region : in Region_Info);
+
+      --  Find the memory region that intersect the given section described by <tt>From</tt>
+      --  and <tt>To</tt>.  Each memory region that intersects is added to the <tt>Into</tt>
+      --  map.
+      procedure Find (From : in MAT.Types.Target_Addr;
+                      To   : in MAT.Types.Target_Addr;
+                      Into : in out MAT.Memory.Region_Info_Map);
 
       --  Take into account a malloc probe.  The memory slot [Addr .. Slot.Size] is inserted
       --  in the used slots map.  The freed slots that intersect the malloc'ed region are
