@@ -85,7 +85,7 @@ package MAT.Memory is
 
    package Region_Info_Maps is
      new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Addr,
-                                      Element_TYpe => Region_Info);
+                                      Element_Type => Region_Info);
 
    subtype Region_Info_Map is Region_Info_Maps.Map;
    subtype Region_Info_Cursor is Region_Info_Maps.Cursor;
