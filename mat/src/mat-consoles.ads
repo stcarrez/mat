@@ -96,6 +96,12 @@ package MAT.Consoles is
                           Field   : in Field_Type;
                           Addr    : in MAT.Types.Target_Addr);
 
+   --  Format the address range and print it for the given field.
+   procedure Print_Field (Console : in out Console_Type;
+                          Field   : in Field_Type;
+                          From    : in MAT.Types.Target_Addr;
+                          To      : in MAT.Types.Target_Addr);
+
    --  Format the size and print it for the given field.
    procedure Print_Size (Console : in out Console_Type;
                          Field   : in Field_Type;
