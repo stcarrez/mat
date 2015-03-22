@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-targets-probes - Definition and Analysis of process start events
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -53,8 +53,14 @@ package MAT.Targets.Probes is
 private
 
    procedure Probe_Begin (Probe : in Process_Probe_Type;
-                          Id          : in MAT.Events.Targets.Probe_Index_Type;
-                          Defs        : in MAT.Events.Attribute_Table;
-                          Msg         : in out MAT.Readers.Message);
+                          Id    : in MAT.Events.Targets.Probe_Index_Type;
+                          Defs  : in MAT.Events.Attribute_Table;
+                          Msg   : in out MAT.Readers.Message);
+
+   --  Extract the information from the 'library' event.
+   procedure Probe_Library (Probe : in Process_Probe_Type;
+                            Id    : in MAT.Events.Targets.Probe_Index_Type;
+                            Defs  : in MAT.Events.Attribute_Table;
+                            Msg   : in out MAT.Readers.Message);
 
 end MAT.Targets.Probes;
