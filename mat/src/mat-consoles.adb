@@ -50,6 +50,19 @@ package body MAT.Consoles is
    end Print_Field;
 
    --  ------------------------------
+   --  Format the address range and print it for the given field.
+   --  ------------------------------
+   procedure Print_Field (Console : in out Console_Type;
+                          Field   : in Field_Type;
+                          From    : in MAT.Types.Target_Addr;
+                          To      : in MAT.Types.Target_Addr) is
+      From_Value : constant String := MAT.Types.Hex_Image (From);
+      To_Value   : constant String := MAT.Types.Hex_Image (To);
+   begin
+      Console_Type'Class (Console).Print_Field (Field, From_Value & "-" & To_Value);
+   end Print_Field;
+
+   --  ------------------------------
    --  Format the size and print it for the given field.
    --  ------------------------------
    procedure Print_Size (Console : in out Console_Type;
