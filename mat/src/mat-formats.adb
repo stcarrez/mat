@@ -27,4 +27,17 @@ package body MAT.Formats is
       return Hex;
    end Addr;
 
+   --  ------------------------------
+   --  Format the size into a string.
+   --  ------------------------------
+   function Size (Value : in MAT.Types.Target_Size) return String is
+      Result : constant String := MAT.Types.Target_Size'Image (Value);
+   begin
+      if Result (Result'First) = ' ' then
+         return Result (Result'First + 1 .. Result'Last);
+      else
+         return Result;
+      end if;
+   end Size;
+
 end MAT.Formats;
