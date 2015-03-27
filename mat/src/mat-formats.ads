@@ -22,4 +22,7 @@ package MAT.Formats is
    --  Format the address into a string.
    function Addr (Value : in MAT.Types.Target_Addr) return String;
 
+   --  Format the size into a string.
+   function Size (Value : in MAT.Types.Target_Size) return String;
+
 end MAT.Formats;
