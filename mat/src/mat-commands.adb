@@ -39,6 +39,7 @@ with MAT.Expressions;
 with MAT.Frames;
 with MAT.Events.Targets;
 with MAT.Consoles;
+with MAT.Formats;
 package body MAT.Commands is
 
    --  The logger
@@ -94,16 +95,9 @@ package body MAT.Commands is
                                                 Name    => File_Name,
                                                 Func    => Func,
                                                 Line    => Line);
-         if Ada.Strings.Unbounded.Length (File_Name) = 0 then
-            Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME, Func, MAT.Consoles.J_RIGHT);
-         else
-            Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME, Func, MAT.Consoles.J_RIGHT);
-            Console.Print_Field (MAT.Consoles.F_FILE_NAME, File_Name,
-                                 MAT.Consoles.J_RIGHT_NO_FILL);
-            if Line > 0 then
-               Console.Print_Field (MAT.Consoles.F_LINE_NUMBER, Line);
-            end if;
-         end if;
+         Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME,
+                              MAT.Formats.Location (File_Name, Line, Func),
+                              MAT.Consoles.J_RIGHT_NO_FILL);
          Console.End_Row;
       end loop;
    end Print_Frame;
@@ -150,13 +144,7 @@ package body MAT.Commands is
                                                    Func    => Func,
                                                    Line    => Line);
             Ada.Text_IO.Put ("   ");
-            Ada.Text_IO.Put (Ada.Strings.Unbounded.To_String (Func));
-            Ada.Text_IO.Put (" ");
-            Ada.Text_IO.Put (Ada.Strings.Unbounded.To_String (Name));
-            if Line /= 0 then
-               Ada.Text_IO.Put (":");
-               Ada.Text_IO.Put (Util.Strings.Image (Line));
-            end if;
+            Ada.Text_IO.Put (MAT.Formats.Location (Name, Line, Func));
             Ada.Text_IO.New_Line;
          end loop;
       end Print;
@@ -317,13 +305,8 @@ package body MAT.Commands is
                                                    Func    => Name,
                                                    Line    => Line);
             Console.Start_Row;
-            if Ada.Strings.Unbounded.Length (Name) = 0 then
-               Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME, Func);
-            else
-               Console.Print_Field (MAT.Consoles.F_FILE_NAME, File_Name);
-               Console.Print_Field (MAT.Consoles.F_LINE_NUMBER, Line);
-               Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME, Name);
-            end if;
+            Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME,
+                                 MAT.Formats.Location (File_Name, Line, Name));
             Console.Print_Field (MAT.Consoles.F_COUNT, Info.Memory.Alloc_Count);
             Console.Print_Size (MAT.Consoles.F_TOTAL_SIZE, Info.Memory.Total_Size);
             Console.Print_Size (MAT.Consoles.F_MIN_SIZE, Info.Memory.Min_Slot_Size);
@@ -395,20 +378,32 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Event_Command (Target : in out MAT.Targets.Target_Type'Class;
                             Args   : in String) is
+      use Consoles;
+      use type MAT.Types.Target_Tick_Ref;
+
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Id      : MAT.Events.Targets.Event_Id_Type;
       Event   : MAT.Events.Targets.Probe_Event_Type;
+      Start, Finish : MAT.Types.Target_Tick_Ref;
+      Time    : MAT.Types.Target_Tick_Ref;
    begin
       Id := MAT.Events.Targets.Event_Id_Type'Value (Args);
       Event := Process.Events.Get_Event (Id);
+      Process.Events.Get_Time_Range (Start, Finish);
 
+      Time := Event.Time - Start;
+      Console.Notice (N_EVENT_ID, "Event: " & MAT.Events.Targets.Event_Id_Type'Image (Id));
+      Console.Notice (N_EVENT_TIME, "Time: " & MAT.Types.Tick_Image (Time));
+      Console.Notice (N_EVENT_TYPE, "Type: " & MAT.Events.Targets.Probe_Index_Type'Image (Event.Index));
+      Console.Notice (N_EVENT_THREAD, "Thread: " & MAT.Types.Target_Thread_Ref'Image (Event.Thread));
+      Console.Notice (N_EVENT_ADDR, "Addr: " & MAT.Types.Hex_Image (Event.Addr));
+      Console.Notice (N_EVENT_OLD_ADDR, "Old addr: " & MAT.Types.Hex_Image (Event.Old_Addr));
+      Console.Notice (N_EVENT_SIZE, "Size: " & MAT.Types.Target_Size'Image (Event.Size));
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_FRAME_ID, "Id", 3);
       Console.Print_Title (MAT.Consoles.F_FRAME_ADDR, "Frame Addr", 10);
-      Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 30);
-      Console.Print_Title (MAT.Consoles.F_FILE_NAME, "File", 40);
-      Console.Print_Title (MAT.Consoles.F_LINE_NUMBER, "Line", 5);
+      Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 80);
       Console.End_Title;
 
       Print_Frame (Console, Event.Frame, Process.Symbols);
