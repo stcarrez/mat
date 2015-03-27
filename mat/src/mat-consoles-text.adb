@@ -61,14 +61,14 @@ package body MAT.Consoles.Text is
       case Justify is
          when J_LEFT =>
             if Value'Length < Size then
-               Pad := Size - Value'Length;
+               Fill := Size - Value'Length;
             else
                Start := Last - Size + 1;
             end if;
 
          when J_RIGHT =>
             if Value'Length < Size then
-               Fill := Size - Value'Length;
+               Pad := Size - Value'Length;
             else
                Start := Last - Size + 1;
             end if;
