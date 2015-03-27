@@ -40,4 +40,36 @@ package body MAT.Formats is
       end if;
    end Size;
 
+   function Location (File : in Ada.Strings.Unbounded.Unbounded_String) return String is
+      Pos : constant Natural := Ada.Strings.Unbounded.Index (File, "/", Ada.Strings.Backward);
+      Len : constant Natural := Ada.Strings.Unbounded.Length (File);
+   begin
+      if Pos /= 0 then
+         return Ada.Strings.Unbounded.Slice (File, Pos + 1, Len);
+      else
+         return Ada.Strings.Unbounded.To_String (File);
+      end if;
+   end Location;
+
+   --  ------------------------------
+   --  Format a file, line, function information into a string.
+   --  ------------------------------
+   function Location (File : in Ada.Strings.Unbounded.Unbounded_String;
+                      Line : in Natural;
+                      Func : in Ada.Strings.Unbounded.Unbounded_String) return String is
+   begin
+      if Ada.Strings.Unbounded.Length (File) = 0 then
+         return Ada.Strings.Unbounded.To_String (Func);
+      elsif Line > 0 then
+         declare
+            Num : constant String := Natural'Image (Line);
+         begin
+            return Ada.Strings.Unbounded.To_String (Func) & " ("
+              & Location (File) & ":" & Num (Num'First + 1 .. Num'Last) & ")";
+         end;
+      else
+         return Ada.Strings.Unbounded.To_String (Func) & " (" & Location (File) & ")";
+      end if;
+   end Location;
+
 end MAT.Formats;
