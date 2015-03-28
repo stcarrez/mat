@@ -56,6 +56,11 @@ package MAT.Events.Targets is
    subtype Target_Event_Vector is Target_Event_Vectors.Vector;
    subtype Target_Event_Cursor is Target_Event_Vectors.Cursor;
 
+   --  Find in the list the first event with the given type.
+   --  Raise <tt>Not_Found</tt> if the list does not contain such event.
+   function Find (List : in Target_Event_Vector;
+                  Kind : in Probe_Index_Type) return Probe_Event_Type;
+
    type Target_Events is tagged limited private;
    type Target_Events_Access is access all Target_Events'Class;
 
