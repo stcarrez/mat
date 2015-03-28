@@ -20,6 +20,8 @@ package body MAT.Formats is
 
    Hex_Prefix : Boolean := True;
 
+   Conversion : constant String (1 .. 10) := "0123456789";
+
    --  ------------------------------
    --  Format the address into a string.
    --  ------------------------------
@@ -45,6 +47,29 @@ package body MAT.Formats is
          return Result;
       end if;
    end Size;
+
+   --  ------------------------------
+   --  Format the time relative to the start time.
+   --  ------------------------------
+   function Time (Value : in MAT.Types.Target_Tick_Ref;
+                  Start : in MAT.Types.Target_Tick_Ref) return String is
+      use type MAT.Types.Target_Tick_Ref;
+
+      T    : constant MAT.Types.Target_Tick_Ref := Value - Start;
+      Sec  : constant MAT.Types.Target_Tick_Ref := T / 1_000_000;
+      Usec : constant MAT.Types.Target_Tick_Ref := T mod 1_000_000;
+      Msec : Natural := Natural (Usec / 1_000);
+      Frac : String (1 .. 5);
+   begin
+      Frac (5) := 's';
+      Frac (4) := Conversion (Msec mod 10 + 1);
+      Msec := Msec / 10;
+      Frac (3) := Conversion (Msec mod 10 + 1);
+      Msec := Msec / 10;
+      Frac (2) := Conversion (Msec mod 10 + 1);
+      Frac (1) := '.';
+      return MAT.Types.Target_Tick_Ref'Image (Sec) & Frac;
+   end Time;
 
    function Location (File : in Ada.Strings.Unbounded.Unbounded_String) return String is
       Pos : constant Natural := Ada.Strings.Unbounded.Index (File, "/", Ada.Strings.Backward);
@@ -103,7 +128,7 @@ package body MAT.Formats is
    begin
       Free_Event := MAT.Events.Targets.Find (Related, MAT.Events.Targets.MSG_FREE);
 
-      return Size (Item.Size) & " bytes allocated, ";
+      return Size (Item.Size) & " bytes allocated, " & Time (Free_Event.Time, Item.Time);
 
    exception
       when MAT.Events.Targets.Not_Found =>
