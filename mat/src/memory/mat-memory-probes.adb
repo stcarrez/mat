@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-memory-probes - Definition and Analysis of memory events
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,10 +24,6 @@ package body MAT.Memory.Probes is
 
    --  The logger
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Memory.Probes");
-
-   MSG_MALLOC  : constant MAT.Events.Targets.Probe_Index_Type := 0;
-   MSG_FREE    : constant MAT.Events.Targets.Probe_Index_Type := 1;
-   MSG_REALLOC : constant MAT.Events.Targets.Probe_Index_Type := 2;
 
    M_SIZE     : constant MAT.Events.Internal_Reference := 1;
    M_FRAME    : constant MAT.Events.Internal_Reference := 2;
@@ -72,11 +68,11 @@ package body MAT.Memory.Probes is
    procedure Register (Into  : in out MAT.Events.Probes.Probe_Manager_Type'Class;
                        Probe : in Memory_Probe_Type_Access) is
    begin
-      Into.Register_Probe (Probe.all'Access, "malloc", MSG_MALLOC,
+      Into.Register_Probe (Probe.all'Access, "malloc", MAT.Events.Targets.MSG_MALLOC,
                            Memory_Attributes'Access);
-      Into.Register_Probe (Probe.all'Access, "free", MSG_FREE,
+      Into.Register_Probe (Probe.all'Access, "free", MAT.Events.Targets.MSG_FREE,
                            Memory_Attributes'Access);
-      Into.Register_Probe (Probe.all'Access, "realloc", MSG_REALLOC,
+      Into.Register_Probe (Probe.all'Access, "realloc", MAT.Events.Targets.MSG_REALLOC,
                            Memory_Attributes'Access);
    end Register;
 
@@ -123,13 +119,13 @@ package body MAT.Memory.Probes is
                       Event   : in out MAT.Events.Targets.Probe_Event_Type) is
    begin
       case Event.Index is
-         when MSG_MALLOC =>
+         when MAT.Events.Targets.MSG_MALLOC =>
             Unmarshall_Allocation (Msg, Event.Size, Event.Addr, Event.Old_Addr, Params.all);
 
-         when MSG_FREE =>
+         when MAT.Events.Targets.MSG_FREE =>
             Unmarshall_Allocation (Msg, Event.Size, Event.Addr, Event.Old_Addr, Params.all);
 
-         when MSG_REALLOC =>
+         when MAT.Events.Targets.MSG_REALLOC =>
             Unmarshall_Allocation (Msg, Event.Size, Event.Addr, Event.Old_Addr, Params.all);
 
          when others =>
@@ -147,13 +143,13 @@ package body MAT.Memory.Probes is
       Slot.Time   := Event.Time;
       Slot.Frame  := Event.Frame;
       case Event.Index is
-         when MSG_MALLOC =>
+         when MAT.Events.Targets.MSG_MALLOC =>
             Probe.Data.Probe_Malloc (Event.Addr, Slot);
 
-         when MSG_FREE =>
+         when MAT.Events.Targets.MSG_FREE =>
             Probe.Data.Probe_Free (Event.Addr, Slot);
 
-         when MSG_REALLOC =>
+         when MAT.Events.Targets.MSG_REALLOC =>
             Probe.Data.Probe_Realloc (Event.Addr, Event.Old_Addr, Slot);
 
          when others =>
