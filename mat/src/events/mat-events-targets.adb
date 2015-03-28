@@ -183,8 +183,8 @@ package body MAT.Events.Targets is
          while Event_Id_Maps.Has_Element (Iter) loop
             Block := Event_Id_Maps.Element (Iter);
             exit when Id < Block.Events (Block.Events'First).Id;
-            Pos := Id - Block.Events (Block.Events'First).Id;
-            if Pos < Block.Count then
+            Pos := Id - Block.Events (Block.Events'First).Id + Block.Events'First;
+            if Pos <= Block.Count then
                return Block.Events (Pos);
             end if;
             Event_Id_Maps.Next (Iter);
@@ -209,25 +209,47 @@ package body MAT.Events.Targets is
          while Event_Id_Maps.Has_Element (Iter) loop
             Block := Event_Id_Maps.Element (Iter);
             exit when Id < Block.Events (Block.Events'First).Id;
-            Pos := Id - Block.Events (Block.Events'First).Id;
-            if Pos < Block.Count then
+            Pos := Id - Block.Events (Block.Events'First).Id + Block.Events'First;
+            if Start <= Finish then
+               if Pos <= Block.Count then
 
-               --  Second, iterate over the events moving to the next event block
-               --  until we reach the last event.
-               loop
-                  Process (Block.Events (Pos));
-                  exit when Id > Finish;
-                  Pos := Pos + 1;
-                  Id := Id + 1;
-                  if Pos = Block.Count then
-                     Event_Id_Maps.Next (Iter);
-                     exit when not Event_Id_Maps.Has_Element (Iter);
-                     Block := Event_Id_Maps.Element (Iter);
-                     Pos := Block.Events'First;
-                  end if;
-               end loop;
+                  --  Second, iterate over the events moving to the next event block
+                  --  until we reach the last event.
+                  loop
+                     Process (Block.Events (Pos));
+                     exit when Id > Finish;
+                     Pos := Pos + 1;
+                     Id := Id + 1;
+                     if Pos > Block.Count then
+                        Event_Id_Maps.Next (Iter);
+                        exit when not Event_Id_Maps.Has_Element (Iter);
+                        Block := Event_Id_Maps.Element (Iter);
+                        Pos := Block.Events'First;
+                     end if;
+                  end loop;
+               end if;
+               Event_Id_Maps.Next (Iter);
+            else
+               if Pos <= Block.Count then
+
+                  --  Second, iterate over the events moving to the next event block
+                  --  until we reach the last event.
+                  loop
+                     Process (Block.Events (Pos));
+                     exit when Id < Finish;
+                     Id := Id - 1;
+                     if Pos = Block.Events'First then
+                        Event_Id_Maps.Previous (Iter);
+                        exit when not Event_Id_Maps.Has_Element (Iter);
+                        Block := Event_Id_Maps.Element (Iter);
+                        Pos := Block.Count;
+                     else
+                        Pos := Pos - 1;
+                     end if;
+                  end loop;
+               end if;
+               Event_Id_Maps.Previous (Iter);
             end if;
-            Event_Id_Maps.Next (Iter);
          end loop;
       end Iterate;
 
