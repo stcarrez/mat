@@ -78,4 +78,66 @@ package body MAT.Formats is
       end if;
    end Location;
 
+   function Event (Item : in MAT.Events.Targets.Probe_Event_Type) return String is
+   begin
+      case Item.Index is
+         when MAT.Events.Targets.MSG_MALLOC =>
+            return Size (Item.Size) & " bytes allocated";
+
+         when MAT.Events.Targets.MSG_REALLOC =>
+            return Size (Item.Size) & " bytes reallocated";
+
+         when MAT.Events.Targets.MSG_FREE =>
+            return Size (Item.Size) & " bytes freed";
+
+         when others =>
+            return "unknown";
+
+      end case;
+   end Event;
+
+   function Event_Malloc (Item    : in MAT.Events.Targets.Probe_Event_Type;
+                          Related : in MAT.Events.Targets.Target_Event_Vector) return String is
+      Iter : MAT.Events.Targets.Target_Event_Cursor := Related.First;
+      Free_Event : MAT.Events.Targets.Probe_Event_Type;
+   begin
+      Free_Event := MAT.Events.Targets.Find (Related, MAT.Events.Targets.MSG_FREE);
+
+      return Size (Item.Size) & " bytes allocated, ";
+
+   exception
+      when MAT.Events.Targets.Not_Found =>
+         return Size (Item.Size) & " bytes allocated";
+
+   end Event_Malloc;
+
+   --  Format a short description of the event.
+   function Event (Item    : in MAT.Events.Targets.Probe_Event_Type;
+                   Related : in MAT.Events.Targets.Target_Event_Vector) return String is
+   begin
+      case Item.Index is
+         when MAT.Events.Targets.MSG_MALLOC =>
+            return Event_Malloc (Item, Related);
+
+         when MAT.Events.Targets.MSG_REALLOC =>
+            return Size (Item.Size) & " bytes reallocated";
+
+         when MAT.Events.Targets.MSG_FREE =>
+            return Size (Item.Size) & " bytes freed";
+
+         when MAT.Events.Targets.MSG_BEGIN =>
+            return "Begin event";
+
+         when MAT.Events.Targets.MSG_END =>
+            return "End event";
+
+         when MAT.Events.Targets.MSG_LIBRARY =>
+            return "Library information event";
+
+         when others =>
+            return "unknown";
+
+      end case;
+   end Event;
+
 end MAT.Formats;
