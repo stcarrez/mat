@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-readers -- Reader
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -182,8 +182,9 @@ package body MAT.Events.Probes is
             end case;
          end;
       end loop;
-      Client.Event.Time := MAT.Types.Target_Tick_Ref (Interfaces.Shift_Left (Interfaces.Unsigned_64 (Time_Sec), 32));
-      Client.Event.Time := Client.Event.Time or MAT.Types.Target_Tick_Ref (Time_Usec);
+      --  Convert the time in usec to make computation easier.
+      Client.Event.Time := MAT.Types.Target_Tick_Ref (Time_Sec) * 1_000_000;
+      Client.Event.Time := Client.Event.Time + MAT.Types.Target_Tick_Ref (Time_Usec);
       Frame.Cur_Depth := Count;
    end Read_Probe;
 
