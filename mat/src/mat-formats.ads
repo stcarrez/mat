@@ -18,6 +18,7 @@
 with Ada.Strings.Unbounded;
 
 with MAT.Types;
+with MAT.Events.Targets;
 package MAT.Formats is
 
    --  Format the address into a string.
@@ -30,5 +31,9 @@ package MAT.Formats is
    function Location (File : in Ada.Strings.Unbounded.Unbounded_String;
                       Line : in Natural;
                       Func : in Ada.Strings.Unbounded.Unbounded_String) return String;
+
+   --  Format a short description of the event.
+   function Event (Item    : in MAT.Events.Targets.Probe_Event_Type;
+                   Related : in MAT.Events.Targets.Target_Event_Vector) return String;
 
 end MAT.Formats;
