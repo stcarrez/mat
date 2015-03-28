@@ -31,6 +31,9 @@ package MAT.Formats is
    function Time (Value : in MAT.Types.Target_Tick_Ref;
                   Start : in MAT.Types.Target_Tick_Ref) return String;
 
+   --  Format the duration in seconds, milliseconds or microseconds.
+   function Duration (Value : in MAT.Types.Target_Tick_Ref) return String;
+
    --  Format a file, line, function information into a string.
    function Location (File : in Ada.Strings.Unbounded.Unbounded_String;
                       Line : in Natural;
