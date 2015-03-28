@@ -24,10 +24,6 @@ package body MAT.Targets.Probes is
    --  The logger
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Targets.Probes");
 
-   MSG_BEGIN     : constant MAT.Events.Targets.Probe_Index_Type := 0;
-   MSG_END       : constant MAT.Events.Targets.Probe_Index_Type := 1;
-   MSG_LIBRARY   : constant MAT.Events.Targets.Probe_Index_Type := 2;
-
    M_PID         : constant MAT.Events.Internal_Reference := 1;
    M_EXE         : constant MAT.Events.Internal_Reference := 2;
    M_HEAP_START  : constant MAT.Events.Internal_Reference := 3;
@@ -217,9 +213,9 @@ package body MAT.Targets.Probes is
                       Event  : in out MAT.Events.Targets.Probe_Event_Type) is
       use type MAT.Events.Targets.Probe_Index_Type;
    begin
-      if Event.Index = MSG_BEGIN then
+      if Event.Index = MAT.Events.Targets.MSG_BEGIN then
          Probe.Probe_Begin (Event.Index, Params.all, Msg);
-      elsif Event.Index = MSG_LIBRARY then
+      elsif Event.Index = MAT.Events.Targets.MSG_LIBRARY then
          Probe.Probe_Library (Event.Index, Params.all, Msg);
       end if;
    end Extract;
@@ -237,11 +233,11 @@ package body MAT.Targets.Probes is
                        Probe : in Process_Probe_Type_Access) is
    begin
       Probe.Manager := Into'Unchecked_Access;
-      Into.Register_Probe (Probe.all'Access, "begin", MSG_BEGIN,
+      Into.Register_Probe (Probe.all'Access, "begin", MAT.Events.Targets.MSG_BEGIN,
                            Process_Attributes'Access);
-      Into.Register_Probe (Probe.all'Access, "end", MSG_END,
+      Into.Register_Probe (Probe.all'Access, "end", MAT.Events.Targets.MSG_END,
                            Process_Attributes'Access);
-      Into.Register_Probe (Probe.all'Access, "shlib", MSG_LIBRARY,
+      Into.Register_Probe (Probe.all'Access, "shlib", MAT.Events.Targets.MSG_LIBRARY,
                            Library_Attributes'Access);
    end Register;
 
