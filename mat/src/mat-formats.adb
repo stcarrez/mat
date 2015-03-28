@@ -18,13 +18,19 @@
 
 package body MAT.Formats is
 
+   Hex_Prefix : Boolean := True;
+
    --  ------------------------------
    --  Format the address into a string.
    --  ------------------------------
    function Addr (Value : in MAT.Types.Target_Addr) return String is
       Hex : constant String := MAT.Types.Hex_Image (Value);
    begin
-      return Hex;
+      if Hex_Prefix then
+         return "0x" & Hex;
+      else
+         return Hex;
+      end if;
    end Addr;
 
    --  ------------------------------
