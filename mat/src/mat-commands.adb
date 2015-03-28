@@ -40,6 +40,7 @@ with MAT.Frames;
 with MAT.Events.Targets;
 with MAT.Consoles;
 with MAT.Formats;
+with MAT.Events.Timelines;
 package body MAT.Commands is
 
    --  The logger
@@ -387,19 +388,15 @@ package body MAT.Commands is
       Event   : MAT.Events.Targets.Probe_Event_Type;
       Start, Finish : MAT.Types.Target_Tick_Ref;
       Time    : MAT.Types.Target_Tick_Ref;
+      Related : MAT.Events.Targets.Target_Event_Vector;
    begin
       Id := MAT.Events.Targets.Event_Id_Type'Value (Args);
       Event := Process.Events.Get_Event (Id);
+      MAT.Events.Timelines.Find_Related (Process.Events.all, Event, 10, Related);
       Process.Events.Get_Time_Range (Start, Finish);
 
       Time := Event.Time - Start;
-      Console.Notice (N_EVENT_ID, "Event: " & MAT.Events.Targets.Event_Id_Type'Image (Id));
-      Console.Notice (N_EVENT_TIME, "Time: " & MAT.Types.Tick_Image (Time));
-      Console.Notice (N_EVENT_TYPE, "Type: " & MAT.Events.Targets.Probe_Index_Type'Image (Event.Index));
-      Console.Notice (N_EVENT_THREAD, "Thread: " & MAT.Types.Target_Thread_Ref'Image (Event.Thread));
-      Console.Notice (N_EVENT_ADDR, "Addr: " & MAT.Types.Hex_Image (Event.Addr));
-      Console.Notice (N_EVENT_OLD_ADDR, "Old addr: " & MAT.Types.Hex_Image (Event.Old_Addr));
-      Console.Notice (N_EVENT_SIZE, "Size: " & MAT.Types.Target_Size'Image (Event.Size));
+      Console.Notice (N_EVENT_ID, MAT.Formats.Event (Event, Related));
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_FRAME_ID, "Id", 3);
       Console.Print_Title (MAT.Consoles.F_FRAME_ADDR, "Frame Addr", 10);
