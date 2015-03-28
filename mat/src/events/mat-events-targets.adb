@@ -19,6 +19,25 @@
 package body MAT.Events.Targets is
 
    --  ------------------------------
+   --  Find in the list the first event with the given type.
+   --  Raise <tt>Not_Found</tt> if the list does not contain such event.
+   --  ------------------------------
+   function Find (List : in Target_Event_Vector;
+                  Kind : in Probe_Index_Type) return Probe_Event_Type is
+      Iter  : Target_Event_Cursor := List.First;
+      Event : Probe_Event_Type;
+   begin
+      while Target_Event_Vectors.Has_Element (Iter) loop
+         Event := Target_Event_Vectors.Element (Iter);
+         if Event.Index = Kind then
+            return Event;
+         end if;
+         Target_Event_Vectors.Next (Iter);
+      end loop;
+      raise Not_Found;
+   end Find;
+
+   --  ------------------------------
    --  Add the event in the list of events and increment the event counter.
    --  ------------------------------
    procedure Insert (Target : in out Target_Events;
