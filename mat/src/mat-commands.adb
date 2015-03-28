@@ -396,7 +396,7 @@ package body MAT.Commands is
       Process.Events.Get_Time_Range (Start, Finish);
 
       Time := Event.Time - Start;
-      Console.Notice (N_EVENT_ID, MAT.Formats.Event (Event, Related));
+      Console.Notice (N_EVENT_ID, MAT.Formats.Event (Event, Related, Start));
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_FRAME_ID, "Id", 3);
       Console.Print_Title (MAT.Consoles.F_FRAME_ADDR, "Frame Addr", 10);
