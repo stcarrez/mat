@@ -15,8 +15,10 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-
+with Util.Strings;
 package body MAT.Formats is
+
+   use type MAT.Types.Target_Tick_Ref;
 
    Hex_Prefix : Boolean := True;
 
@@ -53,8 +55,6 @@ package body MAT.Formats is
    --  ------------------------------
    function Time (Value : in MAT.Types.Target_Tick_Ref;
                   Start : in MAT.Types.Target_Tick_Ref) return String is
-      use type MAT.Types.Target_Tick_Ref;
-
       T    : constant MAT.Types.Target_Tick_Ref := Value - Start;
       Sec  : constant MAT.Types.Target_Tick_Ref := T / 1_000_000;
       Usec : constant MAT.Types.Target_Tick_Ref := T mod 1_000_000;
@@ -70,6 +70,43 @@ package body MAT.Formats is
       Frac (1) := '.';
       return MAT.Types.Target_Tick_Ref'Image (Sec) & Frac;
    end Time;
+
+   --  ------------------------------
+   --  Format the duration in seconds, milliseconds or microseconds.
+   --  ------------------------------
+   function Duration (Value : in MAT.Types.Target_Tick_Ref) return String is
+
+      Sec  : constant MAT.Types.Target_Tick_Ref := Value / 1_000_000;
+      Usec : constant MAT.Types.Target_Tick_Ref := Value mod 1_000_000;
+      Msec : Natural := Natural (Usec / 1_000);
+      Val  : Natural;
+      Frac : String (1 .. 5);
+   begin
+      if Sec = 0 and Msec = 0 then
+         return Util.Strings.Image (Integer (Usec)) & "us";
+      elsif Sec = 0 then
+         Val := Natural (Usec mod 1_000);
+         Frac (5) := 's';
+         Frac (4) := 'm';
+         Frac (3) := Conversion (Val mod 10 + 1);
+         Val := Val / 10;
+         Frac (3) := Conversion (Val mod 10 + 1);
+         Val := Val / 10;
+         Frac (2) := Conversion (Val mod 10 + 1);
+         Frac (1) := '.';
+         return Util.Strings.Image (Integer (Msec)) & Frac;
+      else
+         Val := Msec;
+         Frac (4) := 's';
+         Frac (3) := Conversion (Val mod 10 + 1);
+         Val := Val / 10;
+         Frac (3) := Conversion (Val mod 10 + 1);
+         Val := Val / 10;
+         Frac (2) := Conversion (Val mod 10 + 1);
+         Frac (1) := '.';
+         return Util.Strings.Image (Integer (Msec)) & Frac (1 .. 4);
+      end if;
+   end Duration;
 
    function Location (File : in Ada.Strings.Unbounded.Unbounded_String) return String is
       Pos : constant Natural := Ada.Strings.Unbounded.Index (File, "/", Ada.Strings.Backward);
@@ -128,7 +165,7 @@ package body MAT.Formats is
    begin
       Free_Event := MAT.Events.Targets.Find (Related, MAT.Events.Targets.MSG_FREE);
 
-      return Size (Item.Size) & " bytes allocated, " & Time (Free_Event.Time, Item.Time);
+      return Size (Item.Size) & " bytes allocated, " & Duration (Free_Event.Time - Item.Time);
 
    exception
       when MAT.Events.Targets.Not_Found =>
