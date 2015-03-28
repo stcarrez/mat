@@ -166,8 +166,9 @@ package body MAT.Formats is
    begin
       Free_Event := MAT.Events.Targets.Find (Related, MAT.Events.Targets.MSG_FREE);
 
-      return Size (Item.Size) & " bytes allocated, @" & Duration (Free_Event.Time - Start_Time)
-        & " freed " & Duration (Free_Event.Time - Item.Time) & " after"
+      return Size (Item.Size) & " bytes allocated after " & Duration (Item.Time - Start_Time)
+        & ", freed by event" & MAT.Events.Targets.Event_Id_Type'Image (Free_Event.Id)
+        & " after " & Duration (Free_Event.Time - Item.Time)
       ;
 
    exception
@@ -175,6 +176,25 @@ package body MAT.Formats is
          return Size (Item.Size) & " bytes allocated";
 
    end Event_Malloc;
+
+   function Event_Free (Item       : in MAT.Events.Targets.Probe_Event_Type;
+                          Related    : in MAT.Events.Targets.Target_Event_Vector;
+                          Start_Time : in MAT.Types.Target_Tick_Ref) return String is
+      Iter : MAT.Events.Targets.Target_Event_Cursor := Related.First;
+      Alloc_Event : MAT.Events.Targets.Probe_Event_Type;
+   begin
+      Alloc_Event := MAT.Events.Targets.Find (Related, MAT.Events.Targets.MSG_MALLOC);
+
+      return Size (Alloc_Event.Size) & " bytes freed after " & Duration (Item.Time - Start_Time)
+        & ", alloc'ed for " & Duration (Item.Time - Alloc_Event.Time)
+        & " by event" & MAT.Events.Targets.Event_Id_Type'Image (Alloc_Event.Id)
+      ;
+
+   exception
+      when MAT.Events.Targets.Not_Found =>
+         return Size (Item.Size) & " bytes freed";
+
+   end Event_Free;
 
    --  Format a short description of the event.
    function Event (Item       : in MAT.Events.Targets.Probe_Event_Type;
@@ -189,7 +209,7 @@ package body MAT.Formats is
             return Size (Item.Size) & " bytes reallocated";
 
          when MAT.Events.Targets.MSG_FREE =>
-            return Size (Item.Size) & " bytes freed";
+            return Event_Free (Item, Related, Start_Time);
 
          when MAT.Events.Targets.MSG_BEGIN =>
             return "Begin event";
