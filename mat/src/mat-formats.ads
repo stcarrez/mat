@@ -27,6 +27,10 @@ package MAT.Formats is
    --  Format the size into a string.
    function Size (Value : in MAT.Types.Target_Size) return String;
 
+   --  Format the time relative to the start time.
+   function Time (Value : in MAT.Types.Target_Tick_Ref;
+                  Start : in MAT.Types.Target_Tick_Ref) return String;
+
    --  Format a file, line, function information into a string.
    function Location (File : in Ada.Strings.Unbounded.Unbounded_String;
                       Line : in Natural;
