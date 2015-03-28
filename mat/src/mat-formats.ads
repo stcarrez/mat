@@ -40,7 +40,8 @@ package MAT.Formats is
                       Func : in Ada.Strings.Unbounded.Unbounded_String) return String;
 
    --  Format a short description of the event.
-   function Event (Item    : in MAT.Events.Targets.Probe_Event_Type;
-                   Related : in MAT.Events.Targets.Target_Event_Vector) return String;
+   function Event (Item       : in MAT.Events.Targets.Probe_Event_Type;
+                   Related    : in MAT.Events.Targets.Target_Event_Vector;
+                   Start_Time : in MAT.Types.Target_Tick_Ref) return String;
 
 end MAT.Formats;
