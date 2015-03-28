@@ -26,7 +26,13 @@ package MAT.Events.Targets is
    Not_Found : exception;
 
    type Event_Type is mod 16;
-   type Probe_Index_Type is mod 16;
+   type Probe_Index_Type is (MSG_BEGIN,
+                             MSG_END,
+                             MSG_LIBRARY,
+                             MSG_MALLOC,
+                             MSG_FREE,
+                             MSG_REALLOC
+                             );
 
    type Event_Id_Type is new Natural;
 
