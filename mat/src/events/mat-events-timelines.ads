@@ -44,4 +44,13 @@ package MAT.Events.Timelines is
    procedure Extract (Target : in out MAT.Events.Targets.Target_Events;
                       Into   : in out Timeline_Info_Vector);
 
+   --  Find in the events stream the events which are associated with a given event.
+   --  When the <tt>Event</tt> is a memory allocation, find the associated reallocation
+   --  and free events.  When the event is a free, find the associated allocations.
+   --  Collect at most <tt>Max</tt> events.
+   procedure Find_Related (Target : in out MAT.Events.Targets.Target_Events'Class;
+                           Event  : in MAT.Events.Targets.Probe_Event_Type;
+                           Max    : in Positive;
+                           List   : in out MAT.Events.Targets.Target_Event_Vector);
+
 end MAT.Events.Timelines;
