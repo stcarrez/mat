@@ -1,8 +1,4 @@
 
---%token <ival> INT
---%token <str>  STRING
---%token <str>  NAME
-
 %token      T_NAME T_INT T_STRING
 %token      T_SELECT T_WITH T_AT T_BY T_IN T_NOT T_OR T_AND
 %token      T_SIZE T_ADDR T_FROM T_BEGIN T_END T_TO T_REALLOCATION
@@ -15,14 +11,6 @@
 %token T_TIME
 %token T_LT T_LE T_GT T_GE T_NE T_EQ
 %token '[' ']' '(' ')' ','
-
---%type <str>   name
---%type <ctree> condition
---%type <range> range
---%type <ival>  on_off direct count
---%type <str>   time
---%type <ival>  one_cmd cmd select_cmd set_cmd list_cmd help_cmd condition_cmd
---%type <ival>  echo_cmd
 
 %left T_OR
 %left T_AND
@@ -80,9 +68,6 @@ condition :
     |
         T_BY direct name
             {
-
-
-
                if $2.bval then
                   $$.expr := MAT.Expressions.Create_Inside ($3.name, MAT.Expressions.INSIDE_DIRECT_FUNCTION);
                else
@@ -112,29 +97,32 @@ condition :
     |
         T_SIZE compare
             {
-              $$.expr := MAT.Expressions.Create_Size (MAT.Types.Target_Size ($2.low), MAT.Types.Target_Size ($2.high));
+              $$.expr := MAT.Expressions.Create_Size (MAT.Types.Target_Size ($2.low),
+                                                      MAT.Types.Target_Size ($2.high));
             }
     |
         T_THREAD compare
             {
-              $$.expr := MAT.Expressions.Create_Size (MAT.Types.Target_Size ($2.low), MAT.Types.Target_Size ($2.high));
+              $$.expr := MAT.Expressions.Create_Size (MAT.Types.Target_Size ($2.low),
+                                                      MAT.Types.Target_Size ($2.high));
             }
     |
         T_ADDR compare
             {
-              $$.expr := MAT.Expressions.Create_Addr (MAT.Types.Target_Addr ($2.low), MAT.Types.Target_Addr ($2.high));
+              $$.expr := MAT.Expressions.Create_Addr (MAT.Types.Target_Addr ($2.low),
+                                                      MAT.Types.Target_Addr ($2.high));
             }
     |
         T_EVENT compare
             {
-              $$.expr := MAT.Expressions.Create_Event (MAT.Events.Targets.Event_Id_Type ($2.low),
-                                                      MAT.Events.Targets.Event_Id_Type ($2.high));
+              $$.expr := MAT.Expressions.Create_Event (To_Event_Id_Type ($2.low),
+                                                       To_Event_Id_Type ($2.high));
             }
     |
         T_TIME compare
             {
-              $$.expr := MAT.Expressions.Create_Event (MAT.Events.Targets.Event_Id_Type ($2.low),
-                                                      MAT.Events.Targets.Event_Id_Type ($2.high));
+              $$.expr := MAT.Expressions.Create_Event (To_Event_Id_Type ($2.low),
+                                                       To_Event_Id_Type ($2.high));
             }
     |
         name
@@ -266,7 +254,19 @@ package body MAT.Expressions.Parser is
 
    procedure yyerror (s : in String := "syntax error");
 
+   function To_Event_Id_Type (Value : in MAT.Types.Uint64) return MAT.Events.Targets.Event_Id_Type;
+
    Expr : MAT.Expressions.Expression_Type;
+
+   function To_Event_Id_Type (Value : in MAT.Types.Uint64)
+      return MAT.Events.Targets.Event_Id_Type is
+   begin
+      if Value > MAT.Types.Uint64 (MAT.Events.Targets.Event_Id_Type'Last) then
+         return MAT.Events.Targets.Event_Id_Type'Last;
+      else
+         return MAT.Events.Targets.Event_Id_Type (Value);
+      end if;
+   end To_Event_Id_Type;
 
    procedure yyerror (s : in String := "syntax error") is
    begin
