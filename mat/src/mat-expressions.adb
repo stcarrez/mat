@@ -17,8 +17,6 @@
 -----------------------------------------------------------------------
 with Ada.Unchecked_Deallocation;
 
-with MAT.Types;
-with MAT.Memory;
 with MAT.Expressions.Parser;
 package body MAT.Expressions is
 
