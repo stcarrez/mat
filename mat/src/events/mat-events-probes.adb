@@ -18,7 +18,6 @@
 with Util.Log.Loggers;
 
 with MAT.Readers.Marshaller;
-with Interfaces;
 package body MAT.Events.Probes is
 
    --  The logger
@@ -159,7 +158,8 @@ package body MAT.Events.Probes is
                   Time_Usec := MAT.Readers.Marshaller.Get_Target_Uint32 (Msg, Def.Kind);
 
                when P_THREAD_ID =>
-                  Client.Event.Thread := MAT.Types.Target_Thread_Ref (MAT.Readers.Marshaller.Get_Target_Uint32 (Msg, Def.Kind));
+                  Client.Event.Thread := MAT.Types.Target_Thread_Ref
+                    (MAT.Readers.Marshaller.Get_Target_Uint32 (Msg, Def.Kind));
 
                when P_THREAD_SP =>
                   Frame.Stack := MAT.Readers.Marshaller.Get_Target_Addr (Msg, Def.Kind);
