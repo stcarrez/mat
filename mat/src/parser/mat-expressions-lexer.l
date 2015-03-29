@@ -68,25 +68,21 @@ with MAT.Types;
 with MAT.Expressions;
 with Ada.Text_IO;
 with MAT.Expressions.Lexer_dfa;
-with MAT.Expressions.Parser_io;
+with MAT.Expressions.Parser_IO;
 
 package body MAT.Expressions.Lexer is
 
    use Ada.Text_IO;
    use Ada;
    use MAT.Expressions.Lexer_dfa;
-   use MAT.Expressions.Parser_io;
+   use MAT.Expressions.Parser_IO;
 
    Line_Number : Natural := 0;
  
    pragma Style_Checks (Off);
+   pragma Warnings (Off);
 ##
    pragma Style_Checks (On);
-
---   pragma Unreferenced (yyless);
---   pragma Unreferenced (yyrestart);
---   pragma Unreferenced (ENTER);
---   pragma Unreferenced (YY_END_TOK);
 
 end MAT.Expressions.Lexer;
 
