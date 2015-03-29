@@ -111,7 +111,9 @@ package body MAT.Memory.Probes is
       end loop;
    end Unmarshall_Allocation;
 
+   ----------------------
    --  Extract the probe information from the message.
+   ----------------------
    overriding
    procedure Extract (Probe   : in Memory_Probe_Type;
                       Params  : in MAT.Events.Const_Attribute_Table_Access;
@@ -129,6 +131,8 @@ package body MAT.Memory.Probes is
             Unmarshall_Allocation (Msg, Event.Size, Event.Addr, Event.Old_Addr, Params.all);
 
          when others =>
+            Log.Error ("Invalid event {0} for memory extract probe",
+                       MAT.Events.Targets.Probe_Index_Type'Image (Event.Index));
             raise Program_Error;
 
       end case;
@@ -153,6 +157,8 @@ package body MAT.Memory.Probes is
             Probe.Data.Probe_Realloc (Event.Addr, Event.Old_Addr, Slot);
 
          when others =>
+            Log.Error ("Invalid event {0} for memory execute probe",
+                       MAT.Events.Targets.Probe_Index_Type'Image (Event.Index));
             raise Program_Error;
 
       end case;
