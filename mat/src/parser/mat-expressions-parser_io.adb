@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-expressions-parser_io -- Input IO for Lex parser
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,8 +25,8 @@ package body MAT.Expressions.Parser_IO is
    begin
       Input := Ada.Strings.Unbounded.To_Unbounded_String (Content);
       Pos   := 1;
-      MAT.Expressions.lexer_dfa.yy_init  := True;
-      MAT.Expressions.lexer_dfa.yy_start := 0;
+      MAT.Expressions.Lexer_dfa.yy_init  := True;
+      MAT.Expressions.Lexer_dfa.yy_start := 0;
    end Set_Input;
 
    --  gets input and stuffs it into 'buf'.  number of characters read, or YY_NULL,
