@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-expressions-parser_io -- Input IO for Lex parser
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,12 +15,12 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with MAT.Expressions.lexer_dfa;
+with MAT.Expressions.Lexer_dfa;
 with Ada.Text_IO;
 
 package MAT.Expressions.Parser_IO is
 
-   use MAT.Expressions.lexer_dfa;
+   use MAT.Expressions.Lexer_dfa;
 
    user_output_file      : Ada.Text_IO.File_Type;
    NULL_IN_INPUT         : exception;
@@ -43,7 +43,7 @@ package MAT.Expressions.Parser_IO is
 
    procedure Set_Input (Content : in String);
 
-   procedure YY_INPUT (Buf      : out MAT.Expressions.lexer_dfa.unbounded_character_array;
+   procedure YY_INPUT (Buf      : out MAT.Expressions.Lexer_dfa.unbounded_character_array;
                        Result   : out Integer;
                        Max_Size : in Integer);
 
