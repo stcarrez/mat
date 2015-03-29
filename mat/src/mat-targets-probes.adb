@@ -15,14 +15,10 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with Util.Log.Loggers;
 
 with ELF;
 with MAT.Readers.Marshaller;
 package body MAT.Targets.Probes is
-
-   --  The logger
-   Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Targets.Probes");
 
    M_PID         : constant MAT.Events.Internal_Reference := 1;
    M_EXE         : constant MAT.Events.Internal_Reference := 2;
@@ -146,7 +142,6 @@ package body MAT.Targets.Probes is
 
       Count : MAT.Types.Target_Size := 0;
       Path  : Ada.Strings.Unbounded.Unbounded_String;
-      Heap  : MAT.Memory.Region_Info;
       Addr  : MAT.Types.Target_Addr;
       Pos   : Natural := Defs'Last + 1;
    begin
