@@ -68,7 +68,7 @@ package body MAT.Consoles.Text is
 
          when J_RIGHT =>
             if Value'Length < Size then
-               Pad := Size - Value'Length;
+               Pad := Size - Value'Length - 1;
             else
                Start := Last - Size + 1;
             end if;
@@ -89,13 +89,10 @@ package body MAT.Consoles.Text is
       end case;
       if Pad > 0 then
          Ada.Text_IO.Set_Col (Pos + Ada.Text_IO.Count (Pad));
+      elsif Pos > 1 then
+         Ada.Text_IO.Set_Col (Pos);
       end if;
       Ada.Text_IO.Put (Value (Start .. Last));
-      if Fill > 0 then
-         Ada.Text_IO.Set_Col (Pos + Ada.Text_IO.Count (Pad + Fill + Last - Start));
-      else
-         Ada.Text_IO.Put (" ");
-      end if;
    end Print_Field;
 
    --  ------------------------------
@@ -110,7 +107,7 @@ package body MAT.Consoles.Text is
       Pos : constant Ada.Text_IO.Count := Ada.Text_IO.Count (Console.Cols (Field));
    begin
       if Pos > 1 then
-         Ada.Text_IO.Set_Col (Pos + Ada.Text_IO.Count (Console.Sizes (Field)) - Title'Length);
+         Ada.Text_IO.Set_Col (Pos);
       end if;
       Ada.Text_IO.Put (Title);
    end Print_Title;
