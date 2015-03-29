@@ -337,10 +337,7 @@ package body MAT.Commands is
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_ID, "Id", 10);
       Console.Print_Title (MAT.Consoles.F_TIME, "Time", 10);
-      Console.Print_Title (MAT.Consoles.F_EVENT, "Event", 10);
-      Console.Print_Title (MAT.Consoles.F_ADDR, "Addr", 10);
-      Console.Print_Title (MAT.Consoles.F_OLD_ADDR, "Old Addr", 10);
-      Console.Print_Title (MAT.Consoles.F_SIZE, "Size", 10);
+      Console.Print_Title (MAT.Consoles.F_EVENT, "Event", 40);
       Console.End_Title;
 
       Process.Events.Get_Time_Range (Start, Finish);
@@ -358,9 +355,7 @@ package body MAT.Commands is
                Console.Start_Row;
                Console.Print_Field (MAT.Consoles.F_ID, MAT.Events.Targets.Event_Id_Type'Image (Event.Id));
                Console.Print_Duration (MAT.Consoles.F_TIME, Time);
-               Console.Print_Field (MAT.Consoles.F_EVENT, MAT.Types.Uint16'Image (Event.Event));
-               Console.Print_Field (MAT.Consoles.F_ADDR, Event.Addr);
-               Console.Print_Size (MAT.Consoles.F_SIZE, Event.Size);
+               Console.Print_Field (MAT.Consoles.F_EVENT, MAT.Formats.Event (Event));
                Console.End_Row;
             end if;
          end;
@@ -399,7 +394,7 @@ package body MAT.Commands is
       Console.Notice (N_EVENT_ID, MAT.Formats.Event (Event, Related, Start));
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_FRAME_ID, "Id", 3);
-      Console.Print_Title (MAT.Consoles.F_FRAME_ADDR, "Frame Addr", 10);
+      Console.Print_Title (MAT.Consoles.F_FRAME_ADDR, "Frame Addr", 20);
       Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 80);
       Console.End_Title;
 
@@ -430,7 +425,7 @@ package body MAT.Commands is
                                To     => MAT.Types.Target_Addr'Last,
                                Into   => Maps);
       Console.Start_Title;
-      Console.Print_Title (MAT.Consoles.F_RANGE_ADDR, "Range", 34);
+      Console.Print_Title (MAT.Consoles.F_RANGE_ADDR, "Range", 40);
       Console.Print_Title (MAT.Consoles.F_MODE, "Flags", 4);
       Console.Print_Title (MAT.Consoles.F_FILE_NAME, "Path", 40);
       Console.End_Title;
@@ -504,7 +499,7 @@ package body MAT.Commands is
       Duration := Finish - Start;
       Target.Console.Notice (MAT.Consoles.N_DURATION,
                              "Loaded" & Integer'Image (Count) & " events, duration "
-                             & MAT.Types.Tick_Image (Duration));
+                             & MAT.Formats.Duration (Duration));
 
    exception
       when E : Ada.IO_Exceptions.Name_Error =>
