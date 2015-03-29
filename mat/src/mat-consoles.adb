@@ -70,7 +70,7 @@ package body MAT.Consoles is
    procedure Print_Size (Console : in out Console_Type;
                          Field   : in Field_Type;
                          Size    : in MAT.Types.Target_Size) is
-      Value : constant String := MAT.Types.Target_Size'Image (Size);
+      Value : constant String := MAT.Formats.Size (Size);
    begin
       Console_Type'Class (Console).Print_Field (Field, Value);
    end Print_Size;
