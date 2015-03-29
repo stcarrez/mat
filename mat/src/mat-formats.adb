@@ -24,6 +24,16 @@ package body MAT.Formats is
 
    Conversion : constant String (1 .. 10) := "0123456789";
 
+   function Location (File : in Ada.Strings.Unbounded.Unbounded_String) return String;
+
+   function Event_Malloc (Item       : in MAT.Events.Targets.Probe_Event_Type;
+                          Related    : in MAT.Events.Targets.Target_Event_Vector;
+                          Start_Time : in MAT.Types.Target_Tick_Ref) return String;
+
+   function Event_Free (Item       : in MAT.Events.Targets.Probe_Event_Type;
+                        Related    : in MAT.Events.Targets.Target_Event_Vector;
+                        Start_Time : in MAT.Types.Target_Tick_Ref) return String;
+
    --  ------------------------------
    --  Format the address into a string.
    --  ------------------------------
@@ -78,7 +88,7 @@ package body MAT.Formats is
 
       Sec  : constant MAT.Types.Target_Tick_Ref := Value / 1_000_000;
       Usec : constant MAT.Types.Target_Tick_Ref := Value mod 1_000_000;
-      Msec : Natural := Natural (Usec / 1_000);
+      Msec : constant Natural := Natural (Usec / 1_000);
       Val  : Natural;
       Frac : String (1 .. 5);
    begin
@@ -165,16 +175,12 @@ package body MAT.Formats is
          when MAT.Events.Targets.MSG_LIBRARY =>
             return "library";
 
-         when others =>
-            return "unknown";
-
       end case;
    end Event;
 
    function Event_Malloc (Item       : in MAT.Events.Targets.Probe_Event_Type;
                           Related    : in MAT.Events.Targets.Target_Event_Vector;
                           Start_Time : in MAT.Types.Target_Tick_Ref) return String is
-      Iter : MAT.Events.Targets.Target_Event_Cursor := Related.First;
       Free_Event : MAT.Events.Targets.Probe_Event_Type;
    begin
       Free_Event := MAT.Events.Targets.Find (Related, MAT.Events.Targets.MSG_FREE);
@@ -191,17 +197,15 @@ package body MAT.Formats is
    end Event_Malloc;
 
    function Event_Free (Item       : in MAT.Events.Targets.Probe_Event_Type;
-                          Related    : in MAT.Events.Targets.Target_Event_Vector;
-                          Start_Time : in MAT.Types.Target_Tick_Ref) return String is
-      Iter : MAT.Events.Targets.Target_Event_Cursor := Related.First;
+                        Related    : in MAT.Events.Targets.Target_Event_Vector;
+                        Start_Time : in MAT.Types.Target_Tick_Ref) return String is
       Alloc_Event : MAT.Events.Targets.Probe_Event_Type;
    begin
       Alloc_Event := MAT.Events.Targets.Find (Related, MAT.Events.Targets.MSG_MALLOC);
 
       return Size (Alloc_Event.Size) & " bytes freed after " & Duration (Item.Time - Start_Time)
         & ", alloc'ed for " & Duration (Item.Time - Alloc_Event.Time)
-        & " by event" & MAT.Events.Targets.Event_Id_Type'Image (Alloc_Event.Id)
-      ;
+        & " by event" & MAT.Events.Targets.Event_Id_Type'Image (Alloc_Event.Id);
 
    exception
       when MAT.Events.Targets.Not_Found =>
@@ -209,7 +213,9 @@ package body MAT.Formats is
 
    end Event_Free;
 
+   --  ------------------------------
    --  Format a short description of the event.
+   --  ------------------------------
    function Event (Item       : in MAT.Events.Targets.Probe_Event_Type;
                    Related    : in MAT.Events.Targets.Target_Event_Vector;
                    Start_Time : in MAT.Types.Target_Tick_Ref) return String is
@@ -232,9 +238,6 @@ package body MAT.Formats is
 
          when MAT.Events.Targets.MSG_LIBRARY =>
             return "Library information event";
-
-         when others =>
-            return "unknown";
 
       end case;
    end Event;
