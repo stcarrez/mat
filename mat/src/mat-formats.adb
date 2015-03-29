@@ -140,17 +140,30 @@ package body MAT.Formats is
       end if;
    end Location;
 
+   --  ------------------------------
+   --  Format a short description of the event.
+   --  ------------------------------
    function Event (Item : in MAT.Events.Targets.Probe_Event_Type) return String is
    begin
       case Item.Index is
          when MAT.Events.Targets.MSG_MALLOC =>
-            return Size (Item.Size) & " bytes allocated";
+            return "malloc(" & Size (Item.Size) & ") = " & Addr (Item.Addr);
 
          when MAT.Events.Targets.MSG_REALLOC =>
-            return Size (Item.Size) & " bytes reallocated";
+            return "realloc(" & Addr (Item.Old_Addr) & "," & Size (Item.Size) & ") = "
+              & Addr (Item.Addr);
 
          when MAT.Events.Targets.MSG_FREE =>
-            return Size (Item.Size) & " bytes freed";
+            return "free(" & Addr (Item.Addr) & ")";
+
+         when MAT.Events.Targets.MSG_BEGIN =>
+            return "begin";
+
+         when MAT.Events.Targets.MSG_END =>
+            return "end";
+
+         when MAT.Events.Targets.MSG_LIBRARY =>
+            return "library";
 
          when others =>
             return "unknown";
@@ -167,13 +180,13 @@ package body MAT.Formats is
       Free_Event := MAT.Events.Targets.Find (Related, MAT.Events.Targets.MSG_FREE);
 
       return Size (Item.Size) & " bytes allocated after " & Duration (Item.Time - Start_Time)
-        & ", freed by event" & MAT.Events.Targets.Event_Id_Type'Image (Free_Event.Id)
-        & " after " & Duration (Free_Event.Time - Item.Time)
+        & ", freed " & Duration (Free_Event.Time - Item.Time)
+        & " after by event" & MAT.Events.Targets.Event_Id_Type'Image (Free_Event.Id)
       ;
 
    exception
       when MAT.Events.Targets.Not_Found =>
-         return Size (Item.Size) & " bytes allocated";
+         return Size (Item.Size) & " bytes allocated (never freed)";
 
    end Event_Malloc;
 
