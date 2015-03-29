@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-frames - Representation of stack frames
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -256,9 +256,9 @@ package body MAT.Frames is
             Current := Current.Parent;
          end if;
       end loop;
-      if not Check (Get_Root (Frame)) then
-         Log.Error ("Frame is invalid");
-      end if;
+--        if not Check (Get_Root (Frame)) then
+--           Log.Error ("Frame is invalid");
+--        end if;
    end Release;
 
    --  ------------------------------
@@ -320,9 +320,9 @@ package body MAT.Frames is
          Child.Next := New_Parent;
       end if;
       F := New_Parent;
-      if not Check (Get_Root (F)) then
-         Log.Error ("Error when splitting frame");
-      end if;
+--        if not Check (Get_Root (F)) then
+--           Log.Error ("Error when splitting frame");
+--        end if;
    end Split;
 
    procedure Add_Frame (F      : in Frame_Type;
@@ -349,9 +349,9 @@ package body MAT.Frames is
          Child.Calls (1 .. Cnt) := Pc (Pos .. Pos + Cnt - 1);
          Pos := Pos + Cnt;
          Child.Parent.Children := Child;
-         if not Check (Get_Root (Child)) then
-            Log.Error ("Error when adding frame");
-         end if;
+--           if not Check (Get_Root (Child)) then
+--              Log.Error ("Error when adding frame");
+--           end if;
       end loop;
       Result := Child;
    end Add_Frame;
