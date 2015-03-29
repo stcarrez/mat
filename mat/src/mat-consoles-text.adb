@@ -51,18 +51,15 @@ package body MAT.Consoles.Text is
                           Justify : in Justify_Type := J_LEFT) is
       use type Ada.Text_IO.Count;
 
-      Pos   : Ada.Text_IO.Count := Ada.Text_IO.Count (Console.Cols (Field));
+      Pos   : constant Ada.Text_IO.Count := Ada.Text_IO.Count (Console.Cols (Field));
       Size  : constant Natural := Console.Sizes (Field);
       Start : Natural := Value'First;
-      Last  : Natural := Value'Last;
+      Last  : constant Natural := Value'Last;
       Pad   : Natural := 0;
-      Fill  : Natural := 0;
    begin
       case Justify is
          when J_LEFT =>
-            if Value'Length < Size then
-               Fill := Size - Value'Length;
-            else
+            if Value'Length > Size then
                Start := Last - Size + 1;
             end if;
 
@@ -76,7 +73,6 @@ package body MAT.Consoles.Text is
          when J_CENTER =>
             if Value'Length < Size then
                Pad  := (Size - Value'Length) / 2;
-               Fill := Size - Value'Length - Pad;
             else
                Start := Last - Size + 1;
             end if;
