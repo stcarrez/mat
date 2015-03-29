@@ -1,5 +1,6 @@
 
 pragma Style_Checks (Off);
+with Interfaces;
 with MAT.Expressions.Parser_Goto;
 with MAT.Expressions.Parser_Tokens; 
 with MAT.Expressions.Parser_Shift_Reduce;
@@ -12,12 +13,27 @@ package body MAT.Expressions.Parser is
    use Ada;
    use MAT.Expressions.Lexer;
    use type Ada.Text_IO.Count;
+   use type MAT.Types.Target_Tick_Ref;
+   use type MAT.Events.Targets.Event_Id_Type;
+   use type Interfaces.Unsigned_64;
 
    procedure yyparse;
 
    procedure yyerror (s : in String := "syntax error");
 
+   function To_Event_Id_Type (Value : in MAT.Types.Uint64) return MAT.Events.Targets.Event_Id_Type;
+
    Expr : MAT.Expressions.Expression_Type;
+
+   function To_Event_Id_Type (Value : in MAT.Types.Uint64)
+      return MAT.Events.Targets.Event_Id_Type is
+   begin
+      if Value > MAT.Types.Uint64 (MAT.Events.Targets.Event_Id_Type'Last) then
+         return MAT.Events.Targets.Event_Id_Type'Last;
+      else
+         return MAT.Events.Targets.Event_Id_Type (Value);
+      end if;
+   end To_Event_Id_Type;
 
    procedure yyerror (s : in String := "syntax error") is
    begin
@@ -56,7 +72,7 @@ procedure YYParse is
 
        -- the size of the value and state stacks
        --  Affects error 'Stack size exceeded on state_stack'
-       stack_size : constant Natural :=  8192;
+       stack_size : constant Natural :=  256;
 
        -- subtype rule         is natural;
        subtype parse_state  is natural;
@@ -298,43 +314,43 @@ begin
 
                 case yy.rule_id is
 
-when 1 => -- #line 44
+when 1 => -- #line 34
 
-			  Expr := 
+              Expr := 
 yy.value_stack(yy.tos).Expr;
-			
+            
 
-when 2 => -- #line 51
+when 2 => -- #line 41
 
-			  
+              
 yyval := 
 yy.value_stack(yy.tos-1);
-			
+            
 
-when 3 => -- #line 56
+when 3 => -- #line 46
 
-			  
+              
 yyval.expr := MAT.Expressions.Create_Not (
 yy.value_stack(yy.tos).expr);
-			
+            
 
-when 4 => -- #line 61
+when 4 => -- #line 51
 
-			  
+              
 yyval.expr := MAT.Expressions.Create_Or (
 yy.value_stack(yy.tos-2).expr, 
 yy.value_stack(yy.tos).expr);
-			
+            
 
-when 5 => -- #line 66
+when 5 => -- #line 56
 
-			  
+              
 yyval.expr := MAT.Expressions.Create_And (
 yy.value_stack(yy.tos-2).expr, 
 yy.value_stack(yy.tos).expr);
-			
+            
 
-when 6 => -- #line 71
+when 6 => -- #line 61
 
                if 
 yy.value_stack(yy.tos-1).bval then
@@ -346,9 +362,9 @@ yy.value_stack(yy.tos).name, MAT.Expressions.INSIDE_DIRECT_FILE);
 yyval.expr := MAT.Expressions.Create_Inside (
 yy.value_stack(yy.tos).name, MAT.Expressions.INSIDE_FILE);
                end if;
-			
+            
 
-when 7 => -- #line 80
+when 7 => -- #line 70
 
                if 
 yy.value_stack(yy.tos-1).bval then
@@ -360,130 +376,203 @@ yy.value_stack(yy.tos).name, MAT.Expressions.INSIDE_DIRECT_FUNCTION);
 yyval.expr := MAT.Expressions.Create_Inside (
 yy.value_stack(yy.tos).name, MAT.Expressions.INSIDE_FUNCTION);
                end if;
-			
+            
 
-when 8 => -- #line 89
+when 8 => -- #line 79
 
-			  
+              
 yyval := 
 yy.value_stack(yy.tos-2);
-			
+            
 
-when 9 => -- #line 94
+when 9 => -- #line 84
 
-			  
+              
 yyval := 
 yy.value_stack(yy.tos);
-			
+            
 
-when 10 => -- #line 99
+when 10 => -- #line 89
 
-			  
+              
 yyval := 
 yy.value_stack(yy.tos);
-			
+            
 
-when 11 => -- #line 104
+when 11 => -- #line 94
 
-			  
+              
 yyval := 
 yy.value_stack(yy.tos); -- new Condition( C_STIME, $2 );
-			
+            
 
-when 12 => -- #line 109
+when 12 => -- #line 99
 
-			  
+              
 yyval.expr := MAT.Expressions.Create_Size (MAT.Types.Target_Size (
-yy.value_stack(yy.tos).low), MAT.Types.Target_Size (
+yy.value_stack(yy.tos).low),
+                                                      MAT.Types.Target_Size (
 yy.value_stack(yy.tos).high));
-			
+            
 
-when 13 => -- #line 114
+when 13 => -- #line 105
 
-			  
+              
+yyval.expr := MAT.Expressions.Create_Size (MAT.Types.Target_Size (
+yy.value_stack(yy.tos).low),
+                                                      MAT.Types.Target_Size (
+yy.value_stack(yy.tos).high));
+            
+
+when 14 => -- #line 111
+
+              
 yyval.expr := MAT.Expressions.Create_Addr (MAT.Types.Target_Addr (
-yy.value_stack(yy.tos).low), MAT.Types.Target_Addr (
+yy.value_stack(yy.tos).low),
+                                                      MAT.Types.Target_Addr (
 yy.value_stack(yy.tos).high));
-			
+            
 
-when 14 => -- #line 119
+when 15 => -- #line 117
 
-			  
-yyval := 
-yy.value_stack(yy.tos);
-			
+              
+yyval.expr := MAT.Expressions.Create_Event (To_Event_Id_Type (
+yy.value_stack(yy.tos).low),
+                                                       To_Event_Id_Type (
+yy.value_stack(yy.tos).high));
+            
 
-when 15 => -- #line 124
- 
-yyval.bval := True;
-			
+when 16 => -- #line 123
 
-when 16 => -- #line 128
+              
+yyval.expr := MAT.Expressions.Create_Event (To_Event_Id_Type (
+yy.value_stack(yy.tos).low),
+                                                       To_Event_Id_Type (
+yy.value_stack(yy.tos).high));
+            
 
-			  
+when 17 => -- #line 129
+
+              
 yyval.low := 0;
-			
+            
 
-when 17 => -- #line 135
- 
-yyval.low := 0;				
+when 18 => -- #line 136
 
-when 18 => -- #line 138
- 
-yyval.low := 0;				
-
-when 19 => -- #line 143
- 
-yyval.low := 1;				
-
-when 20 => -- #line 146
- 
-yyval := MAT.Expressions.Parser_Tokens.YYLval;	
-
-when 21 => -- #line 151
-
-				  
-yyval.low  := 
-yy.value_stack(yy.tos-3).low;
-				  
-yyval.high := 
-yy.value_stack(yy.tos-1).low;
-				
-
-when 22 => -- #line 157
-
-				  
-yyval.low  := 
-yy.value_stack(yy.tos-3).low;
-				  
-yyval.high := 
-yy.value_stack(yy.tos-1).low;
-				
-
-when 23 => -- #line 163
-
-				  
+              
 yyval.low  := 0;
-                  
-yyval.high := 0;
-				  -- error( "Wrong  range specification" );
-				
+              
+yyval.high := 
+yy.value_stack(yy.tos).low - 1;
+            
 
-when 24 => -- #line 172
+when 19 => -- #line 142
+
+              
+yyval.low  := 0;
+              
+yyval.high := 
+yy.value_stack(yy.tos).low;
+            
+
+when 20 => -- #line 148
+
+              
+yyval.low  := 
+yy.value_stack(yy.tos).low + 1;
+              
+yyval.high := MAT.Types.Uint64'Last;
+            
+
+when 21 => -- #line 154
+
+              
+yyval.low  := 
+yy.value_stack(yy.tos).low;
+              
+yyval.high := MAT.Types.Uint64'Last;
+            
+
+when 22 => -- #line 160
+
+              
+yyval.low  := 
+yy.value_stack(yy.tos).low;
+              
+yyval.high := 
+yy.value_stack(yy.tos).low;
+            
+
+when 23 => -- #line 166
+
+              
+yyval.low := 
+yy.value_stack(yy.tos).low;
+			  
+yyval.high := 
+yy.value_stack(yy.tos).low;
+            
+
+when 24 => -- #line 174
  
-yyval := MAT.Expressions.Parser_Tokens.YYLval; 
+yyval.low := 0;              
 
 when 25 => -- #line 177
  
-yyval.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);	
+yyval.low := 0;              
 
 when 26 => -- #line 182
  
-yyval.bval := True;			
+yyval.low := 1;              
 
 when 27 => -- #line 185
  
-yyval.bval := False;			
+yyval := MAT.Expressions.Parser_Tokens.YYLval;   
+
+when 28 => -- #line 190
+
+                  
+yyval.low  := 
+yy.value_stack(yy.tos-3).low;
+                  
+yyval.high := 
+yy.value_stack(yy.tos-1).low;
+                
+
+when 29 => -- #line 196
+
+                  
+yyval.low  := 
+yy.value_stack(yy.tos-3).low;
+                  
+yyval.high := 
+yy.value_stack(yy.tos-1).low;
+                
+
+when 30 => -- #line 202
+
+                  
+yyval.low  := 0;
+                  
+yyval.high := 0;
+                  -- error( "Wrong  range specification" );
+                
+
+when 31 => -- #line 211
+ 
+yyval := MAT.Expressions.Parser_Tokens.YYLval; 
+
+when 32 => -- #line 216
+ 
+yyval.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);  
+
+when 33 => -- #line 221
+ 
+yyval.bval := True;          
+
+when 34 => -- #line 224
+ 
+yyval.bval := False;         
 
                     when others => null;
                 end case;

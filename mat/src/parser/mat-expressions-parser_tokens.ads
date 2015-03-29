@@ -2,16 +2,14 @@ pragma Style_Checks (Off);
 package Mat.Expressions.Parser_Tokens is
 
 
-    type key_type is (str, ival, ctree);
-    
-    type yystype is record
-        low  : MAT.Types.Uint64 := 0;
-        high : MAT.Types.Uint64 := 0;
-        bval : Boolean := False;
-        name : Ada.Strings.Unbounded.Unbounded_String;
-        expr : MAT.Expressions.Expression_Type;
-    end record;
-    
+   type yystype is record
+      low   : MAT.Types.Uint64 := 0;
+      high  : MAT.Types.Uint64 := 0;
+      bval  : Boolean := False;
+      name  : Ada.Strings.Unbounded.Unbounded_String;
+      expr  : MAT.Expressions.Expression_Type;
+   end record;
+
 
     YYLVal, YYVal : YYSType; 
     type Token is
@@ -24,7 +22,10 @@ package Mat.Expressions.Parser_Tokens is
          T_Reallocation, T_All, T_Unot,
          T_Within, T_Use, T_After,
          T_Before, T_Direct, T_Is,
-         T_Range, '[', ']',
+         T_Thread, T_Range, T_Event,
+         T_Time, T_Lt, T_Le,
+         T_Gt, T_Ge, T_Ne,
+         T_Eq, '[', ']',
          '(', ')', ',' );
 
     Syntax_Error : exception;
