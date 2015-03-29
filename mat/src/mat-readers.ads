@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-readers -- Reader
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +15,14 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with Ada.Containers;
-with Ada.Finalization;
+--  with Ada.Containers;
+--  with Ada.Finalization;
 
 with System;
 
 with Util.Streams.Buffered;
 
-with MAT.Types;
+--  with MAT.Types;
 with MAT.Events;
 package MAT.Readers is
 
