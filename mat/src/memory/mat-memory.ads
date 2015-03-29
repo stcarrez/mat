@@ -22,7 +22,6 @@ with ELF;
 with MAT.Types;
 with MAT.Frames;
 
-with Interfaces;
 package MAT.Memory is
 
    type Allocation is record
@@ -89,7 +88,5 @@ package MAT.Memory is
 
    subtype Region_Info_Map is Region_Info_Maps.Map;
    subtype Region_Info_Cursor is Region_Info_Maps.Cursor;
-
-private
 
 end MAT.Memory;
