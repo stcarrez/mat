@@ -94,9 +94,9 @@ package body MAT.Targets.Probes is
    end Create_Process;
 
    procedure Probe_Begin (Probe : in Process_Probe_Type;
-                          Id          : in MAT.Events.Targets.Probe_Index_Type;
-                          Defs        : in MAT.Events.Attribute_Table;
-                          Msg         : in out MAT.Readers.Message) is
+                          Defs  : in MAT.Events.Attribute_Table;
+                          Msg   : in out MAT.Readers.Message;
+                          Event : in out MAT.Events.Targets.Probe_Event_Type) is
       use type MAT.Types.Target_Addr;
 
       Pid  : MAT.Types.Target_Process_Ref := 0;
@@ -125,8 +125,10 @@ package body MAT.Targets.Probes is
             end case;
          end;
       end loop;
-      Heap.Size       := Heap.End_Addr - Heap.Start_Addr;
-      Heap.Path       := Ada.Strings.Unbounded.To_Unbounded_String ("[heap]");
+      Heap.Size  := Heap.End_Addr - Heap.Start_Addr;
+      Heap.Path  := Ada.Strings.Unbounded.To_Unbounded_String ("[heap]");
+      Event.Addr := Heap.Start_Addr;
+      Event.Size := Heap.Size;
       Probe.Create_Process (Pid, Path);
       Probe.Manager.Read_Message (Msg);
       Probe.Manager.Read_Event_Definitions (Msg);
@@ -137,9 +139,9 @@ package body MAT.Targets.Probes is
    --  Extract the information from the 'library' event.
    --  ------------------------------
    procedure Probe_Library (Probe : in Process_Probe_Type;
-                            Id    : in MAT.Events.Targets.Probe_Index_Type;
                             Defs  : in MAT.Events.Attribute_Table;
-                            Msg   : in out MAT.Readers.Message) is
+                            Msg   : in out MAT.Readers.Message;
+                            Event : in out MAT.Events.Targets.Probe_Event_Type) is
       use type MAT.Types.Target_Addr;
 
       Count : MAT.Types.Target_Size := 0;
@@ -169,6 +171,8 @@ package body MAT.Targets.Probes is
             end case;
          end;
       end loop;
+      Event.Addr := Addr;
+      Event.Size := 0;
       for Region in 1 .. Count loop
          declare
             Region : MAT.Memory.Region_Info;
@@ -200,6 +204,7 @@ package body MAT.Targets.Probes is
                Region.Start_Addr := Addr + Region.Start_Addr;
                Region.End_Addr   := Region.Start_Addr + Region.Size;
                Region.Path := Path;
+               Event.Size := Event.Size + Region.Size;
                Probe.Target.Process.Memory.Add_Region (Region);
             end if;
          end;
@@ -214,9 +219,9 @@ package body MAT.Targets.Probes is
       use type MAT.Events.Targets.Probe_Index_Type;
    begin
       if Event.Index = MAT.Events.Targets.MSG_BEGIN then
-         Probe.Probe_Begin (Event.Index, Params.all, Msg);
+         Probe.Probe_Begin (Params.all, Msg, Event);
       elsif Event.Index = MAT.Events.Targets.MSG_LIBRARY then
-         Probe.Probe_Library (Event.Index, Params.all, Msg);
+         Probe.Probe_Library (Params.all, Msg, Event);
       end if;
    end Extract;
 
