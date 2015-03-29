@@ -121,7 +121,8 @@ package body MAT.Consoles is
    begin
       if Size <= Item'Length then
          Item (Item'Last - Size + 2 .. Item'Last - Size + 4) := "...";
-         Console_Type'Class (Console).Print_Field (Field, Item (Item'Last - Size + 2 .. Item'Last));
+         Console_Type'Class (Console).Print_Field (Field,
+                                                   Item (Item'Last - Size + 2 .. Item'Last));
       else
          Console_Type'Class (Console).Print_Field (Field, Item, Justify);
       end if;
