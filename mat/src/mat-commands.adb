@@ -351,13 +351,14 @@ package body MAT.Commands is
          declare
             use type MAT.Types.Target_Tick_Ref;
 
-            Event : MAT.Events.Targets.Probe_Event_Type
+            Event : constant MAT.Events.Targets.Probe_Event_Type
               := MAT.Events.Targets.Target_Event_Vectors.Element (Iter);
-            Time  : MAT.Types.Target_Tick_Ref := Event.Time - Start;
+            Time  : constant MAT.Types.Target_Tick_Ref := Event.Time - Start;
          begin
             if Filter.Is_Selected (Event) then
                Console.Start_Row;
-               Console.Print_Field (MAT.Consoles.F_ID, MAT.Events.Targets.Event_Id_Type'Image (Event.Id));
+               Console.Print_Field (MAT.Consoles.F_ID,
+                                    MAT.Events.Targets.Event_Id_Type'Image (Event.Id));
                Console.Print_Duration (MAT.Consoles.F_TIME, Time);
                Console.Print_Field (MAT.Consoles.F_EVENT, MAT.Formats.Event (Event));
                Console.End_Row;
@@ -386,7 +387,6 @@ package body MAT.Commands is
       Id      : MAT.Events.Targets.Event_Id_Type;
       Event   : MAT.Events.Targets.Probe_Event_Type;
       Start, Finish : MAT.Types.Target_Tick_Ref;
-      Time    : MAT.Types.Target_Tick_Ref;
       Related : MAT.Events.Targets.Target_Event_Vector;
    begin
       Id := MAT.Events.Targets.Event_Id_Type'Value (Args);
@@ -394,7 +394,6 @@ package body MAT.Commands is
       MAT.Events.Timelines.Find_Related (Process.Events.all, Event, 10, Related);
       Process.Events.Get_Time_Range (Start, Finish);
 
-      Time := Event.Time - Start;
       Console.Notice (N_EVENT_ID, MAT.Formats.Event (Event, Related, Start));
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_FRAME_ID, "Id", 3);
@@ -415,14 +414,13 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Maps_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String) is
+      pragma Unreferenced (Args);
       use type ELF.Elf32_Word;
 
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Maps    : MAT.Memory.Region_Info_Map;
       Iter    : MAT.Memory.Region_Info_Cursor;
-      Id      : MAT.Events.Targets.Event_Id_Type;
-      Event   : MAT.Events.Targets.Probe_Event_Type;
    begin
       MAT.Memory.Targets.Find (Memory => Process.Memory,
                                From   => MAT.Types.Target_Addr'First,
@@ -435,7 +433,7 @@ package body MAT.Commands is
       Console.End_Title;
 
       Iter := Maps.First;
-      while MAT.Memory.Region_Info_Maps.Has_Element (iter) loop
+      while MAT.Memory.Region_Info_Maps.Has_Element (Iter) loop
          declare
             Region : constant MAT.Memory.Region_Info := MAT.Memory.Region_Info_Maps.Element (Iter);
             Flags  : String (1 .. 3) := "---";
@@ -519,6 +517,7 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Help_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String) is
+      pragma Unreferenced (Args);
       use MAT.Consoles;
 
       Console : constant MAT.Consoles.Console_Access := Target.Console;
@@ -528,9 +527,11 @@ package body MAT.Commands is
       Console.Notice (N_HELP, "events <selection>  --  List the events filtered by the selection");
       Console.Notice (N_HELP, "event id            --  Print the event ID");
       Console.Notice (N_HELP, "threads             --  List the threads");
-      Console.Notice (N_HELP, "slots <selection>   --  List the memory slots filtered by the selection");
+      Console.Notice (N_HELP, "slots <selection>   --  List the memory slots"
+                      & " filtered by the selection");
       Console.Notice (N_HELP, "sizes               --  ");
-      Console.Notice (N_HELP, "frames <level>      --  Print the stack frames up to the given level");
+      Console.Notice (N_HELP, "frames <level>      --  Print the stack frames up"
+                      & " to the given level");
       Console.Notice (N_HELP, "open file           --  Load the mat file to analyze");
       Console.Notice (N_HELP, "symbol file         --  Load the executable symbol file");
    end Help_Command;
