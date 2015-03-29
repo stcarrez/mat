@@ -252,7 +252,7 @@ package body MAT.Expressions.Parser is
 
    procedure yyparse;
 
-   procedure yyerror (s : in String := "syntax error");
+   procedure yyerror (Message : in String := "syntax error");
 
    function To_Event_Id_Type (Value : in MAT.Types.Uint64) return MAT.Events.Targets.Event_Id_Type;
 
@@ -268,7 +268,8 @@ package body MAT.Expressions.Parser is
       end if;
    end To_Event_Id_Type;
 
-   procedure yyerror (s : in String := "syntax error") is
+   procedure yyerror (Message : in String := "syntax error") is
+      pragma Unreferenced (Message);
    begin
       error_count := error_count + 1;
    end yyerror;
