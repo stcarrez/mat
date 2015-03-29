@@ -116,6 +116,7 @@ package body MAT.Commands is
       Slots   : MAT.Memory.Allocation_Map;
       Iter    : MAT.Memory.Allocation_Cursor;
       Symbols : constant MAT.Symbols.Targets.Target_Symbols_Ref := Target.Process.Symbols;
+      Console : constant MAT.Consoles.Console_Access := Target.Console;
 
       procedure Print (Addr : in MAT.Types.Target_Addr;
                        Slot : in MAT.Memory.Allocation) is
@@ -135,24 +136,29 @@ package body MAT.Commands is
          Ada.Text_IO.Put (MAT.Types.Target_Tick_Ref'Image (Slot.Time));
          Ada.Text_IO.New_Line;
          for I in Backtrace'Range loop
-            Ada.Text_IO.Put ("   ");
-            Ada.Text_IO.Put (Natural'Image (I));
-            Ada.Text_IO.Put ("   ");
-            Ada.Text_IO.Put (MAT.Types.Hex_Image (Backtrace (I)));
+            Console.Start_Row;
+            Console.Print_Field (Consoles.F_ID, I);
+            Console.Print_Field (Consoles.F_ADDR, MAT.Formats.Addr (Backtrace (I)));
             MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Symbols.Value.all,
                                                    Addr    => Backtrace (I),
                                                    Name    => Name,
                                                    Func    => Func,
                                                    Line    => Line);
-            Ada.Text_IO.Put ("   ");
-            Ada.Text_IO.Put (MAT.Formats.Location (Name, Line, Func));
-            Ada.Text_IO.New_Line;
+            Console.Print_Field (Consoles.F_FUNCTION_NAME,
+                                 MAT.Formats.Location (Name, Line, Func));
+            Console.End_Row;
          end loop;
       end Print;
 
-      Filter : MAT.Expressions.Expression_Type;
+      Filter  : MAT.Expressions.Expression_Type;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
    begin
+      Console.Start_Title;
+      Console.Print_Title (MAT.Consoles.F_ID, "Id", 4);
+      Console.Print_Title (MAT.Consoles.F_ADDR, "Address", 22);
+      Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 80);
+      Console.End_Title;
+
       Filter := MAT.Expressions.Parse (Args);
       Process.Memory.Find (From   => MAT.Types.Target_Addr'First,
                            To     => MAT.Types.Target_Addr'Last,
@@ -205,7 +211,7 @@ package body MAT.Commands is
             Console.Start_Row;
             Console.Print_Size (MAT.Consoles.F_SIZE, Size);
             Console.Print_Field (MAT.Consoles.F_COUNT, Info.Count);
-            Console.Print_Field (MAT.Consoles.F_TOTAL_SIZE, Total);
+            Console.Print_Size (MAT.Consoles.F_TOTAL_SIZE, Total);
             Console.End_Row;
          end;
          MAT.Memory.Tools.Size_Info_Maps.Next (Iter);
@@ -275,8 +281,6 @@ package body MAT.Commands is
          Level := Positive'Value (Args);
       end if;
       Console.Start_Title;
-      Console.Print_Title (MAT.Consoles.F_FILE_NAME, "File", 20);
-      Console.Print_Title (MAT.Consoles.F_LINE_NUMBER, "Line", 6);
       Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 20);
       Console.Print_Title (MAT.Consoles.F_COUNT, "# Slots", 10);
       Console.Print_Title (MAT.Consoles.F_TOTAL_SIZE, "Total size", 12);
@@ -394,7 +398,7 @@ package body MAT.Commands is
       Console.Notice (N_EVENT_ID, MAT.Formats.Event (Event, Related, Start));
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_FRAME_ID, "Id", 3);
-      Console.Print_Title (MAT.Consoles.F_FRAME_ADDR, "Frame Addr", 20);
+      Console.Print_Title (MAT.Consoles.F_FRAME_ADDR, "Frame Address", 22);
       Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 80);
       Console.End_Title;
 
@@ -425,8 +429,8 @@ package body MAT.Commands is
                                To     => MAT.Types.Target_Addr'Last,
                                Into   => Maps);
       Console.Start_Title;
-      Console.Print_Title (MAT.Consoles.F_RANGE_ADDR, "Range", 40);
-      Console.Print_Title (MAT.Consoles.F_MODE, "Flags", 4);
+      Console.Print_Title (MAT.Consoles.F_RANGE_ADDR, "Address range", 39);
+      Console.Print_Title (MAT.Consoles.F_MODE, "Flags", 6);
       Console.Print_Title (MAT.Consoles.F_FILE_NAME, "Path", 40);
       Console.End_Title;
 
