@@ -42,6 +42,7 @@ package MAT.Consoles is
                        F_FRAME_ADDR);
 
    type Notice_Type is (N_HELP,
+                        N_EVENT_ID,
                         N_PID_INFO,
                         N_DURATION,
                         N_PATH_INFO);
