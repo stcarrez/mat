@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-consoles - Console interface
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,8 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 
+with Util.Strings;
+with MAT.Formats;
 package body MAT.Consoles is
 
    --  ------------------------------
@@ -44,7 +46,7 @@ package body MAT.Consoles is
    procedure Print_Field (Console : in out Console_Type;
                           Field   : in Field_Type;
                           Addr    : in MAT.Types.Target_Addr) is
-      Value : constant String := MAT.Types.Hex_Image (Addr);
+      Value : constant String := MAT.Formats.Addr (Addr);
    begin
       Console_Type'Class (Console).Print_Field (Field, Value);
    end Print_Field;
@@ -56,8 +58,8 @@ package body MAT.Consoles is
                           Field   : in Field_Type;
                           From    : in MAT.Types.Target_Addr;
                           To      : in MAT.Types.Target_Addr) is
-      From_Value : constant String := MAT.Types.Hex_Image (From);
-      To_Value   : constant String := MAT.Types.Hex_Image (To);
+      From_Value : constant String := MAT.Formats.Addr (From);
+      To_Value   : constant String := MAT.Formats.Addr (To);
    begin
       Console_Type'Class (Console).Print_Field (Field, From_Value & "-" & To_Value);
    end Print_Field;
@@ -90,7 +92,7 @@ package body MAT.Consoles is
    procedure Print_Duration (Console  : in out Console_Type;
                              Field    : in Field_Type;
                              Duration : in MAT.Types.Target_Tick_Ref) is
-      Value : constant String := MAT.Types.Tick_Image (Duration);
+      Value : constant String := MAT.Formats.Duration (Duration);
    begin
       Console_Type'Class (Console).Print_Field (Field, Value);
    end Print_Duration;
@@ -102,7 +104,7 @@ package body MAT.Consoles is
                           Field   : in Field_Type;
                           Value   : in Integer;
                           Justify : in Justify_Type := J_LEFT) is
-      Val : constant String := Integer'Image (Value);
+      Val : constant String := Util.Strings.Image (Value);
    begin
       Console_Type'Class (Console).Print_Field (Field, Val, Justify);
    end Print_Field;
