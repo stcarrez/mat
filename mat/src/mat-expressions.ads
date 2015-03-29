@@ -95,6 +95,7 @@ private
                       N_RANGE_TIME, N_EVENT,
                       N_CONDITION, N_THREAD);
 
+
    type Node_Type;
    type Node_Type_Access is access all Node_Type;
 
