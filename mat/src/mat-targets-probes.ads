@@ -53,14 +53,14 @@ package MAT.Targets.Probes is
 private
 
    procedure Probe_Begin (Probe : in Process_Probe_Type;
-                          Id    : in MAT.Events.Targets.Probe_Index_Type;
                           Defs  : in MAT.Events.Attribute_Table;
-                          Msg   : in out MAT.Readers.Message);
+                          Msg   : in out MAT.Readers.Message;
+                          Event : in out MAT.Events.Targets.Probe_Event_Type);
 
    --  Extract the information from the 'library' event.
    procedure Probe_Library (Probe : in Process_Probe_Type;
-                            Id    : in MAT.Events.Targets.Probe_Index_Type;
                             Defs  : in MAT.Events.Attribute_Table;
-                            Msg   : in out MAT.Readers.Message);
+                            Msg   : in out MAT.Readers.Message;
+                            Event : in out MAT.Events.Targets.Probe_Event_Type);
 
 end MAT.Targets.Probes;
