@@ -41,7 +41,7 @@ struct frame
 };
 
 static inline struct frame *
-gp_get_frame_pointer ()
+mat_get_frame_pointer ()
 {
   struct frame *fp;
 
@@ -50,19 +50,19 @@ gp_get_frame_pointer ()
 }
 
 static inline void *
-gp_get_frame_pc (struct frame *fp)
+mat_get_frame_pc (struct frame *fp)
 {
   return fp->pc;
 }
 
 static inline struct frame *
-gp_get_frame_next (struct frame *fp)
+mat_get_frame_next (struct frame *fp)
 {
   return fp->fp;
 }
 
 static inline int
-gp_frame_is_valid (struct frame *fp)
+mat_frame_is_valid (struct frame *fp)
 {
   return IS_VALID_ADDR (fp);
 }

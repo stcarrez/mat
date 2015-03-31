@@ -98,11 +98,11 @@
    wrong results which do not reflect the current stack frame.
    Sparc processors are in this case.  */
 static int
-gp_flush_registers (int count)
+mat_flush_registers (int count)
 {
   if (count > 0)
     {
-      count = gp_flush_registers (count - 1);
+      count = mat_flush_registers (count - 1);
     }
 
   return count;
@@ -111,24 +111,24 @@ gp_flush_registers (int count)
 
 #ifdef HAVE_BACKTRACE
 int
-gp_fetch_stack_frame (void **table, int size, int skip)
+mat_fetch_stack_frame (void **table, int size, int skip)
 {
     return backtrace (table, size);
 }
 #else
 
-static jmp_buf	gp_frame_restart_point;
+static jmp_buf	mat_frame_restart_point;
 
 /* A SIGBUS or SIGSEGV signal has been received while
    examining the stack frame.  */
 static void
 catch_bus_error (int sig)
 {
-  longjmp (gp_frame_restart_point, 1);
+  longjmp (mat_frame_restart_point, 1);
 }
 
 int
-gp_fetch_stack_frame (void **table, int size, int skip)
+mat_fetch_stack_frame (void **table, int size, int skip)
 {
   struct frame	*fp;
   auto int nr_frames = 0;
@@ -154,7 +154,7 @@ gp_fetch_stack_frame (void **table, int size, int skip)
      before setting the new handlers (In most cases this is
      not needed but this is safer: a signal might arrive
      after `sigaction' and before the second `setjmp').  */
-  if (setjmp (gp_frame_restart_point) != 0) 
+  if (setjmp (mat_frame_restart_point) != 0) 
     {
       sigaction (SIGBUS, &oact_SIGBUS, (struct sigaction *) 0);
       sigaction (SIGSEGV, &oact_SIGSEGV, (struct sigaction *) 0);
@@ -167,7 +167,7 @@ gp_fetch_stack_frame (void **table, int size, int skip)
   sigaction (SIGBUS, &act, &oact_SIGBUS);
   sigaction (SIGSEGV, &act, &oact_SIGSEGV);
 
-  if (setjmp (gp_frame_restart_point) != 0) 
+  if (setjmp (mat_frame_restart_point) != 0) 
     {
       sigaction (SIGBUS, &oact_SIGBUS, (struct sigaction *) 0);
       sigaction (SIGSEGV, &oact_SIGSEGV, (struct sigaction *) 0);
@@ -181,18 +181,18 @@ gp_fetch_stack_frame (void **table, int size, int skip)
   /* We have to make sure that the processor's registers are copied in
      memory. This is done by forcing the processor to flush its
      register windows.  */
-  gp_flush_registers (REGISTER_WINDOW_COUNT);
+  mat_flush_registers (REGISTER_WINDOW_COUNT);
 #endif
 
   /* Call the assembly routine to get the frame pointer.  */
   skip++;
-  fp = gp_get_frame_pointer ();
+  fp = mat_get_frame_pointer ();
 
   nr_frames = 0;
 
   /* Make sure this is a valid frame pointer
      and the table is not full.  */
-  while (gp_frame_is_valid (fp) && nr_frames < size)
+  while (mat_frame_is_valid (fp) && nr_frames < size)
     {
       if (skip > 0)
         {
@@ -200,12 +200,12 @@ gp_fetch_stack_frame (void **table, int size, int skip)
         }
       else
         {
-          *table++ = gp_get_frame_pc (fp);
+          *table++ = mat_get_frame_pc (fp);
           nr_frames++;
         }
 
       /* Get the next frame.  */
-      fp = gp_get_frame_next (fp);
+      fp = mat_get_frame_next (fp);
     }
 
 #ifdef HAVE_SIGACION

@@ -24,7 +24,7 @@
 #endif
 
 int
-gp_fetch_stack_frame (void **table, int size, int skip)
+mat_fetch_stack_frame (void **table, int size, int skip)
 {
   return backtrace (table, size);
 }
