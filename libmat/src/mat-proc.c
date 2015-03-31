@@ -28,7 +28,7 @@
 #include "mat-proc.h"
 
 static void
-gp_extract_map_line (char* data, map_info_t* info)
+mat_extract_map_line (char* data, map_info_t* info)
 {
   int i;
 
@@ -82,7 +82,7 @@ gp_extract_map_line (char* data, map_info_t* info)
  * @param data the callback data.
  */
 void
-gp_read_proc_maps (int pid, gp_extract_map_callback callback, void *data)
+mat_read_proc_maps (int pid, mat_extract_map_callback callback, void *data)
 {
   int fd;
   char buf[512];
@@ -129,7 +129,7 @@ gp_read_proc_maps (int pid, gp_extract_map_callback callback, void *data)
           src++;
           size--;
           *p = 0;
-          gp_extract_map_line (line, &info);
+          mat_extract_map_line (line, &info);
           callback (&info, data);
           p = line;
         }

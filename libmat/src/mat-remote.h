@@ -29,28 +29,28 @@
 
 #define DEFAULT_TCP_PORT 4096
 
-struct gp_server;
-struct gp_buffered_server;
+struct mat_server;
+struct mat_buffered_server;
 
-typedef void (* gp_remote_send_t) (struct gp_server *, const void *, size_t);
+typedef void (* mat_remote_send_t) (struct mat_server *, const void *, size_t);
 
-typedef int (* gp_remote_sync_t) (struct gp_server *);
+typedef int (* mat_remote_sync_t) (struct mat_server *);
 
-typedef void (* gp_remote_close_t) (struct gp_server *);
+typedef void (* mat_remote_close_t) (struct mat_server *);
 
-typedef int (* gp_remote_flush_t) (struct gp_buffered_server *);
+typedef int (* mat_remote_flush_t) (struct mat_buffered_server *);
 
-struct gp_server
+struct mat_server
 {
-  gp_remote_send_t  to_send;
-  gp_remote_sync_t  to_synchronize;
-  gp_remote_close_t to_close;
+  mat_remote_send_t  to_send;
+  mat_remote_sync_t  to_synchronize;
+  mat_remote_close_t to_close;
 };
 
-struct gp_buffered_server
+struct mat_buffered_server
 {
-  struct gp_server  root;
-  gp_remote_flush_t to_flush;
+  struct mat_server  root;
+  mat_remote_flush_t to_flush;
   unsigned char*    write_ptr;
   unsigned char*    last_ptr;
   unsigned char     buffer[4096];
@@ -62,17 +62,17 @@ struct gp_buffered_server
  * @param addr the data to send.
  * @param len the number of bytes to send.
  */
-extern void gp_remote_send (const void *addr, size_t len);
+extern void mat_remote_send (const void *addr, size_t len);
 
 /**
  * @brief Close the event probe stream.
  */
-extern void gp_remote_close (void);
+extern void mat_remote_close (void);
 
 /**
  * @brief Synchronize the event probe stream (if enabled).
  */
-extern void gp_remote_sync (void);
+extern void mat_remote_sync (void);
 
 /**
  * @brief Initialize the connection to the server.
@@ -86,7 +86,7 @@ extern void gp_remote_sync (void);
  * @param p the connection string.
  * @return 0
  */
-extern int gp_initialize (const char* p);
+extern int mat_initialize (const char* p);
 
 /**
  * @brief Initialize the connection to the server.
@@ -99,7 +99,7 @@ extern int gp_initialize (const char* p);
  *
  * @return 0
  */
-extern int gp_remote_initialize (const char* p);
+extern int mat_remote_initialize (const char* p);
 
 /**
  * @brief Initialize the buffered server instance.
@@ -107,16 +107,16 @@ extern int gp_remote_initialize (const char* p);
  * @param server the server instance.
  * @param param the configuration parameter.
  */
-extern void gp_buffered_server_initialize (struct gp_buffered_server* server, const char* param);
+extern void mat_buffered_server_initialize (struct mat_buffered_server* server, const char* param);
 
 #ifdef DEBUG
-extern void gp_debug_msg (const char* msg);
-extern void gp_dump (const char* title, int indent, const void* addr, size_t len);
-extern void gp_write (const char* title, int indent, const void* addr, size_t len);
+extern void mat_debug_msg (const char* msg);
+extern void mat_dump (const char* title, int indent, const void* addr, size_t len);
+extern void mat_write (const char* title, int indent, const void* addr, size_t len);
 #else
-# define gp_debug_msg(MSG)
-# define gp_dump(TITLE, INDENT, ADDR, LEN)
-# define gp_write(TITLE, INDENT, ADDR, LEN) gp_remote_send(ADDR, LEN)
+# define mat_debug_msg(MSG)
+# define mat_dump(TITLE, INDENT, ADDR, LEN)
+# define mat_write(TITLE, INDENT, ADDR, LEN) mat_remote_send(ADDR, LEN)
 #endif
 
 #endif

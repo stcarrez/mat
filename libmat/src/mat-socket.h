@@ -17,9 +17,9 @@
 #ifndef _GP_SOCKET_H
 #define _GP_SOCKET_H
 
-struct gp_socket_server 
+struct mat_socket_server 
 {
-  struct gp_buffered_server root;
+  struct mat_buffered_server root;
   int fd;
 };
 
@@ -34,6 +34,6 @@ struct gp_socket_server
  * @param param the TCP/IP server to connect.
  * @return the GP server instance.
  */
-extern struct gp_socket_server* gp_socket_open (struct gp_socket_server* server, const char* param);
+extern struct mat_socket_server* mat_socket_open (struct mat_socket_server* server, const char* param);
 
 #endif

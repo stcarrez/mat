@@ -30,7 +30,7 @@ typedef struct map_info
   char* name;
 } map_info_t;
 
-typedef void (* gp_extract_map_callback) (map_info_t* map, void* data);
+typedef void (* mat_extract_map_callback) (map_info_t* map, void* data);
 
 /**
  * @brief Read the process /proc/<pid>/maps file.
@@ -40,6 +40,6 @@ typedef void (* gp_extract_map_callback) (map_info_t* map, void* data);
  * @param data the callback data.
  */
 extern void
-gp_read_proc_maps (int pid, gp_extract_map_callback callback, void *data);
+mat_read_proc_maps (int pid, mat_extract_map_callback callback, void *data);
 
 #endif

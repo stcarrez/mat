@@ -43,9 +43,9 @@
  * @param file the GP server instance.
  * @return 0 if the operation succeeded.
  */
-static int gp_socket_flush (struct gp_buffered_server* server)
+static int mat_socket_flush (struct mat_buffered_server* server)
 {
-  struct gp_socket_server* sock = (struct gp_socket_server*) server;
+  struct mat_socket_server* sock = (struct mat_socket_server*) server;
   size_t sz = sock->root.write_ptr - sock->root.buffer;
   ssize_t res = write (sock->fd, sock->root.buffer, sz);
   if (res != sz)
@@ -63,14 +63,14 @@ static int gp_socket_flush (struct gp_buffered_server* server)
  *
  * @param server the GP server instance.
  */
-void gp_socket_close (struct gp_server* server)
+void mat_socket_close (struct mat_server* server)
 {
-  struct gp_socket_server* sock = (struct gp_socket_server*) server;
+  struct mat_socket_server* sock = (struct mat_socket_server*) server;
 
   if (sock->fd < 0)
     return;
 
-  if (gp_socket_flush ((struct gp_buffered_server*) sock) == 0)
+  if (mat_socket_flush ((struct mat_buffered_server*) sock) == 0)
     close (sock->fd);
   sock->fd = -1;
 }
@@ -86,7 +86,7 @@ void gp_socket_close (struct gp_server* server)
  * @param param the TCP/IP server to connect.
  * @return the GP server instance.
  */
-struct gp_socket_server* gp_socket_open (struct gp_socket_server* server, const char* param)
+struct mat_socket_server* mat_socket_open (struct mat_socket_server* server, const char* param)
 {
   char host[PATH_MAX];
   char* s;
@@ -137,9 +137,9 @@ struct gp_socket_server* gp_socket_open (struct gp_socket_server* server, const 
   setsockopt (server->fd, SOL_SOCKET, SO_KEEPALIVE, &on, sizeof(on));
   SET_CLOEXEC (server->fd);
 
-  gp_buffered_server_initialize (&server->root, s);
-  server->root.to_flush = gp_socket_flush;
-  server->root.root.to_close = gp_socket_close;
+  mat_buffered_server_initialize (&server->root, s);
+  server->root.to_flush = mat_socket_flush;
+  server->root.root.to_close = mat_socket_close;
   unsetenv ("MAT_SERVER");
   return server;
 }

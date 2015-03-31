@@ -33,14 +33,14 @@
 
 static union 
 {
-  struct gp_file_server   file;
-  struct gp_socket_server socket;
+  struct mat_file_server   file;
+  struct mat_socket_server socket;
 } server_data;
 
-static struct gp_server* server;
+static struct mat_server* server;
 
 #ifdef DEBUG
-static int gp_debug = 0;
+static int mat_debug = 0;
 
 static void
 to_hex (char* buf, unsigned byte)
@@ -50,7 +50,7 @@ to_hex (char* buf, unsigned byte)
 }
 
 void
-gp_dump (const char* title, int indent, const void* addr, size_t len)
+mat_dump (const char* title, int indent, const void* addr, size_t len)
 {
   char buf[256];
   unsigned char* ptr = (unsigned char*) addr;
@@ -72,17 +72,17 @@ gp_dump (const char* title, int indent, const void* addr, size_t len)
 }
 
 void
-gp_write (const char* title, int indent, const void* addr, size_t len)
+mat_write (const char* title, int indent, const void* addr, size_t len)
 {
-  if (gp_debug)
-    gp_dump (title, indent, addr, len);
-  gp_remote_send (addr, len);
+  if (mat_debug)
+    mat_dump (title, indent, addr, len);
+  mat_remote_send (addr, len);
 }
 
 void
-gp_debug_msg (const char*  msg)
+mat_debug_msg (const char*  msg)
 {
-  if (gp_debug)
+  if (mat_debug)
     write (STDERR_FILENO, msg, strlen (msg));
 }
 
@@ -95,9 +95,9 @@ gp_debug_msg (const char*  msg)
  * @param ptr the data to send.
  * @param len the number of bytes to send.
  */
-void gp_buffered_send (struct gp_server* server, const void* ptr, size_t len)
+void mat_buffered_send (struct mat_server* server, const void* ptr, size_t len)
 {
-  struct gp_buffered_server* buffer = (struct gp_buffered_server*) server;
+  struct mat_buffered_server* buffer = (struct mat_buffered_server*) server;
 
   while (len > 0)
     {
@@ -128,9 +128,9 @@ void gp_buffered_send (struct gp_server* server, const void* ptr, size_t len)
  * @param server the GP server instance.
  * @return 0 if the operation succeeded or an error code.
  */
-int gp_buffered_synchronize (struct gp_server* server)
+int mat_buffered_synchronize (struct mat_server* server)
 {
-  struct gp_buffered_server* buffer = (struct gp_buffered_server*) server;
+  struct mat_buffered_server* buffer = (struct mat_buffered_server*) server;
 
   return buffer->to_flush (buffer);
 }
@@ -142,7 +142,7 @@ int gp_buffered_synchronize (struct gp_server* server)
  * @param len the number of bytes to send.
  */
 void
-gp_remote_send (const void *addr, size_t len)
+mat_remote_send (const void *addr, size_t len)
 {
   if (server)
     {
@@ -154,7 +154,7 @@ gp_remote_send (const void *addr, size_t len)
  * @brief Close the event probe stream.
  */
 void
-gp_remote_close (void)
+mat_remote_close (void)
 {
   if (server)
     {
@@ -166,7 +166,7 @@ gp_remote_close (void)
  * @brief Synchronize the event probe stream (if enabled).
  */
 void
-gp_remote_sync (void)
+mat_remote_sync (void)
 {
   if (server && server->to_synchronize)
     {
@@ -181,14 +181,14 @@ gp_remote_sync (void)
  * @param param the configuration parameter.
  */
 void
-gp_buffered_server_initialize (struct gp_buffered_server* server, const char* param)
+mat_buffered_server_initialize (struct mat_buffered_server* server, const char* param)
 {
   server->write_ptr = server->buffer;
   server->last_ptr  = &server->buffer[sizeof (server->buffer)];
-  server->root.to_send        = gp_buffered_send;
+  server->root.to_send        = mat_buffered_send;
   server->root.to_synchronize = NULL;
   if (param != NULL && strcmp (param, "sync") == 0)
-    server->root.to_synchronize = gp_buffered_synchronize;
+    server->root.to_synchronize = mat_buffered_synchronize;
 }
 
 /**
@@ -203,22 +203,22 @@ gp_buffered_server_initialize (struct gp_buffered_server* server, const char* pa
  * @return 0
  */
 int
-gp_remote_initialize (const char* p)
+mat_remote_initialize (const char* p)
 {
   if (p != NULL)
     {
       if (strncmp (p, "file://", 7) == 0)
         {
-          server = (struct gp_server*) gp_file_open (&server_data.file, &p[7]);
+          server = (struct mat_server*) mat_file_open (&server_data.file, &p[7]);
         }
       else if (strncmp (p, "tcp://", 6) == 0)
         {
-          server = (struct gp_server*) gp_socket_open (&server_data.socket, &p[6]);
+          server = (struct mat_server*) mat_socket_open (&server_data.socket, &p[6]);
         }
 #ifdef DEBUG
       if ((server != NULL) && (getenv("MAT_DEBUG") != NULL))
         {
-          gp_debug = 1;
+          mat_debug = 1;
         }
 #endif
     }
