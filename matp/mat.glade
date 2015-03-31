@@ -10,11 +10,11 @@
     <property name="website">http://code.google.com/p/matp</property>
     <property name="license" translatable="yes">Apache License 2.0</property>
     <property name="authors">Stephane Carrez</property>
-    <property name="license_type">custom</property>
+<!--    <property name="license_type">custom</property> -->
     <signal name="close" handler="close-about" swapped="no"/>
     <signal name="response" handler="close-about" swapped="no"/>
     <child internal-child="vbox">
-      <object class="GtkBox" id="aboutdialog-vbox1">
+      <object class="GtkVBox" id="aboutdialog-vbox1">
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
@@ -42,7 +42,7 @@
     <property name="role">GtkFileChooserDialog</property>
     <property name="type_hint">dialog</property>
     <child internal-child="vbox">
-      <object class="GtkBox" id="filechooserdialog-vbox1">
+      <object class="GtkVBox" id="filechooserdialog-vbox1">
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
@@ -75,7 +75,7 @@
     <property name="default_width">1024</property>
     <property name="default_height">600</property>
     <child>
-      <object class="GtkBox" id="box1">
+      <object class="GtkVBox" id="box1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
@@ -442,7 +442,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkPaned" id="paned1">
+          <object class="GtkFrame" id="paned1">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
@@ -493,12 +493,12 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="box2">
+          <object class="GtkHBox" id="box2">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="homogeneous">True</property>
             <child>
-              <object class="GtkBox" id="box3">
+              <object class="GtkHBox" id="box3">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="spacing">3</property>

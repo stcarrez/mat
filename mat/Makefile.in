@@ -1,91 +1,98 @@
-MODE=debug
-GNATMAKE=@GNATMAKE@
-GNATCLEAN=@GNATCLEAN@
-GPRPATH=@GPRPATH@
-SVN=svn
+INSTALL=@INSTALL@
 
-INSTALL = @INSTALL@
-INSTALL_PROGRAM = @INSTALL_PROGRAM@ $(AM_INSTALL_PROGRAM_FLAGS)
-INSTALL_DATA = @INSTALL_DATA@
-INSTALL_SCRIPT = @INSTALL_SCRIPT@
-
-srcdir = @srcdir@
+srcdir = .
 top_srcdir = @top_srcdir@
-VPATH = @srcdir@
+VPATH = @srcdir@/src
 prefix = @prefix@
 exec_prefix = @exec_prefix@
-
-bindir = @bindir@
-sbindir = @sbindir@
-libexecdir = @libexecdir@
-datadir = @datadir@
-datarootdir= @datarootdir@
-sysconfdir = @sysconfdir@
-sharedstatedir = @sharedstatedir@
-localstatedir = @localstatedir@
-libdir = @libdir@
-infodir = @infodir@
-mandir = @mandir@
-includedir = @includedir@
-
 top_builddir = .
-config_dir=${datadir}/dynamo
 
-CPUS := @NR_CPUS@
-MAKE_ARGS=-XMODE=${MODE} -XPROCESSORS=$(CPUS)
+pkgdatadir = $(datadir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkglibexecdir = $(libexecdir)/@PACKAGE@
 
-MAT_GTKADA=@MAT_GTKADA@
-MKDIR=mkdir
-CP=cp
+install_sh_DATA = $(install_sh) -c -m 644
+install_sh_PROGRAM = $(install_sh) -c
+install_sh_SCRIPT = $(install_sh) -c
+INSTALL_HEADER = $(INSTALL_DATA)
 
-# Build executables for all mains defined by the project.
-all build:
-	$(GNATMAKE) -p -P "$(GPRPATH)" $(MAKE_ARGS)
+build_triplet = @build@
+host_triplet = @host@
+target_triplet = @target@
 
-# Not intended for manual invocation.
-# Invoked if automatic builds are enabled.
-# Analyzes only on those sources that have changed.
-# Does not build executables.
-autobuild:
-	$(GNATMAKE) -gnatc -c -k  -P "$(GPRPATH)" $(MAKE_ARGS)
+bindir=${prefix}/bin
+libdir=${prefix}/lib
 
-# Clean the root project of all build products.
+AR = @AR@
+AS = @AS@
+CC = @CC@
+CFLAGS = @CFLAGS@ -Wall -fpic
+CPPFLAGS = @CPPFLAGS@
+ECHO_C = @ECHO_C@
+ECHO_N = @ECHO_N@
+ECHO_T = @ECHO_T@
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_SCRIPT = @INSTALL_SCRIPT@
+INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+LD = @LD@
+LDFLAGS = @LDFLAGS@ -shared
+RANLIB = @RANLIB@
+
+CPPFLAGS += -I$(top_builddir)/src -I$(top_srcdir)/src
+CPPFLAGS += @MAT_DEBUG@ @MAT_TLS@
+
+HEADERS = src/gp-events.h \
+ src/gp-probe.h
+
+SOURCES = \
+	src/gp-events.c \
+	src/gp-probe.c \
+	src/gp-remote.c \
+	src/gp-file.c \
+	src/gp-socket.c \
+	src/gp-malloc.c \
+	src/gp-proc.c \
+	src/shm-channel.c \
+	src/shm-ops.c \
+	@CPU_FILES@
+
+OBJS=gp-events.o \
+	gp-probe.o \
+	gp-remote.o \
+	gp-file.o \
+	gp-malloc.o \
+	gp-socket.o \
+	gp-proc.o \
+	shm-channel.o \
+	shm-ops.o \
+	@CPU_OBJS@
+
+LIBNAME=libgpmat.so
+
+COMPILE=$(CC) $(CFLAGS) $(CPPFLAGS)
+
+LIBS=-ldl
+
+all:	$(LIBNAME)
+
 clean:
-	-$(GNATCLEAN) -q -P "$(GPRPATH)"
+	$(RM) -f $(OBJS) $(LIBNAME)
 
-# Check *all* sources for errors, even those not changed.
-# Does not build executables.
-analyze:
-	$(GNATMAKE) -f  -gnatc -c -k  -P "$(GPRPATH)" $(MAKE_ARGS)
+$(LIBNAME):		$(OBJS)
+	$(CC) -o $(LIBNAME) $(LDFLAGS) $(OBJS) $(LIBS)
 
-# Clean, then build executables for all mains defined by the project.
-rebuild: clean build
-
-bin/mat_harness:  bin/matp
-	$(GNATMAKE) -p -Ptests $(MAKE_ARGS)
-
-bin/matp:		Makefile $(GPRPATH)
-	$(GNATMAKE) -P "$(GPRPATH)" $(MAKE_ARGS)
-
-test:			bin/mat_harness
-	bin/mat_harness
+mat:	  mat.o
+	$(CC) -o mat mat.o
 
 install:
-	$(INSTALL_PROGRAM) bin/matp $(bindir)/
-	$(INSTALL) man/mat.1 $(mandir)/man1/mat.1
+	$(INSTALL) $(LIBNAME) ${libdir}/
+
+.c.o:
+	$(COMPILE) -c $<
 
 
-# Development targets that requires ayacc and aflex to be installed.
-# Do not call these unless you modify the lex/yacc grammar.
-parser:	
-	cd src/parser && \
-	   ayacc -n 256 -v -e .ada mat-expressions-parser.y && \
-	   gnatchop -w mat-expressions-parser.ada && \
-	   rm -f mat-expressions-parser.ada
 
-lexer:
-	cd src/parser; \
-	aflex -ms mat-expressions-lexer.l
-	cd src/parser && \
-	  gnatchop -w mat-expressions-lexer.ada && \
-	  rm -f mat-expressions-lexer.ada
+.NOEXPORT:

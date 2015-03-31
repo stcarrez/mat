@@ -51,7 +51,7 @@ project Config is
    package binder is
       case Mode is
          when "debug" =>
-            for Default_Switches ("Ada") use ("-E", "-shared");
+            for Default_Switches ("Ada") use ("-E", "-shared", "-v");
 
 	 when others =>
             for Default_Switches ("Ada") use ("-E");
