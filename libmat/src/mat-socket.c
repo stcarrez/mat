@@ -1,4 +1,4 @@
-/*  gp-socket.c -- Write probe information over a socket stream
+/*  mat-socket.c -- Write probe information over a socket stream
 --  Copyright (C) 2011, 2012, 2013, 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
@@ -14,7 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 */
-#include "gp-config.h"
+#include "mat-config.h"
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
@@ -27,8 +27,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include "gp-remote.h"
-#include "gp-socket.h"
+#include "mat-remote.h"
+#include "mat-socket.h"
 
 #ifndef SOCK_CLOEXEC
 # define SOCK_CLOEXEC 0
