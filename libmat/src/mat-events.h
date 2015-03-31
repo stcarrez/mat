@@ -28,7 +28,7 @@ typedef enum
   GP_CPU_X86    = 0x8600,
   GP_CPU_X86_64 = 0x8664,
   GP_CPU_MIPS
-} gp_cpu_id;
+} mat_cpu_id;
     
 /**
  * @brief Basic data types which can be sent to the event probe stream.
@@ -40,12 +40,12 @@ typedef enum
   GP_TYPE_UINT32,
   GP_TYPE_UINT64,
   GP_TYPE_STRING
-} gp_type_id;
+} mat_type_id;
 
 #define GP_TYPE_SIZE_T  GP_TYPE_UINT32
 #define GP_TYPE_POINTER GP_TYPE_UINT32
 
-typedef gp_uint32 gp_pointer;
+typedef mat_uint32 mat_pointer;
 
 /**
  * @brief The list of probe events which can be sent in the event probe  stream.
@@ -61,7 +61,7 @@ typedef enum
   GP_EVENT_MUTEX_TRYLOCK,
   GP_EVENT_MUTEX_UNLOCK,
   GP_EVENT_SHLIB
-} gp_event_type;
+} mat_event_type;
 
 
 /**
@@ -69,10 +69,10 @@ typedef enum
  *
  * Each attribute description describes a value that is sent in the event data stream.
  */
-struct gp_attr_def
+struct mat_attr_def
 {
   const char *name;
-  gp_type_id type;
+  mat_type_id type;
   int        size;
 };
 
@@ -82,35 +82,35 @@ struct gp_attr_def
  * The event description describes the values that are sent in the event data
  * stream for a given event probe.
  */
-struct gp_event_def
+struct mat_event_def
 {
   const char *name;
-  gp_event_type type;
+  mat_event_type type;
   size_t size;
   int nr_attrs;
-  const struct gp_attr_def *attributes;
+  const struct mat_attr_def *attributes;
 };
 
-extern void gp_event_send (struct gp_probe *gp, int size,
-                           const struct gp_event_def *type, ...);
+extern void mat_event_send (struct mat_probe *gp, int size,
+                           const struct mat_event_def *type, ...);
 
-extern void gp_event_malloc (struct gp_probe *gp, void *p, size_t size, void* curbrk);
+extern void mat_event_malloc (struct mat_probe *gp, void *p, size_t size, void* curbrk);
 
-extern void gp_event_free (struct gp_probe *gp, void *p);
+extern void mat_event_free (struct mat_probe *gp, void *p);
 
-extern void gp_event_realloc (struct gp_probe *gp, void *p,
+extern void mat_event_realloc (struct mat_probe *gp, void *p,
                               void *old, size_t size, void* curbrk);
 
-extern void gp_event_begin (struct gp_probe *gp);
+extern void mat_event_begin (struct mat_probe *gp);
 
-extern void gp_event_end (struct gp_probe *gp);
+extern void mat_event_end (struct mat_probe *gp);
 
-extern void gp_event_begin (struct gp_probe *gp);
+extern void mat_event_begin (struct mat_probe *gp);
 
-extern void gp_event_end (struct gp_probe *gp);
+extern void mat_event_end (struct mat_probe *gp);
 
-extern void gp_event_mutex_lock (struct gp_probe *gp, void* mutex);
-extern void gp_event_mutex_unlock (struct gp_probe *gp, void* mutex);
-extern void gp_event_mutex_trylock (struct gp_probe *gp, void* mutex);
+extern void mat_event_mutex_lock (struct mat_probe *gp, void* mutex);
+extern void mat_event_mutex_unlock (struct mat_probe *gp, void* mutex);
+extern void mat_event_mutex_trylock (struct mat_probe *gp, void* mutex);
 
 #endif

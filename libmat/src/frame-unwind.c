@@ -59,7 +59,7 @@ backtrace_helper (struct _Unwind_Context *ctx, void *a)
 }
 
 int
-gp_fetch_stack_frame (void **array, int size, int skip)
+mat_fetch_stack_frame (void **array, int size, int skip)
 {
   struct trace_arg arg = { .array = array, .cfa = 0, .size = size, .cnt = -1 };
 
