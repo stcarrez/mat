@@ -21,27 +21,27 @@
 #include "shm-ops.h"
 
 int
-gp_shm_channel_create (struct gp_shm_channel *ch, const char *key,
+mat_shm_channel_create (struct mat_shm_channel *ch, const char *key,
                        long size)
 {
   int result;
 
-  ch->shm_key = gp_shm_get_key (key, SHARED_MEMORY_DEFAULT_KEY);
-  result = gp_shm_create (&ch->shm_send, ch->shm_key, size, 0644, 0);
+  ch->shm_key = mat_shm_get_key (key, SHARED_MEMORY_DEFAULT_KEY);
+  result = mat_shm_create (&ch->shm_send, ch->shm_key, size, 0644, 0);
   return result;
 }
 
 /* Send the message pointed to by `_addr' and holding `_size' bytes.  */
     void
-gp_shm_send (struct gp_shm_channel *ch, const void *_addr, long _size)
+mat_shm_send (struct mat_shm_channel *ch, const void *_addr, long _size)
 {
-  volatile struct gp_shm_header *shm;
+  volatile struct mat_shm_header *shm;
   
-  if (gp_shm_is_initialized (&ch->shm_send) == 0)
+  if (mat_shm_is_initialized (&ch->shm_send) == 0)
     return;
 
   /* Get shared memory communication descriptor.  */
-  shm = (struct gp_shm_header *) gp_shm_addr (&ch->shm_send);
+  shm = (struct mat_shm_header *) mat_shm_addr (&ch->shm_send);
 
   while (1) 
     {
@@ -69,7 +69,7 @@ gp_shm_send (struct gp_shm_channel *ch, const void *_addr, long _size)
       if (freeSize <= 0) 
         {
           shm->senderBlocked = 1;
-          gp_shm_wait (&ch->shm_send);
+          mat_shm_wait (&ch->shm_send);
           /* siSemSend->P();*/
           continue;
 	}
@@ -97,26 +97,26 @@ gp_shm_send (struct gp_shm_channel *ch, const void *_addr, long _size)
 /* Synchronize with the server. We block until the server has
    processed the previous message.  */
 void
-gp_shm_synchronize (struct gp_shm_channel *ch)
+mat_shm_synchronize (struct mat_shm_channel *ch)
 {
-  volatile struct gp_shm_header *shm;
+  volatile struct mat_shm_header *shm;
 
-  if (gp_shm_is_initialized (&ch->shm_send) == 0)
+  if (mat_shm_is_initialized (&ch->shm_send) == 0)
     return;
 
-  shm = (struct gp_shm_header *) gp_shm_addr (&ch->shm_send);
+  shm = (struct mat_shm_header *) mat_shm_addr (&ch->shm_send);
 
   if (shm->syncMode) 
     {
       shm->senderBlocked = 1;
-      gp_shm_wait (&ch->shm_send);
+      mat_shm_wait (&ch->shm_send);
       /* siSemSend->P(); */
     }
 }
 
 void
-gp_shm_channel_destroy (struct gp_shm_channel *ch)
+mat_shm_channel_destroy (struct mat_shm_channel *ch)
 {
-  gp_shm_destroy (&ch->shm_send);
+  mat_shm_destroy (&ch->shm_send);
 }
 

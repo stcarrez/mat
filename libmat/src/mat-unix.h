@@ -51,51 +51,51 @@
  *
  * @return the thread ID.
  */
-static inline gp_uint32 gp_get_thread_id (void)
+static inline mat_uint32 mat_get_thread_id (void)
 {
 #ifdef SYS_gettid
   return syscall (SYS_gettid);
 #else
-  return (gp_uint32) pthread_self ();
+  return (mat_uint32) pthread_self ();
 #endif
 }
 
 struct proc_info
 {
-  gp_uint32	pid;
-  gp_addr	etext;
-  gp_addr	edata;
-  gp_addr	ebss;
-  gp_addr	bss;
-  gp_uint16 exe_length;
+  mat_uint32	pid;
+  mat_addr	etext;
+  mat_addr	edata;
+  mat_addr	ebss;
+  mat_addr	bss;
+  mat_uint16 exe_length;
 };
 
 struct thread_info
 {
-  gp_uint32 thread_id;
-  gp_addr	thread_stack;
+  mat_uint32 thread_id;
+  mat_addr	thread_stack;
 };
 
 struct rusage_info
 {
-  gp_uint32	ru_minflt;
-  gp_uint32	ru_majflt;
-  gp_uint32	ru_nvcsw;
-  gp_uint32	ru_nivcsw;
+  mat_uint32	ru_minflt;
+  mat_uint32	ru_majflt;
+  mat_uint32	ru_nvcsw;
+  mat_uint32	ru_nivcsw;
 };
 
 #ifdef HAVE_FRAME
 struct frame_info
 {
-  gp_uint16	frame_count;
-  gp_uint16 frame_skip_count;
+  mat_uint16	frame_count;
+  mat_uint16 frame_skip_count;
   void**	frame_pc;
 };
 #endif
 
 typedef unsigned long long time_info;
 
-struct gp_probe
+struct mat_probe
 {
   struct timeval        time;
   struct thread_info	thread;
@@ -108,10 +108,10 @@ struct gp_probe
 };
 
 static inline void
-gp_get_probe_info (struct gp_probe *gp)
+mat_get_probe_info (struct mat_probe *gp)
 {
   gettimeofday (&gp->time, (struct timezone*) NULL);
-  gp->thread.thread_id    = gp_get_thread_id ();
+  gp->thread.thread_id    = mat_get_thread_id ();
   gp->thread.thread_stack = 0;
 #ifdef HAVE_RUSAGE
   {
@@ -128,30 +128,30 @@ gp_get_probe_info (struct gp_probe *gp)
 }
 
 static inline void
-gp_remote_send_probe (struct gp_probe *gp)
+mat_remote_send_probe (struct mat_probe *gp)
 {
-  gp_uint32 val = gp->time.tv_sec;
-  gp_remote_send (&val, sizeof (val));
+  mat_uint32 val = gp->time.tv_sec;
+  mat_remote_send (&val, sizeof (val));
   val = gp->time.tv_usec;
-  gp_remote_send (&val, sizeof (val));
-  gp_remote_send (&gp->thread, sizeof (gp->thread));
+  mat_remote_send (&val, sizeof (val));
+  mat_remote_send (&gp->thread, sizeof (gp->thread));
 #ifdef HAVE_RUSAGE
-  gp_remote_send (&gp->rusage, sizeof (gp->rusage));
+  mat_remote_send (&gp->rusage, sizeof (gp->rusage));
 #endif
 #ifdef HAVE_FRAME
   if (gp->frame.frame_count > gp->frame.frame_skip_count)
     {
-      gp_uint16 val = gp->frame.frame_count - gp->frame.frame_skip_count;
+      mat_uint16 val = gp->frame.frame_count - gp->frame.frame_skip_count;
       
-      gp_remote_send (&val, sizeof (val));
-      gp_remote_send (&gp->frame.frame_pc[gp->frame.frame_skip_count],
+      mat_remote_send (&val, sizeof (val));
+      mat_remote_send (&gp->frame.frame_pc[gp->frame.frame_skip_count],
                       (gp->frame.frame_count - gp->frame.frame_skip_count) * sizeof (void*));
     }
 #endif
 }
 
 static inline size_t
-gp_remote_sizeof_probe (struct gp_probe *gp)
+mat_remote_sizeof_probe (struct mat_probe *gp)
 {
   size_t result;
   
@@ -168,7 +168,7 @@ gp_remote_sizeof_probe (struct gp_probe *gp)
 }
 
 #ifdef HAVE_FRAME
-extern int gp_fetch_stack_frame (void** table, int size, int skip);
+extern int mat_fetch_stack_frame (void** table, int size, int skip);
 #endif
 
 #endif

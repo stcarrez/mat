@@ -56,7 +56,7 @@ Boston, MA 02111-1307, USA.  */
 // The shared memory segment and semaphore object are created by
 // the server.
 //
-struct gp_shm_header {
+struct mat_shm_header {
     long	readPos;
     long	writePos;
     long	lastPos;
@@ -77,9 +77,9 @@ struct gp_shm_header {
 // messages. The two memory segments are necessary to allow the tool
 // to analyze itself.
 //
-struct gp_shm_channel
+struct mat_shm_channel
 {
-  struct gp_shm_segment shm_send;
+  struct mat_shm_segment shm_send;
   long   shm_key;
   
   int			siIpcLockCount;

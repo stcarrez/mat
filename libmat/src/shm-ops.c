@@ -50,7 +50,7 @@ union semun {
    in the process's address space. The memory segment is created
    only when the flag O_CREAT is passed in `_mode'.  */
 int
-gp_shm_create (struct gp_shm_segment *seg, long key, long size, 
+mat_shm_create (struct mat_shm_segment *seg, long key, long size, 
                int mode, int creat)
 {
   seg->segStart   = 0;
@@ -100,7 +100,7 @@ gp_shm_create (struct gp_shm_segment *seg, long key, long size,
 /* Unmap the shared memory segment and delete it if it was created
    by the constructor (O_CREAT).  */
 void
-gp_shm_destroy (struct gp_shm_segment *seg)
+mat_shm_destroy (struct mat_shm_segment *seg)
 {
     int res __attribute__((unused));
 
@@ -127,7 +127,7 @@ gp_shm_destroy (struct gp_shm_segment *seg)
 /* Find the key which must be used to connect to the shared
    memory (or open the communication).  */
 long
-gp_shm_get_key (const char *env, const char *def)
+mat_shm_get_key (const char *env, const char *def)
 {
   const char *n = getenv (env);
   long	val;
@@ -166,7 +166,7 @@ gp_shm_get_key (const char *env, const char *def)
 
 /* Get the semaphore.  */
 void
-gp_shm_wait (struct gp_shm_segment *seg)
+mat_shm_wait (struct mat_shm_segment *seg)
 {
   struct sembuf sem;
 
@@ -188,7 +188,7 @@ gp_shm_wait (struct gp_shm_segment *seg)
 
 /* Release the semaphore.  */
 void
-gp_shm_wakeup (struct gp_shm_segment *seg)
+mat_shm_wakeup (struct mat_shm_segment *seg)
 {
   struct sembuf sem;
   int res __attribute__((unused));

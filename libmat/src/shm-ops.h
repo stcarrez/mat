@@ -30,7 +30,7 @@ Boston, MA 02111-1307, USA.  */
 
    The segment is immediately mapped in memory, its size and
    starting address can be fetched using size() and addr().  */
-struct gp_shm_segment 
+struct mat_shm_segment 
 {
   void*	segStart;
   long	segSize;
@@ -43,27 +43,27 @@ struct gp_shm_segment
 /* Map the shared memory segment identified by the key `_key'
    in the process's address space. The memory segment is created
    only when the flag O_CREAT is passed in `_mode'.  */
-extern int gp_shm_create (struct gp_shm_segment *seg,
+extern int mat_shm_create (struct mat_shm_segment *seg,
                           long key, long size, int mode, int creat);
 
 /* Unmap the shared memory segment and delete it if it was created
    by the constructor (O_CREAT).  */
-extern void gp_shm_destroy (struct gp_shm_segment *seg);
+extern void mat_shm_destroy (struct mat_shm_segment *seg);
 
-extern long gp_shm_get_key (const char *env, const char *def);
+extern long mat_shm_get_key (const char *env, const char *def);
 
 /* Get the semaphore.  */
-extern void gp_shm_wait (struct gp_shm_segment *seg);
+extern void mat_shm_wait (struct mat_shm_segment *seg);
 
 
 static inline int
-gp_shm_is_initialized (struct gp_shm_segment *seg)
+mat_shm_is_initialized (struct mat_shm_segment *seg)
 {
   return seg->segId >= 0;
 }
 
 static inline void *
-gp_shm_addr (struct gp_shm_segment *seg)
+mat_shm_addr (struct mat_shm_segment *seg)
 {
   return seg->segStart;
 }
