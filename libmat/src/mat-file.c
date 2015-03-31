@@ -1,4 +1,4 @@
-/*  gp-file.c -- file storage
+/*  mat-file.c -- file storage
 --  Copyright (C) 2011, 2012, 2013, 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
@@ -14,7 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 */
-#include "gp-config.h"
+#include "mat-config.h"
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif
@@ -24,8 +24,8 @@
 #include <fcntl.h>
 #include <string.h>
 #include <limits.h>
-#include "gp-remote.h"
-#include "gp-file.h"
+#include "mat-remote.h"
+#include "mat-file.h"
 
 /**
  * @brief Flush the data stored in the buffer.

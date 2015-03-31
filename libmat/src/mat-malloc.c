@@ -15,11 +15,11 @@
 --  limitations under the License.
 */
 
-#include "gp-config.h"
+#include "mat-config.h"
 #include <dlfcn.h>
-#include "gp-remote.h"
-#include "gp-probe.h"
-#include "gp-events.h"
+#include "mat-remote.h"
+#include "mat-probe.h"
+#include "mat-events.h"
 
 #ifndef RTLD_NEXT
 # define RTLD_NEXT      ((void *) -1l)
