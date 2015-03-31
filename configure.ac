@@ -29,29 +29,33 @@ AC_SUBST(MAT_VERSION)
 # checking for local tools
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
+AC_PROG_CC
+AC_PROG_CPP
+AC_LANG(C)
 
 EXEC_PREFIX="$prefix"
 AC_SUBST(EXEC_PREFIX)
 
-AC_CONFIG_SUBDIRS(libgpmat)
+AC_CONFIG_SUBDIRS(libmat)
 
-SUBDIRS="libgpmat"
+SUBDIRS="libmat mat"
 ac_enable_mat=yes
-AC_ARG_ENABLE(mat,
-[  --enable-mat          Enable compilation of mat tool which requires GNAT Ada compiler (enabled)],
+AC_ARG_ENABLE(matp,
+[  --enable-matp         Enable compilation of matp tool which requires GNAT Ada compiler (enabled)],
 [case "${enableval}" in
-  no|none)  ac_enable_mat= ;;
-  *)        ac_enable_mat=yes
-            SUBDIRS="$DIRS mat"
+  no|none)  ac_enable_matp= ;;
+  *)        ac_enable_matp=yes
+            SUBDIRS="$DIRS matp"
 			;;
 esac])dnl
 
-if test x$ac_enable_mat = 'xyes'; then
-  AC_CONFIG_SUBDIRS(mat)
+if test x$ac_enable_matp = 'xyes'; then
+  AC_CONFIG_SUBDIRS(matp)
 fi
 
 AC_SUBST(SUBDIRS)
 
 AC_OUTPUT(
 Makefile
+mat/Makefile
 )
