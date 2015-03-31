@@ -14,10 +14,10 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 */
-#include "gp-config.h"
+#include "mat-config.h"
 #include <sys/types.h>
-#include "gp-remote.h"
-#include "gp-probe.h"
+#include "mat-remote.h"
+#include "mat-probe.h"
 
 #ifdef HAVE_BACKTRACE
 # include <execinfo.h>

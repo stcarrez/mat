@@ -15,7 +15,7 @@
 --  limitations under the License.
 */
 
-#include "gp-config.h"
+#include "mat-config.h"
 #include "shm-ops.h"
 
 #include <stddef.h>

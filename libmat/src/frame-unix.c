@@ -48,10 +48,10 @@
 ** which can use the register for another purpose. In these cases, the
 ** stack analysis might be broken...)
 */
-#include "gp-config.h"
+#include "mat-config.h"
 #include <stdio.h>
-#include "gp-remote.h"
-#include "gp-probe.h"
+#include "mat-remote.h"
+#include "mat-probe.h"
 
 #ifdef HAVE_BACKTRACE
 # include <execinfo.h>
