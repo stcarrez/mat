@@ -19,7 +19,7 @@ AC_INIT(mat, 1.0,Stephane.Carrez@gmail.com,libmat)
 
 AC_CANONICAL_SYSTEM
 
-AC_CONFIG_HEADERS([src/gp-config.h])
+AC_CONFIG_HEADERS([src/mat-config.h])
 
 AC_EXEEXT
 
