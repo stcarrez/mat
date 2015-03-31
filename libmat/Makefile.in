@@ -44,30 +44,26 @@ RANLIB = @RANLIB@
 CPPFLAGS += -I$(top_builddir)/src -I$(top_srcdir)/src
 CPPFLAGS += @MAT_DEBUG@ @MAT_TLS@
 
-HEADERS = src/gp-events.h \
- src/gp-probe.h
+HEADERS = src/mat-events.h \
+ src/mat-probe.h
 
 SOURCES = \
-	src/gp-events.c \
-	src/gp-probe.c \
-	src/gp-remote.c \
-	src/gp-file.c \
-	src/gp-socket.c \
-	src/gp-malloc.c \
-	src/gp-proc.c \
-	src/shm-channel.c \
-	src/shm-ops.c \
+	src/mat-events.c \
+	src/mat-probe.c \
+	src/mat-remote.c \
+	src/mat-file.c \
+	src/mat-socket.c \
+	src/mat-malloc.c \
+	src/mat-proc.c \
 	@CPU_FILES@
 
-OBJS=gp-events.o \
-	gp-probe.o \
-	gp-remote.o \
-	gp-file.o \
-	gp-malloc.o \
-	gp-socket.o \
-	gp-proc.o \
-	shm-channel.o \
-	shm-ops.o \
+OBJS=mat-events.o \
+	mat-probe.o \
+	mat-remote.o \
+	mat-file.o \
+	mat-malloc.o \
+	mat-socket.o \
+	mat-proc.o \
 	@CPU_OBJS@
 
 LIBNAME=libmat.so
