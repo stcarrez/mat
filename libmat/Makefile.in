@@ -41,11 +41,16 @@ LD = @LD@
 LDFLAGS = @LDFLAGS@ -shared
 RANLIB = @RANLIB@
 
-CPPFLAGS += -I$(top_builddir)/src -I$(top_srcdir)/src
+CPPFLAGS += -I$(top_srcdir)/src
 CPPFLAGS += @MAT_DEBUG@ @MAT_TLS@
 
-HEADERS = src/mat-events.h \
- src/mat-probe.h
+HEADERS = mat-events.h \
+		mat-probe.h \
+		mat-events.h \
+		mat-proc.h \
+		mat-socket.h \
+		mat-file.h \
+		mat-unix.h
 
 SOURCES = \
 	src/mat-events.c \
@@ -86,6 +91,6 @@ install:
 .c.o:
 	$(COMPILE) -c $<
 
-
-
 .NOEXPORT:
+
+$(OBJS):	$(HEADERS)
