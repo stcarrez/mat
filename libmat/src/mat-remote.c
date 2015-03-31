@@ -15,7 +15,7 @@
 --  limitations under the License.
 */
 
-#include "gp-config.h"
+#include "mat-config.h"
 #include <stdarg.h>
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
@@ -24,11 +24,11 @@
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#include "gp-remote.h"
-#include "gp-probe.h"
-#include "gp-events.h"
-#include "gp-file.h"
-#include "gp-socket.h"
+#include "mat-remote.h"
+#include "mat-probe.h"
+#include "mat-events.h"
+#include "mat-file.h"
+#include "mat-socket.h"
 #include "shm-channel.h"
 
 static union 

@@ -1,4 +1,4 @@
-/*  gp-probe.h -- Probe definition
+/*  mat-probe.h -- Probe definition
 --  Copyright (C) 2011, 2012, 2013, 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
@@ -28,7 +28,7 @@ typedef unsigned long long gp_uint64;
 typedef gp_uint32 gp_addr;
 // typedef gp_uint64 gp_addr;
 
-#include "gp-unix.h"
+#include "mat-unix.h"
 
 /**
  * @brief Skip a number of frames in the backtrace report.

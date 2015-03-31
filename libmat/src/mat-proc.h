@@ -1,4 +1,4 @@
-/* gp-proc.c -- Information extracted from /proc
+/* mat-proc.c -- Information extracted from /proc
 --  Copyright (C) 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --

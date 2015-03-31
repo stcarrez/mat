@@ -1,4 +1,4 @@
-/* gp-proc.c -- Information extracted from /proc
+/* mat-proc.c -- Information extracted from /proc
 --  Copyright (C) 2014 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
@@ -14,7 +14,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 */
-#include "gp-config.h"
+#include "mat-config.h"
 #include <string.h>
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
@@ -25,7 +25,7 @@
 #include <fcntl.h>
 #include <limits.h>
 #include <stdio.h>
-#include "gp-proc.h"
+#include "mat-proc.h"
 
 static void
 gp_extract_map_line (char* data, map_info_t* info)

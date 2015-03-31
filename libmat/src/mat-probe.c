@@ -15,16 +15,16 @@
 --  limitations under the License.
 */
 
-#include "gp-config.h"
+#include "mat-config.h"
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef HAVE_PTHREAD_H
 # include <pthread.h>
 #endif
-#include "gp-remote.h"
-#include "gp-probe.h"
-#include "gp-events.h"
+#include "mat-remote.h"
+#include "mat-probe.h"
+#include "mat-events.h"
 
 #ifndef HAVE_PTHREAD_H
 # define pthread_mutex_lock(L)
