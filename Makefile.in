@@ -45,10 +45,11 @@ mat/configure mat/configure.ac \
 mat/config.guess mat/config.sub \
 mat/Makefile.in mat/install-sh \
 mat/mat.gpr.in mat/gtkmat.gpr.in mat/tests.gpr.in mat/config.gpr \
-libgpmat/src \
-libgpmat/configure libgpmat/configure.ac \
-libgpmat/config.guess libgpmat/config.sub \
-libgpmat/Makefile.in libgpmat/install-sh
+libmat/src \
+libmat/configure libmat/configure.ac \
+libmat/config.guess libmat/config.sub \
+libmat/Makefile.in libmat/install-sh \
+mat/Makefile.in mat/mat.c
 
 dist:
 	-rm -rf $(distdir)
