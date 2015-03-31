@@ -32,13 +32,13 @@ extern void* __curbrk;
 # define CURBRK (void*) 0
 #endif
 
-typedef void* (*gp_malloc_t) (size_t);
-typedef void* (*gp_realloc_t) (void*, size_t);
-typedef void (*gp_free_t) (void*);
+typedef void* (*mat_malloc_t) (size_t);
+typedef void* (*mat_realloc_t) (void*, size_t);
+typedef void (*mat_free_t) (void*);
 
-static gp_malloc_t _malloc;
-static gp_realloc_t _realloc;
-static gp_free_t _free;
+static mat_malloc_t _malloc;
+static mat_realloc_t _realloc;
+static mat_free_t _free;
 
 #ifdef HAVE___LIBC_MALLOC
 # define LIBC_MALLOC_SYM   "__libc_malloc"
@@ -52,9 +52,9 @@ static gp_free_t _free;
 
 static void __attribute__ ((constructor)) init (void)
 {
-  _malloc = (gp_malloc_t) dlsym(RTLD_NEXT, LIBC_MALLOC_SYM);
-  _realloc = (gp_realloc_t) dlsym(RTLD_NEXT, LIBC_REALLOC_SYM);
-  _free = (gp_free_t) dlsym(RTLD_NEXT, LIBC_FREE_SYM);
+  _malloc = (mat_malloc_t) dlsym(RTLD_NEXT, LIBC_MALLOC_SYM);
+  _realloc = (mat_realloc_t) dlsym(RTLD_NEXT, LIBC_REALLOC_SYM);
+  _free = (mat_free_t) dlsym(RTLD_NEXT, LIBC_FREE_SYM);
 }
 
 /**
@@ -66,29 +66,29 @@ static void __attribute__ ((constructor)) init (void)
 void*
 __libc_malloc (size_t size)
 {
-  struct gp_probe probe;
+  struct mat_probe probe;
   int has_probe;
   void *p;
 
   /* Get the probe.  */
-  has_probe = gp_get_probe (&probe);
+  has_probe = mat_get_probe (&probe);
 
   if (_malloc == 0)
     {
-      _malloc = (gp_malloc_t) dlsym (RTLD_NEXT, LIBC_MALLOC_SYM);
+      _malloc = (mat_malloc_t) dlsym (RTLD_NEXT, LIBC_MALLOC_SYM);
     }
   
   /* Call the real memory allocator.  */
   p = _malloc (size);
 
   /* Send the information only when this is possible (can have
-     recursive calls to malloc from gp_get_probe, and the communication
+     recursive calls to malloc from mat_get_probe, and the communication
      could also failed to be open).  */
   if (has_probe) 
     {
-      gp_frame_add_skip (&probe, 2);
-      gp_event_malloc (&probe, p, size, CURBRK);
-      gp_free_probe (&probe);
+      mat_frame_add_skip (&probe, 2);
+      mat_event_malloc (&probe, p, size, CURBRK);
+      mat_free_probe (&probe);
     }
 
   return p;
@@ -103,20 +103,20 @@ malloc (size_t size)
 void*
 __libc_realloc (void *ptr, size_t size)
 {
-  struct gp_probe probe;
+  struct mat_probe probe;
   int has_probe;
   void *p;
 
   /* Get the probe information.  */
-  has_probe = gp_get_probe (&probe);
+  has_probe = mat_get_probe (&probe);
 
   p = _realloc (ptr, size);
 
   if (has_probe)
     {
-      gp_frame_add_skip (&probe, 2);
-      gp_event_realloc (&probe, p, ptr, size, CURBRK);
-      gp_free_probe (&probe);
+      mat_frame_add_skip (&probe, 2);
+      mat_event_realloc (&probe, p, ptr, size, CURBRK);
+      mat_free_probe (&probe);
     }
 
   return p;
@@ -131,7 +131,7 @@ realloc (void* ptr, size_t size)
 void
 __libc_free (void* ptr)
 {
-  struct gp_probe probe;
+  struct mat_probe probe;
   int has_probe;
 
   if (ptr == NULL)
@@ -140,13 +140,13 @@ __libc_free (void* ptr)
     }
 
   /* Get the probe information.  */
-  has_probe = gp_get_probe (&probe);
+  has_probe = mat_get_probe (&probe);
 
   if (has_probe) 
     {
-      gp_frame_add_skip (&probe, 2);
-      gp_event_free (&probe, ptr);
-      gp_free_probe (&probe);
+      mat_frame_add_skip (&probe, 2);
+      mat_event_free (&probe, ptr);
+      mat_free_probe (&probe);
     }
 
   if (_free != NULL)

@@ -35,12 +35,12 @@
 # define RTLD_NEXT      ((void *) -1l)
 #endif
 
-int _gp_initialize (void);
+int _mat_initialize (void);
 
 #ifdef HAVE_FRAME
 #define GP_STACK_FRAME_MAX 256
 
-static void* gp_stack_frame_buffer [GP_STACK_FRAME_MAX];
+static void* mat_stack_frame_buffer [GP_STACK_FRAME_MAX];
 #endif
 
 #define LIBC_PTHREAD_MUTEX_LOCK    "pthread_mutex_lock"
@@ -48,7 +48,7 @@ static void* gp_stack_frame_buffer [GP_STACK_FRAME_MAX];
 #define LIBC_PTHREAD_MUTEX_TRYLOCK "pthread_mutex_trylock"
 #define LIBGCC_UNWIND_FIND_FDE     "_Unwind_Find_FDE"
 
-enum gp_probe_state
+enum mat_probe_state
 {
   GP_NOT_INITIALIZED = 0,
   GP_NOT_CONNECTED,
@@ -56,35 +56,35 @@ enum gp_probe_state
   GP_CLOSED
 };
 
-static enum gp_probe_state gp_is_initialized = GP_NOT_INITIALIZED;
-static void* gp_libgcc_s;
+static enum mat_probe_state mat_is_initialized = GP_NOT_INITIALIZED;
+static void* mat_libgcc_s;
 
 #ifdef HAVE_TLS
 
-static __thread int gp_recursive = 0;
+static __thread int mat_recursive = 0;
 
 #elif defined(HAVE_PTHREAD_H)
-static int gp_recursive = 0;
-static pthread_t gp_recursive_thread = -1;
-static pthread_mutex_t gp_recursive_lock = PTHREAD_MUTEX_INITIALIZER;
+static int mat_recursive = 0;
+static pthread_t mat_recursive_thread = -1;
+static pthread_mutex_t mat_recursive_lock = PTHREAD_MUTEX_INITIALIZER;
 
 #else
-static int gp_recursive = 0;
+static int mat_recursive = 0;
 #endif
 
 #ifdef HAVE_PTHREAD_H
-static pthread_mutex_t gp_lock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t mat_mutex = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
-typedef int (* gp_mutex_lock_t) (pthread_mutex_t* m);
-typedef int (* gp_mutex_unlock_t) (pthread_mutex_t* m);
-typedef int (* gp_mutex_trylock_t) (pthread_mutex_t* m);
-typedef void* (* gp_unwind_find_fde_t) (void* pc, void* bases);
+typedef int (* mat_mutex_lock_t) (pthread_mutex_t* m);
+typedef int (* mat_mutex_unlock_t) (pthread_mutex_t* m);
+typedef int (* mat_mutex_trylock_t) (pthread_mutex_t* m);
+typedef void* (* mat_unwind_find_fde_t) (void* pc, void* bases);
 
-static gp_mutex_lock_t _lock;
-static gp_mutex_unlock_t _unlock;
-static gp_mutex_trylock_t _trylock;
-static gp_unwind_find_fde_t _unwind_find_fde;
+static mat_mutex_lock_t _lock;
+static mat_mutex_unlock_t _unlock;
+static mat_mutex_trylock_t _trylock;
+static mat_unwind_find_fde_t _unwind_find_fde;
 
 static inline int mat_lock (pthread_mutex_t* m)
 {
@@ -103,72 +103,72 @@ static inline int mat_unlock (pthread_mutex_t* m)
 }
 
 int
-gp_probe_lock (void)
+mat_probe_lock (void)
 {
 #ifdef HAVE_TLS
-  if (gp_recursive != 0)
+  if (mat_recursive != 0)
     return -1;
 
-  gp_recursive++;
-  return mat_lock (&gp_lock);
+  mat_recursive++;
+  return mat_lock (&mat_mutex);
 
 #elif defined(HAVE_PTHREAD_H)
   pthread_t self = pthread_self ();
 
-  mat_lock (&gp_recursive_lock);
-  if (self == gp_recursive_thread)
+  mat_lock (&mat_recursive_lock);
+  if (self == mat_recursive_thread)
     {
-      mat_unlock (&gp_recursive_lock);
+      mat_unlock (&mat_recursive_lock);
 
       /* We already have the lock.  */
       return -1;
     }
-  mat_unlock (&gp_recursive_lock);
+  mat_unlock (&mat_recursive_lock);
 
   /* Get the probe lock and mark the thread as owner.  */
-  mat_lock (&gp_lock);
+  mat_lock (&mat_mutex);
 
-  mat_lock (&gp_recursive_lock);
-  gp_recursive_thread = self;
-  gp_recursive++;
-  mat_unlock (&gp_recursive_lock);
+  mat_lock (&mat_recursive_lock);
+  mat_recursive_thread = self;
+  mat_recursive++;
+  mat_unlock (&mat_recursive_lock);
   return 0;
 
 #else
-  if (gp_recursive != 0)
+  if (mat_recursive != 0)
     return -1;
 
-  gp_recursive++;  
+  mat_recursive++;  
   return 0;
 #endif
 }
 
 void
-gp_probe_unlock (void)
+mat_probe_unlock (void)
 {
 #ifdef HAVE_TLS
-  gp_recursive--;
-  if (gp_recursive == 0)
-    mat_unlock (&gp_lock);
+  mat_recursive--;
+  if (mat_recursive == 0)
+    mat_unlock (&mat_mutex);
 
 #elif defined(HAVE_PTHREAD_H)
   int count;
 
-  mat_lock (&gp_recursive_lock);
-  count = --gp_recursive;
+  mat_lock (&mat_recursive_lock);
+  count = --mat_recursive;
   if (count == 0)
-      gp_recursive_thread = -1;
+      mat_recursive_thread = -1;
 
-  mat_unlock (&gp_recursive_lock);
+  mat_unlock (&mat_recursive_lock);
 
   /* Release the lock when the counter reaches 0.  */
   if (count == 0)
-    mat_unlock (&gp_lock);
+    mat_unlock (&mat_mutex);
 
 #else
-  gp_recursive--;
-  if (gp_recursive == 0)
-    mat_unlock (&gp_lock);
+  mat_recursive--;
+  if (mat_recursive == 0)
+    mat_unlock (&mat_mutex);
 
 #endif
 }
@@ -184,26 +184,26 @@ _Unwind_Find_FDE (void* pc, void* bases)
      * the pthread_mutex_lock.  Increment the per-thread recursion variable to
      * avoid monitoring these mutex calls.
      */
-    gp_recursive++;
+    mat_recursive++;
     result = _unwind_find_fde (pc, bases);
-    gp_recursive--;
+    mat_recursive--;
     return result;
 }
 
 int
 pthread_mutex_lock (pthread_mutex_t* mutex)
 {
-  struct gp_probe probe;
+  struct mat_probe probe;
   int has_probe;
 
   /* Get the probe information.  */
-  has_probe = gp_get_probe (&probe);
+  has_probe = mat_get_probe (&probe);
 
   if (has_probe) 
     {
-      gp_frame_add_skip (&probe, 2);
-      gp_event_mutex_lock (&probe, mutex);
-      gp_free_probe (&probe);
+      mat_frame_add_skip (&probe, 2);
+      mat_event_mutex_lock (&probe, mutex);
+      mat_free_probe (&probe);
     }
 
   return mat_lock (mutex);
@@ -212,17 +212,17 @@ pthread_mutex_lock (pthread_mutex_t* mutex)
 int
 pthread_mutex_unlock (pthread_mutex_t* mutex)
 {
-  struct gp_probe probe;
+  struct mat_probe probe;
   int has_probe;
 
   /* Get the probe information.  */
-  has_probe = gp_get_probe (&probe);
+  has_probe = mat_get_probe (&probe);
 
   if (has_probe) 
     {
-      gp_frame_add_skip (&probe, 2);
-      gp_event_mutex_lock (&probe, mutex);
-      gp_free_probe (&probe);
+      mat_frame_add_skip (&probe, 2);
+      mat_event_mutex_lock (&probe, mutex);
+      mat_free_probe (&probe);
     }
 
   return mat_unlock (mutex);
@@ -235,10 +235,10 @@ pthread_mutex_trylock (pthread_mutex_t* mutex)
 }
 
 int
-gp_get_probe (struct gp_probe *gp)
+mat_get_probe (struct mat_probe *gp)
 {
   /* Initialize the client prober interface (if needed).  */
-  switch (gp_is_initialized)
+  switch (mat_is_initialized)
     {
     case GP_CONNECTED:
       break;
@@ -248,7 +248,7 @@ gp_get_probe (struct gp_probe *gp)
       return 0;
 
     default:
-      if (_gp_initialize () != 0)
+      if (_mat_initialize () != 0)
         {
           return 0;
         }
@@ -257,51 +257,51 @@ gp_get_probe (struct gp_probe *gp)
   /* Lock the prober interface (only one thread must use it at
      a time, and in particular the same thread must not recursively
      call the prober routines).  */
-  if (gp_probe_lock () != 0)
+  if (mat_probe_lock () != 0)
     {
       return 0;
     }
 
-  gp_get_probe_info (gp);
+  mat_get_probe_info (gp);
 
 #ifdef HAVE_FRAME
-  gp->frame.frame_count = gp_fetch_stack_frame (gp_stack_frame_buffer, GP_STACK_FRAME_MAX, 1);
+  gp->frame.frame_count = mat_fetch_stack_frame (mat_stack_frame_buffer, GP_STACK_FRAME_MAX, 1);
   gp->frame.frame_skip_count = 2;
-  gp->frame.frame_pc = gp_stack_frame_buffer;
+  gp->frame.frame_pc = mat_stack_frame_buffer;
 #endif
   gp->thread.thread_stack = (long) (gp) + sizeof (*gp);
   return 1;
 }
 
 void
-gp_free_probe (struct gp_probe *gp)
+mat_free_probe (struct mat_probe *gp)
 {
-  gp_remote_sync ();
-  gp_probe_unlock ();
+  mat_remote_sync ();
+  mat_probe_unlock ();
 }
 
 void __attribute__ ((destructor))
-gp_exit (void)
+mat_exit (void)
 {
-  struct gp_probe probe;
+  struct mat_probe probe;
   int result;
 
-  result = gp_get_probe (&probe);
+  result = mat_get_probe (&probe);
     
   if (result == 0)
     {
-      gp_event_end (&probe);
-      gp_free_probe (&probe);
+      mat_event_end (&probe);
+      mat_free_probe (&probe);
     }
 
-  gp_remote_close ();
-  gp_is_initialized = GP_CLOSED;
+  mat_remote_close ();
+  mat_is_initialized = GP_CLOSED;
 }
 
 int
-_gp_initialize (void)
+_mat_initialize (void)
 {
-  return gp_initialize (getenv("MAT_SERVER"));
+  return mat_initialize (getenv("MAT_SERVER"));
 }
 
 /**
@@ -317,19 +317,19 @@ _gp_initialize (void)
  * @return 0
  */
 int
-gp_initialize (const char* p)
+mat_initialize (const char* p)
 {
-  struct gp_probe probe;
+  struct mat_probe probe;
   int result;
-  gp_mutex_lock_t lock;
-  gp_mutex_unlock_t unlock;
-  gp_mutex_trylock_t trylock;
-  gp_unwind_find_fde_t find_fde;
+  mat_mutex_lock_t lock;
+  mat_mutex_unlock_t unlock;
+  mat_mutex_trylock_t trylock;
+  mat_unwind_find_fde_t find_fde;
 
-  gp_is_initialized = GP_NOT_CONNECTED;
+  mat_is_initialized = GP_NOT_CONNECTED;
 
   /* Initialize the communication channel.  */
-  result = gp_remote_initialize (p);
+  result = mat_remote_initialize (p);
   if (result < 0)
     {
       return result;
@@ -337,15 +337,15 @@ gp_initialize (const char* p)
 
   /* The dlsym may call malloc.  Set the global variables
      only when we have everything.  */
-  lock = (gp_mutex_lock_t) dlsym (RTLD_NEXT, LIBC_PTHREAD_MUTEX_LOCK);
-  unlock = (gp_mutex_unlock_t) dlsym (RTLD_NEXT, LIBC_PTHREAD_MUTEX_UNLOCK);
-  trylock = (gp_mutex_trylock_t) dlsym (RTLD_NEXT, LIBC_PTHREAD_MUTEX_TRYLOCK);
-  find_fde = (gp_unwind_find_fde_t) dlsym (RTLD_NEXT, LIBGCC_UNWIND_FIND_FDE);
+  lock = (mat_mutex_lock_t) dlsym (RTLD_NEXT, LIBC_PTHREAD_MUTEX_LOCK);
+  unlock = (mat_mutex_unlock_t) dlsym (RTLD_NEXT, LIBC_PTHREAD_MUTEX_UNLOCK);
+  trylock = (mat_mutex_trylock_t) dlsym (RTLD_NEXT, LIBC_PTHREAD_MUTEX_TRYLOCK);
+  find_fde = (mat_unwind_find_fde_t) dlsym (RTLD_NEXT, LIBGCC_UNWIND_FIND_FDE);
   if (find_fde == NULL)
     {
-      gp_libgcc_s = dlopen ("libgcc_s.so.1", RTLD_LAZY);
-      if (gp_libgcc_s != NULL)
-        find_fde = (gp_unwind_find_fde_t) dlsym (gp_libgcc_s, LIBGCC_UNWIND_FIND_FDE);
+      mat_libgcc_s = dlopen ("libgcc_s.so.1", RTLD_LAZY);
+      if (mat_libgcc_s != NULL)
+        find_fde = (mat_unwind_find_fde_t) dlsym (mat_libgcc_s, LIBGCC_UNWIND_FIND_FDE);
     }
 
   _lock = lock;
@@ -353,11 +353,11 @@ gp_initialize (const char* p)
   _trylock = trylock;
   _unwind_find_fde = find_fde;
 
-  gp_is_initialized = GP_CONNECTED;
-  (void) gp_get_probe (&probe);
-  gp_event_begin (&probe);
+  mat_is_initialized = GP_CONNECTED;
+  (void) mat_get_probe (&probe);
+  mat_event_begin (&probe);
 
-  gp_free_probe (&probe);
+  mat_free_probe (&probe);
 
   return 0;
 }

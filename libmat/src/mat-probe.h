@@ -18,15 +18,15 @@
 #ifndef _GP_PROBE_H
 #define _GP_PROBE_H
 
-typedef unsigned char gp_uint8;
-typedef unsigned gp_uint8_varg;
-typedef unsigned short gp_uint16;
-typedef unsigned gp_uint16_varg;
-typedef unsigned long gp_uint32;
-typedef unsigned long long gp_uint64;
+typedef unsigned char mat_uint8;
+typedef unsigned mat_uint8_varg;
+typedef unsigned short mat_uint16;
+typedef unsigned mat_uint16_varg;
+typedef unsigned long mat_uint32;
+typedef unsigned long long mat_uint64;
 
-typedef gp_uint32 gp_addr;
-// typedef gp_uint64 gp_addr;
+typedef mat_uint32 mat_addr;
+// typedef mat_uint64 mat_addr;
 
 #include "mat-unix.h"
 
@@ -37,15 +37,15 @@ typedef gp_uint32 gp_addr;
  * @param skip the number of frames to skip.
  */
 static inline void
-gp_frame_add_skip (struct gp_probe *gp, int skip)
+mat_frame_add_skip (struct mat_probe *gp, int skip)
 {
 #ifdef HAVE_FRAME
     gp->frame.frame_skip_count += skip;
 #endif
 }
 
-extern int gp_get_probe (struct gp_probe *gp);
+extern int mat_get_probe (struct mat_probe *gp);
 
-extern void gp_free_probe (struct gp_probe *gp);
+extern void mat_free_probe (struct mat_probe *gp);
 
 #endif

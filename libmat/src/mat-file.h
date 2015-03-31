@@ -17,9 +17,9 @@
 #ifndef _GP_FILE_H
 #define _GP_FILE_H
 
-struct gp_file_server 
+struct mat_file_server 
 {
-  struct gp_buffered_server root;
+  struct mat_buffered_server root;
   int fd;
 };
 
@@ -30,6 +30,6 @@ struct gp_file_server
  * @param param the file pattern to create.
  * @return the GP server instance.
  */
-extern struct gp_file_server* gp_file_open (struct gp_file_server* server, const char* param);
+extern struct mat_file_server* mat_file_open (struct mat_file_server* server, const char* param);
 
 #endif

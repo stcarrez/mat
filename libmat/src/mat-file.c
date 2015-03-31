@@ -33,9 +33,9 @@
  * @param file the GP server instance.
  * @return 0 if the operation succeeded.
  */
-static int gp_file_flush (struct gp_buffered_server* server)
+static int mat_file_flush (struct mat_buffered_server* server)
 {
-  struct gp_file_server* file = (struct gp_file_server*) server;
+  struct mat_file_server* file = (struct mat_file_server*) server;
   size_t sz = file->root.write_ptr - file->root.buffer;
   ssize_t res = write (file->fd, file->root.buffer, sz);
   if (res != sz)
@@ -53,14 +53,14 @@ static int gp_file_flush (struct gp_buffered_server* server)
  *
  * @param server the GP server instance.
  */
-void gp_file_close (struct gp_server* server)
+void mat_file_close (struct mat_server* server)
 {
-  struct gp_file_server* file = (struct gp_file_server*) server;
+  struct mat_file_server* file = (struct mat_file_server*) server;
 
   if (file->fd < 0)
     return;
 
-  if (gp_file_flush ((struct gp_buffered_server*) server) == 0)
+  if (mat_file_flush ((struct mat_buffered_server*) server) == 0)
     close (file->fd);
   file->fd = -1;
 }
@@ -72,7 +72,7 @@ void gp_file_close (struct gp_server* server)
  * @param param the file pattern to create.
  * @return the GP server instance.
  */
-struct gp_file_server* gp_file_open (struct gp_file_server* server, const char* param)
+struct mat_file_server* mat_file_open (struct mat_file_server* server, const char* param)
 {
   char path[PATH_MAX];
   char* s;
@@ -101,9 +101,9 @@ struct gp_file_server* gp_file_open (struct gp_file_server* server, const char* 
       param++;
     }
 
-  gp_buffered_server_initialize (&server->root, param);
-  server->root.root.to_close       = gp_file_close;
-  server->root.to_flush            = gp_file_flush;
+  mat_buffered_server_initialize (&server->root, param);
+  server->root.root.to_close       = mat_file_close;
+  server->root.to_flush            = mat_file_flush;
    
   return server;
 }
