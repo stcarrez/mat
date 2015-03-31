@@ -70,7 +70,7 @@ OBJS=gp-events.o \
 	shm-ops.o \
 	@CPU_OBJS@
 
-LIBNAME=libgpmat.so
+LIBNAME=libmat.so
 
 COMPILE=$(CC) $(CFLAGS) $(CPPFLAGS)
 
