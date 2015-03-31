@@ -16,7 +16,7 @@
 */
 #define _GNU_SOURCE
 #include <link.h>
-#include "gp-config.h"
+#include "mat-config.h"
 #include <stdarg.h>
 #include <string.h>
 #ifdef HAVE_STDLIB_H
@@ -28,10 +28,10 @@
 #include <fcntl.h>
 #include <limits.h>
 #include <stdio.h>
-#include "gp-remote.h"
-#include "gp-probe.h"
-#include "gp-events.h"
-#include "gp-proc.h"
+#include "mat-remote.h"
+#include "mat-probe.h"
+#include "mat-events.h"
+#include "mat-proc.h"
 #define _GNU_SOURCE
 #include <dlfcn.h>
 
