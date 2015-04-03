@@ -147,6 +147,12 @@ mat_remote_send_probe (struct mat_probe *gp)
       mat_remote_send (&gp->frame.frame_pc[gp->frame.frame_skip_count],
                       (gp->frame.frame_count - gp->frame.frame_skip_count) * sizeof (void*));
     }
+  else
+    {
+      mat_uint16 val = 0;
+
+      mat_remote_send (&val, sizeof (val));
+    }
 #endif
 }
 
