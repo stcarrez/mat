@@ -129,6 +129,20 @@ package body MAT.Expressions is
    end Create_Time;
 
    --  ------------------------------
+   --  Create a thread ID range expression node.
+   --  ------------------------------
+   function Create_Thread (Min : in MAT.Types.Target_Thread_Ref;
+                           Max : in MAT.Types.Target_Thread_Ref) return Expression_Type is
+      Result : Expression_Type;
+   begin
+      Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
+                                    Kind        => N_THREAD,
+                                    Min_Thread  => Min,
+                                    Max_Thread  => Max);
+      return Result;
+   end Create_Thread;
+
+   --  ------------------------------
    --  Create an event ID range expression node.
    --  ------------------------------
    function Create_Event (Min : in MAT.Events.Targets.Event_Id_Type;
