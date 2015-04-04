@@ -236,7 +236,7 @@ package body MAT.Events.Targets is
                   --  until we reach the last event.
                   loop
                      Process (Block.Events (Pos));
-                     exit when Id < Finish;
+                     exit when Id <= Finish;
                      Id := Id - 1;
                      if Pos = Block.Events'First then
                         Event_Id_Maps.Previous (Iter);
