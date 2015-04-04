@@ -24,6 +24,7 @@ with Bfd.Files;
 with Util.Refs;
 
 with MAT.Types;
+with MAT.Memory.Targets;
 package MAT.Symbols.Targets is
 
    --  The <tt>Library_Symbols</tt> holds the symbol table associated with
@@ -49,15 +50,23 @@ package MAT.Symbols.Targets is
      new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Addr,
                                       Element_Type => Library_Symbols_Ref);
 
+   subtype Symbols_Map is Symbols_Maps.Map;
+   subtype Symbols_Cursor is Symbols_Maps.Cursor;
+
    type Target_Symbols is new Util.Refs.Ref_Entity with record
-      File    : Bfd.Files.File_Type;
-      Symbols : Bfd.Symbols.Symbol_Table;
+      File      : Bfd.Files.File_Type;
+      Symbols   : Bfd.Symbols.Symbol_Table;
+      Libraries : Symbols_Maps.Map;
    end record;
    type Target_Symbols_Access is access all Target_Symbols;
 
    --  Open the binary and load the symbols from that file.
    procedure Open (Symbols : in out Target_Symbols;
                    Path    : in String);
+
+   --  Load the symbols associated with a shared library described by the memory region.
+   procedure Load_Symbols (Symbols : in out Target_Symbols;
+                           Region  : in MAT.Memory.Region_Info);
 
    --  Find the nearest source file and line for the given address.
    procedure Find_Nearest_Line (Symbols : in Target_Symbols;
