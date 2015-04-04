@@ -49,7 +49,8 @@ package body MAT.Symbols.Targets is
    begin
       if not Symbols_Maps.Has_Element (Pos) then
          Syms := Library_Symbols_Refs.Create;
-         Syms.Value.Text_Addr := Region.Start_Addr;
+         Syms.Value.Start_Addr := Region.Start_Addr;
+         Syms.Value.End_Addr   := Region.End_Addr;
          Symbols.Libraries.Insert (Region.Start_Addr, Syms);
       else
          Syms := Symbols_Maps.Element (Pos);
@@ -65,9 +66,30 @@ package body MAT.Symbols.Targets is
                                 Name    : out Ada.Strings.Unbounded.Unbounded_String;
                                 Func    : out Ada.Strings.Unbounded.Unbounded_String;
                                 Line    : out Natural) is
+      Pos  : constant Symbols_Cursor := Symbols.Libraries.Floor (Addr);
       Text_Section : Bfd.Sections.Section;
    begin
       Line := 0;
+      if Symbols_Maps.Has_Element (Pos) then
+         declare
+            Syms   : Library_Symbols_Ref := Symbols_Maps.Element (Pos);
+            Offset : constant Bfd.Vma_Type := Bfd.Vma_Type (Addr - Syms.Value.Start_Addr);
+         begin
+            if Syms.Value.End_Addr > Addr then
+               if Bfd.Files.Is_Open (Syms.Value.File) then
+                  Text_Section := Bfd.Sections.Find_Section (Syms.Value.File, ".text");
+                  Bfd.Symbols.Find_Nearest_Line (File    => Syms.Value.File,
+                                                 Sec     => Text_Section,
+                                                 Symbols => Syms.Value.Symbols,
+                                                 Addr    => Offset,
+                                                 Name    => Name,
+                                                 Func    => Func,
+                                                 Line    => Line);
+                  return;
+               end if;
+            end if;
+         end;
+      end if;
       if Bfd.Files.Is_Open (Symbols.File) then
          Text_Section := Bfd.Sections.Find_Section (Symbols.File, ".text");
          Bfd.Symbols.Find_Nearest_Line (File    => Symbols.File,
