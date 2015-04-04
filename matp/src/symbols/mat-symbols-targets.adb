@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-symbols-targets - Symbol files management
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,11 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Bfd.Sections;
+with Util.Log.Loggers;
 package body MAT.Symbols.Targets is
+
+   --  The logger
+   Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Symbols.Targets");
 
    --  ------------------------------
    --  Open the binary and load the symbols from that file.
@@ -24,15 +28,19 @@ package body MAT.Symbols.Targets is
    procedure Open (Symbols : in out Target_Symbols;
                    Path    : in String) is
    begin
+      Log.Info ("Loading symbols from {0}", Path);
+
       Bfd.Files.Open (Symbols.File, Path, "");
       if Bfd.Files.Check_Format (Symbols.File, Bfd.Files.OBJECT) then
          Bfd.Symbols.Read_Symbols (Symbols.File, Symbols.Symbols);
       end if;
    end Open;
 
-   procedure Open (Symbols : in out Library_Symbols;
+   procedure Open (Symbols : in out Region_Symbols;
                    Path    : in String) is
    begin
+      Log.Info ("Loading symbols from {0}", Path);
+
       Bfd.Files.Open (Symbols.File, Path, "");
       if Bfd.Files.Check_Format (Symbols.File, Bfd.Files.OBJECT) then
          Bfd.Symbols.Read_Symbols (Symbols.File, Symbols.Symbols);
@@ -42,21 +50,51 @@ package body MAT.Symbols.Targets is
    --  ------------------------------
    --  Load the symbols associated with a shared library described by the memory region.
    --  ------------------------------
-   procedure Load_Symbols (Symbols : in out Target_Symbols;
-                           Region  : in MAT.Memory.Region_Info) is
+   procedure Load_Symbols (Symbols     : in out Target_Symbols;
+                           Region      : in MAT.Memory.Region_Info;
+                           Offset_Addr : in MAT.Types.Target_Addr) is
       Pos  : constant Symbols_Cursor := Symbols.Libraries.Find (Region.Start_Addr);
-      Syms : Library_Symbols_Ref;
+      Syms : Region_Symbols_Ref;
    begin
       if not Symbols_Maps.Has_Element (Pos) then
-         Syms := Library_Symbols_Refs.Create;
-         Syms.Value.Start_Addr := Region.Start_Addr;
-         Syms.Value.End_Addr   := Region.End_Addr;
+         Syms := Region_Symbols_Refs.Create;
+         Syms.Value.Region := Region;
+         Syms.Value.Offset := Offset_Addr;
          Symbols.Libraries.Insert (Region.Start_Addr, Syms);
       else
          Syms := Symbols_Maps.Element (Pos);
       end if;
-      Open (Syms.Value.all, Ada.Strings.Unbounded.To_String (Region.Path));
+      if Ada.Strings.Unbounded.Length (Region.Path) > 0 then
+         Open (Syms.Value.all, Ada.Strings.Unbounded.To_String (Region.Path));
+      end if;
    end Load_Symbols;
+
+   procedure Find_Nearest_Line (Symbols : in Region_Symbols;
+                                Addr    : in MAT.Types.Target_Addr;
+                                Name    : out Ada.Strings.Unbounded.Unbounded_String;
+                                Func    : out Ada.Strings.Unbounded.Unbounded_String;
+                                Line    : out Natural) is
+      use type Bfd.Vma_Type;
+
+      Text_Section : Bfd.Sections.Section;
+      Pc : Bfd.Vma_Type := Bfd.Vma_Type (Addr);
+   begin
+      if not Bfd.Files.Is_Open (Symbols.File) then
+         Func := Symbols.Region.Path;
+         return;
+      end if;
+      Text_Section := Bfd.Sections.Find_Section (Symbols.File, ".text");
+--        if Text_Section.Vma > Pc or else Text_Section.Vma + Text_Section.Size < Pc then
+--
+--        end if;
+      Bfd.Symbols.Find_Nearest_Line (File    => Symbols.File,
+                                     Sec     => Text_Section,
+                                     Symbols => Symbols.Symbols,
+                                     Addr    => Pc,
+                                     Name    => Name,
+                                     Func    => Func,
+                                     Line    => Line);
+   end Find_Nearest_Line;
 
    --  ------------------------------
    --  Find the nearest source file and line for the given address.
@@ -72,21 +110,15 @@ package body MAT.Symbols.Targets is
       Line := 0;
       if Symbols_Maps.Has_Element (Pos) then
          declare
-            Syms   : Library_Symbols_Ref := Symbols_Maps.Element (Pos);
-            Offset : constant Bfd.Vma_Type := Bfd.Vma_Type (Addr - Syms.Value.Start_Addr);
+            Syms   : Region_Symbols_Ref := Symbols_Maps.Element (Pos);
          begin
-            if Syms.Value.End_Addr > Addr then
-               if Bfd.Files.Is_Open (Syms.Value.File) then
-                  Text_Section := Bfd.Sections.Find_Section (Syms.Value.File, ".text");
-                  Bfd.Symbols.Find_Nearest_Line (File    => Syms.Value.File,
-                                                 Sec     => Text_Section,
-                                                 Symbols => Syms.Value.Symbols,
-                                                 Addr    => Offset,
-                                                 Name    => Name,
-                                                 Func    => Func,
-                                                 Line    => Line);
-                  return;
-               end if;
+            if Syms.Value.Region.End_Addr > Addr then
+               Find_Nearest_Line (Symbols => Syms.Value.all,
+                                  Addr    => Addr - Syms.Value.Offset,
+                                  Name    => Name,
+                                  Func    => Func,
+                                  Line    => Line);
+               return;
             end if;
          end;
       end if;
