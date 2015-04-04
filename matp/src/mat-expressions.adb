@@ -143,6 +143,19 @@ package body MAT.Expressions is
    end Create_Thread;
 
    --  ------------------------------
+   --  Create a event type expression check.
+   --  ------------------------------
+   function Create_Event_Type (Event_Kind : in MAT.Events.Targets.Probe_Index_Type)
+                               return Expression_Type is
+      Result : Expression_Type;
+   begin
+      Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
+                                    Kind        => N_TYPE,
+                                    Event_Kind  => Event_Kind);
+      return Result;
+   end Create_Event_Type;
+
+   --  ------------------------------
    --  Create an event ID range expression node.
    --  ------------------------------
    function Create_Event (Min : in MAT.Events.Targets.Event_Id_Type;
