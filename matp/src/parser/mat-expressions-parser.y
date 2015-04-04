@@ -103,8 +103,8 @@ condition :
     |
         T_THREAD compare
             {
-              $$.expr := MAT.Expressions.Create_Size (MAT.Types.Target_Size ($2.low),
-                                                      MAT.Types.Target_Size ($2.high));
+              $$.expr := MAT.Expressions.Create_Thread (MAT.Types.Target_Thread_Ref ($2.low),
+                                                      	MAT.Types.Target_Thread_Ref ($2.high));
             }
     |
         T_ADDR compare
@@ -255,6 +255,7 @@ package body MAT.Expressions.Parser is
    procedure yyerror (Message : in String := "syntax error");
 
    function To_Event_Id_Type (Value : in MAT.Types.Uint64) return MAT.Events.Targets.Event_Id_Type;
+   function To_Thread_Ref (Value : in MAT.Types.Uint64) return MAT.Types.Target_Thread_Ref;
 
    Expr : MAT.Expressions.Expression_Type;
 
@@ -267,6 +268,16 @@ package body MAT.Expressions.Parser is
          return MAT.Events.Targets.Event_Id_Type (Value);
       end if;
    end To_Event_Id_Type;
+
+   function To_Thread_Ref (Value : in MAT.Types.Uint64)
+      return MAT.Types.Target_Thread_Ref is
+   begin
+      if Value > MAT.Types.Uint64 (MAT.Types.Target_Thread_Ref'Last) then
+         return MAT.Types.Target_Thread_Ref'Last;
+      else
+         return MAT.Types.Target_Thread_Ref (Value);
+      end if;
+   end To_Thread_Ref;
 
    procedure yyerror (Message : in String := "syntax error") is
       pragma Unreferenced (Message);
