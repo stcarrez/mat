@@ -72,6 +72,10 @@ package MAT.Expressions is
    function Create_Thread (Min : in MAT.Types.Target_Thread_Ref;
                            Max : in MAT.Types.Target_Thread_Ref) return Expression_Type;
 
+   --  Create a event type expression check.
+   function Create_Event_Type (Event_Kind : in MAT.Events.Targets.Probe_Index_Type)
+                               return Expression_Type;
+
    --  Evaluate the expression to check if the memory slot described by the
    --  context is selected.  Returns True if the memory slot is selected.
    function Is_Selected (Node       : in Expression_Type;
@@ -97,7 +101,7 @@ private
                       N_IN_FUNC, N_IN_FUNC_DIRECT,
                       N_RANGE_SIZE, N_RANGE_ADDR,
                       N_RANGE_TIME, N_EVENT,
-                      N_CONDITION, N_THREAD);
+                      N_CONDITION, N_THREAD, N_TYPE);
 
 
    type Node_Type;
@@ -135,6 +139,9 @@ private
          when N_EVENT =>
             Min_Event : MAT.Events.Targets.Event_Id_Type;
             Max_Event : MAT.Events.Targets.Event_Id_Type;
+
+         when N_TYPE =>
+            Event_Kind : MAT.Events.Targets.Probe_Index_Type;
 
          when others =>
             null;
