@@ -463,8 +463,33 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Symbol_Command (Target : in out MAT.Targets.Target_Type'Class;
                              Args   : in String) is
+      use type ELF.Elf32_Word;
+
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
+      Console : constant MAT.Consoles.Console_Access := Target.Console;
+      Maps    : MAT.Memory.Region_Info_Map;
+      Iter    : MAT.Memory.Region_Info_Cursor;
    begin
+      MAT.Memory.Targets.Find (Memory => Process.Memory,
+                               From   => MAT.Types.Target_Addr'First,
+                               To     => MAT.Types.Target_Addr'Last,
+                               Into   => Maps);
+      Iter := Maps.First;
+      while MAT.Memory.Region_Info_Maps.Has_Element (Iter) loop
+         declare
+            Region : constant MAT.Memory.Region_Info := MAT.Memory.Region_Info_Maps.Element (Iter);
+         begin
+            if (Region.Flags and ELF.PF_X) /= 0 then
+               MAT.Symbols.Targets.Load_Symbols (Process.Symbols.Value.all, Region);
+            end if;
+
+         exception
+            when Bfd.OPEN_ERROR =>
+               Target.Console.Error ("Cannot open symbol library file '"
+                                     & Ada.Strings.Unbounded.To_String (Region.Path) & "'");
+         end;
+         MAT.Memory.Region_Info_Maps.Next (Iter);
+      end loop;
       MAT.Symbols.Targets.Open (Process.Symbols.Value.all, Args);
 
    exception
