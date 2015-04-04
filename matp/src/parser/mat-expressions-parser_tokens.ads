@@ -22,6 +22,7 @@ package Mat.Expressions.Parser_Tokens is
          T_Reallocation, T_All, T_Unot,
          T_Within, T_Use, T_After,
          T_Before, T_Direct, T_Is,
+         T_Malloc, T_Realloc, T_Free,
          T_Thread, T_Range, T_Event,
          T_Time, T_Lt, T_Le,
          T_Gt, T_Ge, T_Ne,
