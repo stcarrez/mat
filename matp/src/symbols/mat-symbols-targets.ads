@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-symbols-targets - Symbol files management
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.Strings.Unbounded;
+with Ada.Containers.Ordered_Maps;
 
 with Bfd.Symbols;
 with Bfd.Files;
@@ -24,6 +25,29 @@ with Util.Refs;
 
 with MAT.Types;
 package MAT.Symbols.Targets is
+
+   --  The <tt>Library_Symbols</tt> holds the symbol table associated with
+   --  a shared library loaded by the program.  The <tt>Text_Addr</tt> indicates
+   --  the text segment address of the loaded library.
+   type Library_Symbols is new Util.Refs.Ref_Entity with record
+      Text_Addr : MAT.Types.Target_Addr;
+      File      : Bfd.Files.File_Type;
+      Symbols   : Bfd.Symbols.Symbol_Table;
+   end record;
+   type Library_Symbols_Access is access all Library_Symbols;
+
+   package Library_Symbols_Refs is
+     new Util.Refs.References (Library_Symbols, Library_Symbols_Access);
+
+   subtype Library_Symbols_Ref is Library_Symbols_Refs.Ref;
+
+   --  The <tt>Symbols_Maps</tt> keeps a sorted list of symbol tables indexed
+   --  by their mapping address.
+   use type Library_Symbols_Refs.Ref;
+   use type MAT.Types.Target_Addr;
+   package Symbols_Maps is
+     new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Addr,
+                                      Element_Type => Library_Symbols_Ref);
 
    type Target_Symbols is new Util.Refs.Ref_Entity with record
       File    : Bfd.Files.File_Type;
