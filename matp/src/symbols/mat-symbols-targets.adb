@@ -30,6 +30,33 @@ package body MAT.Symbols.Targets is
       end if;
    end Open;
 
+   procedure Open (Symbols : in out Library_Symbols;
+                   Path    : in String) is
+   begin
+      Bfd.Files.Open (Symbols.File, Path, "");
+      if Bfd.Files.Check_Format (Symbols.File, Bfd.Files.OBJECT) then
+         Bfd.Symbols.Read_Symbols (Symbols.File, Symbols.Symbols);
+      end if;
+   end Open;
+
+   --  ------------------------------
+   --  Load the symbols associated with a shared library described by the memory region.
+   --  ------------------------------
+   procedure Load_Symbols (Symbols : in out Target_Symbols;
+                           Region  : in MAT.Memory.Region_Info) is
+      Pos  : constant Symbols_Cursor := Symbols.Libraries.Find (Region.Start_Addr);
+      Syms : Library_Symbols_Ref;
+   begin
+      if not Symbols_Maps.Has_Element (Pos) then
+         Syms := Library_Symbols_Refs.Create;
+         Syms.Value.Text_Addr := Region.Start_Addr;
+         Symbols.Libraries.Insert (Region.Start_Addr, Syms);
+      else
+         Syms := Symbols_Maps.Element (Pos);
+      end if;
+      Open (Syms.Value.all, Ada.Strings.Unbounded.To_String (Region.Path));
+   end Load_Symbols;
+
    --  ------------------------------
    --  Find the nearest source file and line for the given address.
    --  ------------------------------
