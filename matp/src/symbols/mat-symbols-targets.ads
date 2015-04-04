@@ -31,9 +31,10 @@ package MAT.Symbols.Targets is
    --  a shared library loaded by the program.  The <tt>Text_Addr</tt> indicates
    --  the text segment address of the loaded library.
    type Library_Symbols is new Util.Refs.Ref_Entity with record
-      Text_Addr : MAT.Types.Target_Addr;
-      File      : Bfd.Files.File_Type;
-      Symbols   : Bfd.Symbols.Symbol_Table;
+      Start_Addr : MAT.Types.Target_Addr;
+      End_Addr   : MAT.Types.Target_Addr;
+      File       : Bfd.Files.File_Type;
+      Symbols    : Bfd.Symbols.Symbol_Table;
    end record;
    type Library_Symbols_Access is access all Library_Symbols;
 
