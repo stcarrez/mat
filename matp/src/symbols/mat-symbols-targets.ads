@@ -27,29 +27,29 @@ with MAT.Types;
 with MAT.Memory.Targets;
 package MAT.Symbols.Targets is
 
-   --  The <tt>Library_Symbols</tt> holds the symbol table associated with
-   --  a shared library loaded by the program.  The <tt>Text_Addr</tt> indicates
-   --  the text segment address of the loaded library.
-   type Library_Symbols is new Util.Refs.Ref_Entity with record
-      Start_Addr : MAT.Types.Target_Addr;
-      End_Addr   : MAT.Types.Target_Addr;
+   --  The <tt>Region_Symbols</tt> holds the symbol table associated with the program or
+   --  a shared library loaded by the program.  The <tt>Region</tt> indicates
+   --  the text segment address of the program or the loaded library.
+   type Region_Symbols is new Util.Refs.Ref_Entity with record
+      Region     : MAT.Memory.Region_Info;
+      Offset     : MAT.Types.Target_Addr;
       File       : Bfd.Files.File_Type;
       Symbols    : Bfd.Symbols.Symbol_Table;
    end record;
-   type Library_Symbols_Access is access all Library_Symbols;
+   type Region_Symbols_Access is access all Region_Symbols;
 
-   package Library_Symbols_Refs is
-     new Util.Refs.References (Library_Symbols, Library_Symbols_Access);
+   package Region_Symbols_Refs is
+     new Util.Refs.References (Region_Symbols, Region_Symbols_Access);
 
-   subtype Library_Symbols_Ref is Library_Symbols_Refs.Ref;
+   subtype Region_Symbols_Ref is Region_Symbols_Refs.Ref;
 
    --  The <tt>Symbols_Maps</tt> keeps a sorted list of symbol tables indexed
    --  by their mapping address.
-   use type Library_Symbols_Refs.Ref;
+   use type Region_Symbols_Refs.Ref;
    use type MAT.Types.Target_Addr;
    package Symbols_Maps is
      new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Addr,
-                                      Element_Type => Library_Symbols_Ref);
+                                      Element_Type => Region_Symbols_Ref);
 
    subtype Symbols_Map is Symbols_Maps.Map;
    subtype Symbols_Cursor is Symbols_Maps.Cursor;
@@ -66,8 +66,9 @@ package MAT.Symbols.Targets is
                    Path    : in String);
 
    --  Load the symbols associated with a shared library described by the memory region.
-   procedure Load_Symbols (Symbols : in out Target_Symbols;
-                           Region  : in MAT.Memory.Region_Info);
+   procedure Load_Symbols (Symbols     : in out Target_Symbols;
+                           Region      : in MAT.Memory.Region_Info;
+                           Offset_Addr : in MAT.Types.Target_Addr);
 
    --  Find the nearest source file and line for the given address.
    procedure Find_Nearest_Line (Symbols : in Target_Symbols;
