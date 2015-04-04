@@ -244,6 +244,7 @@ package body MAT.Expressions is
       use type MAT.Types.Target_Tick_Ref;
       use type MAT.Types.Target_Thread_Ref;
       use type MAT.Events.Targets.Event_Id_Type;
+      use type MAT.Events.Targets.Probe_Index_Type;
    begin
       case Node.Kind is
          when N_NOT =>
@@ -276,6 +277,9 @@ package body MAT.Expressions is
          when N_THREAD =>
             return Event.Thread >= Node.Min_Thread
               and Event.Thread <= Node.Max_Thread;
+
+         when N_TYPE =>
+            return Event.Index = Node.Event_Kind;
 
          when others =>
             return False;
