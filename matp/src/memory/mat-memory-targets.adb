@@ -278,8 +278,16 @@ package body MAT.Memory.Targets is
             MAT.Frames.Release (Item.Frame);
             Used_Slots.Delete (Iter);
             Item.Frame := Slot.Frame;
-            Freed_Slots.Insert (Addr, Item);
+            Iter := Freed_Slots.Find (Addr);
+            if not Allocation_Maps.Has_Element (Iter) then
+               Freed_Slots.Insert (Addr, Item);
+            end if;
          end if;
+
+      exception
+         when others =>
+            Log.Error ("Free {0} raised some exception", MAT.Types.Hex_Image (Addr));
+            raise;
       end Probe_Free;
 
       --  ------------------------------
