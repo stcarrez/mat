@@ -5,6 +5,9 @@
 %token      T_ALL T_UNOT
 %token      T_WITHIN T_USE T_AFTER T_BEFORE
 %token      T_DIRECT T_IS
+%token T_MALLOC
+%token T_REALLOC
+%token T_FREE
 %token T_THREAD
 %token T_RANGE
 %token T_EVENT
