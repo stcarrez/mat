@@ -128,6 +128,21 @@ condition :
                                                        To_Event_Id_Type ($2.high));
             }
     |
+    	T_MALLOC
+    		{
+    		  $$.expr := MAT.Expressions.Create_Event_Type (MAT.Events.Targets.MSG_MALLOC);
+    		}
+    |
+    	T_FREE
+    		{
+    		  $$.expr := MAT.Expressions.Create_Event_Type (MAT.Events.Targets.MSG_FREE);
+    		}
+    |
+    	T_REALLOC
+    		{
+    		  $$.expr := MAT.Expressions.Create_Event_Type (MAT.Events.Targets.MSG_REALLOC);
+    		}
+    |
         name
             {
               $$.low := 0;
