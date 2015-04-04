@@ -477,10 +477,17 @@ package body MAT.Commands is
       Iter := Maps.First;
       while MAT.Memory.Region_Info_Maps.Has_Element (Iter) loop
          declare
-            Region : constant MAT.Memory.Region_Info := MAT.Memory.Region_Info_Maps.Element (Iter);
+            Region : MAT.Memory.Region_Info := MAT.Memory.Region_Info_Maps.Element (Iter);
+            Offset : MAT.Types.Target_Addr;
          begin
             if (Region.Flags and ELF.PF_X) /= 0 then
-               MAT.Symbols.Targets.Load_Symbols (Process.Symbols.Value.all, Region);
+               if Ada.Strings.Unbounded.Length (Region.Path) = 0 then
+                  Region.Path := Ada.Strings.Unbounded.To_Unbounded_String (Args);
+                  Offset := 0;
+               else
+                  Offset := Region.Start_Addr;
+               end if;
+               MAT.Symbols.Targets.Load_Symbols (Process.Symbols.Value.all, Region, Offset);
             end if;
 
          exception
