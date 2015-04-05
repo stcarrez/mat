@@ -116,6 +116,11 @@ package MAT.Events.Targets is
                       Finish  : in Event_Id_Type;
                       Process : access procedure (Event : in Probe_Event_Type));
 
+   --  Iterate over the events starting from first first event up to the last event collected.
+   --  Execute the <tt>Process</tt> procedure with each event instance.
+   procedure Iterate (Target  : in out Target_Events;
+                      Process : access procedure (Event : in Target_Event));
+
 private
 
    EVENT_BLOCK_SIZE : constant Event_Id_Type := 1024;
