@@ -154,4 +154,53 @@ package body MAT.Events.Timelines is
          null;
    end Find_Related;
 
+   --  ------------------------------
+   --  Find the sizes of malloc and realloc events which is selected by the given filter.
+   --  Update the <tt>Sizes</tt> map to keep track of the first event and last event and
+   --  the number of events found for the corresponding size.
+   --  ------------------------------
+   procedure Find_Sizes (Target : in out MAT.Events.Targets.Target_Events'Class;
+                         Filter : in MAT.Expressions.Expression_Type;
+                         Sizes  : in out MAT.Events.Targets.Size_Event_Info_Map) is
+      procedure Collect_Event (Event : in MAT.Events.Targets.Target_Event);
+
+      procedure Collect_Event (Event : in MAT.Events.Targets.Target_Event) is
+         procedure Update_Size (Size : in MAT.Types.Target_Size;
+                                Info : in out MAT.Events.Targets.Event_Info_Type);
+
+         procedure Update_Size (Size : in MAT.Types.Target_Size;
+                                Info : in out MAT.Events.Targets.Event_Info_Type) is
+            pragma Unreferenced (Size);
+         begin
+            Info.Count      := Info.Count + 1;
+            Info.Last_Event := Event;
+         end Update_Size;
+
+      begin
+         if Event.Index = MAT.Events.Targets.MSG_MALLOC and then Filter.Is_Selected (Event) then
+            declare
+               Pos : constant MAT.Events.Targets.Size_Event_Info_Cursor := Sizes.Find (Event.Size);
+            begin
+               if MAT.Events.Targets.Size_Event_Info_Maps.Has_Element (Pos) then
+                  --  Increment the count and update the last event.
+                  Sizes.Update_Element (Pos, Update_Size'Access);
+               else
+                  declare
+                     Info : Event_Info_Type;
+                  begin
+                     --  Insert a new size with the event.
+                     Info.First_Event := Event;
+                     Info.Last_Event := Event;
+                     Info.Count := 1;
+                     Sizes.Insert (Event.Size, Info);
+                  end;
+               end if;
+            end;
+         end if;
+      end Collect_Event;
+
+   begin
+      Target.Iterate (Process => Collect_Event'Access);
+   end Find_Sizes;
+
 end MAT.Events.Timelines;
