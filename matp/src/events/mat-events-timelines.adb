@@ -177,26 +177,31 @@ package body MAT.Events.Timelines is
          end Update_Size;
 
       begin
-         if Event.Index = MAT.Events.Targets.MSG_MALLOC and then Filter.Is_Selected (Event) then
-            declare
-               Pos : constant MAT.Events.Targets.Size_Event_Info_Cursor := Sizes.Find (Event.Size);
-            begin
-               if MAT.Events.Targets.Size_Event_Info_Maps.Has_Element (Pos) then
-                  --  Increment the count and update the last event.
-                  Sizes.Update_Element (Pos, Update_Size'Access);
-               else
-                  declare
-                     Info : Event_Info_Type;
-                  begin
-                     --  Insert a new size with the event.
-                     Info.First_Event := Event;
-                     Info.Last_Event := Event;
-                     Info.Count := 1;
-                     Sizes.Insert (Event.Size, Info);
-                  end;
-               end if;
-            end;
+         --  Look for malloc or realloc events which are selected by the filter.
+         if (Event.Index /= MAT.Events.Targets.MSG_MALLOC
+             and Event.Index /= MAT.Events.Targets.MSG_REALLOC)
+           or else not Filter.Is_Selected (Event)
+         then
+            return;
          end if;
+         declare
+            Pos : constant MAT.Events.Targets.Size_Event_Info_Cursor := Sizes.Find (Event.Size);
+         begin
+            if MAT.Events.Targets.Size_Event_Info_Maps.Has_Element (Pos) then
+               --  Increment the count and update the last event.
+               Sizes.Update_Element (Pos, Update_Size'Access);
+            else
+               declare
+                  Info : Event_Info_Type;
+               begin
+                  --  Insert a new size with the event.
+                  Info.First_Event := Event;
+                  Info.Last_Event := Event;
+                  Info.Count := 1;
+                  Sizes.Insert (Event.Size, Info);
+               end;
+            end if;
+         end;
       end Collect_Event;
 
    begin
