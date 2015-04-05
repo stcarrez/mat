@@ -114,7 +114,7 @@ package body MAT.Formats is
          Val := Val / 10;
          Frac (2) := Conversion (Val mod 10 + 1);
          Frac (1) := '.';
-         return Util.Strings.Image (Integer (Msec)) & Frac (1 .. 4);
+         return Util.Strings.Image (Integer (Sec)) & Frac (1 .. 4);
       end if;
    end Duration;
 
