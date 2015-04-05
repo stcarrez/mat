@@ -61,6 +61,24 @@ package MAT.Events.Targets is
    function Find (List : in Target_Event_Vector;
                   Kind : in Probe_Index_Type) return Probe_Event_Type;
 
+   type Event_Info_Type is record
+      First_Event : Target_Event;
+      Last_Event  : Target_Event;
+      Count       : Natural;
+   end record;
+
+   package Size_Event_Info_Maps is
+     new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Size,
+                                      Element_Type => Event_Info_Type);
+   subtype Size_Event_Info_Map is Size_Event_Info_Maps.Map;
+   subtype Size_Event_Info_Cursor is Size_Event_Info_Maps.Cursor;
+
+   package Frame_Event_Info_Maps is
+     new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Addr,
+                                      Element_Type => Event_Info_Type);
+   subtype Frame_Event_Info_Map is Frame_Event_Info_Maps.Map;
+   subtype Frame_Event_Info_Cursor is Frame_Event_Info_Maps.Cursor;
+
    type Target_Events is tagged limited private;
    type Target_Events_Access is access all Target_Events'Class;
 
