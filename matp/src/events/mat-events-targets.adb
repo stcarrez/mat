@@ -18,6 +18,8 @@
 
 package body MAT.Events.Targets is
 
+   ITERATE_COUNT : constant Event_Id_Type := 10_000;
+
    --  ------------------------------
    --  Find in the list the first event with the given type.
    --  Raise <tt>Not_Found</tt> if the list does not contain such event.
@@ -103,6 +105,28 @@ package body MAT.Events.Targets is
                       Process : access procedure (Event : in Probe_Event_Type)) is
    begin
       Target.Events.Iterate (Start, Finish, Process);
+   end Iterate;
+
+   --  ------------------------------
+   --  Iterate over the events starting from first first event up to the last event collected.
+   --  Execute the <tt>Process</tt> procedure with each event instance.
+   --  ------------------------------
+   procedure Iterate (Target  : in out Target_Events;
+                      Process : access procedure (Event : in Target_Event)) is
+      First_Event : Target_Event;
+      Last_Event  : Target_Event;
+      First_Id    : Event_Id_Type;
+   begin
+      Target.Get_Limits (First_Event, Last_Event);
+      First_Id := First_Event.Id;
+      while First_Id < Last_Event.Id loop
+         --  Iterate over the events in groups of 10_000 to release the lock and give some
+         --  opportunity to the server thread to add new events.
+         Target.Iterate (Start   => First_Id,
+                         Finish  => First_Id + ITERATE_COUNT,
+                         Process => Process);
+         First_Id := First_Id + ITERATE_COUNT;
+      end loop;
    end Iterate;
 
    protected body Event_Collector is
