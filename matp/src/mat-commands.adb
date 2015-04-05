@@ -341,7 +341,7 @@ package body MAT.Commands is
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_ID, "Id", 10);
       Console.Print_Title (MAT.Consoles.F_TIME, "Time", 10);
-      Console.Print_Title (MAT.Consoles.F_EVENT, "Event", 40);
+      Console.Print_Title (MAT.Consoles.F_EVENT, "Event", 60);
       Console.End_Title;
 
       Process.Events.Get_Time_Range (Start, Finish);
