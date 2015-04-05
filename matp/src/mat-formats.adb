@@ -153,20 +153,33 @@ package body MAT.Formats is
    --  ------------------------------
    --  Format a short description of the event.
    --  ------------------------------
-   function Event (Item : in MAT.Events.Targets.Probe_Event_Type) return String is
+   function Event (Item : in MAT.Events.Targets.Probe_Event_Type;
+                   Mode : in Format_Type := NORMAL) return String is
       use type MAT.Types.Target_Addr;
    begin
       case Item.Index is
          when MAT.Events.Targets.MSG_MALLOC =>
-            return "malloc(" & Size (Item.Size) & ") = " & Addr (Item.Addr);
+            if Mode = BRIEF then
+               return "malloc(" & Size (Item.Size) & ")";
+            else
+               return "malloc(" & Size (Item.Size) & ") = " & Addr (Item.Addr);
+            end if;
 
          when MAT.Events.Targets.MSG_REALLOC =>
-            if Item.Old_Addr = 0 then
-               return "realloc(0," & Size (Item.Size) & ") = "
-                 & Addr (Item.Addr);
+            if Mode = BRIEF then
+               if Item.Old_Addr = 0 then
+                  return "realloc(0," & Size (Item.Size) & ")";
+               else
+                  return "realloc(" & Addr (Item.Old_Addr) & "," & Size (Item.Size) & ")";
+               end if;
             else
-               return "realloc(" & Addr (Item.Old_Addr) & "," & Size (Item.Size) & ") = "
-                 & Addr (Item.Addr);
+               if Item.Old_Addr = 0 then
+                  return "realloc(0," & Size (Item.Size) & ") = "
+                    & Addr (Item.Addr);
+               else
+                  return "realloc(" & Addr (Item.Old_Addr) & "," & Size (Item.Size) & ") = "
+                    & Addr (Item.Addr);
+               end if;
             end if;
 
          when MAT.Events.Targets.MSG_FREE =>
