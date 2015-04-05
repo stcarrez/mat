@@ -21,6 +21,8 @@ with MAT.Types;
 with MAT.Events.Targets;
 package MAT.Formats is
 
+   type Format_Type is (BRIEF, NORMAL);
+
    --  Format the address into a string.
    function Addr (Value : in MAT.Types.Target_Addr) return String;
 
@@ -40,7 +42,8 @@ package MAT.Formats is
                       Func : in Ada.Strings.Unbounded.Unbounded_String) return String;
 
    --  Format a short description of the event.
-   function Event (Item : in MAT.Events.Targets.Probe_Event_Type) return String;
+   function Event (Item : in MAT.Events.Targets.Probe_Event_Type;
+                   Mode : in Format_Type := NORMAL) return String;
 
    --  Format a short description of the event.
    function Event (Item       : in MAT.Events.Targets.Probe_Event_Type;
