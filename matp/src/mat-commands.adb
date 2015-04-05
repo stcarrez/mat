@@ -57,6 +57,8 @@ package body MAT.Commands is
                            Args   : in String);
    procedure Help_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String);
+   procedure Event_Sizes_Command (Target : in out MAT.Targets.Target_Type'Class;
+                                  Args   : in String);
 
    --  Maps command to dump the memory maps of the program.
    procedure Maps_Command (Target : in out MAT.Targets.Target_Type'Class;
@@ -323,6 +325,62 @@ package body MAT.Commands is
          MAT.Memory.Frame_Info_Maps.Next (Iter);
       end loop;
    end Frames_Command;
+
+   --  ------------------------------
+   --  Event size command.
+   --  Print the size used by malloc/realloc events.
+   --  ------------------------------
+   procedure Event_Sizes_Command (Target : in out MAT.Targets.Target_Type'Class;
+                                  Args   : in String) is
+      Console : constant MAT.Consoles.Console_Access := Target.Console;
+      Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
+      Start, Finish : MAT.Types.Target_Tick_Ref;
+      Sizes   : MAT.Events.Targets.Size_Event_Info_Map;
+      Iter    : MAT.Events.Targets.Size_Event_Info_Cursor;
+      Filter  : MAT.Expressions.Expression_Type;
+   begin
+      if Args'Length > 0 then
+         Filter := MAT.Expressions.Parse (Args);
+      end if;
+      Console.Start_Title;
+      Console.Print_Title (MAT.Consoles.F_ID, "Id", 10);
+      Console.Print_Title (MAT.Consoles.F_TIME, "Time", 10);
+      Console.Print_Title (MAT.Consoles.F_EVENT, "Event", 60);
+      Console.Print_Title (MAT.Consoles.F_COUNT, "Count", 8);
+      Console.End_Title;
+
+      Process.Events.Get_Time_Range (Start, Finish);
+      MAT.Events.Timelines.Find_Sizes (Target => Process.Events.all,
+                                       Filter => Filter,
+                                       Sizes  => Sizes);
+      Iter := Sizes.First;
+      while MAT.Events.Targets.Size_Event_Info_Maps.Has_Element (Iter) loop
+         declare
+            use type MAT.Types.Target_Tick_Ref;
+
+            Size  : constant MAT.Types.Target_Size
+              := MAT.Events.Targets.Size_Event_Info_Maps.Key (Iter);
+            Info  : constant MAT.Events.Targets.Event_Info_Type
+              := MAT.Events.Targets.Size_Event_Info_Maps.Element (Iter);
+            Time  : constant MAT.Types.Target_Tick_Ref := Info.First_Event.Time - Start;
+         begin
+            Console.Start_Row;
+            Console.Print_Field (MAT.Consoles.F_ID,
+                                 MAT.Events.Targets.Event_Id_Type'Image (Info.First_Event.Id));
+            Console.Print_Duration (MAT.Consoles.F_TIME, Time);
+            Console.Print_Field (MAT.Consoles.F_EVENT,
+                                 MAT.Formats.Event (Info.First_Event, MAT.Formats.BRIEF));
+            Console.Print_Field (MAT.Consoles.F_COUNT, Natural'Image (Info.Count));
+            Console.End_Row;
+         end;
+         MAT.Events.Targets.Size_Event_Info_Maps.Next (Iter);
+      end loop;
+
+   exception
+      when E : others =>
+         Log.Error ("Exception when evaluating " & Args, E);
+         Target.Console.Error ("Invalid selection");
+   end Event_Sizes_Command;
 
    --  ------------------------------
    --  Events command.
@@ -629,6 +687,7 @@ begin
    Commands.Insert ("frames", Frames_Command'Access);
    Commands.Insert ("events", Events_Command'Access);
    Commands.Insert ("event", Event_Command'Access);
+   Commands.Insert ("event-sizes", Event_Sizes_Command'Access);
    Commands.Insert ("help", Help_Command'Access);
    Commands.Insert ("maps", Maps_Command'Access);
 end MAT.Commands;
