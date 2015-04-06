@@ -40,6 +40,25 @@ package body MAT.Events.Targets is
    end Find;
 
    --  ------------------------------
+   --  Extract from the frame info map, the list of event info sorted on the count.
+   --  ------------------------------
+   procedure Build_Event_Info (Map  : in Frame_Event_Info_Map;
+                               List : in out Event_Info_Vector) is
+
+      function "<" (Left, Right : in Event_Info_Type) return Boolean is
+      begin
+         return Left.Count < Right.Count;
+      end "<";
+
+      package Sort_Event_Info is new Event_Info_Vectors.Generic_Sorting;
+   begin
+      for Item of Map loop
+         List.Append (Item);
+      end loop;
+      Sort_Event_Info.Sort (List);
+   end Build_Event_Info;
+
+   --  ------------------------------
    --  Add the event in the list of events and increment the event counter.
    --  ------------------------------
    procedure Insert (Target : in out Target_Events;
