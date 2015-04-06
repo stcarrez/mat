@@ -20,12 +20,19 @@ with Ada.Containers.Ordered_Maps;
 
 with Bfd.Symbols;
 with Bfd.Files;
+with Bfd.Constants;
 
 with Util.Refs;
 
 with MAT.Types;
 with MAT.Memory.Targets;
 package MAT.Symbols.Targets is
+
+   type Symbol_Info is record
+      File : Ada.Strings.Unbounded.Unbounded_String;
+      Name : Ada.Strings.Unbounded.Unbounded_String;
+      Line : Natural;
+   end record;
 
    --  The <tt>Region_Symbols</tt> holds the symbol table associated with the program or
    --  a shared library loaded by the program.  The <tt>Region</tt> indicates
@@ -58,6 +65,7 @@ package MAT.Symbols.Targets is
       File      : Bfd.Files.File_Type;
       Symbols   : Bfd.Symbols.Symbol_Table;
       Libraries : Symbols_Maps.Map;
+      Demangle  : Bfd.Demangle_Flags := Bfd.Constants.DMGL_AUTO;
    end record;
    type Target_Symbols_Access is access all Target_Symbols;
 
@@ -73,9 +81,7 @@ package MAT.Symbols.Targets is
    --  Find the nearest source file and line for the given address.
    procedure Find_Nearest_Line (Symbols : in Target_Symbols;
                                 Addr    : in MAT.Types.Target_Addr;
-                                Name    : out Ada.Strings.Unbounded.Unbounded_String;
-                                Func    : out Ada.Strings.Unbounded.Unbounded_String;
-                                Line    : out Natural);
+                                Symbol  : out Symbol_Info);
 
    package Target_Symbols_Refs is
      new Util.Refs.References (Target_Symbols, Target_Symbols_Access);
