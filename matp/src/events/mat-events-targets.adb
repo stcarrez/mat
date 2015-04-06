@@ -26,15 +26,11 @@ package body MAT.Events.Targets is
    --  ------------------------------
    function Find (List : in Target_Event_Vector;
                   Kind : in Probe_Index_Type) return Probe_Event_Type is
-      Iter  : Target_Event_Cursor := List.First;
-      Event : Probe_Event_Type;
    begin
-      while Target_Event_Vectors.Has_Element (Iter) loop
-         Event := Target_Event_Vectors.Element (Iter);
+      for Event of List loop
          if Event.Index = Kind then
             return Event;
          end if;
-         Target_Event_Vectors.Next (Iter);
       end loop;
       raise Not_Found;
    end Find;
