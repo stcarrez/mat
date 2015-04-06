@@ -349,7 +349,7 @@ package body MAT.Commands is
       Console.Print_Title (MAT.Consoles.F_EVENT, "Event", 9);
       Console.Print_Title (MAT.Consoles.F_SIZE, "Size", 10);
       Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 50);
-      Console.Print_Title (MAT.Consoles.F_ID, "Id", 10);
+      Console.Print_Title (MAT.Consoles.F_ID, "Id", 40);
       Console.End_Title;
 
       Process.Events.Get_Time_Range (Start, Finish);
@@ -378,7 +378,7 @@ package body MAT.Commands is
             Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME,
                                  MAT.Formats.Location (File_Name, Line, Name));
             Console.Print_Field (MAT.Consoles.F_ID,
-                                 MAT.Events.Targets.Event_Id_Type'Image (Info.First_Event.Id));
+                                 MAT.Formats.Event (Info.First_Event, Info.Last_Event));
             Console.End_Row;
          end;
       end loop;
