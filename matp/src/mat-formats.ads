@@ -41,6 +41,10 @@ package MAT.Formats is
                       Line : in Natural;
                       Func : in Ada.Strings.Unbounded.Unbounded_String) return String;
 
+   --  Format an event range description.
+   function Event (First : in MAT.Events.Targets.Probe_Event_Type;
+                   Last  : in MAT.Events.Targets.Probe_Event_Type) return String;
+
    --  Format a short description of the event.
    function Event (Item : in MAT.Events.Targets.Probe_Event_Type;
                    Mode : in Format_Type := NORMAL) return String;
