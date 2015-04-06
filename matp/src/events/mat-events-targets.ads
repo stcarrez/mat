@@ -64,6 +64,7 @@ package MAT.Events.Targets is
    type Event_Info_Type is record
       First_Event : Target_Event;
       Last_Event  : Target_Event;
+      Frame_Addr  : MAT.Types.Target_Addr;
       Count       : Natural;
    end record;
 
@@ -78,6 +79,16 @@ package MAT.Events.Targets is
                                       Element_Type => Event_Info_Type);
    subtype Frame_Event_Info_Map is Frame_Event_Info_Maps.Map;
    subtype Frame_Event_Info_Cursor is Frame_Event_Info_Maps.Cursor;
+
+   package Event_Info_Vectors is
+     new Ada.Containers.Vectors (Index_Type   => Positive,
+                                 Element_Type => Event_Info_Type);
+   subtype Event_Info_Vector is Event_Info_Vectors.Vector;
+   subtype Event_Info_Cursor is Event_Info_Vectors.Cursor;
+
+   --  Extract from the frame info map, the list of event info sorted on the count.
+   procedure Build_Event_Info (Map : in Frame_Event_Info_Map;
+                               List : in out Event_Info_Vector);
 
    type Target_Events is tagged limited private;
    type Target_Events_Access is access all Target_Events'Class;
