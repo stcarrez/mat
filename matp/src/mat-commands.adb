@@ -85,9 +85,7 @@ package body MAT.Commands is
                           Symbols : in MAT.Symbols.Targets.Target_Symbols_Ref) is
       Backtrace : constant MAT.Frames.Frame_Table := MAT.Frames.Backtrace (Frame);
 
-      File_Name : Ada.Strings.Unbounded.Unbounded_String;
-      Func      : Ada.Strings.Unbounded.Unbounded_String;
-      Line      : Natural;
+      Symbol    : MAT.Symbols.Targets.Symbol_Info;
    begin
       for I in Backtrace'Range loop
          Console.Start_Row;
@@ -95,11 +93,9 @@ package body MAT.Commands is
          Console.Print_Field (MAT.Consoles.F_FRAME_ADDR, Backtrace (I));
          MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Symbols.Value.all,
                                                 Addr    => Backtrace (I),
-                                                Name    => File_Name,
-                                                Func    => Func,
-                                                Line    => Line);
+                                                Symbol  => Symbol);
          Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME,
-                              MAT.Formats.Location (File_Name, Line, Func),
+                              MAT.Formats.Location (Symbol.File, Symbol.Line, Symbol.Name),
                               MAT.Consoles.J_RIGHT_NO_FILL);
          Console.End_Row;
       end loop;
@@ -125,9 +121,7 @@ package body MAT.Commands is
          use type MAT.Frames.Frame_Type;
          Backtrace : constant MAT.Frames.Frame_Table := MAT.Frames.Backtrace (Slot.Frame);
 
-         Name : Ada.Strings.Unbounded.Unbounded_String;
-         Func : Ada.Strings.Unbounded.Unbounded_String;
-         Line : Natural;
+         Symbol : MAT.Symbols.Targets.Symbol_Info;
       begin
          Ada.Text_IO.Put (MAT.Types.Hex_Image (Addr));
          Ada.Text_IO.Set_Col (14);
@@ -143,11 +137,9 @@ package body MAT.Commands is
             Console.Print_Field (Consoles.F_ADDR, MAT.Formats.Addr (Backtrace (I)));
             MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Symbols.Value.all,
                                                    Addr    => Backtrace (I),
-                                                   Name    => Name,
-                                                   Func    => Func,
-                                                   Line    => Line);
+                                                   Symbol  => Symbol);
             Console.Print_Field (Consoles.F_FUNCTION_NAME,
-                                 MAT.Formats.Location (Name, Line, Func));
+                                 MAT.Formats.Location (Symbol.File, Symbol.Line, Symbol.Name));
             Console.End_Row;
          end loop;
       end Print;
@@ -302,18 +294,14 @@ package body MAT.Commands is
 
             Func   : constant Types.Target_Addr := MAT.Memory.Frame_Info_Maps.Key (Iter);
             Info   : constant Memory.Frame_Info := MAT.Memory.Frame_Info_Maps.Element (Iter);
-            Name : Ada.Strings.Unbounded.Unbounded_String;
-            File_Name : Ada.Strings.Unbounded.Unbounded_String;
-            Line : Natural;
+            Symbol : MAT.Symbols.Targets.Symbol_Info;
          begin
             MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Process.Symbols.Value.all,
                                                    Addr    => Func,
-                                                   Name    => File_Name,
-                                                   Func    => Name,
-                                                   Line    => Line);
+                                                   Symbol  => Symbol);
             Console.Start_Row;
             Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME,
-                                 MAT.Formats.Location (File_Name, Line, Name));
+                                 MAT.Formats.Location (Symbol.File, Symbol.Line, Symbol.Name));
             Console.Print_Field (MAT.Consoles.F_COUNT, Info.Memory.Alloc_Count);
             Console.Print_Size (MAT.Consoles.F_TOTAL_SIZE, Info.Memory.Total_Size);
             Console.Print_Size (MAT.Consoles.F_MIN_SIZE, Info.Memory.Min_Slot_Size);
@@ -360,15 +348,11 @@ package body MAT.Commands is
       MAT.Events.Targets.Build_Event_Info (Frames, List);
       for Info of List loop
          declare
-            Name : Ada.Strings.Unbounded.Unbounded_String;
-            File_Name : Ada.Strings.Unbounded.Unbounded_String;
-            Line : Natural;
+            Symbol : MAT.Symbols.Targets.Symbol_Info;
          begin
             MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Process.Symbols.Value.all,
                                                    Addr    => Info.Frame_Addr,
-                                                   Name    => File_Name,
-                                                   Func    => Name,
-                                                   Line    => Line);
+                                                   Symbol  => Symbol);
 
             Console.Start_Row;
             Console.Print_Field (MAT.Consoles.F_COUNT, Natural'Image (Info.Count));
@@ -376,7 +360,7 @@ package body MAT.Commands is
                                  MAT.Formats.Event (Info.First_Event, MAT.Formats.BRIEF));
             Console.Print_Size (MAT.Consoles.F_SIZE, Info.First_Event.Size);
             Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME,
-                                 MAT.Formats.Location (File_Name, Line, Name));
+                                 MAT.Formats.Location (Symbol.File, Symbol.Line, Symbol.Name));
             Console.Print_Field (MAT.Consoles.F_ID,
                                  MAT.Formats.Event (Info.First_Event, Info.Last_Event));
             Console.End_Row;
