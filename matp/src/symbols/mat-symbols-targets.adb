@@ -69,31 +69,58 @@ package body MAT.Symbols.Targets is
       end if;
    end Load_Symbols;
 
+   --  ------------------------------
+   --  Demangle the symbol.
+   --  ------------------------------
+   procedure Demangle (Symbols : in Target_Symbols;
+                       Symbol  : in out Symbol_Info) is
+      use type Bfd.Demangle_Flags;
+      use Ada.Strings.Unbounded;
+
+      Pos : constant Natural := Index (Symbol.File, ".", Ada.Strings.Backward);
+   begin
+      if Symbol.Line = 0 or else Pos = 0 then
+         return;
+      end if;
+      declare
+         Mode : Bfd.Demangle_Flags := Symbols.Demangle;
+         Len  : constant Positive := Length (Symbol.File);
+         Ext  : constant String := Slice (Symbol.File, Pos, Len);
+         Sym  : constant String := To_String (Symbol.Name);
+      begin
+         if Mode = Bfd.Constants.DMGL_AUTO and then Ext = ".adb" then
+            Mode := Bfd.Constants.DMGL_GNAT;
+         end if;
+         declare
+            Name : constant String := Bfd.Symbols.Demangle (Symbols.File, Sym, Mode);
+         begin
+            if Name'Length > 0 then
+               Symbol.Name := To_Unbounded_String (Name);
+            end if;
+         end;
+      end;
+   end Demangle;
+
    procedure Find_Nearest_Line (Symbols : in Region_Symbols;
                                 Addr    : in MAT.Types.Target_Addr;
-                                Name    : out Ada.Strings.Unbounded.Unbounded_String;
-                                Func    : out Ada.Strings.Unbounded.Unbounded_String;
-                                Line    : out Natural) is
+                                Symbol  : out Symbol_Info) is
       use type Bfd.Vma_Type;
 
       Text_Section : Bfd.Sections.Section;
       Pc : Bfd.Vma_Type := Bfd.Vma_Type (Addr);
    begin
       if not Bfd.Files.Is_Open (Symbols.File) then
-         Func := Symbols.Region.Path;
+         Symbol.File := Symbols.Region.Path;
          return;
       end if;
       Text_Section := Bfd.Sections.Find_Section (Symbols.File, ".text");
---        if Text_Section.Vma > Pc or else Text_Section.Vma + Text_Section.Size < Pc then
---
---        end if;
       Bfd.Symbols.Find_Nearest_Line (File    => Symbols.File,
                                      Sec     => Text_Section,
                                      Symbols => Symbols.Symbols,
                                      Addr    => Pc,
-                                     Name    => Name,
-                                     Func    => Func,
-                                     Line    => Line);
+                                     Name    => Symbol.File,
+                                     Func    => Symbol.Name,
+                                     Line    => Symbol.Line);
    end Find_Nearest_Line;
 
    --  ------------------------------
@@ -101,13 +128,13 @@ package body MAT.Symbols.Targets is
    --  ------------------------------
    procedure Find_Nearest_Line (Symbols : in Target_Symbols;
                                 Addr    : in MAT.Types.Target_Addr;
-                                Name    : out Ada.Strings.Unbounded.Unbounded_String;
-                                Func    : out Ada.Strings.Unbounded.Unbounded_String;
-                                Line    : out Natural) is
+                                Symbol  : out Symbol_Info) is
+      use Ada.Strings.Unbounded;
+
       Pos  : constant Symbols_Cursor := Symbols.Libraries.Floor (Addr);
       Text_Section : Bfd.Sections.Section;
    begin
-      Line := 0;
+      Symbol.Line := 0;
       if Symbols_Maps.Has_Element (Pos) then
          declare
             Syms   : Region_Symbols_Ref := Symbols_Maps.Element (Pos);
@@ -115,9 +142,8 @@ package body MAT.Symbols.Targets is
             if Syms.Value.Region.End_Addr > Addr then
                Find_Nearest_Line (Symbols => Syms.Value.all,
                                   Addr    => Addr - Syms.Value.Offset,
-                                  Name    => Name,
-                                  Func    => Func,
-                                  Line    => Line);
+                                  Symbol  => Symbol);
+               Demangle (Symbols, Symbol);
                return;
             end if;
          end;
@@ -128,20 +154,21 @@ package body MAT.Symbols.Targets is
                                         Sec     => Text_Section,
                                         Symbols => Symbols.Symbols,
                                         Addr    => Bfd.Vma_Type (Addr),
-                                        Name    => Name,
-                                        Func    => Func,
-                                        Line    => Line);
+                                        Name    => Symbol.File,
+                                        Func    => Symbol.Name,
+                                        Line    => Symbol.Line);
+         Demangle (Symbols, Symbol);
       else
-         Line := 0;
-         Name := Ada.Strings.Unbounded.To_Unbounded_String ("");
-         Func := Ada.Strings.Unbounded.To_Unbounded_String ("");
+         Symbol.Line := 0;
+         Symbol.File := Ada.Strings.Unbounded.To_Unbounded_String ("");
+         Symbol.Name := Ada.Strings.Unbounded.To_Unbounded_String ("");
       end if;
 
    exception
       when Bfd.NOT_FOUND =>
-         Line := 0;
-         Name := Ada.Strings.Unbounded.To_Unbounded_String ("");
-         Func := Ada.Strings.Unbounded.To_Unbounded_String ("");
+         Symbol.Line := 0;
+         Symbol.File := Ada.Strings.Unbounded.To_Unbounded_String ("");
+         Symbol.Name := Ada.Strings.Unbounded.To_Unbounded_String ("");
    end Find_Nearest_Line;
 
 end MAT.Symbols.Targets;
