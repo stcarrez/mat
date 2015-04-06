@@ -25,10 +25,9 @@ bindir=${prefix}/bin
 libdir=${prefix}/lib
 
 AR = @AR@
-AS = @AS@
 CC = @CC@
-CFLAGS = @CFLAGS@ -Wall -fpic -I$(srcdir)/src
-CPPFLAGS = @CPPFLAGS@
+CFLAGS = @CFLAGS@ -Wall -fpic
+CPPFLAGS = @CPPFLAGS@ -I$(srcdir)/src
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
