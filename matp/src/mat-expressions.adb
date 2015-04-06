@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------
---  mat-expressions -- Expressions for memory slot selection
+--  mat-expressions -- Expressions for event and memory slot selection
 --  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
