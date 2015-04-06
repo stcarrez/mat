@@ -160,7 +160,7 @@ package body MAT.Formats is
       case Item.Index is
          when MAT.Events.Targets.MSG_MALLOC =>
             if Mode = BRIEF then
-               return "malloc(" & Size (Item.Size) & ")";
+               return "malloc";
             else
                return "malloc(" & Size (Item.Size) & ") = " & Addr (Item.Addr);
             end if;
@@ -168,9 +168,9 @@ package body MAT.Formats is
          when MAT.Events.Targets.MSG_REALLOC =>
             if Mode = BRIEF then
                if Item.Old_Addr = 0 then
-                  return "realloc(0," & Size (Item.Size) & ")";
+                  return "realloc";
                else
-                  return "realloc(" & Addr (Item.Old_Addr) & "," & Size (Item.Size) & ")";
+                  return "realloc";
                end if;
             else
                if Item.Old_Addr = 0 then
@@ -183,7 +183,11 @@ package body MAT.Formats is
             end if;
 
          when MAT.Events.Targets.MSG_FREE =>
-            return "free(" & Addr (Item.Addr) & ")";
+            if Mode = BRIEF then
+               return "free";
+            else
+               return "free(" & Addr (Item.Addr) & ")";
+            end if;
 
          when MAT.Events.Targets.MSG_BEGIN =>
             return "begin";
