@@ -76,7 +76,7 @@ AC_ARG_ENABLE(tls,
 [case "${enableval}" in
   no|none)  ac_enable_tls= ;;
   *)        ac_enable_tls=yes
-            MAT_TLS=-DTLS
+            MAT_TLS=-DHAVE_TLS
 			;;
 esac])dnl
 
