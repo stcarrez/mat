@@ -313,11 +313,11 @@ package body MAT.Commands is
                                   Args   : in String) is
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
-      Start, Finish : MAT.Types.Target_Tick_Ref;
       Frames  : MAT.Events.Targets.Frame_Event_Info_Map;
       List    : MAT.Events.Targets.Event_Info_Vector;
       Filter  : MAT.Expressions.Expression_Type;
       Depth   : Natural := 3;
+      Symbol  : MAT.Symbols.Targets.Symbol_Info;
    begin
       if Args'Length > 0 then
          Filter := MAT.Expressions.Parse (Args);
@@ -330,31 +330,26 @@ package body MAT.Commands is
       Console.Print_Title (MAT.Consoles.F_ID, "Id", 40);
       Console.End_Title;
 
-      Process.Events.Get_Time_Range (Start, Finish);
       MAT.Events.Timelines.Find_Frames (Target => Process.Events.all,
                                         Filter => Filter,
                                         Depth  => Depth,
                                         Frames => Frames);
       MAT.Events.Targets.Build_Event_Info (Frames, List);
       for Info of List loop
-         declare
-            Symbol : MAT.Symbols.Targets.Symbol_Info;
-         begin
-            MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Process.Symbols.Value.all,
-                                                   Addr    => Info.Frame_Addr,
-                                                   Symbol  => Symbol);
+         MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Process.Symbols.Value.all,
+                                                Addr    => Info.Frame_Addr,
+                                                Symbol  => Symbol);
 
-            Console.Start_Row;
-            Console.Print_Field (MAT.Consoles.F_COUNT, Natural'Image (Info.Count));
-            Console.Print_Field (MAT.Consoles.F_EVENT,
-                                 MAT.Formats.Event (Info.First_Event, MAT.Formats.BRIEF));
-            Console.Print_Size (MAT.Consoles.F_SIZE, Info.First_Event.Size);
-            Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME,
-                                 MAT.Formats.Location (Symbol.File, Symbol.Line, Symbol.Name));
-            Console.Print_Field (MAT.Consoles.F_ID,
-                                 MAT.Formats.Event (Info.First_Event, Info.Last_Event));
-            Console.End_Row;
-         end;
+         Console.Start_Row;
+         Console.Print_Field (MAT.Consoles.F_COUNT, Natural'Image (Info.Count));
+         Console.Print_Field (MAT.Consoles.F_EVENT,
+                              MAT.Formats.Event (Info.First_Event, MAT.Formats.BRIEF));
+         Console.Print_Size (MAT.Consoles.F_SIZE, Info.First_Event.Size);
+         Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME,
+                              MAT.Formats.Location (Symbol.File, Symbol.Line, Symbol.Name));
+         Console.Print_Field (MAT.Consoles.F_ID,
+                              MAT.Formats.Event (Info.First_Event, Info.Last_Event));
+         Console.End_Row;
       end loop;
 
    exception
