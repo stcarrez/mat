@@ -256,6 +256,7 @@ package body MAT.Events.Timelines is
                         --  Insert a new size with the event.
                         Info.First_Event := Event;
                         Info.Last_Event := Event;
+                        Info.Frame_Addr := Backtrace (I);
                         Info.Count := 1;
                         Frames.Insert (Backtrace (I), Info);
                      end;
