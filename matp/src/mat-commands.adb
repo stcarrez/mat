@@ -330,6 +330,70 @@ package body MAT.Commands is
    --  Event size command.
    --  Print the size used by malloc/realloc events.
    --  ------------------------------
+   procedure Event_Frames_Command (Target : in out MAT.Targets.Target_Type'Class;
+                                  Args   : in String) is
+      Console : constant MAT.Consoles.Console_Access := Target.Console;
+      Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
+      Start, Finish : MAT.Types.Target_Tick_Ref;
+      Frames  : MAT.Events.Targets.Frame_Event_Info_Map;
+--        Iter    : MAT.Events.Targets.Frame_Event_Info_Cursor;
+      List    : MAT.Events.Targets.Event_Info_Vector;
+      Filter  : MAT.Expressions.Expression_Type;
+      Depth   : Natural := 3;
+   begin
+      if Args'Length > 0 then
+         Filter := MAT.Expressions.Parse (Args);
+      end if;
+      Console.Start_Title;
+      Console.Print_Title (MAT.Consoles.F_COUNT, "Count", 8);
+      Console.Print_Title (MAT.Consoles.F_EVENT, "Event", 9);
+      Console.Print_Title (MAT.Consoles.F_SIZE, "Size", 10);
+      Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 50);
+      Console.Print_Title (MAT.Consoles.F_ID, "Id", 10);
+      Console.End_Title;
+
+      Process.Events.Get_Time_Range (Start, Finish);
+      MAT.Events.Timelines.Find_Frames (Target => Process.Events.all,
+                                        Filter => Filter,
+                                        Depth  => Depth,
+                                        Frames => Frames);
+      MAT.Events.Targets.Build_Event_Info (Frames, List);
+      for Info of List loop
+         declare
+            Name : Ada.Strings.Unbounded.Unbounded_String;
+            File_Name : Ada.Strings.Unbounded.Unbounded_String;
+            Line : Natural;
+         begin
+            MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Process.Symbols.Value.all,
+                                                   Addr    => Info.Frame_Addr,
+                                                   Name    => File_Name,
+                                                   Func    => Name,
+                                                   Line    => Line);
+
+            Console.Start_Row;
+            Console.Print_Field (MAT.Consoles.F_COUNT, Natural'Image (Info.Count));
+            Console.Print_Field (MAT.Consoles.F_EVENT,
+                                 MAT.Formats.Event (Info.First_Event, MAT.Formats.BRIEF));
+            Console.Print_Size (MAT.Consoles.F_SIZE, Info.First_Event.Size);
+            Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME,
+                                 MAT.Formats.Location (File_Name, Line, Name));
+            Console.Print_Field (MAT.Consoles.F_ID,
+                                 MAT.Events.Targets.Event_Id_Type'Image (Info.First_Event.Id));
+            Console.End_Row;
+         end;
+      end loop;
+
+   exception
+      when E : others =>
+         Log.Error ("Exception when evaluating " & Args, E);
+         Target.Console.Error ("Invalid selection");
+   end Event_Frames_Command;
+--     pragma Ada_2012 (Event_Frames_Command);
+
+   --  ------------------------------
+   --  Event size command.
+   --  Print the size used by malloc/realloc events.
+   --  ------------------------------
    procedure Event_Sizes_Command (Target : in out MAT.Targets.Target_Type'Class;
                                   Args   : in String) is
       Console : constant MAT.Consoles.Console_Access := Target.Console;
@@ -688,6 +752,7 @@ begin
    Commands.Insert ("events", Events_Command'Access);
    Commands.Insert ("event", Event_Command'Access);
    Commands.Insert ("event-sizes", Event_Sizes_Command'Access);
+   Commands.Insert ("event-frames", Event_Frames_Command'Access);
    Commands.Insert ("help", Help_Command'Access);
    Commands.Insert ("maps", Maps_Command'Access);
 end MAT.Commands;
