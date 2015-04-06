@@ -151,6 +151,23 @@ package body MAT.Formats is
    end Location;
 
    --  ------------------------------
+   --  Format an event range description.
+   --  ------------------------------
+   function Event (First : in MAT.Events.Targets.Probe_Event_Type;
+                   Last  : in MAT.Events.Targets.Probe_Event_Type) return String is
+      use type MAT.Events.Targets.Event_Id_Type;
+
+      Id1 : constant String := MAT.Events.Targets.Event_Id_Type'Image (First.Id);
+      Id2 : constant String := MAT.Events.Targets.Event_Id_Type'Image (Last.Id);
+   begin
+      if First.Id = Last.Id then
+         return Id1 (Id1'First + 1 .. Id1'Last);
+      else
+         return Id1 (Id1'First + 1 .. Id1'Last) & ".." & Id2 (Id2'First + 1 .. Id2'Last);
+      end if;
+   end Event;
+
+   --  ------------------------------
    --  Format a short description of the event.
    --  ------------------------------
    function Event (Item : in MAT.Events.Targets.Probe_Event_Type;
