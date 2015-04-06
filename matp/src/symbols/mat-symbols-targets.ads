@@ -78,6 +78,10 @@ package MAT.Symbols.Targets is
                            Region      : in MAT.Memory.Region_Info;
                            Offset_Addr : in MAT.Types.Target_Addr);
 
+   --  Demangle the symbol.
+   procedure Demangle (Symbols : in Target_Symbols;
+                       Symbol  : in out Symbol_Info);
+
    --  Find the nearest source file and line for the given address.
    procedure Find_Nearest_Line (Symbols : in Target_Symbols;
                                 Addr    : in MAT.Types.Target_Addr;
