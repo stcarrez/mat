@@ -38,7 +38,7 @@ AC_SUBST(EXEC_PREFIX)
 
 AC_CONFIG_SUBDIRS(libmat)
 
-SUBDIRS="libmat mat"
+SUBDIRS="libmat matl"
 ac_enable_matp=no
 AC_ARG_ENABLE(matp,
 [  --enable-matp         Enable compilation of matp tool which requires GNAT Ada compiler (disabled)],
@@ -57,5 +57,5 @@ AC_SUBST(SUBDIRS)
 
 AC_OUTPUT(
 Makefile
-mat/Makefile
+matl/Makefile
 )
