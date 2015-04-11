@@ -85,6 +85,7 @@ $(LIBNAME):		$(OBJS)
 	$(CC) -o $(LIBNAME) $(LDFLAGS) $(OBJS) $(LIBS)
 
 install:
+	mkdir -p ${libdir}
 	$(INSTALL) $(LIBNAME) ${libdir}/
 
 .c.o:
