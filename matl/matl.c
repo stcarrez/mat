@@ -1,4 +1,4 @@
-/*  mat.c --  Wrapper to launch a program with memory analysis
+/*  matl.c --  Wrapper to launch a program with memory analysis
 --  Copyright (C) 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
@@ -21,7 +21,7 @@
 
 static int usage(void)
 {
-  fprintf (stderr, "Usage: mat [-o file] [-s host[:port]] command\n");
+  fprintf (stderr, "Usage: matl [-o file] [-s host[:port]] command\n");
   return 2;
 }
 
