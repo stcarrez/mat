@@ -34,25 +34,25 @@ LD = @LD@
 LDFLAGS = @LDFLAGS@
 
 SOURCES = \
-	mat.c
+	matl.c
 
-OBJS=mat.o
+OBJS=matl.o
 
 COMPILE=$(CC) $(CFLAGS) $(CPPFLAGS)
 
-EXECS=mat
+EXECS=matl
 
 all:	$(EXECS)
 
 clean:
 	$(RM) -f $(OBJS) $(EXECS)
 
-mat:	  mat.o
-	$(CC) -o mat mat.o
+matl:	  matl.o
+	$(CC) -o matl matl.o
 
 install:
 	mkdir -p ${bindir}
-	$(INSTALL) mat ${bindir}/
+	$(INSTALL) matl ${bindir}/
 
 .c.o:
 	$(COMPILE) -c $<
