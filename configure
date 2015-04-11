@@ -1278,7 +1278,7 @@ Optional Features:
   --disable-option-checking  ignore unrecognized --enable/--with options
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
-  --enable-matp         Enable compilation of matp tool which requires GNAT Ada compiler (enabled)
+  --enable-matp         Enable compilation of matp tool which requires GNAT Ada compiler (disabled)
 
 Some influential environment variables:
   CC          C compiler command
@@ -3013,13 +3013,13 @@ subdirs="$subdirs libmat"
 
 
 SUBDIRS="libmat mat"
-ac_enable_mat=yes
+ac_enable_matp=no
 # Check whether --enable-matp was given.
 if test "${enable_matp+set}" = set; then :
   enableval=$enable_matp; case "${enableval}" in
   no|none)  ac_enable_matp= ;;
   *)        ac_enable_matp=yes
-            SUBDIRS="$DIRS matp"
+            SUBDIRS="$SUBDIRS matp"
 			;;
 esac
 fi
