@@ -1288,7 +1288,7 @@ Optional Features:
   --disable-option-checking  ignore unrecognized --enable/--with options
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
-  --enable-gtk          Enable compilation of mat Gtk tool (enabled)
+  --enable-gtk          Enable compilation of mat Gtk tool (disabled)
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -3039,7 +3039,7 @@ done
 test -n "$GNATMAKE" || GNATMAKE=""""
 
 
-ac_enable_gtk=yes
+ac_enable_gtk=no
 # Check whether --enable-gtk was given.
 if test "${enable_gtk+set}" = set; then :
   enableval=$enable_gtk; case "${enableval}" in
