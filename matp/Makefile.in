@@ -71,6 +71,8 @@ test:			bin/mat_harness
 	bin/mat_harness
 
 install:
+	mkdir -p ${bindir}
+	mkdir -p ${mandir}/man1
 	$(INSTALL_PROGRAM) bin/matp $(bindir)/
 	$(INSTALL) man/mat.1 $(mandir)/man1/mat.1
 
