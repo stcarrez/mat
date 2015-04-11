@@ -17,6 +17,7 @@ target_triplet = @target@
 
 bindir=${prefix}/bin
 libdir=${prefix}/lib
+mandir = @mandir@
 
 AS = @AS@
 CC = @CC@
@@ -52,7 +53,9 @@ matl:	  matl.o
 
 install:
 	mkdir -p ${bindir}
+	mkdir -p ${mandir}/man1
 	$(INSTALL) matl ${bindir}/
+	$(INSTALL) matl.1 $(mandir)/man1/matl.1
 
 .c.o:
 	$(COMPILE) -c $<
