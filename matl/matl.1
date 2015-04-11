@@ -1,0 +1,62 @@
+.\"
+.\"
+.TH MATL 1 "Apr 11, 2015" "Memory Analysis Tool Launcher"
+.SH NAME
+matl - Memory Analysis Tool Launcher
+.SH SYNOPSIS
+.B matl
+[ -o
+.I file
+] [ -s
+.I host[:port]
+]
+.I command
+.br
+.SH DESCRIPTION
+\fImatl\fR is a simple memory analysis tool launcher to help in instrumenting
+the program memory by using the
+.BR mat (1)
+application.  The launcher sets the
+.I LD_PRELOAD
+environment variable to load the
+.BR libmat.so
+shared library in the program.  This library will instrument the memory allocation.
+The launcher also defines the
+.I MAT_SERVER
+environment variables which is used by
+.BR libmat.so
+to control and activate the memory analysis in the program.
+.\"
+.PP
+When the environment variables are set, \fImatl\fR launches the program with its arguments.
+.\"
+.PP
+The information collected by
+.BR libmat.so
+can be saved to a file or directed to the
+.BR mat (1)
+server.  In that case, the server must be started first.
+.\"
+.SH OPTIONS
+The following options are recognized by \fImatl\fR:
+.TP 5
+.B -o file
+Instrument the program and write the results in a file.
+.TP 5
+.B -s host[:port]
+.br
+Instrument the program by connecting to the
+.I mat
+TCP/IP server.  The host and optional port defines the host name or IP address
+of the host where the
+.I mat
+server is running.  The
+.I mat
+server must be started first.
+.\"
+.SH SEE ALSO
+\fImat(1)\fR, \fIld.so(8)\fR
+.\"
+.SH AUTHOR
+Written by Stephane Carrez.
+.\"
