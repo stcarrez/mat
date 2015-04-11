@@ -39,13 +39,13 @@ AC_SUBST(EXEC_PREFIX)
 AC_CONFIG_SUBDIRS(libmat)
 
 SUBDIRS="libmat mat"
-ac_enable_mat=yes
+ac_enable_matp=no
 AC_ARG_ENABLE(matp,
-[  --enable-matp         Enable compilation of matp tool which requires GNAT Ada compiler (enabled)],
+[  --enable-matp         Enable compilation of matp tool which requires GNAT Ada compiler (disabled)],
 [case "${enableval}" in
   no|none)  ac_enable_matp= ;;
   *)        ac_enable_matp=yes
-            SUBDIRS="$DIRS matp"
+            SUBDIRS="$SUBDIRS matp"
 			;;
 esac])dnl
 
