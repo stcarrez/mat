@@ -38,13 +38,14 @@ force:
 rebuild: clean build
 
 # Files to package in source distribution
-DISTFILES=README LICENSE.txt NOTICE.txt CHANGES ChangeLog config.guess configure config.sub \
+DISTFILES=README LICENSE.txt config.guess configure config.sub \
 configure.ac Makefile.in install-sh \
-mat/src mat/regtests mat/man \
-mat/configure mat/configure.ac \
-mat/config.guess mat/config.sub \
-mat/Makefile.in mat/install-sh \
-mat/mat.gpr.in mat/gtkmat.gpr.in mat/tests.gpr.in mat/config.gpr \
+matp/Makefile.in \
+matp/src matp/regtests mat/man \
+matp/configure matp/configure.ac \
+matp/config.guess matp/config.sub \
+mat/Makefile.in matp/install-sh \
+matp/mat.gpr.in matp/gtkmat.gpr.in matp/tests.gpr.in matp/config.gpr \
 libmat/src \
 libmat/configure libmat/configure.ac \
 libmat/config.guess libmat/config.sub \
@@ -58,7 +59,7 @@ dist:
 	here=`cd $(top_builddir) && pwd`; \
 	top_distdir=`cd $(distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
-    mkdir -p $(distdir)/mat $(distdir)/libgpmat; \
+	mkdir -p $(distdir)/mat $(distdir)/libmat $(distdir)/matp; \
 	for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
