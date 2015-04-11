@@ -32,9 +32,9 @@ AC_SUBST(NR_CPUS)
 
 AC_CHECK_PROGS(GNATMAKE, gnatmake, "")
 
-ac_enable_gtk=yes
+ac_enable_gtk=no
 AC_ARG_ENABLE(gtk,
-[  --enable-gtk          Enable compilation of mat Gtk tool (enabled)],
+[  --enable-gtk          Enable compilation of mat Gtk tool (disabled)],
 [case "${enableval}" in
   no|none)  ac_enable_gtk= ;;
   *)        ac_enable_gtk=yes
