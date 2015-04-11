@@ -51,6 +51,7 @@ mat:	  mat.o
 	$(CC) -o mat mat.o
 
 install:
+	mkdir -p ${bindir}
 	$(INSTALL) mat ${bindir}/
 
 .c.o:
