@@ -14,45 +14,57 @@ memory allocation was made, the timestamp and thread information.
 To use MAT, you'll need to intrument your application
 and then to analyze the results with the tool.
 
-Instrumenting you application
-=============================
+Building mat
+============
+The package is composed of three separate components:
 
-Build the libgpmat.so share library for you program.
+- libmat is the shared library that instruments the memory allocation.
+- matl is a small launcher that helps instrument a program with libmat.
+- mat is the analysis tool.
 
-  cd libgpmat
+libmat and matl are written in C and mat is written in Ada which requires
+the GNAT Ada compiler.  By default the mat component is not built.
+If you only need libmat and matl, configure and build as follows:
+
   ./configure
+  make
+
+To build a 32-bit or 64-bit version of the shared library you may use:
+
+  CC="/usr/bin/gcc -m32" ../mat/configure
+  make
+or
+  CC="/usr/bin/gcc -m64" ../mat/configure
+  make
 
 If you're using a cross compilation environment, you should
 indicate to the configure your target host.  For example to
 build for a remote mips system, use:
 
   ./configure --host="mips-uclibc-linux" --target=mips-uclibc-linux
+  make
 
-Prepare the instrumentation by setting some environment
-variables:
+To build the mat analysis tool, you must have installed the following
+components on your system:
 
-  export MAT_SERVER=file://my-program
-  export LD_PRELOAD=`pwd`/libgpmat.so
+- the GNAT Ada compiler (at least 4.7.3 or higher),
+- the GNU Ada Bfd library,
+- the Ada Utility Library
 
-Run your program:
+You must configure and build by using:
 
-  my-program
+  ./configure --enable-mat
+  make
 
-While the program runs and the libgpmat.so collect events,
-it generates a file 'my-program-<pid>.mat'.
+Instrumenting you application
+=============================
+
+You can instrument the memory allocation by using the matl launcher.
+
+  matl -o name my-program
+
+While the program runs and the libmat.so collect events,
+it generates a file 'name-<pid>.mat'.
 
 
-Analyzing the data
-==================
-
-To build the matp analysis tool, you'll need the GNAT Ada compiler
-and you'll need to install ada-util as well as ada-bfd libraries.
-
-  cd mat
-  ./configure
-
-If you are using a cross compilation environment, you don't need
-to build matp for your target.
-
-Run the matp tool and give it the data file collected for your program.
 
