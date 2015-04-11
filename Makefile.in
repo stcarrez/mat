@@ -50,7 +50,7 @@ libmat/src \
 libmat/configure libmat/configure.ac \
 libmat/config.guess libmat/config.sub \
 libmat/Makefile.in libmat/install-sh \
-mat/Makefile.in mat/mat.c
+matl/Makefile.in matl/matl.c matl/matl.1
 
 dist:
 	-rm -rf $(distdir)
