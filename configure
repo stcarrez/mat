@@ -3012,7 +3012,7 @@ EXEC_PREFIX="$prefix"
 subdirs="$subdirs libmat"
 
 
-SUBDIRS="libmat mat"
+SUBDIRS="libmat matl"
 ac_enable_matp=no
 # Check whether --enable-matp was given.
 if test "${enable_matp+set}" = set; then :
@@ -3031,7 +3031,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile mat/Makefile"
+ac_config_files="$ac_config_files Makefile matl/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -3740,7 +3740,7 @@ for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "mat/Makefile") CONFIG_FILES="$CONFIG_FILES mat/Makefile" ;;
+    "matl/Makefile") CONFIG_FILES="$CONFIG_FILES matl/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
