@@ -3174,8 +3174,8 @@ $as_echo "no" >&6; }
   else
     gnat_project_dir_util=
     gnat_project_name_util=
-    if test x"Building Ada EL requires the Ada Utility Library." != x; then
-      as_fn_error $? "Building Ada EL requires the Ada Utility Library.
+    if test x"Building MAT requires the Ada Utility Library." != x; then
+      as_fn_error $? "Building MAT requires the Ada Utility Library.
   You should build and install the Ada Utility Library component.
   It must be available and found by ${GNATMAKE}.
   This project was not found in the ADA_PROJECT_PATH environment variable.
@@ -3267,8 +3267,8 @@ $as_echo "no" >&6; }
   else
     gnat_project_dir_bfdada=
     gnat_project_name_bfdada=
-    if test x"Building NAT requires the Ada Bfd Library." != x; then
-      as_fn_error $? "Building NAT requires the Ada Bfd Library.
+    if test x"Building MAT requires the Ada Bfd Library." != x; then
+      as_fn_error $? "Building MAT requires the Ada Bfd Library.
   You should build and install the Ada Bfd Library component.
   It must be available and found by ${GNATMAKE}.
   This project was not found in the ADA_PROJECT_PATH environment variable.
