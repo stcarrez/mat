@@ -50,7 +50,7 @@ AC_CHECK_LIB([readline],[readline])
 ##########################################
 AM_GNAT_FIND_PROJECT([ada-util],[Ada Utility Library],[util],
   [git@github.com:stcarrez/ada-util.git],
-  [Building Ada EL requires the Ada Utility Library.],
+  [Building MAT requires the Ada Utility Library.],
   [
     UTIL_DIR=${gnat_project_dir_util}
   ])
@@ -61,7 +61,7 @@ AC_SUBST(UTIL_DIR)
 ##########################################
 AM_GNAT_FIND_PROJECT([ada-bfd],[Ada Bfd Library],[bfdada],
   [git@github.com:stcarrez/ada-bfd.git],
-  [Building NAT requires the Ada Bfd Library.],
+  [Building MAT requires the Ada Bfd Library.],
   [
     BFD_DIR=${gnat_project_dir_bfdada}
   ])
