@@ -1,0 +1,83 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# gnatmake can do parallel builds; we don't want make to interfere.
+.NOTPARALLEL:
+
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+libname=libmat
+
+%:
+	dh $@ 
+
+.PHONY: binary-arch build-arch
+.PHONY: libmat mat
+
+binary-arch: build-arch libmat mat
+	: # Common to all architecture-dependent packages
+	dh_installchangelogs -a
+	dh_installdocs -a
+	dh_lintian -a
+	dh_compress -a
+	dh_fixperms -a
+	dh_makeshlibs -a
+	dh_installdeb -a
+	dh_shlibdeps -a -L$(libname)$(soversion) -ldebian/$(libname)$(soversion)/usr/lib
+	dh_gencontrol -a
+	dh_md5sums -a
+	dh_builddeb -a
+
+mat:
+	$(MAKE) prefix=$(CURDIR)/debian/tmp/usr install
+	dh_installdirs -p$@ \
+		usr/bin
+	dh_install -p$@ usr/bin/mat /usr/bin
+	dh_installman -p$@ debian/tmp/usr/share/man/man1/mat.1
+	dh_strip -p$@
+
+libmat:
+	: # The development package
+	$(MAKE) prefix=$(CURDIR)/debian/tmp/usr install
+	dh_installdirs -p$@ \
+	    usr/bin \
+		usr/lib/$(DEB_HOST_MULTIARCH)
+	dh_install -p$@ usr/lib/$(libname).so /usr/lib/$(DEB_HOST_MULTIARCH)
+	dh_install -p$@ usr/bin/matl /usr/bin
+	dh_installman -p$@ debian/tmp/usr/share/man/man1/matl.1
+	dh_strip -p$@
+
+# Add specific link options when the libada_util.so shared library is created.  The -ld is passed but it
+# is lost from the ELF NEEDED list.
+override_dh_auto_configure:
+	dh_auto_configure -- --enable-matp
+
+override_dh_auto_build:
+	dh_auto_build
+
+override_dh_auto_test:
+	dh_auto_test -- LD_LIBRARY_PATH=./lib
+
+override_dh_auto_install: libmat
+
+override_dh_install:
+	dh_install
+
+#override_dh_compress:
+#	dh_compress -X.ads -X.adb -XMakefile
+
+override_dh_strip:
+	#dh_strip --dbg-package=libada-bfd$(aliversion)-dbg
+
+override_dh_auto_clean:
+	rm -f $(CURDIR)/debian/$(libname)*.postinst
+	rm -f $(CURDIR)/debian/$(libname)*.postrm
+	dh_auto_clean
