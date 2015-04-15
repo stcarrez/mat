@@ -32,6 +32,8 @@ with MAT.Readers.Streams.Sockets;
 with MAT.Consoles;
 package MAT.Targets is
 
+   pragma Preelaborate_Body;
+
    --  Exception raised if some option is invalid.
    Usage_Error : exception;
 
