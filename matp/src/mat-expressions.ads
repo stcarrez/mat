@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------
---  mat-expressions -- Expressions for memory slot selection
+--  mat-expressions -- Expressions for event and memory slot selection
 --  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
@@ -92,6 +92,14 @@ package MAT.Expressions is
 
    --  Empty expression.
    EMPTY : constant Expression_Type;
+
+   type yystype is record
+      low   : MAT.Types.Uint64 := 0;
+      high  : MAT.Types.Uint64 := 0;
+      bval  : Boolean := False;
+      name  : Ada.Strings.Unbounded.Unbounded_String;
+      expr  : Expression_Type;
+   end record;
 
 private
 
