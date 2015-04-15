@@ -18,6 +18,8 @@
 with Interfaces;
 package MAT.Types is
 
+   pragma Preelaborate;
+
    type String_Ptr is access all String;
 
    subtype Uint8 is Interfaces.Unsigned_8;
