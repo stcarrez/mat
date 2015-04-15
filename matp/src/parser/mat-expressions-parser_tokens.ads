@@ -2,14 +2,7 @@ pragma Style_Checks (Off);
 package Mat.Expressions.Parser_Tokens is
 
 
-   type yystype is record
-      low   : MAT.Types.Uint64 := 0;
-      high  : MAT.Types.Uint64 := 0;
-      bval  : Boolean := False;
-      name  : Ada.Strings.Unbounded.Unbounded_String;
-      expr  : MAT.Expressions.Expression_Type;
-   end record;
-
+   subtype yystype is MAT.Expressions.yystype;
 
     YYLVal, YYVal : YYSType; 
     type Token is
