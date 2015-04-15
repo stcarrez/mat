@@ -18,6 +18,8 @@
 with Interfaces;
 package ELF is
 
+   pragma Preelaborate;
+
    subtype Elf32_Word is Interfaces.Unsigned_32;
    subtype Elf64_Word is Interfaces.Unsigned_64;
 
