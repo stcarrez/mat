@@ -18,7 +18,6 @@ project Config is
           when others =>
              for Default_Switches ("Ada") use ("-g", "-O2", "-gnat05", "-j" & Processors);
        end case;
---  for Global_Configuration_Pragmas use "gnat.adc";
    end Builder;
 
    package compiler is
