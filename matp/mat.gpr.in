@@ -16,8 +16,12 @@ project mat is
    for Exec_Dir use "./" & Config'Exec_Dir & "/bin";
 
    package Binder renames Config.Binder;
-   package Builder renames Config.Builder;
    package Compiler renames Config.Compiler;
    package Linker renames Config.Linker;
+
+   package Builder is
+      for Executable ("matp.adb") use "mat";
+      for Default_Switches use Config.Builder'Default_Switches;
+   end Builder;
 
 end mat;
