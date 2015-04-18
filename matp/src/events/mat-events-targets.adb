@@ -26,11 +26,15 @@ package body MAT.Events.Targets is
    --  ------------------------------
    function Find (List : in Target_Event_Vector;
                   Kind : in Probe_Index_Type) return Probe_Event_Type is
+      Iter  : Target_Event_Cursor := List.First;
+      Event : Target_Event;
    begin
-      for Event of List loop
+      while Target_Event_Vectors.Has_Element (Iter) loop
+         Event := Target_Event_Vectors.Element (Iter);
          if Event.Index = Kind then
             return Event;
          end if;
+         Target_Event_Vectors.Next (Iter);
       end loop;
       raise Not_Found;
    end Find;
@@ -47,9 +51,13 @@ package body MAT.Events.Targets is
       end "<";
 
       package Sort_Event_Info is new Event_Info_Vectors.Generic_Sorting;
+      Iter : Frame_Event_Info_Cursor := Map.First;
+      Item : Event_Info_Type;
    begin
-      for Item of Map loop
+      while Frame_Event_Info_Maps.Has_Element (Iter) loop
+         Item := Frame_Event_Info_Maps.Element (Iter);
          List.Append (Item);
+         Frame_Event_Info_Maps.Next (Iter);
       end loop;
       Sort_Event_Info.Sort (List);
    end Build_Event_Info;
