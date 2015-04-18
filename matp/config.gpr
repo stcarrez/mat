@@ -14,9 +14,9 @@ project Config is
    package Builder is
        case Mode is
           when "debug" => 
-             for Default_Switches ("Ada") use ("-g", "-gnat2012", "-j" & Processors);
+             for Default_Switches ("Ada") use ("-g", "-gnat05", "-j" & Processors);
           when others =>
-             for Default_Switches ("Ada") use ("-g", "-O2", "-gnat2012", "-j" & Processors);
+             for Default_Switches ("Ada") use ("-g", "-O2", "-gnat05", "-j" & Processors);
        end case;
 --  for Global_Configuration_Pragmas use "gnat.adc";
    end Builder;
@@ -51,7 +51,7 @@ project Config is
    package binder is
       case Mode is
          when "debug" =>
-            for Default_Switches ("Ada") use ("-E", "-shared", "-v");
+            for Default_Switches ("Ada") use ("-E", "-v");
 
 	 when others =>
             for Default_Switches ("Ada") use ("-E");
