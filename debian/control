@@ -2,14 +2,14 @@ Source: mat
 Priority: extra
 Maintainer: Stephane Carrez <Stephane.Carrez@gmail.com>
 Build-Depends: debhelper (>= 8.0.0), autotools-dev, gnat, gnat-4.6, binutils-dev (>= 2.22), libiberty-dev
-Standards-Version: 3.9.2
+Standards-Version: 3.9.5
 Section: devel
 Homepage: https://github.com/stcarrez/mat
 
 Package: libmat
 Section: devel
 Architecture: any
-Depends: ${misc:Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
 Suggests: mat
 Description: Memory analysis tool library and launcher
  The libmat is a shared library that instruments memory allocation
@@ -20,7 +20,7 @@ Description: Memory analysis tool library and launcher
 Package: mat
 Section: devel
 Architecture: any
-Depends: ${misc:Depends}, libgnat-4.6
+Depends: ${misc:Depends}, ${shlibs:Depends}
 Suggests: libmat
 Description: Memory analysis tool
  The mat application is a memory analysis tool that analyzes the results
