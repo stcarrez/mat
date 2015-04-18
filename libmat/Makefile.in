@@ -24,6 +24,7 @@ target_triplet = @target@
 bindir=${prefix}/bin
 libdir=${prefix}/lib
 
+LN_S=@LN_S@
 AR = @AR@
 CC = @CC@
 CFLAGS = @CFLAGS@ -Wall -fpic
@@ -70,7 +71,10 @@ OBJS=mat-events.o \
 	mat-proc.o \
 	@CPU_OBJS@
 
-LIBNAME=libmat.so
+LIBEXT=so
+LIBVER=1
+
+LIBNAME=libmat.${LIBEXT}
 
 COMPILE=$(CC) $(CFLAGS) $(CPPFLAGS)
 
@@ -86,7 +90,9 @@ $(LIBNAME):		$(OBJS)
 
 install:
 	mkdir -p ${libdir}
-	$(INSTALL) $(LIBNAME) ${libdir}/
+	$(INSTALL) $(LIBNAME) ${libdir}/$(LIBNAME).$(LIBVER)
+	rm -f ${libdir}/$(LIBNAME).$(LIBEXT)
+	${LN_S} $(LIBNAME).$(LIBVER) ${libdir}/$(LIBNAME)
 
 .c.o:
 	$(COMPILE) -c $<
