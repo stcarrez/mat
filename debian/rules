@@ -51,6 +51,7 @@ libmat:
 	    usr/bin \
 		usr/lib/$(DEB_HOST_MULTIARCH)
 	dh_install -p$@ usr/lib/$(libname).so /usr/lib/$(DEB_HOST_MULTIARCH)
+	dh_install -p$@ usr/lib/$(libname).so.1 /usr/lib/$(DEB_HOST_MULTIARCH)
 	dh_install -p$@ usr/bin/matl /usr/bin
 	dh_installman -p$@ debian/tmp/usr/share/man/man1/matl.1
 	dh_strip -p$@
