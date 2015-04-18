@@ -182,6 +182,7 @@ package body MAT.Commands is
       Sizes   : MAT.Memory.Tools.Size_Info_Map;
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
+      Iter    : MAT.Memory.Tools.Size_Info_Cursor;
    begin
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_SIZE, "Slot size", 25);
@@ -191,7 +192,8 @@ package body MAT.Commands is
 
       MAT.Memory.Targets.Size_Information (Memory => Process.Memory,
                                            Sizes  => Sizes);
-      for Iter in Sizes.Iterate loop
+      Iter := Sizes.First;
+      while MAT.Memory.Tools.Size_Info_Maps.Has_Element (Iter) loop
          declare
             use MAT.Memory.Tools;
             use type MAT.Types.Target_Size;
@@ -206,6 +208,7 @@ package body MAT.Commands is
             Console.Print_Size (MAT.Consoles.F_TOTAL_SIZE, Total);
             Console.End_Row;
          end;
+         MAT.Memory.Tools.Size_Info_Maps.Next (Iter);
       end loop;
    end Sizes_Command;
 
@@ -220,6 +223,7 @@ package body MAT.Commands is
       Threads : MAT.Memory.Memory_Info_Map;
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
+      Iter    : MAT.Memory.Memory_Info_Cursor;
    begin
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_THREAD, "Thread", 10);
@@ -233,7 +237,8 @@ package body MAT.Commands is
 
       MAT.Memory.Targets.Thread_Information (Memory  => Process.Memory,
                                              Threads => Threads);
-      for Iter in Threads.Iterate loop
+      Iter := Threads.First;
+      while MAT.Memory.Memory_Info_Maps.Has_Element (Iter) loop
          declare
             use type MAT.Types.Target_Size;
 
@@ -250,6 +255,7 @@ package body MAT.Commands is
             Console.Print_Field (MAT.Consoles.F_MAX_ADDR, Info.Max_Addr);
             Console.End_Row;
          end;
+         MAT.Memory.Memory_Info_Maps.Next (Iter);
       end loop;
    end Threads_Command;
 
@@ -263,6 +269,7 @@ package body MAT.Commands is
       Level   : Positive := 3;
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
+      Iter    : MAT.Memory.Frame_Info_Cursor;
    begin
       if Args'Length > 0 then
          Level := Positive'Value (Args);
@@ -280,7 +287,8 @@ package body MAT.Commands is
       MAT.Memory.Targets.Frame_Information (Memory => Process.Memory,
                                             Level  => Level,
                                             Frames => Frames);
-      for Iter in Frames.Iterate loop
+      Iter := Frames.First;
+      while MAT.Memory.Frame_Info_Maps.Has_Element (Iter) loop
          declare
             use type MAT.Types.Target_Size;
 
@@ -302,6 +310,7 @@ package body MAT.Commands is
             Console.Print_Field (MAT.Consoles.F_MAX_ADDR, Info.Memory.Max_Addr);
             Console.End_Row;
          end;
+         MAT.Memory.Frame_Info_Maps.Next (Iter);
       end loop;
    end Frames_Command;
 
@@ -315,9 +324,11 @@ package body MAT.Commands is
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Frames  : MAT.Events.Targets.Frame_Event_Info_Map;
       List    : MAT.Events.Targets.Event_Info_Vector;
+      Iter    : MAT.Events.Targets.Event_Info_Cursor;
       Filter  : MAT.Expressions.Expression_Type;
       Depth   : Natural := 3;
       Symbol  : MAT.Symbols.Targets.Symbol_Info;
+      Info    : MAT.Events.Targets.Event_Info_Type;
    begin
       if Args'Length > 0 then
          Filter := MAT.Expressions.Parse (Args);
@@ -335,7 +346,9 @@ package body MAT.Commands is
                                         Depth  => Depth,
                                         Frames => Frames);
       MAT.Events.Targets.Build_Event_Info (Frames, List);
-      for Info of List loop
+      Iter := List.First;
+      while MAT.Events.Targets.Event_Info_Vectors.Has_Element (Iter) loop
+         Info := MAT.Events.Targets.Event_Info_Vectors.Element (Iter);
          MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Process.Symbols.Value.all,
                                                 Addr    => Info.Frame_Addr,
                                                 Symbol  => Symbol);
@@ -350,6 +363,7 @@ package body MAT.Commands is
          Console.Print_Field (MAT.Consoles.F_ID,
                               MAT.Formats.Event (Info.First_Event, Info.Last_Event));
          Console.End_Row;
+         MAT.Events.Targets.Event_Info_Vectors.Next (Iter);
       end loop;
 
    exception
@@ -369,6 +383,7 @@ package body MAT.Commands is
       Start, Finish : MAT.Types.Target_Tick_Ref;
       Sizes   : MAT.Events.Targets.Size_Event_Info_Map;
       Filter  : MAT.Expressions.Expression_Type;
+      Iter    : MAT.Events.Targets.Size_Event_Info_Cursor;
    begin
       if Args'Length > 0 then
          Filter := MAT.Expressions.Parse (Args);
@@ -384,7 +399,8 @@ package body MAT.Commands is
       MAT.Events.Timelines.Find_Sizes (Target => Process.Events.all,
                                        Filter => Filter,
                                        Sizes  => Sizes);
-      for Iter in Sizes.Iterate loop
+      Iter := Sizes.First;
+      while MAT.Events.Targets.Size_Event_Info_Maps.Has_Element (Iter) loop
          declare
             use type MAT.Types.Target_Tick_Ref;
 
@@ -403,6 +419,7 @@ package body MAT.Commands is
             Console.Print_Field (MAT.Consoles.F_COUNT, Natural'Image (Info.Count));
             Console.End_Row;
          end;
+         MAT.Events.Targets.Size_Event_Info_Maps.Next (Iter);
       end loop;
 
    exception
@@ -422,6 +439,7 @@ package body MAT.Commands is
       Start, Finish : MAT.Types.Target_Tick_Ref;
       Events  : MAT.Events.Targets.Target_Event_Vector;
       Filter  : MAT.Expressions.Expression_Type;
+      Iter    : MAT.Events.Targets.Target_Event_Cursor;
    begin
       Filter := MAT.Expressions.Parse (Args);
       Console.Start_Title;
@@ -432,7 +450,8 @@ package body MAT.Commands is
 
       Process.Events.Get_Time_Range (Start, Finish);
       Process.Events.Get_Events (Start, Finish, Events);
-      for Iter in Events.Iterate loop
+      Iter := Events.First;
+      while MAT.Events.Targets.Target_Event_Vectors.Has_Element (Iter) loop
          declare
             use type MAT.Types.Target_Tick_Ref;
 
@@ -449,6 +468,7 @@ package body MAT.Commands is
                Console.End_Row;
             end if;
          end;
+         MAT.Events.Targets.Target_Event_Vectors.Next (Iter);
       end loop;
 
    exception
@@ -504,6 +524,8 @@ package body MAT.Commands is
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Maps    : MAT.Memory.Region_Info_Map;
+      Iter    : MAT.Memory.Region_Info_Cursor;
+      Region  : MAT.Memory.Region_Info;
    begin
       MAT.Memory.Targets.Find (Memory => Process.Memory,
                                From   => MAT.Types.Target_Addr'First,
@@ -515,7 +537,9 @@ package body MAT.Commands is
       Console.Print_Title (MAT.Consoles.F_FILE_NAME, "Path", 40);
       Console.End_Title;
 
-      for Region of Maps loop
+      Iter := Maps.First;
+      while MAT.Memory.Region_Info_Maps.Has_Element (Iter) loop
+         Region := MAT.Memory.Region_Info_Maps.Element (Iter);
          declare
             Flags  : String (1 .. 3) := "---";
          begin
@@ -534,6 +558,7 @@ package body MAT.Commands is
             Console.Print_Field (MAT.Consoles.F_FILE_NAME, Region.Path);
             Console.End_Row;
          end;
+         MAT.Memory.Region_Info_Maps.Next (Iter);
       end loop;
    end Maps_Command;
 
