@@ -61,7 +61,7 @@ override_dh_auto_configure:
 	dh_auto_configure -- --enable-matp
 
 override_dh_auto_build:
-	dh_auto_build -- MAKE_ARGS="-XMODE=optimize -bargs -static"
+	dh_auto_build -- MAKE_ARGS="-XMODE=optimize -bargs -static -largs -Wl,-Bstatic -lada_util -lada-bfd -lbfd -Wl,-Bdynamic"
 
 override_dh_auto_test:
 	dh_auto_test -- LD_LIBRARY_PATH=./lib
