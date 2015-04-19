@@ -119,7 +119,7 @@ struct mat_socket_server* mat_socket_open (struct mat_socket_server* server, con
       return NULL;
     }
   
-  server->fd = socket (PF_INET, SOCK_STREAM, SOCK_CLOEXEC);
+  server->fd = socket (PF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
   if (server->fd < 0)
     {
       return NULL;
