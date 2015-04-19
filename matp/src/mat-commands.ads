@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-commands -- Command support and execution
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,5 +57,9 @@ package MAT.Commands is
    --  Print the probe event with the stack frame.
    procedure Event_Command (Target : in out MAT.Targets.Target_Type'Class;
                             Args   : in String);
+
+   --  Info command to print symmary information about the program.
+   procedure Info_Command (Target : in out MAT.Targets.Target_Type'Class;
+                           Args   : in String);
 
 end MAT.Commands;
