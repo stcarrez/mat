@@ -36,9 +36,12 @@ package MAT.Readers is
    end record;
    subtype Message is Message_Type;
 
-private
-
    type Endian_Type is (BIG_ENDIAN, LITTLE_ENDIAN);
+
+   --  Get the buffer endian format.
+   function Get_Endian (Msg : in Message_Type) return Endian_Type;
+
+private
 
    type Buffer_Type is record
       Current : System.Address;
