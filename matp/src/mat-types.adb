@@ -93,4 +93,33 @@ package body MAT.Types is
       return Res;
    end "-";
 
+   --  ------------------------------
+   --  Convert the hexadecimal string into an unsigned integer.
+   --  ------------------------------
+   function Hex_Value (Value : in String) return Uint64 is
+      use type Interfaces.Unsigned_64;
+
+      Result : Uint64 := 0;
+   begin
+      if Value'Length = 0 then
+         raise Constraint_Error with "Empty string";
+      end if;
+      for I in Value'Range loop
+         declare
+            C : constant Character := Value (I);
+         begin
+            if C >= '0' and C <= '9' then
+               Result := (Result * 16) + (Character'Pos (C) - Character'Pos ('0'));
+            elsif C >= 'A' and C <= 'F' then
+               Result := (Result * 16) + (Character'Pos (C) - Character'Pos ('F') + 10);
+            elsif C >= 'a' and C <= 'f' then
+               Result := (Result * 16) + (Character'Pos (C) - Character'Pos ('f') + 10);
+            else
+               raise Constraint_Error with "Invalid character: " & C;
+            end if;
+         end;
+      end loop;
+      return Result;
+   end Hex_Value;
+
 end MAT.Types;
