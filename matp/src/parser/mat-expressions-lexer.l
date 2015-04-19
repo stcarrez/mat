@@ -25,6 +25,7 @@ all		        return T_ALL;
 is		        return T_IS;
 from		    return T_FROM;
 direct		    return T_DIRECT;
+has             return T_HAS;
 \\\n		{   Line_Number := Line_Number + 1;  }
 \(              return '(';
 \)              return ')';
