@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 with Ada.Containers.Ordered_Maps;
 with Ada.Containers.Vectors;
+with Ada.Finalization;
 
 with Util.Concurrent.Counters;
 
@@ -195,9 +196,13 @@ private
       Last_Id       : Event_Id_Type := 0;
    end Event_Collector;
 
-   type Target_Events is tagged limited record
+   type Target_Events is new Ada.Finalization.Limited_Controlled with record
       Events      : Event_Collector;
       Event_Count : Util.Concurrent.Counters.Counter;
    end record;
+
+   --  Release the storage allocated for the events.
+   overriding
+   procedure Finalize (Target : in out Target_Events);
 
 end MAT.Events.Targets;
