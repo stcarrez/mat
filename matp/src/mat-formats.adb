@@ -35,6 +35,14 @@ package body MAT.Formats is
                         Start_Time : in MAT.Types.Target_Tick_Ref) return String;
 
    --  ------------------------------
+   --  Format the PID into a string.
+   --  ------------------------------
+   function Pid (Value : in MAT.Types.Target_Process_Ref) return String is
+   begin
+      return Util.Strings.Image (Natural (Value));
+   end Pid;
+
+   --  ------------------------------
    --  Format the address into a string.
    --  ------------------------------
    function Addr (Value : in MAT.Types.Target_Addr) return String is
