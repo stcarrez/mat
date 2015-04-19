@@ -13,6 +13,7 @@
 %token T_EVENT
 %token T_TIME
 %token T_LT T_LE T_GT T_GE T_NE T_EQ
+%token T_HAS
 %token '[' ']' '(' ')' ','
 
 %left T_OR
@@ -101,6 +102,12 @@ condition :
             {
               $$.expr := MAT.Expressions.Create_Thread (MAT.Types.Target_Thread_Ref ($2.low),
                                                       	MAT.Types.Target_Thread_Ref ($2.high));
+            }
+    |
+        T_HAS integer
+            {
+              $$.expr := MAT.Expressions.Create_Addr (MAT.Types.Target_Addr ($2.low),
+                                                      MAT.Types.Target_Addr ($2.low));
             }
     |
         T_ADDR compare
