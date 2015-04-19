@@ -189,6 +189,9 @@ private
                          Finish  : in Event_Id_Type;
                          Process : access procedure (Event : in Probe_Event_Type));
 
+      --  Clear the events.
+      procedure Clear;
+
    private
       Current       : Event_Block_Access := null;
       Events        : Event_Map;
