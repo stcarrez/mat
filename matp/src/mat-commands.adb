@@ -584,10 +584,10 @@ package body MAT.Commands is
          return;
       end if;
       Process.Events.Get_Limits (Start, Finish);
-      Console.Notice (Consoles.N_INFO, "Pid      : " & MAT.Formats.Pid (Process.Pid));
-      Console.Notice (Consoles.N_INFO, "Path     : " & To_String (Process.Path));
-      Console.Notice (Consoles.N_INFO, "Events   : " & MAT.Formats.Event (Start, Finish));
-      Console.Notice (Consoles.N_INFO, "Duration : "
+      Console.Notice (Consoles.N_INFO, "Pid            : " & MAT.Formats.Pid (Process.Pid));
+      Console.Notice (Consoles.N_INFO, "Path           : " & To_String (Process.Path));
+      Console.Notice (Consoles.N_INFO, "Events         : " & MAT.Formats.Event (Start, Finish));
+      Console.Notice (Consoles.N_INFO, "Duration       : "
                       & MAT.Formats.Duration (Finish.Time - Start.Time));
 
       --  Print number of memory regions.
@@ -597,6 +597,8 @@ package body MAT.Commands is
                                Into   => Maps);
       Console.Notice (Consoles.N_INFO, "Memory regions : "
                       & Util.Strings.Image (Natural (Maps.Length)));
+      Console.Notice (Consoles.N_INFO, "Endianness     : "
+                      & MAT.Readers.Endian_Type'Image (Process.Endian));
    end Info_Command;
 
    --  ------------------------------
@@ -698,16 +700,19 @@ package body MAT.Commands is
    begin
       Console.Notice (N_HELP, "Available commands");
       Console.Notice (N_HELP, "exit                --  Exit the tool");
-      Console.Notice (N_HELP, "events <selection>  --  List the events filtered by the selection");
       Console.Notice (N_HELP, "event id            --  Print the event ID");
+      Console.Notice (N_HELP, "events <selection>  --  List the events filtered by the selection");
       Console.Notice (N_HELP, "threads             --  List the threads");
       Console.Notice (N_HELP, "slots <selection>   --  List the memory slots"
                       & " filtered by the selection");
-      Console.Notice (N_HELP, "sizes               --  ");
+      Console.Notice (N_HELP, "sizes <selection>   --  Print a summary of sizes "
+                      & "filtered by the selection");
       Console.Notice (N_HELP, "frames <level>      --  Print the stack frames up"
                       & " to the given level");
-      Console.Notice (N_HELP, "open file           --  Load the mat file to analyze");
-      Console.Notice (N_HELP, "symbol file         --  Load the executable symbol file");
+      Console.Notice (N_HELP, "open <file>         --  Load the mat file to analyze");
+      Console.Notice (N_HELP, "symbol <file>       --  Load the executable symbol file");
+      Console.Notice (N_HELP, "info                --  Print some information about the program");
+      Console.Notice (N_HELP, "maps                --  Print the program memory maps");
    end Help_Command;
 
    function Get_Command (Line : in String) return String is
