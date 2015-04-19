@@ -5,20 +5,17 @@
 mat - Memory Analysis Tool
 .SH SYNOPSIS
 .B mat
-[ -i ] [ -o
-.I directory
-] [ -t
-.I templates
-] [ -c
-.I config-dir
+[ -i ] [ -b
+.I ip[:port]
+] [ -ns ] [
+.I mat-event-file
 ]
-.I command
 .br
 .SH DESCRIPTION
 \fImat\fR is a memory analysis tool intended to help understand what areas of a program
 use the most memory.  The tool works with a small shared library
 .I libmat.so
-that must be loaded by the program to analyze. The shared library catches a number of
+that must be loaded by the program for the analysis. The shared library catches a number of
 memory allocation operations such as
 .BR malloc ,
 .B realloc
@@ -65,10 +62,10 @@ Enable the interactive mode.
 .B -b [ip:]port
 .br
 Define the TCP/IP port and local address to bind.
-.TP 5
-.B -nw
-.br
-Disable the graphical mode.
+.\" .TP 5
+.\" .B -nw
+.\" .br
+.\" Disable the graphical mode.
 .TP 5
 .B -ns
 .br
