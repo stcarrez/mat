@@ -80,11 +80,10 @@ GOTO_OFFSET : array (0.. 61) of Integer :=
 subtype Rule        is Natural;
 subtype Nonterminal is Integer;
 
-   Rule_Length : array (Rule range  0 ..  38) of Natural := (2,
-1,3,2,3,3,3,3,4,2,2,2,2,2,2,2,2,2,1,1,1,1,2,2,2,2,2,2,1,1,0,1,5,5,3,1,1,0,
-1);
-   Get_LHS_Rule: array (Rule range  0 ..  38) of Nonterminal := (-1,
+   Rule_Length : array (Rule range  0 ..  35) of Natural := (2,
+1,3,2,3,3,3,3,4,2,2,2,2,2,2,2,2,2,1,1,1,1,2,2,2,2,2,2,1,1,0,1,1,1,0,1);
+   Get_LHS_Rule: array (Rule range  0 ..  35) of Nonterminal := (-1,
 -2,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,
 -3,-3,-3,-3,-3,-3,-3,-7,-7,-7,-7,-7,-7,-5,
--5,-9,-9,-10,-10,-10,-8,-6,-4,-4);
+-5,-9,-9,-8,-6,-4,-4);
 end Mat.Expressions.Parser_Goto;

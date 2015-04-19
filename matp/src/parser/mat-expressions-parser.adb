@@ -569,47 +569,18 @@ when 31 => -- #line 203
 yyval := MAT.Expressions.Parser_Tokens.YYLval;   
 
 when 32 => -- #line 208
-
-                  
-yyval.low  := 
-yy.value_stack(yy.tos-3).low;
-                  
-yyval.high := 
-yy.value_stack(yy.tos-1).low;
-                
-
-when 33 => -- #line 214
-
-                  
-yyval.low  := 
-yy.value_stack(yy.tos-3).low;
-                  
-yyval.high := 
-yy.value_stack(yy.tos-1).low;
-                
-
-when 34 => -- #line 220
-
-                  
-yyval.low  := 0;
-                  
-yyval.high := 0;
-                  -- error( "Wrong  range specification" );
-                
-
-when 35 => -- #line 229
  
 yyval := MAT.Expressions.Parser_Tokens.YYLval; 
 
-when 36 => -- #line 234
+when 33 => -- #line 213
  
 yyval.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);  
 
-when 37 => -- #line 239
+when 34 => -- #line 218
  
 yyval.bval := True;          
 
-when 38 => -- #line 242
+when 35 => -- #line 221
  
 yyval.bval := False;         
 
