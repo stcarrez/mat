@@ -733,11 +733,11 @@ begin
    Commands.Insert ("symbol", Symbol_Command'Access);
    Commands.Insert ("slots", Slot_Command'Access);
    Commands.Insert ("threads", Threads_Command'Access);
-   Commands.Insert ("frames", Frames_Command'Access);
+   Commands.Insert ("malloc-frames", Frames_Command'Access);
    Commands.Insert ("events", Events_Command'Access);
    Commands.Insert ("event", Event_Command'Access);
    Commands.Insert ("sizes", Event_Sizes_Command'Access);
-   Commands.Insert ("event-frames", Event_Frames_Command'Access);
+   Commands.Insert ("frames", Event_Frames_Command'Access);
    Commands.Insert ("help", Help_Command'Access);
    Commands.Insert ("maps", Maps_Command'Access);
 end MAT.Commands;
