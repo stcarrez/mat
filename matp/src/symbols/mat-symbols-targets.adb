@@ -16,7 +16,9 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Bfd.Sections;
+with ELF;
 with Util.Log.Loggers;
+
 package body MAT.Symbols.Targets is
 
    --  The logger
@@ -36,6 +38,9 @@ package body MAT.Symbols.Targets is
       end if;
    end Open;
 
+   --  ------------------------------
+   --  Load the symbol table for the associated region.
+   --  ------------------------------
    procedure Open (Symbols : in out Region_Symbols;
                    Path    : in String) is
    begin
@@ -67,6 +72,40 @@ package body MAT.Symbols.Targets is
       if Ada.Strings.Unbounded.Length (Region.Path) > 0 then
          Open (Syms.Value.all, Ada.Strings.Unbounded.To_String (Region.Path));
       end if;
+   end Load_Symbols;
+
+   --  ------------------------------
+   --  Load the symbols associated with all the shared libraries described by
+   --  the memory region map.
+   --  ------------------------------
+   procedure Load_Symbols (Symbols     : in out Target_Symbols;
+                           Regions     : in MAT.Memory.Region_Info_Map) is
+      use type ELF.Elf32_Word;
+
+      Iter    : MAT.Memory.Region_Info_Cursor := Regions.First;
+   begin
+      while MAT.Memory.Region_Info_Maps.Has_Element (Iter) loop
+         declare
+            Region : MAT.Memory.Region_Info := MAT.Memory.Region_Info_Maps.Element (Iter);
+            Offset : MAT.Types.Target_Addr;
+         begin
+            if (Region.Flags and ELF.PF_X) /= 0 then
+               if Ada.Strings.Unbounded.Length (Region.Path) = 0 then
+                  Region.Path := Symbols.Path;
+                  Offset := 0;
+               else
+                  Offset := Region.Start_Addr;
+               end if;
+               MAT.Symbols.Targets.Load_Symbols (Symbols, Region, Offset);
+            end if;
+
+         exception
+            when Bfd.OPEN_ERROR =>
+               Symbols.Console.Error ("Cannot open symbol library file '"
+                                      & Ada.Strings.Unbounded.To_String (Region.Path) & "'");
+         end;
+         MAT.Memory.Region_Info_Maps.Next (Iter);
+      end loop;
    end Load_Symbols;
 
    --  ------------------------------
@@ -107,7 +146,7 @@ package body MAT.Symbols.Targets is
       use type Bfd.Vma_Type;
 
       Text_Section : Bfd.Sections.Section;
-      Pc : Bfd.Vma_Type := Bfd.Vma_Type (Addr);
+      Pc : constant Bfd.Vma_Type := Bfd.Vma_Type (Addr);
    begin
       if not Bfd.Files.Is_Open (Symbols.File) then
          Symbol.File := Symbols.Region.Path;
@@ -137,7 +176,7 @@ package body MAT.Symbols.Targets is
       Symbol.Line := 0;
       if Symbols_Maps.Has_Element (Pos) then
          declare
-            Syms   : Region_Symbols_Ref := Symbols_Maps.Element (Pos);
+            Syms : constant Region_Symbols_Ref := Symbols_Maps.Element (Pos);
          begin
             if Syms.Value.Region.End_Addr > Addr then
                Find_Nearest_Line (Symbols => Syms.Value.all,
