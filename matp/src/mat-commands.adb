@@ -565,6 +565,41 @@ package body MAT.Commands is
    end Maps_Command;
 
    --  ------------------------------
+   --  Info command to print symmary information about the program.
+   --  ------------------------------
+   procedure Info_Command (Target : in out MAT.Targets.Target_Type'Class;
+                           Args   : in String) is
+      use type MAT.Targets.Target_Process_Type_Access;
+      use type MAT.Types.Target_Tick_Ref;
+      use Ada.Strings.Unbounded;
+
+      Console : constant MAT.Consoles.Console_Access := Target.Console;
+      Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
+      Start   : MAT.Events.Targets.Probe_Event_Type;
+      Finish  : MAT.Events.Targets.Probe_Event_Type;
+      Maps    : MAT.Memory.Region_Info_Map;
+   begin
+      if Process = null then
+         Console.Notice (Consoles.N_EVENT_ID, "There is no process");
+         return;
+      end if;
+      Process.Events.Get_Limits (Start, Finish);
+      Console.Notice (Consoles.N_INFO, "Pid      : " & MAT.Formats.Pid (Process.Pid));
+      Console.Notice (Consoles.N_INFO, "Path     : " & To_String (Process.Path));
+      Console.Notice (Consoles.N_INFO, "Events   : " & MAT.Formats.Event (Start, Finish));
+      Console.Notice (Consoles.N_INFO, "Duration : "
+                      & MAT.Formats.Duration (Finish.Time - Start.Time));
+
+      --  Print number of memory regions.
+      MAT.Memory.Targets.Find (Memory => Process.Memory,
+                               From   => MAT.Types.Target_Addr'First,
+                               To     => MAT.Types.Target_Addr'Last,
+                               Into   => Maps);
+      Console.Notice (Consoles.N_INFO, "Memory regions : "
+                      & Util.Strings.Image (Natural (Maps.Length)));
+   end Info_Command;
+
+   --  ------------------------------
    --  Symbol command.
    --  Load the symbols from the binary file.
    --  ------------------------------
@@ -740,4 +775,5 @@ begin
    Commands.Insert ("frames", Event_Frames_Command'Access);
    Commands.Insert ("help", Help_Command'Access);
    Commands.Insert ("maps", Maps_Command'Access);
+   Commands.Insert ("info", Info_Command'Access);
 end MAT.Commands;
