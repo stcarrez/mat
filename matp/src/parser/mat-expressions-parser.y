@@ -203,27 +203,6 @@ count:
                 { $$ := MAT.Expressions.Parser_Tokens.YYLval;   }
     ;
 
-range:
-        '[' integer ',' integer ']'
-                {
-                  $$.low  := $2.low;
-                  $$.high := $4.low;
-                }
-    |
-        '[' integer T_RANGE integer ']'
-                {
-                  $$.low  := $2.low;
-                  $$.high := $4.low;
-                }
-    |
-        '[' error ']'
-                {
-                  $$.low  := 0;
-                  $$.high := 0;
-                  -- error( "Wrong  range specification" );
-                }
-    ;
-
 integer:
         T_INT
                 { $$ := MAT.Expressions.Parser_Tokens.YYLval; }
