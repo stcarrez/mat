@@ -81,6 +81,7 @@ package body MAT.Targets is
          Process.Pid := Pid;
          Process.Path := Path;
          Process.Symbols := MAT.Symbols.Targets.Target_Symbols_Refs.Create;
+         Process.Symbols.Value.Console := Target.Console;
          Target.Processes.Insert (Pid, Process);
          Target.Console.Notice (MAT.Consoles.N_PID_INFO,
                                 "Process" & MAT.Types.Target_Process_Ref'Image (Pid) & " created");
