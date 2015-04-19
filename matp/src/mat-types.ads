@@ -57,4 +57,7 @@ package MAT.Types is
 
    function "-" (Left, Right : in Target_Tick_Ref) return Target_Tick_Ref;
 
+   --  Convert the hexadecimal string into an unsigned integer.
+   function Hex_Value (Value : in String) return Uint64;
+
 end MAT.Types;
