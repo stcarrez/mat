@@ -152,6 +152,15 @@ package body MAT.Events.Targets is
       end loop;
    end Iterate;
 
+   --  ------------------------------
+   --  Release the storage allocated for the events.
+   --  ------------------------------
+   overriding
+   procedure Finalize (Target : in out Target_Events) is
+   begin
+      null;
+   end Finalize;
+
    protected body Event_Collector is
 
       --  ------------------------------
