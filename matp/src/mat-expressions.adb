@@ -108,7 +108,7 @@ package body MAT.Expressions is
       Result : Expression_Type;
    begin
       Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
-                                    Kind        => N_RANGE_ADDR,
+                                    Kind        => N_HAS_ADDR,
                                     Min_Addr    => Min,
                                     Max_Addr    => Max);
       return Result;
@@ -280,6 +280,13 @@ package body MAT.Expressions is
 
          when N_TYPE =>
             return Event.Index = Node.Event_Kind;
+
+         when N_HAS_ADDR =>
+            if Event.Index = MAT.Events.Targets.MSG_MALLOC
+              or Event.Index = MAT.Events.Targets.MSG_REALLOC then
+               return Event.Addr <= Node.Min_Addr and Event.Addr + Event.Size >= Node.Max_Addr;
+            end if;
+            return False;
 
          when others =>
             return False;
