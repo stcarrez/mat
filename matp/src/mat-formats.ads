@@ -23,6 +23,9 @@ package MAT.Formats is
 
    type Format_Type is (BRIEF, NORMAL);
 
+   --  Format the PID into a string.
+   function Pid (Value : in MAT.Types.Target_Process_Ref) return String;
+
    --  Format the address into a string.
    function Addr (Value : in MAT.Types.Target_Addr) return String;
 
