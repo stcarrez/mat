@@ -38,7 +38,7 @@ direct		    return T_DIRECT;
 \>\=              return T_GE;
 \=               return T_EQ;
 
-0x[0-9a-fA-F]+	{  yylval.low := MAT.Types.Uint64'Value (YYText);
+0x[0-9a-fA-F]+	{  yylval.low := MAT.Types.Hex_Value (YYText (YYText'First + 2 .. YYText'Last));
 		           return T_INT;
 		        }
 \\[0-7]+	{
