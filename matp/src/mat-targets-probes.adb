@@ -129,6 +129,7 @@ package body MAT.Targets.Probes is
       Probe.Manager.Read_Message (Msg);
       Probe.Manager.Read_Event_Definitions (Msg);
       Probe.Target.Process.Memory.Add_Region (Heap);
+      Probe.Target.Process.Endian := MAT.Readers.Get_Endian (Msg);
    end Probe_Begin;
 
    --  ------------------------------
