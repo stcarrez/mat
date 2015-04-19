@@ -326,27 +326,27 @@ begin
 
                 case yy.rule_id is
 
-when 1 => -- #line 30
+when 1 => -- #line 31
 
               Expr := 
 yy.value_stack(yy.tos).Expr;
             
 
-when 2 => -- #line 37
+when 2 => -- #line 38
 
               
 yyval := 
 yy.value_stack(yy.tos-1);
             
 
-when 3 => -- #line 42
+when 3 => -- #line 43
 
               
 yyval.expr := MAT.Expressions.Create_Not (
 yy.value_stack(yy.tos).expr);
             
 
-when 4 => -- #line 47
+when 4 => -- #line 48
 
               
 yyval.expr := MAT.Expressions.Create_Or (
@@ -354,7 +354,7 @@ yy.value_stack(yy.tos-2).expr,
 yy.value_stack(yy.tos).expr);
             
 
-when 5 => -- #line 52
+when 5 => -- #line 53
 
               
 yyval.expr := MAT.Expressions.Create_And (
@@ -362,7 +362,7 @@ yy.value_stack(yy.tos-2).expr,
 yy.value_stack(yy.tos).expr);
             
 
-when 6 => -- #line 57
+when 6 => -- #line 58
 
                if 
 yy.value_stack(yy.tos-1).bval then
@@ -376,7 +376,7 @@ yy.value_stack(yy.tos).name, MAT.Expressions.INSIDE_FILE);
                end if;
             
 
-when 7 => -- #line 66
+when 7 => -- #line 67
 
                if 
 yy.value_stack(yy.tos-1).bval then
@@ -390,35 +390,35 @@ yy.value_stack(yy.tos).name, MAT.Expressions.INSIDE_FUNCTION);
                end if;
             
 
-when 8 => -- #line 75
+when 8 => -- #line 76
 
               
 yyval := 
 yy.value_stack(yy.tos-2);
             
 
-when 9 => -- #line 80
+when 9 => -- #line 81
 
               
 yyval := 
 yy.value_stack(yy.tos);
             
 
-when 10 => -- #line 85
+when 10 => -- #line 86
 
               
 yyval := 
 yy.value_stack(yy.tos);
             
 
-when 11 => -- #line 90
+when 11 => -- #line 91
 
               
 yyval := 
 yy.value_stack(yy.tos); -- new Condition( C_STIME, $2 );
             
 
-when 12 => -- #line 95
+when 12 => -- #line 96
 
               
 yyval.expr := MAT.Expressions.Create_Size (MAT.Types.Target_Size (
@@ -427,7 +427,7 @@ yy.value_stack(yy.tos).low),
 yy.value_stack(yy.tos).high));
             
 
-when 13 => -- #line 101
+when 13 => -- #line 102
 
               
 yyval.expr := MAT.Expressions.Create_Thread (MAT.Types.Target_Thread_Ref (
@@ -436,7 +436,16 @@ yy.value_stack(yy.tos).low),
 yy.value_stack(yy.tos).high));
             
 
-when 14 => -- #line 107
+when 14 => -- #line 108
+
+              
+yyval.expr := MAT.Expressions.Create_Addr (MAT.Types.Target_Addr (
+yy.value_stack(yy.tos).low),
+                                                      MAT.Types.Target_Addr (
+yy.value_stack(yy.tos).low));
+            
+
+when 15 => -- #line 114
 
               
 yyval.expr := MAT.Expressions.Create_Addr (MAT.Types.Target_Addr (
@@ -445,7 +454,7 @@ yy.value_stack(yy.tos).low),
 yy.value_stack(yy.tos).high));
             
 
-when 15 => -- #line 113
+when 16 => -- #line 120
 
               
 yyval.expr := MAT.Expressions.Create_Event (To_Event_Id_Type (
@@ -454,7 +463,7 @@ yy.value_stack(yy.tos).low),
 yy.value_stack(yy.tos).high));
             
 
-when 16 => -- #line 119
+when 17 => -- #line 126
 
               
 yyval.expr := MAT.Expressions.Create_Event (To_Event_Id_Type (
@@ -463,31 +472,31 @@ yy.value_stack(yy.tos).low),
 yy.value_stack(yy.tos).high));
             
 
-when 17 => -- #line 125
+when 18 => -- #line 132
 
     		  
 yyval.expr := MAT.Expressions.Create_Event_Type (MAT.Events.Targets.MSG_MALLOC);
     		
 
-when 18 => -- #line 130
+when 19 => -- #line 137
 
     		  
 yyval.expr := MAT.Expressions.Create_Event_Type (MAT.Events.Targets.MSG_FREE);
     		
 
-when 19 => -- #line 135
+when 20 => -- #line 142
 
     		  
 yyval.expr := MAT.Expressions.Create_Event_Type (MAT.Events.Targets.MSG_REALLOC);
     		
 
-when 20 => -- #line 140
+when 21 => -- #line 147
 
               
 yyval.low := 0;
             
 
-when 21 => -- #line 147
+when 22 => -- #line 154
 
               
 yyval.low  := 0;
@@ -496,7 +505,7 @@ yyval.high :=
 yy.value_stack(yy.tos).low - 1;
             
 
-when 22 => -- #line 153
+when 23 => -- #line 160
 
               
 yyval.low  := 0;
@@ -505,7 +514,7 @@ yyval.high :=
 yy.value_stack(yy.tos).low;
             
 
-when 23 => -- #line 159
+when 24 => -- #line 166
 
               
 yyval.low  := 
@@ -514,7 +523,7 @@ yy.value_stack(yy.tos).low + 1;
 yyval.high := MAT.Types.Uint64'Last;
             
 
-when 24 => -- #line 165
+when 25 => -- #line 172
 
               
 yyval.low  := 
@@ -523,7 +532,7 @@ yy.value_stack(yy.tos).low;
 yyval.high := MAT.Types.Uint64'Last;
             
 
-when 25 => -- #line 171
+when 26 => -- #line 178
 
               
 yyval.low  := 
@@ -533,7 +542,7 @@ yyval.high :=
 yy.value_stack(yy.tos).low;
             
 
-when 26 => -- #line 177
+when 27 => -- #line 184
 
               
 yyval.low := 
@@ -543,23 +552,23 @@ yyval.high :=
 yy.value_stack(yy.tos).low;
             
 
-when 27 => -- #line 185
+when 28 => -- #line 192
  
 yyval.low := 0;              
 
-when 28 => -- #line 188
+when 29 => -- #line 195
  
 yyval.low := 0;              
 
-when 29 => -- #line 193
+when 30 => -- #line 200
  
 yyval.low := 1;              
 
-when 30 => -- #line 196
+when 31 => -- #line 203
  
 yyval := MAT.Expressions.Parser_Tokens.YYLval;   
 
-when 31 => -- #line 201
+when 32 => -- #line 208
 
                   
 yyval.low  := 
@@ -569,7 +578,7 @@ yyval.high :=
 yy.value_stack(yy.tos-1).low;
                 
 
-when 32 => -- #line 207
+when 33 => -- #line 214
 
                   
 yyval.low  := 
@@ -579,7 +588,7 @@ yyval.high :=
 yy.value_stack(yy.tos-1).low;
                 
 
-when 33 => -- #line 213
+when 34 => -- #line 220
 
                   
 yyval.low  := 0;
@@ -588,19 +597,19 @@ yyval.high := 0;
                   -- error( "Wrong  range specification" );
                 
 
-when 34 => -- #line 222
+when 35 => -- #line 229
  
 yyval := MAT.Expressions.Parser_Tokens.YYLval; 
 
-when 35 => -- #line 227
+when 36 => -- #line 234
  
 yyval.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);  
 
-when 36 => -- #line 232
+when 37 => -- #line 239
  
 yyval.bval := True;          
 
-when 37 => -- #line 235
+when 38 => -- #line 242
  
 yyval.bval := False;         
 

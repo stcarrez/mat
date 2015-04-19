@@ -19,8 +19,9 @@ package Mat.Expressions.Parser_Tokens is
          T_Thread, T_Range, T_Event,
          T_Time, T_Lt, T_Le,
          T_Gt, T_Ge, T_Ne,
-         T_Eq, '[', ']',
-         '(', ')', ',' );
+         T_Eq, T_Has, '[',
+         ']', '(', ')',
+         ',' );
 
     Syntax_Error : exception;
 
