@@ -32,8 +32,6 @@ with MAT.Readers.Streams.Sockets;
 with MAT.Consoles;
 package MAT.Targets is
 
-   pragma Preelaborate_Body;
-
    --  Exception raised if some option is invalid.
    Usage_Error : exception;
 
@@ -57,6 +55,7 @@ package MAT.Targets is
 
    type Target_Process_Type is tagged limited record
       Pid     : MAT.Types.Target_Process_Ref;
+      Endian  : MAT.Readers.Endian_Type := MAT.Readers.LITTLE_ENDIAN;
       Path    : Ada.Strings.Unbounded.Unbounded_String;
       Memory  : MAT.Memory.Targets.Target_Memory;
       Symbols : MAT.Symbols.Targets.Target_Symbols_Ref;
