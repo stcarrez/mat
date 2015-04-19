@@ -15,7 +15,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-
+with Ada.Unchecked_Deallocation;
 package body MAT.Events.Targets is
 
    ITERATE_COUNT : constant Event_Id_Type := 10_000;
@@ -158,7 +158,7 @@ package body MAT.Events.Targets is
    overriding
    procedure Finalize (Target : in out Target_Events) is
    begin
-      null;
+      Target.Events.Clear;
    end Finalize;
 
    protected body Event_Collector is
@@ -308,6 +308,26 @@ package body MAT.Events.Targets is
             end if;
          end loop;
       end Iterate;
+
+      --  ------------------------------
+      --  Clear the events.
+      --  ------------------------------
+      procedure Clear is
+         procedure Free is
+            new Ada.Unchecked_Deallocation (Event_Block, Event_Block_Access);
+      begin
+         while not Events.Is_Empty loop
+            declare
+               Block : Event_Block_Access := Events.First_Element;
+            begin
+               Free (Block);
+               Events.Delete_First;
+            end;
+         end loop;
+         Current := null;
+         Last_Id := 0;
+         Ids.Clear;
+      end Clear;
 
    end Event_Collector;
 
