@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 with Ada.Text_IO;
 with Ada.Command_Line;
+with Ada.Unchecked_Deallocation;
 
 with GNAT.Command_Line;
 
@@ -28,6 +29,23 @@ with Util.Log.Loggers;
 with MAT.Commands;
 with MAT.Targets.Probes;
 package body MAT.Targets is
+
+   procedure Free is
+     new Ada.Unchecked_Deallocation (MAT.Events.Targets.Target_Events'Class,
+                                     MAT.Events.Targets.Target_Events_Access);
+
+   procedure Free is
+     new Ada.Unchecked_Deallocation (Target_Process_Type'Class,
+                                     Target_Process_Type_Access);
+
+   --  ------------------------------
+   --  Release the target process instance.
+   --  ------------------------------
+   overriding
+   procedure Finalize (Target : in out Target_Process_Type) is
+   begin
+      Free (Target.Events);
+   end Finalize;
 
    --  ------------------------------
    --  Get the console instance.
@@ -240,5 +258,22 @@ package body MAT.Targets is
    begin
       Target.Server.Stop;
    end Stop;
+
+   --  ------------------------------
+   --  Release the storage used by the target object.
+   --  ------------------------------
+   overriding
+   procedure Finalize (Target : in out Target_Type) is
+   begin
+      while not Target.Processes.Is_Empty loop
+         declare
+            Process : Target_Process_Type_Access := Target.Processes.First_Element;
+         begin
+            Free (Process);
+            Target.Processes.Delete_First;
+         end;
+      end loop;
+   end Finalize;
+
 
 end MAT.Targets;
