@@ -59,6 +59,8 @@ package body MAT.Commands is
                            Args   : in String);
    procedure Event_Sizes_Command (Target : in out MAT.Targets.Target_Type'Class;
                                   Args   : in String);
+   procedure Event_Frames_Command (Target : in out MAT.Targets.Target_Type'Class;
+                                   Args   : in String);
 
    --  Maps command to dump the memory maps of the program.
    procedure Maps_Command (Target : in out MAT.Targets.Target_Type'Class;
@@ -319,7 +321,7 @@ package body MAT.Commands is
    --  Print the size used by malloc/realloc events.
    --  ------------------------------
    procedure Event_Frames_Command (Target : in out MAT.Targets.Target_Type'Class;
-                                  Args   : in String) is
+                                   Args   : in String) is
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Frames  : MAT.Events.Targets.Frame_Event_Info_Map;
@@ -443,7 +445,9 @@ package body MAT.Commands is
       Filter  : MAT.Expressions.Expression_Type;
       Iter    : MAT.Events.Targets.Target_Event_Cursor;
    begin
-      Filter := MAT.Expressions.Parse (Args);
+      if Args'Length > 0 then
+         Filter := MAT.Expressions.Parse (Args);
+      end if;
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_ID, "Id", 10);
       Console.Print_Title (MAT.Consoles.F_TIME, "Time", 10);
@@ -612,40 +616,17 @@ package body MAT.Commands is
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Maps    : MAT.Memory.Region_Info_Map;
-      Iter    : MAT.Memory.Region_Info_Cursor;
    begin
       MAT.Memory.Targets.Find (Memory => Process.Memory,
                                From   => MAT.Types.Target_Addr'First,
                                To     => MAT.Types.Target_Addr'Last,
                                Into   => Maps);
-      Iter := Maps.First;
-      while MAT.Memory.Region_Info_Maps.Has_Element (Iter) loop
-         declare
-            Region : MAT.Memory.Region_Info := MAT.Memory.Region_Info_Maps.Element (Iter);
-            Offset : MAT.Types.Target_Addr;
-         begin
-            if (Region.Flags and ELF.PF_X) /= 0 then
-               if Ada.Strings.Unbounded.Length (Region.Path) = 0 then
-                  Region.Path := Ada.Strings.Unbounded.To_Unbounded_String (Args);
-                  Offset := 0;
-               else
-                  Offset := Region.Start_Addr;
-               end if;
-               MAT.Symbols.Targets.Load_Symbols (Process.Symbols.Value.all, Region, Offset);
-            end if;
-
-         exception
-            when Bfd.OPEN_ERROR =>
-               Target.Console.Error ("Cannot open symbol library file '"
-                                     & Ada.Strings.Unbounded.To_String (Region.Path) & "'");
-         end;
-         MAT.Memory.Region_Info_Maps.Next (Iter);
-      end loop;
+      MAT.Symbols.Targets.Load_Symbols (Process.Symbols.Value.all, Maps);
       MAT.Symbols.Targets.Open (Process.Symbols.Value.all, Args);
 
    exception
       when Bfd.OPEN_ERROR =>
-         Target.Console.Error ("Cannot open symbol file '" & Args & "'");
+         Console.Error ("Cannot open symbol file '" & Args & "'");
    end Symbol_Command;
 
    --  ------------------------------
@@ -699,20 +680,25 @@ package body MAT.Commands is
       Console : constant MAT.Consoles.Console_Access := Target.Console;
    begin
       Console.Notice (N_HELP, "Available commands");
-      Console.Notice (N_HELP, "exit                --  Exit the tool");
-      Console.Notice (N_HELP, "event id            --  Print the event ID");
-      Console.Notice (N_HELP, "events <selection>  --  List the events filtered by the selection");
-      Console.Notice (N_HELP, "threads             --  List the threads");
-      Console.Notice (N_HELP, "slots <selection>   --  List the memory slots"
+      Console.Notice (N_HELP, "exit                    Exit the tool");
+      Console.Notice (N_HELP, "event id                Print the event ID");
+      Console.Notice (N_HELP, "events <selection>      List the events filtered by the selection");
+      Console.Notice (N_HELP, "threads                 List the threads");
+      Console.Notice (N_HELP, "slots <selection>       List the memory slots"
                       & " filtered by the selection");
-      Console.Notice (N_HELP, "sizes <selection>   --  Print a summary of sizes "
+      Console.Notice (N_HELP, "sizes <selection>       Print a summary of sizes "
                       & "filtered by the selection");
-      Console.Notice (N_HELP, "frames <level>      --  Print the stack frames up"
+      Console.Notice (N_HELP, "frames <level>          Print the stack frames up"
                       & " to the given level");
-      Console.Notice (N_HELP, "open <file>         --  Load the mat file to analyze");
-      Console.Notice (N_HELP, "symbol <file>       --  Load the executable symbol file");
-      Console.Notice (N_HELP, "info                --  Print some information about the program");
-      Console.Notice (N_HELP, "maps                --  Print the program memory maps");
+      Console.Notice (N_HELP, "open <file>             Load the mat file to analyze");
+      Console.Notice (N_HELP, "symbol <file>           Load the executable symbol file");
+      Console.Notice (N_HELP, "info                    Print some information about the program");
+      Console.Notice (N_HELP, "maps                    Print the program memory maps");
+      Console.Notice (N_HELP, "Selection examples:");
+      Console.Notice (N_HELP, "  size > 100 and size < 1000    Selection on the allocation size");
+      Console.Notice (N_HELP, "  has 0x4a7281                  Allocations with the given address");
+      Console.Notice (N_HELP, "  event >= 200 and event <= 300 Event range selection");
+      Console.Notice (N_HELP, "  malloc or realloc             Malloc or realloc events");
    end Help_Command;
 
    function Get_Command (Line : in String) return String is
@@ -737,7 +723,8 @@ package body MAT.Commands is
       if Command_Map.Has_Element (Pos) then
          Command_Map.Element (Pos) (Target, Line (Index + 1 .. Line'Last));
       elsif Command'Length > 0 then
-         Target.Console.Error ("Command '" & Command & "' not found");
+         Target.Console.Error ("Command '" & Command
+                               & "' not found.  Type 'help' for available commands");
       end if;
 
    exception
