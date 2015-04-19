@@ -444,7 +444,7 @@ INITIAL : constant := 0;
 
          when 36 => 
 --# line 41 "mat-expressions-lexer.l"
-              yylval.low := MAT.Types.Uint64'Value (YYText);
+              yylval.low := MAT.Types.Hex_Value (YYText (YYText'First + 2 .. YYText'Last));
 		           return T_INT;
 		        
 
