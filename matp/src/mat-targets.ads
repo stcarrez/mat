@@ -53,7 +53,7 @@ package MAT.Targets is
       Address      : GNAT.Sockets.Sock_Addr_Type := (Port => 4096, others => <>);
    end record;
 
-   type Target_Process_Type is tagged limited record
+   type Target_Process_Type is new Ada.Finalization.Limited_Controlled with record
       Pid     : MAT.Types.Target_Process_Ref;
       Endian  : MAT.Readers.Endian_Type := MAT.Readers.LITTLE_ENDIAN;
       Path    : Ada.Strings.Unbounded.Unbounded_String;
@@ -63,6 +63,10 @@ package MAT.Targets is
       Console : MAT.Consoles.Console_Access;
    end record;
    type Target_Process_Type_Access is access all Target_Process_Type'Class;
+
+   --  Release the target process instance.
+   overriding
+   procedure Finalize (Target : in out Target_Process_Type);
 
    type Target_Type is new Ada.Finalization.Limited_Controlled
      and MAT.Events.Probes.Reader_List_Type with private;
@@ -142,5 +146,9 @@ private
       Options   : Options_Type;
       Server    : MAT.Readers.Streams.Sockets.Socket_Listener_Type;
    end record;
+
+   --  Release the storage used by the target object.
+   overriding
+   procedure Finalize (Target : in out Target_Type);
 
 end MAT.Targets;
