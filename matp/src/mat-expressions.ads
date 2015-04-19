@@ -108,7 +108,7 @@ private
                       N_CALL_ADDR, N_CALL_ADDR_DIRECT,
                       N_IN_FUNC, N_IN_FUNC_DIRECT,
                       N_RANGE_SIZE, N_RANGE_ADDR,
-                      N_RANGE_TIME, N_EVENT,
+                      N_RANGE_TIME, N_EVENT, N_HAS_ADDR,
                       N_CONDITION, N_THREAD, N_TYPE);
 
 
@@ -132,7 +132,7 @@ private
             Min_Size : MAT.Types.Target_Size;
             Max_Size : MAT.Types.Target_Size;
 
-         when N_RANGE_ADDR | N_CALL_ADDR | N_CALL_ADDR_DIRECT =>
+         when N_RANGE_ADDR | N_CALL_ADDR | N_CALL_ADDR_DIRECT | N_HAS_ADDR =>
             Min_Addr : MAT.Types.Target_Addr;
             Max_Addr : MAT.Types.Target_Addr;
 
