@@ -25,7 +25,8 @@ with Bfd.Constants;
 with Util.Refs;
 
 with MAT.Types;
-with MAT.Memory.Targets;
+with MAT.Consoles;
+with MAT.Memory;
 package MAT.Symbols.Targets is
 
    type Symbol_Info is record
@@ -45,6 +46,10 @@ package MAT.Symbols.Targets is
    end record;
    type Region_Symbols_Access is access all Region_Symbols;
 
+   --  Load the symbol table for the associated region.
+   procedure Open (Symbols : in out Region_Symbols;
+                   Path    : in String);
+
    package Region_Symbols_Refs is
      new Util.Refs.References (Region_Symbols, Region_Symbols_Access);
 
@@ -62,10 +67,12 @@ package MAT.Symbols.Targets is
    subtype Symbols_Cursor is Symbols_Maps.Cursor;
 
    type Target_Symbols is new Util.Refs.Ref_Entity with record
+      Path      : Ada.Strings.Unbounded.Unbounded_String;
       File      : Bfd.Files.File_Type;
       Symbols   : Bfd.Symbols.Symbol_Table;
       Libraries : Symbols_Maps.Map;
       Demangle  : Bfd.Demangle_Flags := Bfd.Constants.DMGL_AUTO;
+      Console   : MAT.Consoles.Console_Access;
    end record;
    type Target_Symbols_Access is access all Target_Symbols;
 
@@ -77,6 +84,11 @@ package MAT.Symbols.Targets is
    procedure Load_Symbols (Symbols     : in out Target_Symbols;
                            Region      : in MAT.Memory.Region_Info;
                            Offset_Addr : in MAT.Types.Target_Addr);
+
+   --  Load the symbols associated with all the shared libraries described by
+   --  the memory region map.
+   procedure Load_Symbols (Symbols     : in out Target_Symbols;
+                           Regions     : in MAT.Memory.Region_Info_Map);
 
    --  Demangle the symbol.
    procedure Demangle (Symbols : in Target_Symbols;
