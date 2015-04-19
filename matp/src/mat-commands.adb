@@ -389,9 +389,10 @@ package body MAT.Commands is
          Filter := MAT.Expressions.Parse (Args);
       end if;
       Console.Start_Title;
-      Console.Print_Title (MAT.Consoles.F_ID, "Id", 10);
+      Console.Print_Title (MAT.Consoles.F_ID, "Event Id range", 30);
       Console.Print_Title (MAT.Consoles.F_TIME, "Time", 10);
-      Console.Print_Title (MAT.Consoles.F_EVENT, "Event", 60);
+      Console.Print_Title (MAT.Consoles.F_EVENT, "Event", 20);
+      Console.Print_Title (MAT.Consoles.F_SIZE, "Size", 12);
       Console.Print_Title (MAT.Consoles.F_COUNT, "Count", 8);
       Console.End_Title;
 
@@ -412,10 +413,11 @@ package body MAT.Commands is
          begin
             Console.Start_Row;
             Console.Print_Field (MAT.Consoles.F_ID,
-                                 MAT.Events.Targets.Event_Id_Type'Image (Info.First_Event.Id));
+                                 MAT.Formats.Event (Info.First_Event, Info.Last_Event));
             Console.Print_Duration (MAT.Consoles.F_TIME, Time);
             Console.Print_Field (MAT.Consoles.F_EVENT,
                                  MAT.Formats.Event (Info.First_Event, MAT.Formats.BRIEF));
+            Console.Print_Size (MAT.Consoles.F_SIZE, Size);
             Console.Print_Field (MAT.Consoles.F_COUNT, Natural'Image (Info.Count));
             Console.End_Row;
          end;
@@ -727,14 +729,14 @@ begin
    Commands.Insert ("exit", Exit_Command'Access);
    Commands.Insert ("quit", Exit_Command'Access);
    Commands.Insert ("open", Open_Command'Access);
-   Commands.Insert ("sizes", Sizes_Command'Access);
+   Commands.Insert ("malloc-sizes", Sizes_Command'Access);
    Commands.Insert ("symbol", Symbol_Command'Access);
    Commands.Insert ("slots", Slot_Command'Access);
    Commands.Insert ("threads", Threads_Command'Access);
    Commands.Insert ("frames", Frames_Command'Access);
    Commands.Insert ("events", Events_Command'Access);
    Commands.Insert ("event", Event_Command'Access);
-   Commands.Insert ("event-sizes", Event_Sizes_Command'Access);
+   Commands.Insert ("sizes", Event_Sizes_Command'Access);
    Commands.Insert ("event-frames", Event_Frames_Command'Access);
    Commands.Insert ("help", Help_Command'Access);
    Commands.Insert ("maps", Maps_Command'Access);
