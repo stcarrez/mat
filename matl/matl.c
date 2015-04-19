@@ -18,6 +18,10 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+
+#define DEFAULT_PORT 4096
 
 static int usage(void)
 {
@@ -38,11 +42,13 @@ static void set_file(const char* file)
   putenv (env);
 }
 
-static void set_server(const char* file)
+static void set_server(const struct in_addr* ip, unsigned port)
 {
-  char* env = (char*) malloc (strlen (file) + sizeof ("MAT_SERVER=tcp://"));
+  char buf[16];
+  char* env = (char*) malloc (sizeof (buf) + sizeof ("MAT_SERVER=tcp://:nnnnn"));
 
-  sprintf (env, "MAT_SERVER=tcp://%s", file);
+  inet_ntop (AF_INET, ip, buf, sizeof (buf));
+  sprintf (env, "MAT_SERVER=tcp://%s:%u", buf, port);
   putenv (env);
 }
 
@@ -65,12 +71,46 @@ int main(int argc, char* argv[])
         }
       else if (strcmp (argv[i], "-s") == 0)
         {
+      char* p;
+      struct in_addr ip;
+      unsigned port = DEFAULT_PORT;
+
           i++;
           if (i == argc)
             return usage ();
 
           server = argv[i];
-          set_server (server);
+      p = strchr (server, ':');
+
+      /* Verify the port number if there is one.  */
+      if (p != NULL)
+        {
+          *p = 0;
+          p ++;
+          port = strtol (p, &p, 10);
+          if (port <= 0 || port >= 65536 || *p != 0)
+        {
+          fprintf (stderr, "matl: invalid TCP/IP port '%s'\n", p);
+          return EXIT_FAILURE;
+        }
+        }
+
+      /* Verify that the server is a valid IP address.  The libmat.so library accepts
+       * only IP addresses in the dot notation.  Resolve the hostname here.
+       */
+      if (inet_pton (AF_INET, server, &ip) != 1)
+        {
+              struct hostent* hp = gethostbyname (server);
+           
+          if (hp == NULL)
+            {
+          fprintf (stderr, "matl: cannot find IP address associated with '%s'\n", server);
+          return EXIT_FAILURE;
+        }
+          ip = *(struct in_addr*) hp->h_addr_list[0];
+        }
+      
+          set_server (&ip, port);
         }
       else if (argv[i][0] == '-')
         {
