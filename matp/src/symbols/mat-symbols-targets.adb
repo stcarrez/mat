@@ -118,7 +118,7 @@ package body MAT.Symbols.Targets is
 
       Pos : constant Natural := Index (Symbol.File, ".", Ada.Strings.Backward);
    begin
-      if Symbol.Line = 0 or else Pos = 0 then
+      if Symbol.Line = 0 or else Pos = 0 or else Symbol.Symbols.Is_Null then
          return;
       end if;
       declare
@@ -131,7 +131,7 @@ package body MAT.Symbols.Targets is
             Mode := Bfd.Constants.DMGL_GNAT;
          end if;
          declare
-            Name : constant String := Bfd.Symbols.Demangle (Symbols.File, Sym, Mode);
+            Name : constant String := Bfd.Symbols.Demangle (Symbol.Symbols.Value.File, Sym, Mode);
          begin
             if Name'Length > 0 then
                Symbol.Name := To_Unbounded_String (Name);
@@ -179,6 +179,7 @@ package body MAT.Symbols.Targets is
             Syms : constant Region_Symbols_Ref := Symbols_Maps.Element (Pos);
          begin
             if Syms.Value.Region.End_Addr > Addr then
+               Symbol.Symbols := Syms;
                Find_Nearest_Line (Symbols => Syms.Value.all,
                                   Addr    => Addr - Syms.Value.Offset,
                                   Symbol  => Symbol);
