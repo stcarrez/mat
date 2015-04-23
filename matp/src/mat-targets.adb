@@ -109,9 +109,6 @@ package body MAT.Targets is
       if Target.Current = null then
          Target.Current := Process;
       end if;
-      if Target.Options.Load_Symbols then
-         MAT.Commands.Symbol_Command (Target, Path_String);
-      end if;
    end Create_Process;
 
    --  ------------------------------
