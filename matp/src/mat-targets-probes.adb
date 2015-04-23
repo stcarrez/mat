@@ -145,6 +145,7 @@ package body MAT.Targets.Probes is
       Path  : Ada.Strings.Unbounded.Unbounded_String;
       Addr  : MAT.Types.Target_Addr;
       Pos   : Natural := Defs'Last + 1;
+      Offset : MAT.Types.Target_Addr;
    begin
       for I in Defs'Range loop
          declare
@@ -199,9 +200,23 @@ package body MAT.Targets.Probes is
             if Kind = ELF.PT_LOAD then
                Region.Start_Addr := Addr + Region.Start_Addr;
                Region.End_Addr   := Region.Start_Addr + Region.Size;
-               Region.Path := Path;
+               if Ada.Strings.Unbounded.Length (Path) = 0 then
+                  Region.Path := Probe.Target.Process.Path;
+                  Offset := 0;
+               else
+                  Region.Path := Path;
+                  Offset := Region.Start_Addr;
+               end if;
                Event.Size := Event.Size + Region.Size;
                Probe.Target.Process.Memory.Add_Region (Region);
+
+               --  When auto-symbol loading is enabled, load the symbols associated with the
+               --  shared libraries used by the program.
+               if Probe.Target.Options.Load_Symbols then
+                  begin
+                     Probe.Target.Process.Symbols.Value.Load_Symbols (Region, Offset);
+                  end;
+               end if;
             end if;
          end;
       end loop;
