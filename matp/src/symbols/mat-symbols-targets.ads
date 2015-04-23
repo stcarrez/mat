@@ -29,12 +29,6 @@ with MAT.Consoles;
 with MAT.Memory;
 package MAT.Symbols.Targets is
 
-   type Symbol_Info is record
-      File : Ada.Strings.Unbounded.Unbounded_String;
-      Name : Ada.Strings.Unbounded.Unbounded_String;
-      Line : Natural;
-   end record;
-
    --  The <tt>Region_Symbols</tt> holds the symbol table associated with the program or
    --  a shared library loaded by the program.  The <tt>Region</tt> indicates
    --  the text segment address of the program or the loaded library.
@@ -54,6 +48,13 @@ package MAT.Symbols.Targets is
      new Util.Refs.References (Region_Symbols, Region_Symbols_Access);
 
    subtype Region_Symbols_Ref is Region_Symbols_Refs.Ref;
+
+   type Symbol_Info is limited record
+      File    : Ada.Strings.Unbounded.Unbounded_String;
+      Name    : Ada.Strings.Unbounded.Unbounded_String;
+      Line    : Natural;
+      Symbols : Region_Symbols_Ref;
+   end record;
 
    --  The <tt>Symbols_Maps</tt> keeps a sorted list of symbol tables indexed
    --  by their mapping address.
