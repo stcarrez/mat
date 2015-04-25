@@ -22,7 +22,7 @@ package body MAT.Events.Timelines is
 
    ITERATE_COUNT : constant MAT.Events.Targets.Event_Id_Type := 10_000;
 
-   procedure Extract (Target : in out MAT.Events.Targets.Target_Events;
+   procedure Extract (Target : in out MAT.Events.Targets.Target_Events'Class;
                       Into   : in out Timeline_Info_Vector) is
       use type MAT.Types.Target_Time;
       procedure Collect (Event : in MAT.Events.Targets.Probe_Event_Type);
@@ -41,11 +41,10 @@ package body MAT.Events.Timelines is
             Info.Malloc_Count := 0;
             Info.Realloc_Count := 0;
             Info.Free_Count := 0;
-            Info.Start_Id := Event.Id;
-            Info.Start_Time := Event.Time;
+            Info.First_Event := Event;
+            Prev_Event := Event;
          end if;
-         Info.End_Id := Event.Id;
-         Info.End_Time := Event.Time;
+         Info.Last_Event := Event;
          if Event.Event = 2 then
             Info.Malloc_Count := Info.Malloc_Count + 1;
          elsif Event.Event = 3 then
@@ -58,8 +57,7 @@ package body MAT.Events.Timelines is
    begin
       Target.Get_Limits (First_Event, Last_Event);
       Prev_Event      := First_Event;
-      Info.Start_Id   := First_Event.Id;
-      Info.Start_Time := First_Event.Time;
+      Info.First_Event := First_Event;
       First_Id := First_Event.Id;
       while First_Id < Last_Event.Id loop
          Target.Iterate (Start   => First_Id,
