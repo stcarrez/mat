@@ -62,4 +62,9 @@ package MAT.Commands is
    procedure Info_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String);
 
+   --  Timeline command.
+   --  Identify the interesting timeline groups in the events and display them.
+   procedure Timeline_Command (Target : in out MAT.Targets.Target_Type'Class;
+                               Args   : in String);
+
 end MAT.Commands;
