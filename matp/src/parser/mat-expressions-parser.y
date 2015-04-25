@@ -174,6 +174,12 @@ compare:
               $$.high := MAT.Types.Uint64'Last;
             }
     |
+        T_EQ integer T_RANGE integer
+            {
+              $$.low  := $2.low;
+              $$.high := $4.low;
+            }
+    |
         T_EQ integer
             {
               $$.low  := $2.low;
