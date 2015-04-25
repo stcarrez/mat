@@ -68,22 +68,24 @@ package Mat.Expressions.Parser_Goto is
 ,(-8,60)
 -- State  54
 ,(-6,61),(-5,30)
+-- State  62
+,(-8,63)
 );
 --  The offset vector
-GOTO_OFFSET : array (0.. 61) of Integer :=
+GOTO_OFFSET : array (0.. 63) of Integer :=
 (0,
 3,3,5,7,8,9,11,13,15,16,17,18,19,20,21,22,22,
 22,22,22,22,22,22,24,26,26,26,26,27,28,28,28,28,28,
 28,29,30,31,32,33,34,34,34,34,34,34,34,34,34,34,34,
-34,34,34,36,36,36,36,36,36, 36);
+34,34,34,36,36,36,36,36,36,36,36, 37);
 
 subtype Rule        is Natural;
 subtype Nonterminal is Integer;
 
-   Rule_Length : array (Rule range  0 ..  35) of Natural := (2,
-1,3,2,3,3,3,3,4,2,2,2,2,2,2,2,2,2,1,1,1,1,2,2,2,2,2,2,1,1,0,1,1,1,0,1);
-   Get_LHS_Rule: array (Rule range  0 ..  35) of Nonterminal := (-1,
+   Rule_Length : array (Rule range  0 ..  36) of Natural := (2,
+1,3,2,3,3,3,3,4,2,2,2,2,2,2,2,2,2,1,1,1,1,2,2,2,2,4,2,2,1,1,0,1,1,1,0,1);
+   Get_LHS_Rule: array (Rule range  0 ..  36) of Nonterminal := (-1,
 -2,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,-3,
--3,-3,-3,-3,-3,-3,-3,-7,-7,-7,-7,-7,-7,-5,
--5,-9,-9,-8,-6,-4,-4);
+-3,-3,-3,-3,-3,-3,-3,-7,-7,-7,-7,-7,-7,-7,
+-5,-5,-9,-9,-8,-6,-4,-4);
 end Mat.Expressions.Parser_Goto;

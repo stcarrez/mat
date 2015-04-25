@@ -536,13 +536,23 @@ when 26 => -- #line 178
 
               
 yyval.low  := 
-yy.value_stack(yy.tos).low;
+yy.value_stack(yy.tos-2).low;
               
 yyval.high := 
 yy.value_stack(yy.tos).low;
             
 
 when 27 => -- #line 184
+
+              
+yyval.low  := 
+yy.value_stack(yy.tos).low;
+              
+yyval.high := 
+yy.value_stack(yy.tos).low;
+            
+
+when 28 => -- #line 190
 
               
 yyval.low := 
@@ -552,35 +562,35 @@ yyval.high :=
 yy.value_stack(yy.tos).low;
             
 
-when 28 => -- #line 192
+when 29 => -- #line 198
  
 yyval.low := 0;              
 
-when 29 => -- #line 195
+when 30 => -- #line 201
  
 yyval.low := 0;              
 
-when 30 => -- #line 200
+when 31 => -- #line 206
  
 yyval.low := 1;              
 
-when 31 => -- #line 203
+when 32 => -- #line 209
  
 yyval := MAT.Expressions.Parser_Tokens.YYLval;   
 
-when 32 => -- #line 208
+when 33 => -- #line 214
  
 yyval := MAT.Expressions.Parser_Tokens.YYLval; 
 
-when 33 => -- #line 213
+when 34 => -- #line 219
  
 yyval.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);  
 
-when 34 => -- #line 218
+when 35 => -- #line 224
  
 yyval.bval := True;          
 
-when 35 => -- #line 221
+when 36 => -- #line 227
  
 yyval.bval := False;         
 
