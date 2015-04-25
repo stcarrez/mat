@@ -53,7 +53,7 @@ has             return T_HAS;
 \"		{
 		  return T_STRING;
 		}
-[A-Za-z_\.\$][A-Za-z0-9_\.\$]*	{
+[A-Za-z_\$][A-Za-z0-9_\.\$]*	{
 		  return T_NAME;
 		}
 '\n'    { Line_Number := Line_Number + 1;  }
