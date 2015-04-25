@@ -520,6 +520,54 @@ package body MAT.Commands is
    end Event_Command;
 
    --  ------------------------------
+   --  Timeline command.
+   --  Identify the interesting timeline groups in the events and display them.
+   --  ------------------------------
+   procedure Timeline_Command (Target : in out MAT.Targets.Target_Type'Class;
+                               Args   : in String) is
+      use type MAT.Types.Target_Tick_Ref;
+
+      Console : constant MAT.Consoles.Console_Access := Target.Console;
+      Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
+      Id      : MAT.Events.Targets.Event_Id_Type;
+      Start, Finish : MAT.Types.Target_Tick_Ref;
+      Groups  : MAT.Events.Timelines.Timeline_Info_Vector;
+      Iter    : MAT.Events.Timelines.Timeline_Info_Cursor;
+   begin
+--        Id := MAT.Events.Targets.Event_Id_Type'Value (Args);
+      MAT.Events.Timelines.Extract (Process.Events.all, Groups);
+
+      Process.Events.Get_Time_Range (Start, Finish);
+      Console.Start_Title;
+      Console.Print_Title (MAT.Consoles.F_START_TIME, "Start", 10);
+      Console.Print_Title (MAT.Consoles.F_END_TIME, "End time", 10);
+      Console.Print_Title (MAT.Consoles.F_EVENT_RANGE, "Event range", 20);
+      Console.Print_Title (MAT.Consoles.F_MALLOC_COUNT, "# malloc", 10);
+      Console.Print_Title (MAT.Consoles.F_REALLOC_COUNT, "# realloc", 10);
+      Console.Print_Title (MAT.Consoles.F_FREE_COUNT, "# free", 10);
+      Console.End_Title;
+
+      Iter := Groups.First;
+      while MAT.Events.Timelines.Timeline_Info_Vectors.Has_Element (Iter) loop
+         declare
+            Info : constant MAT.Events.Timelines.Timeline_Info
+              := MAT.Events.Timelines.Timeline_Info_Vectors.Element (Iter);
+         begin
+            Console.Start_Row;
+            Console.Print_Duration (MAT.Consoles.F_START_TIME, Info.First_Event.Time - Start);
+            Console.Print_Duration (MAT.Consoles.F_END_TIME, Info.Last_Event.Time - Start);
+            Console.Print_Field (MAT.Consoles.F_EVENT_RANGE,
+                                 MAT.Formats.Event (Info.First_Event, Info.Last_Event));
+            Console.Print_Field (MAT.Consoles.F_MALLOC_COUNT, Info.Malloc_Count);
+            Console.Print_Field (MAT.Consoles.F_REALLOC_COUNT, Info.Realloc_Count);
+            Console.Print_Field (MAT.Consoles.F_FREE_COUNT, Info.Free_Count);
+            Console.End_Row;
+         end;
+         MAT.Events.Timelines.Timeline_Info_Vectors.Next (Iter);
+      end loop;
+   end Timeline_Command;
+
+   --  ------------------------------
    --  Maps command to dump the memory maps of the program.
    --  ------------------------------
    procedure Maps_Command (Target : in out MAT.Targets.Target_Type'Class;
@@ -765,6 +813,7 @@ begin
    Commands.Insert ("event", Event_Command'Access);
    Commands.Insert ("sizes", Event_Sizes_Command'Access);
    Commands.Insert ("frames", Event_Frames_Command'Access);
+   Commands.Insert ("timeline", Timeline_Command'Access);
    Commands.Insert ("help", Help_Command'Access);
    Commands.Insert ("maps", Maps_Command'Access);
    Commands.Insert ("info", Info_Command'Access);
