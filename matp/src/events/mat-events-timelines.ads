@@ -26,10 +26,8 @@ package MAT.Events.Timelines is
    --  The timeline section gives the duration and some statistics about memory
    --  allocation made in the section.
    type Timeline_Info is record
-      Start_Id       : MAT.Events.Targets.Event_Id_Type := 0;
-      Start_Time     : MAT.Types.Target_Tick_Ref := 0;
-      End_Id         : MAT.Events.Targets.Event_Id_Type := 0;
-      End_Time       : MAT.Types.Target_Tick_Ref := 0;
+      First_Event    : MAT.Events.Targets.Probe_Event_Type;
+      Last_Event     : MAT.Events.Targets.Probe_Event_Type;
       Duration       : MAT.Types.Target_Time := 0;
       Malloc_Count   : Natural := 0;
       Realloc_Count  : Natural := 0;
@@ -42,7 +40,7 @@ package MAT.Events.Timelines is
    subtype Timeline_Info_Vector is Timeline_Info_Vectors.Vector;
    subtype Timeline_Info_Cursor is Timeline_Info_Vectors.Cursor;
 
-   procedure Extract (Target : in out MAT.Events.Targets.Target_Events;
+   procedure Extract (Target : in out MAT.Events.Targets.Target_Events'Class;
                       Into   : in out Timeline_Info_Vector);
 
    --  Find in the events stream the events which are associated with a given event.
