@@ -78,7 +78,7 @@ package body MAT.Memory.Targets is
    --  ------------------------------
    procedure Probe_Free (Memory : in out Target_Memory;
                          Addr   : in MAT.Types.Target_Addr;
-                         Slot   : in Allocation) is
+                         Slot   : in out Allocation) is
    begin
       Memory.Memory.Probe_Free (Addr, Slot);
    end Probe_Free;
@@ -258,7 +258,7 @@ package body MAT.Memory.Targets is
       --  the slot from the used slots map.
       --  ------------------------------
       procedure Probe_Free (Addr   : in MAT.Types.Target_Addr;
-                            Slot   : in Allocation) is
+                            Slot   : in out Allocation) is
          Item : Allocation;
          Iter : Allocation_Cursor;
       begin
@@ -269,6 +269,7 @@ package body MAT.Memory.Targets is
          Iter := Used_Slots.Find (Addr);
          if Allocation_Maps.Has_Element (Iter) then
             Item := Allocation_Maps.Element (Iter);
+            Slot.Size := Item.Size;
             if Stats.Total_Alloc >= Item.Size then
                Stats.Total_Alloc := Stats.Total_Alloc - Item.Size;
             else
