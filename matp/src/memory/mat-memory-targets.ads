@@ -30,6 +30,7 @@ package MAT.Memory.Targets is
       Malloc_Count  : Natural := 0;
       Free_Count    : Natural := 0;
       Realloc_Count : Natural := 0;
+      Used_Count    : Natural := 0;
    end record;
 
    type Target_Memory is tagged limited private;
