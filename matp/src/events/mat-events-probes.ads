@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-events-probes -- Event probes
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,7 +43,7 @@ package MAT.Events.Probes is
                       Event  : in out Probe_Event_Type) is abstract;
 
    procedure Execute (Probe : in Probe_Type;
-                      Event : in Probe_Event_Type) is abstract;
+                      Event : in out Probe_Event_Type) is abstract;
 
    -----------------
    --  Probe Manager
