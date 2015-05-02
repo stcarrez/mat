@@ -32,6 +32,8 @@ package MAT.Events.Timelines is
       Malloc_Count   : Natural := 0;
       Realloc_Count  : Natural := 0;
       Free_Count     : Natural := 0;
+      Alloc_Size     : MAT.Types.Target_Size := 0;
+      Free_Size      : MAT.Types.Target_Size := 0;
    end record;
 
    package Timeline_Info_Vectors is
