@@ -40,7 +40,7 @@ package MAT.Targets.Probes is
                       Event  : in out MAT.Events.Targets.Probe_Event_Type);
 
    procedure Execute (Probe : in Process_Probe_Type;
-                      Event : in MAT.Events.Targets.Probe_Event_Type);
+                      Event : in out MAT.Events.Targets.Probe_Event_Type);
 
    --  Register the reader to extract and analyze process events.
    procedure Register (Into  : in out MAT.Events.Probes.Probe_Manager_Type'Class;
