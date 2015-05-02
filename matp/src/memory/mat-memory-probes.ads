@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-memory-probes - Definition and Analysis of memory events
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +35,7 @@ package MAT.Memory.Probes is
                       Event   : in out MAT.Events.Targets.Probe_Event_Type);
 
    procedure Execute (Probe : in Memory_Probe_Type;
-                      Event : in MAT.Events.Targets.Probe_Event_Type);
+                      Event : in out MAT.Events.Targets.Probe_Event_Type);
 
    --  Register the reader to extract and analyze memory events.
    procedure Register (Into   : in out MAT.Events.Probes.Probe_Manager_Type'Class;
