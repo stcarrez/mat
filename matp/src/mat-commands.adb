@@ -526,6 +526,7 @@ package body MAT.Commands is
    procedure Timeline_Command (Target : in out MAT.Targets.Target_Type'Class;
                                Args   : in String) is
       use type MAT.Types.Target_Tick_Ref;
+      use type MAT.Types.Target_Size;
 
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
@@ -534,7 +535,6 @@ package body MAT.Commands is
       Groups  : MAT.Events.Timelines.Timeline_Info_Vector;
       Iter    : MAT.Events.Timelines.Timeline_Info_Cursor;
    begin
---        Id := MAT.Events.Targets.Event_Id_Type'Value (Args);
       MAT.Events.Timelines.Extract (Process.Events.all, Groups);
 
       Process.Events.Get_Time_Range (Start, Finish);
@@ -545,6 +545,7 @@ package body MAT.Commands is
       Console.Print_Title (MAT.Consoles.F_MALLOC_COUNT, "# malloc", 10);
       Console.Print_Title (MAT.Consoles.F_REALLOC_COUNT, "# realloc", 10);
       Console.Print_Title (MAT.Consoles.F_FREE_COUNT, "# free", 10);
+      Console.Print_Title (MAT.Consoles.F_TOTAL_SIZE, "Memory", 10);
       Console.End_Title;
 
       Iter := Groups.First;
@@ -561,6 +562,15 @@ package body MAT.Commands is
             Console.Print_Field (MAT.Consoles.F_MALLOC_COUNT, Info.Malloc_Count);
             Console.Print_Field (MAT.Consoles.F_REALLOC_COUNT, Info.Realloc_Count);
             Console.Print_Field (MAT.Consoles.F_FREE_COUNT, Info.Free_Count);
+            if Info.Alloc_Size = Info.Free_Size then
+               Console.Print_Field (MAT.Consoles.F_TOTAL_SIZE, "");
+            elsif Info.Alloc_Size > Info.Free_Size then
+               Console.Print_Field (MAT.Consoles.F_TOTAL_SIZE,
+                                    "+" & MAT.Formats.Size (Info.Alloc_Size - Info.Free_Size));
+            else
+               Console.Print_Field (MAT.Consoles.F_TOTAL_SIZE,
+                                    "-" & MAT.Formats.Size (Info.Free_Size - Info.Alloc_Size));
+            end if;
             Console.End_Row;
          end;
          MAT.Events.Timelines.Timeline_Info_Vectors.Next (Iter);
