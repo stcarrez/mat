@@ -25,6 +25,7 @@ package body MAT.Events.Timelines is
    procedure Extract (Target : in out MAT.Events.Targets.Target_Events'Class;
                       Into   : in out Timeline_Info_Vector) is
       use type MAT.Types.Target_Time;
+      use type MAT.Types.Target_Size;
       procedure Collect (Event : in MAT.Events.Targets.Probe_Event_Type);
 
       First_Event : MAT.Events.Targets.Probe_Event_Type;
@@ -42,15 +43,21 @@ package body MAT.Events.Timelines is
             Info.Realloc_Count := 0;
             Info.Free_Count := 0;
             Info.First_Event := Event;
+            Info.Free_Size := 0;
+            Info.Alloc_Size := 0;
             Prev_Event := Event;
          end if;
          Info.Last_Event := Event;
          if Event.Event = 2 then
             Info.Malloc_Count := Info.Malloc_Count + 1;
+            Info.Alloc_Size := Info.Alloc_Size + Event.Size;
          elsif Event.Event = 3 then
             Info.Realloc_Count := Info.Realloc_Count + 1;
+            Info.Alloc_Size := Info.Alloc_Size + Event.Size;
+            Info.Free_Size := Info.Free_Size + Event.Old_Size;
          elsif Event.Event = 4 then
             Info.Free_Count := Info.Free_Count + 1;
+            Info.Free_Size := Info.Free_Size + Event.Size;
          end if;
       end Collect;
 
