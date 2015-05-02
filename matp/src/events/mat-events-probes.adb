@@ -186,6 +186,12 @@ package body MAT.Events.Probes is
       Client.Event.Time := MAT.Types.Target_Tick_Ref (Time_Sec) * 1_000_000;
       Client.Event.Time := Client.Event.Time + MAT.Types.Target_Tick_Ref (Time_Usec);
       Frame.Cur_Depth := Count;
+
+   exception
+      when E : others =>
+         Log.Error ("Marshaling error, frame count {0}", Natural'Image (Count));
+         raise;
+
    end Read_Probe;
 
    procedure Dispatch_Message (Client : in out Probe_Manager_Type;
@@ -218,8 +224,8 @@ package body MAT.Events.Probes is
             MAT.Frames.Insert (Frame  => Client.Frames,
                                Pc     => Client.Frame.Frame (1 .. Client.Frame.Cur_Depth),
                                Result => Client.Event.Frame);
-            Client.Events.Insert (Client.Event);
             Handler.Probe.Execute (Client.Event);
+            Client.Events.Insert (Client.Event);
          end;
       end if;
 
