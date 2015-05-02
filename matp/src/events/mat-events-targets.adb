@@ -173,7 +173,7 @@ package body MAT.Events.Targets is
             Current := new Event_Block;
             Current.Start := Event.Time;
             Events.Insert (Event.Time, Current);
-            Ids.Insert (Last_Id + 1, Current);
+            Ids.Insert (Last_Id, Current);
          end if;
          Current.Count := Current.Count + 1;
          Current.Events (Current.Count) := Event;
