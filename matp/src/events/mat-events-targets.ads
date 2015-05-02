@@ -47,6 +47,7 @@ package MAT.Events.Targets is
       Addr     : MAT.Types.Target_Addr;
       Size     : MAT.Types.Target_Size;
       Old_Addr : MAT.Types.Target_Addr;
+      Old_Size : MAT.Types.Target_Size;
    end record;
 
    subtype Target_Event is Probe_Event_Type;
