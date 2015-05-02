@@ -63,7 +63,7 @@ package MAT.Memory.Targets is
    --  the slot from the used slots map.
    procedure Probe_Free (Memory : in out Target_Memory;
                          Addr   : in MAT.Types.Target_Addr;
-                         Slot   : in Allocation);
+                         Slot   : in out Allocation);
 
    --  Take into account a realloc probe.  The old memory slot represented by Old_Addr is
    --  removed from the used slots maps and the new memory slot [Addr .. Slot.Size] is
@@ -130,7 +130,7 @@ private
       --  Take into account a free probe.  Add the memory slot in the freed map and remove
       --  the slot from the used slots map.
       procedure Probe_Free (Addr   : in MAT.Types.Target_Addr;
-                            Slot   : in Allocation);
+                            Slot   : in out Allocation);
 
       --  Take into account a realloc probe.  The old memory slot represented by Old_Addr is
       --  removed from the used slots maps and the new memory slot [Addr .. Slot.Size] is
