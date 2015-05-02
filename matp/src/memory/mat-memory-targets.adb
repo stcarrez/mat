@@ -335,6 +335,7 @@ package body MAT.Memory.Targets is
                   Used_Slots.Update_Element (Pos, Update_Size'Access);
                else
                   Old_Size := Allocation_Maps.Element (Pos).Size;
+                  Stats.Total_Alloc := Stats.Total_Alloc - Old_Size;
                   Used_Slots.Delete (Pos);
                   Used_Slots.Insert (Addr, Slot);
                end if;
@@ -401,6 +402,7 @@ package body MAT.Memory.Targets is
       procedure Stat_Information (Result : out Memory_Stat) is
       begin
          Result := Stats;
+         Result.Used_Count := Natural (Used_Slots.Length);
       end Stat_Information;
 
    end Memory_Allocator;
