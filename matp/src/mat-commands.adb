@@ -380,6 +380,8 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Event_Sizes_Command (Target : in out MAT.Targets.Target_Type'Class;
                                   Args   : in String) is
+      use type MAT.Types.Target_Size;
+
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Start, Finish : MAT.Types.Target_Tick_Ref;
@@ -396,6 +398,7 @@ package body MAT.Commands is
       Console.Print_Title (MAT.Consoles.F_EVENT, "Event", 20);
       Console.Print_Title (MAT.Consoles.F_SIZE, "Size", 12);
       Console.Print_Title (MAT.Consoles.F_COUNT, "Count", 8);
+      Console.Print_Title (MAT.Consoles.F_TOTAL_SIZE, "Total size", 12);
       Console.End_Title;
 
       Process.Events.Get_Time_Range (Start, Finish);
@@ -421,6 +424,8 @@ package body MAT.Commands is
                                  MAT.Formats.Event (Info.First_Event, MAT.Formats.BRIEF));
             Console.Print_Size (MAT.Consoles.F_SIZE, Size);
             Console.Print_Field (MAT.Consoles.F_COUNT, Natural'Image (Info.Count));
+            Console.Print_Field (MAT.Consoles.F_TOTAL_SIZE,
+                                 MAT.Formats.Size (MAT.Types.Target_Size (Info.Count) * Size));
             Console.End_Row;
          end;
          MAT.Events.Targets.Size_Event_Info_Maps.Next (Iter);
@@ -541,6 +546,7 @@ package body MAT.Commands is
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_START_TIME, "Start", 10);
       Console.Print_Title (MAT.Consoles.F_END_TIME, "End time", 10);
+      Console.Print_Title (MAT.Consoles.F_DURATION, "Duration", 10);
       Console.Print_Title (MAT.Consoles.F_EVENT_RANGE, "Event range", 20);
       Console.Print_Title (MAT.Consoles.F_MALLOC_COUNT, "# malloc", 10);
       Console.Print_Title (MAT.Consoles.F_REALLOC_COUNT, "# realloc", 10);
@@ -557,6 +563,8 @@ package body MAT.Commands is
             Console.Start_Row;
             Console.Print_Duration (MAT.Consoles.F_START_TIME, Info.First_Event.Time - Start);
             Console.Print_Duration (MAT.Consoles.F_END_TIME, Info.Last_Event.Time - Start);
+            Console.Print_Duration (MAT.Consoles.F_DURATION,
+                                    Info.Last_Event.Time - Info.First_Event.Time);
             Console.Print_Field (MAT.Consoles.F_EVENT_RANGE,
                                  MAT.Formats.Event (Info.First_Event, Info.Last_Event));
             Console.Print_Field (MAT.Consoles.F_MALLOC_COUNT, Info.Malloc_Count);
@@ -640,27 +648,41 @@ package body MAT.Commands is
       Start   : MAT.Events.Targets.Probe_Event_Type;
       Finish  : MAT.Events.Targets.Probe_Event_Type;
       Maps    : MAT.Memory.Region_Info_Map;
+      Stats   : MAT.Memory.Targets.Memory_Stat;
    begin
       if Process = null then
          Console.Notice (Consoles.N_EVENT_ID, "There is no process");
          return;
       end if;
+      Process.Memory.Stat_Information (Stats);
       Process.Events.Get_Limits (Start, Finish);
-      Console.Notice (Consoles.N_INFO, "Pid            : " & MAT.Formats.Pid (Process.Pid));
-      Console.Notice (Consoles.N_INFO, "Path           : " & To_String (Process.Path));
-      Console.Notice (Consoles.N_INFO, "Events         : " & MAT.Formats.Event (Start, Finish));
-      Console.Notice (Consoles.N_INFO, "Duration       : "
-                      & MAT.Formats.Duration (Finish.Time - Start.Time));
 
       --  Print number of memory regions.
       MAT.Memory.Targets.Find (Memory => Process.Memory,
                                From   => MAT.Types.Target_Addr'First,
                                To     => MAT.Types.Target_Addr'Last,
                                Into   => Maps);
-      Console.Notice (Consoles.N_INFO, "Memory regions : "
-                      & Util.Strings.Image (Natural (Maps.Length)));
+
+      Console.Notice (Consoles.N_INFO, "Pid            : " & MAT.Formats.Pid (Process.Pid));
+      Console.Notice (Consoles.N_INFO, "Path           : " & To_String (Process.Path));
       Console.Notice (Consoles.N_INFO, "Endianness     : "
                       & MAT.Readers.Endian_Type'Image (Process.Endian));
+      Console.Notice (Consoles.N_INFO, "Memory regions : "
+                      & Util.Strings.Image (Natural (Maps.Length)));
+      Console.Notice (Consoles.N_INFO, "Events         : " & MAT.Formats.Event (Start, Finish));
+      Console.Notice (Consoles.N_INFO, "Duration       : "
+                      & MAT.Formats.Duration (Finish.Time - Start.Time));
+
+      Console.Notice (Consoles.N_INFO, "Malloc count   : "
+                      & Natural'Image (Stats.Malloc_Count));
+      Console.Notice (Consoles.N_INFO, "Realloc count  : "
+                      & Natural'Image (Stats.Realloc_Count));
+      Console.Notice (Consoles.N_INFO, "Free count     : "
+                      & Natural'Image (Stats.Free_Count));
+      Console.Notice (Consoles.N_INFO, "Memory alloced : "
+                      & MAT.Formats.Size (Stats.Total_Alloc));
+      Console.Notice (Consoles.N_INFO, "Memory slots   : "
+                      & Natural'Image (Stats.Used_Count));
    end Info_Command;
 
    --  ------------------------------
