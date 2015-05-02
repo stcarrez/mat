@@ -237,7 +237,7 @@ package body MAT.Targets.Probes is
    end Extract;
 
    procedure Execute (Probe : in Process_Probe_Type;
-                      Event : in MAT.Events.Targets.Probe_Event_Type) is
+                      Event : in out MAT.Events.Targets.Probe_Event_Type) is
    begin
       null;
    end Execute;
