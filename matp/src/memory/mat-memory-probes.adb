@@ -139,7 +139,7 @@ package body MAT.Memory.Probes is
    end Extract;
 
    procedure Execute (Probe : in Memory_Probe_Type;
-                      Event : in MAT.Events.Targets.Probe_Event_Type) is
+                      Event : in out MAT.Events.Targets.Probe_Event_Type) is
       Slot     : Allocation;
    begin
       Slot.Size   := Event.Size;
@@ -152,6 +152,7 @@ package body MAT.Memory.Probes is
 
          when MAT.Events.Targets.MSG_FREE =>
             Probe.Data.Probe_Free (Event.Addr, Slot);
+            Event.Size := Slot.Size;
 
          when MAT.Events.Targets.MSG_REALLOC =>
             Probe.Data.Probe_Realloc (Event.Addr, Event.Old_Addr, Slot);
