@@ -71,7 +71,8 @@ package MAT.Memory.Targets is
    procedure Probe_Realloc (Memory   : in out Target_Memory;
                             Addr     : in MAT.Types.Target_Addr;
                             Old_Addr : in MAT.Types.Target_Addr;
-                            Slot     : in Allocation);
+                            Slot     : in Allocation;
+                            Old_Size : out MAT.Types.Target_Size);
 
    --  Insert in the frame tree the new stack frame represented by <tt>Pc</tt>.
    --  If the frame is already known, the frame reference counter is incremented.
@@ -137,7 +138,8 @@ private
       --  inserted in the used slots map.
       procedure Probe_Realloc (Addr     : in MAT.Types.Target_Addr;
                                Old_Addr : in MAT.Types.Target_Addr;
-                               Slot     : in Allocation);
+                               Slot     : in Allocation;
+                               Old_Size : out MAT.Types.Target_Size);
 
       --  Insert in the frame tree the new stack frame represented by <tt>Pc</tt>.
       --  If the frame is already known, the frame reference counter is incremented.
