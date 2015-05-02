@@ -155,7 +155,7 @@ package body MAT.Memory.Probes is
             Event.Size := Slot.Size;
 
          when MAT.Events.Targets.MSG_REALLOC =>
-            Probe.Data.Probe_Realloc (Event.Addr, Event.Old_Addr, Slot);
+            Probe.Data.Probe_Realloc (Event.Addr, Event.Old_Addr, Slot, Event.Old_Size);
 
          when others =>
             Log.Error ("Invalid event {0} for memory execute probe",
