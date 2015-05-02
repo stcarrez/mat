@@ -211,7 +211,7 @@ package body MAT.Formats is
             if Mode = BRIEF then
                return "free";
             else
-               return "free(" & Addr (Item.Addr) & ")";
+               return "free(" & Addr (Item.Addr) & "), " & Size (Item.Size);
             end if;
 
          when MAT.Events.Targets.MSG_BEGIN =>
