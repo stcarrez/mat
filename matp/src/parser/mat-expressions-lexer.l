@@ -15,6 +15,8 @@ thread          return T_THREAD;
 malloc          return T_MALLOC;
 free            return T_FREE;
 realloc         return T_REALLOC;
+leak            return T_LEAK;
+nofree          return T_NO_FREE;
 by		        return T_BY;
 at		        return T_AT;
 in		        return T_IN;
