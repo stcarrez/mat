@@ -283,10 +283,20 @@ package body MAT.Expressions is
 
          when N_HAS_ADDR =>
             if Event.Index = MAT.Events.Targets.MSG_MALLOC
-              or Event.Index = MAT.Events.Targets.MSG_REALLOC then
+              or Event.Index = MAT.Events.Targets.MSG_REALLOC
+            then
                return Event.Addr <= Node.Min_Addr and Event.Addr + Event.Size >= Node.Max_Addr;
             end if;
             return False;
+
+         when N_NO_FREE =>
+            if Event.Index = MAT.Events.Targets.MSG_MALLOC
+              or Event.Index = MAT.Events.Targets.MSG_REALLOC
+            then
+               return Event.Next_Id = 0;
+            else
+               return False;
+            end if;
 
          when others =>
             return False;
