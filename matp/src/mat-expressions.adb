@@ -28,6 +28,8 @@ package body MAT.Expressions is
    --  Destroy recursively the node, releasing the storage.
    procedure Destroy (Node : in out Node_Type_Access);
 
+   Symbols : MAT.Symbols.Targets.Target_Symbols_Ref;
+
    --  ------------------------------
    --  Create a NOT expression node.
    --  ------------------------------
@@ -79,11 +81,19 @@ package body MAT.Expressions is
    function Create_Inside (Name : in Ada.Strings.Unbounded.Unbounded_String;
                            Kind : in Inside_Type) return Expression_Type is
       Result : Expression_Type;
+      From   : MAT.Types.Target_Addr;
+      To     : MAT.Types.Target_Addr;
    begin
+      if not Symbols.Is_Null then
+         Symbols.Value.Find_Symbol_Range (Ada.Strings.Unbounded.To_String (Name), From, To);
+      else
+         From := 0;
+         To   := 0;
+      end if;
       Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
-                                    Kind        => N_INSIDE,
-                                    Name        => Name,
-                                    Inside      => Kind);
+                                    Kind        => N_IN_FUNC,
+                                    Min_Addr    => From,
+                                    Max_Addr    => To);
       return Result;
    end Create_Inside;
 
@@ -322,8 +332,10 @@ package body MAT.Expressions is
    --  ------------------------------
    --  Parse the string and return the expression tree.
    --  ------------------------------
-   function Parse (Expr : in String) return Expression_Type is
+   function Parse (Expr    : in String;
+                   Symbols : in MAT.Symbols.Targets.Target_Symbols_Ref) return Expression_Type is
    begin
+      MAT.Expressions.Symbols := Symbols;
       return MAT.Expressions.Parser.Parse (Expr);
    end Parse;
 
