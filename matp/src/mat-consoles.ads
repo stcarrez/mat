@@ -40,6 +40,7 @@ package MAT.Consoles is
                        F_EVENT_RANGE,
                        F_ID,
                        F_OLD_ADDR,
+                       F_GROW_SIZE,
                        F_TIME,
                        F_DURATION,
                        F_EVENT,
