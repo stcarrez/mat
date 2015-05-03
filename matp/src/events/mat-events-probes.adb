@@ -125,10 +125,10 @@ package body MAT.Events.Probes is
    --  to setup the mapping from the data stream attributes.
    --  ------------------------------
    procedure Register_Probe (Into   : in out Probe_Manager_Type;
-                              Probe  : in Probe_Type_Access;
-                              Name   : in String;
-                              Id     : in MAT.Events.Targets.Probe_Index_Type;
-                              Model  : in MAT.Events.Const_Attribute_Table_Access) is
+                             Probe  : in Probe_Type_Access;
+                             Name   : in String;
+                             Id     : in MAT.Events.Targets.Probe_Index_Type;
+                             Model  : in MAT.Events.Const_Attribute_Table_Access) is
       Handler : Probe_Handler;
    begin
       Handler.Probe := Probe;
@@ -136,6 +136,7 @@ package body MAT.Events.Probes is
       Handler.Attributes  := Model;
       Handler.Mapping     := null;
       Into.Probes.Insert (Name, Handler);
+      Probe.Owner := Into'Unchecked_Access;
    end Register_Probe;
 
    --  ------------------------------
