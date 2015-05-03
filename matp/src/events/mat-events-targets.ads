@@ -102,6 +102,14 @@ package MAT.Events.Targets is
    procedure Insert (Target : in out Target_Events;
                      Event  : in out Probe_Event_Type);
 
+   --  Update the Size and Prev_Id information in the event identified by <tt>Id</tt>.
+   --  Update the event represented by <tt>Prev_Id</tt> so that its Next_Id refers
+   --  to the <tt>Id</tt> event.
+   procedure Update_Event (Target  : in out Target_Events;
+                           Id      : in Event_Id_Type;
+                           Size    : in MAT.Types.Target_Size;
+                           Prev_Id : in Event_Id_Type);
+
    procedure Get_Events (Target : in out Target_Events;
                          Start  : in MAT.Types.Target_Time;
                          Finish : in MAT.Types.Target_Time;
