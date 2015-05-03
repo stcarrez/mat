@@ -183,9 +183,9 @@ package body MAT.Events.Probes is
                                     Def.Kind));
 
                when P_FRAME_PC =>
-                  for I in 1 .. Count loop
+                  for I in 1 .. Count loop --  reverse Count .. 1 loop
                      if Count < Frame.Depth then
-                        Frame.Frame (I) := MAT.Readers.Marshaller.Get_Target_Addr (Msg,
+                        Frame.Frame (Count - I + 1) := MAT.Readers.Marshaller.Get_Target_Addr (Msg,
                                                                                    Def.Kind);
                      end if;
                   end loop;
