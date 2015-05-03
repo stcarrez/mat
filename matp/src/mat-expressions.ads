@@ -127,7 +127,7 @@ private
          when N_OR | N_AND =>
             Left, Right : Node_Type_Access;
 
-         when N_INSIDE | N_IN_FILE | N_IN_FILE_DIRECT | N_IN_FUNC | N_IN_FUNC_DIRECT =>
+         when N_INSIDE | N_IN_FILE | N_IN_FILE_DIRECT | N_IN_FUNC_DIRECT =>
             Name   : Ada.Strings.Unbounded.Unbounded_String;
             Inside : Inside_Type;
 
@@ -135,7 +135,7 @@ private
             Min_Size : MAT.Types.Target_Size;
             Max_Size : MAT.Types.Target_Size;
 
-         when N_RANGE_ADDR | N_CALL_ADDR | N_CALL_ADDR_DIRECT | N_HAS_ADDR =>
+         when N_RANGE_ADDR | N_CALL_ADDR | N_CALL_ADDR_DIRECT | N_HAS_ADDR | N_IN_FUNC =>
             Min_Addr : MAT.Types.Target_Addr;
             Max_Addr : MAT.Types.Target_Addr;
 
