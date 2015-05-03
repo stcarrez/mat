@@ -100,26 +100,28 @@ package body MAT.Memory.Tests is
       M    : MAT.Memory.Targets.Target_Memory;
       S    : Allocation;
       R    : Allocation_Map;
+      Size : MAT.Types.Target_Size;
+      Id   : MAT.Events.Targets.Event_Id_Type;
    begin
       S.Size :=  4;
       M.Create_Frame (Frame_1_0, S.Frame);
 
       --  Malloc followed by a free.
       M.Probe_Malloc (10, S);
-      M.Probe_Free (10, S);
+      M.Probe_Free (10, S, Size, Id);
 
       M.Find (1, 1000, MAT.Expressions.EMPTY, R);
       Util.Tests.Assert_Equals (T, 0, Integer (R.Length),
                                 "Find must return 0 slot after a free");
 
       --  Free the same slot a second time (free error).
-      M.Probe_Free (10, S);
+      M.Probe_Free (10, S, Size, Id);
 
       --  Malloc followed by a free.
       M.Probe_Malloc (10, S);
       M.Probe_Malloc (20, S);
       M.Probe_Malloc (30, S);
-      M.Probe_Free (20, S);
+      M.Probe_Free (20, S, Size, Id);
 
       M.Find (1, 1000, MAT.Expressions.EMPTY, R);
       Util.Tests.Assert_Equals (T, 2, Integer (R.Length),
