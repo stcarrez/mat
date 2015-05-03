@@ -211,4 +211,34 @@ package body MAT.Symbols.Targets is
          Symbol.Name := Ada.Strings.Unbounded.To_Unbounded_String ("");
    end Find_Nearest_Line;
 
+   --  ------------------------------
+   --  Find the symbol in the symbol table and return the start and end address.
+   --  ------------------------------
+   procedure Find_Symbol_Range (Symbols : in Target_Symbols;
+                                Name    : in String;
+                                From    : out MAT.Types.Target_Addr;
+                                To      : out MAT.Types.Target_Addr) is
+      use type Bfd.Symbols.Symbol;
+
+      Iter  : Symbols_Cursor := Symbols.Libraries.First;
+   begin
+      while Symbols_Maps.Has_Element (Iter) loop
+         declare
+            Syms : constant Region_Symbols_Ref := Symbols_Maps.Element (Iter);
+            Sym  : Bfd.Symbols.Symbol;
+         begin
+            if not Syms.Is_Null and then Bfd.Files.Is_Open (Syms.Value.File) then
+               Sym := Bfd.Symbols.Get_Symbol (Syms.Value.Symbols, Name);
+               if Sym /= Bfd.Symbols.Null_Symbol then
+                  From := MAT.Types.Target_Addr (Bfd.Symbols.Get_Value (Sym));
+                  From := From + Syms.Value.Offset;
+                  To := From + MAT.Types.Target_Addr (Bfd.Symbols.Get_Symbol_Size (Sym));
+                  return;
+               end if;
+            end if;
+         end;
+         Symbols_Maps.Next (Iter);
+      end loop;
+   end Find_Symbol_Range;
+
 end MAT.Symbols.Targets;
