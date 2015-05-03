@@ -399,6 +399,7 @@ package body MAT.Commands is
       Console.Print_Title (MAT.Consoles.F_SIZE, "Size", 12);
       Console.Print_Title (MAT.Consoles.F_COUNT, "Count", 8);
       Console.Print_Title (MAT.Consoles.F_TOTAL_SIZE, "Total size", 12);
+      Console.Print_Title (MAT.Consoles.F_GROW_SIZE, "Memory", 12);
       Console.End_Title;
 
       Process.Events.Get_Time_Range (Start, Finish);
@@ -426,6 +427,13 @@ package body MAT.Commands is
             Console.Print_Field (MAT.Consoles.F_COUNT, Natural'Image (Info.Count));
             Console.Print_Field (MAT.Consoles.F_TOTAL_SIZE,
                                  MAT.Formats.Size (MAT.Types.Target_Size (Info.Count) * Size));
+            if Info.Alloc_Size > Info.Free_Size then
+               Console.Print_Field (MAT.Consoles.F_GROW_SIZE,
+                                    "+" & MAT.Formats.Size (Info.Alloc_Size - Info.Free_Size));
+            elsif Info.Alloc_Size < Info.Free_Size then
+               Console.Print_Field (MAT.Consoles.F_GROW_SIZE,
+                                    "-" & MAT.Formats.Size (Info.Free_Size - Info.Alloc_Size));
+            end if;
             Console.End_Row;
          end;
          MAT.Events.Targets.Size_Event_Info_Maps.Next (Iter);
