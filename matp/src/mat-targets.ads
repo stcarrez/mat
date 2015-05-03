@@ -30,6 +30,7 @@ with MAT.Readers;
 with MAT.Readers.Streams;
 with MAT.Readers.Streams.Sockets;
 with MAT.Consoles;
+with MAT.Expressions;
 package MAT.Targets is
 
    --  Exception raised if some option is invalid.
@@ -53,7 +54,8 @@ package MAT.Targets is
       Address      : GNAT.Sockets.Sock_Addr_Type := (Port => 4096, others => <>);
    end record;
 
-   type Target_Process_Type is new Ada.Finalization.Limited_Controlled with record
+   type Target_Process_Type is new Ada.Finalization.Limited_Controlled
+     and MAT.Expressions.Resolver_Type with record
       Pid     : MAT.Types.Target_Process_Ref;
       Endian  : MAT.Readers.Endian_Type := MAT.Readers.LITTLE_ENDIAN;
       Path    : Ada.Strings.Unbounded.Unbounded_String;
@@ -67,6 +69,16 @@ package MAT.Targets is
    --  Release the target process instance.
    overriding
    procedure Finalize (Target : in out Target_Process_Type);
+
+   --  Find the region that matches the given name.
+   overriding
+   function Find_Region (Resolver : in Target_Process_Type;
+                         Name     : in String) return MAT.Memory.Region_Info;
+
+   --  Find the symbol in the symbol table and return the start and end address.
+   overriding
+   function Find_Symbol (Resolver : in Target_Process_Type;
+                         Name     : in String) return MAT.Memory.Region_Info;
 
    type Target_Type is new Ada.Finalization.Limited_Controlled
      and MAT.Events.Probes.Reader_List_Type with private;
