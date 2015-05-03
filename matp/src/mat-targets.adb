@@ -48,6 +48,31 @@ package body MAT.Targets is
    end Finalize;
 
    --  ------------------------------
+   --  Find the region that matches the given name.
+   --  ------------------------------
+   overriding
+   function Find_Region (Resolver : in Target_Process_Type;
+                         Name     : in String) return MAT.Memory.Region_Info is
+   begin
+      return Resolver.Memory.Find_Region (Name);
+   end Find_Region;
+
+   --  ------------------------------
+   --  Find the symbol in the symbol table and return the start and end address.
+   --  ------------------------------
+   overriding
+   function Find_Symbol (Resolver : in Target_Process_Type;
+                         Name     : in String) return MAT.Memory.Region_Info is
+      Region : MAT.Memory.Region_Info;
+   begin
+      if Resolver.Symbols.Is_Null then
+         raise MAT.Memory.Targets.Not_Found;
+      end if;
+      Resolver.Symbols.Value.Find_Symbol_Range (Name, Region.Start_Addr, Region.End_Addr);
+      return Region;
+   end Find_Symbol;
+
+   --  ------------------------------
    --  Get the console instance.
    --  ------------------------------
    function Console (Target : in Target_Type) return MAT.Consoles.Console_Access is
