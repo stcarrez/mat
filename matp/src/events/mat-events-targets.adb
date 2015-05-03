@@ -163,11 +163,58 @@ package body MAT.Events.Targets is
 
    protected body Event_Collector is
 
+      procedure Update (Id      : in Event_Id_Type;
+                        Process : not null access procedure (Event : in out Probe_Event_Type));
+
+      --  ------------------------------
+      --  Internal operation to update the event represented by <tt>Id</tt>.
+      --  ------------------------------
+      procedure Update (Id      : in Event_Id_Type;
+                        Process : not null access procedure (Event : in out Probe_Event_Type)) is
+         Iter  : constant Event_Id_Cursor := Ids.Floor (Id);
+         Block : Event_Block_Access;
+         Pos   : Event_Id_Type;
+      begin
+         if Event_Id_Maps.Has_Element (Iter) then
+            Block := Event_Id_Maps.Element (Iter);
+            Pos := Id - Block.Events (Block.Events'First).Id + Block.Events'First;
+            if Pos <= Block.Count then
+               Process (Block.Events (Pos));
+            end if;
+         end if;
+      end Update;
+
+      --  ------------------------------
+      --  Update the Size and Prev_Id information in the event identified by <tt>Id</tt>.
+      --  Update the event represented by <tt>Prev_Id</tt> so that its Next_Id refers
+      --  to the <tt>Id</tt> event.
+      --  ------------------------------
+      procedure Update_Event (Id      : in Event_Id_Type;
+                              Size    : in MAT.Types.Target_Size;
+                              Prev_Id : in Event_Id_Type) is
+         procedure Update_Size (Event : in out Probe_Event_Type);
+         procedure Update_Next (Event : in out Probe_Event_Type);
+
+         procedure Update_Size (Event : in out Probe_Event_Type) is
+         begin
+            Event.Size    := Size;
+            Event.Prev_Id := Prev_Id;
+         end Update_Size;
+
+         procedure Update_Next (Event : in out Probe_Event_Type) is
+         begin
+            Event.Next_Id := Id;
+         end Update_Next;
+
+      begin
+         Update (Id, Update_Size'Access);
+         Update (Prev_Id, Update_Next'Access);
+      end Update_Event;
+
       --  ------------------------------
       --  Add the event in the list of events.
       --  ------------------------------
       procedure Insert (Event : in Probe_Event_Type) is
-         Info : Target_Event;
       begin
          if Current = null then
             Current := new Event_Block;
