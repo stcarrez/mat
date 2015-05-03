@@ -155,7 +155,7 @@ package body MAT.Commands is
       Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 80);
       Console.End_Title;
 
-      Filter := MAT.Expressions.Parse (Args);
+      Filter := MAT.Expressions.Parse (Args, Process.Symbols);
       Process.Memory.Find (From   => MAT.Types.Target_Addr'First,
                            To     => MAT.Types.Target_Addr'Last,
                            Filter => Filter,
@@ -333,7 +333,7 @@ package body MAT.Commands is
       Info    : MAT.Events.Targets.Event_Info_Type;
    begin
       if Args'Length > 0 then
-         Filter := MAT.Expressions.Parse (Args);
+         Filter := MAT.Expressions.Parse (Args, Process.Symbols);
       end if;
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_COUNT, "Count", 8);
@@ -390,7 +390,7 @@ package body MAT.Commands is
       Iter    : MAT.Events.Targets.Size_Event_Info_Cursor;
    begin
       if Args'Length > 0 then
-         Filter := MAT.Expressions.Parse (Args);
+         Filter := MAT.Expressions.Parse (Args, Process.Symbols);
       end if;
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_ID, "Event Id range", 30);
@@ -451,7 +451,7 @@ package body MAT.Commands is
       Iter    : MAT.Events.Targets.Target_Event_Cursor;
    begin
       if Args'Length > 0 then
-         Filter := MAT.Expressions.Parse (Args);
+         Filter := MAT.Expressions.Parse (Args, Process.Symbols);
       end if;
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_ID, "Id", 10);
