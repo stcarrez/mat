@@ -17,6 +17,7 @@
 -----------------------------------------------------------------------
 with Ada.Unchecked_Deallocation;
 
+with MAT.Frames;
 with MAT.Expressions.Parser;
 package body MAT.Expressions is
 
@@ -308,6 +309,9 @@ package body MAT.Expressions is
             else
                return False;
             end if;
+
+         when N_IN_FUNC =>
+            return MAT.Frames.In_Function (Event.Frame, Node.Min_Addr, Node.Max_Addr);
 
          when others =>
             return False;
