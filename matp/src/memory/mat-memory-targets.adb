@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Util.Log.Loggers;
+with Util.Strings;
 
 with MAT.Memory.Probes;
 package body MAT.Memory.Targets is
@@ -59,6 +60,15 @@ package body MAT.Memory.Targets is
    begin
       Memory.Memory.Find (From, To, Into);
    end Find;
+
+   --  ------------------------------
+   --  Find the region that matches the given name.
+   --  ------------------------------
+   function Find_Region (Memory : in Target_Memory;
+                         Name   : in String) return Region_Info is
+   begin
+      return Memory.Memory.Find_Region (Name);
+   end Find_Region;
 
    --  ------------------------------
    --  Take into account a malloc probe.  The memory slot [Addr .. Slot.Size] is inserted
@@ -173,6 +183,30 @@ package body MAT.Memory.Targets is
       begin
          Regions.Insert (Region.Start_Addr, Region);
       end Add_Region;
+
+      --  ------------------------------
+      --  Find the region that matches the given name.
+      --  ------------------------------
+      function Find_Region (Name   : in String) return Region_Info is
+         Iter   : Region_Info_Cursor := Regions.First;
+      begin
+         while Region_Info_Maps.Has_Element (Iter) loop
+            declare
+               Region : constant Region_Info := Region_Info_Maps.Element (Iter);
+               Path   : constant String := Ada.Strings.Unbounded.To_String (Region.Path);
+               Pos    : constant Natural := Util.Strings.Rindex (Path, '/');
+            begin
+               if Path = Name then
+                  return Region;
+               end if;
+               if Pos > 0 and then Path (Pos + 1 .. Path'Last) = Name then
+                  return Region;
+               end if;
+            end;
+            Region_Info_Maps.Next (Iter);
+         end loop;
+         raise Not_Found with "Region '" & Name & "' was not found";
+      end Find_Region;
 
       --  ------------------------------
       --  Find the memory region that intersect the given section described by <tt>From</tt>
