@@ -64,9 +64,10 @@ package body MAT.Events.Targets is
 
    --  ------------------------------
    --  Add the event in the list of events and increment the event counter.
+   --  Update the event instance to allocate the event Id.
    --  ------------------------------
    procedure Insert (Target : in out Target_Events;
-                     Event  : in Probe_Event_Type) is
+                     Event  : in out Probe_Event_Type) is
    begin
       Target.Events.Insert (Event);
       Util.Concurrent.Counters.Increment (Target.Event_Count);
@@ -213,8 +214,9 @@ package body MAT.Events.Targets is
 
       --  ------------------------------
       --  Add the event in the list of events.
+      --  Update the event instance to allocate the event Id.
       --  ------------------------------
-      procedure Insert (Event : in Probe_Event_Type) is
+      procedure Insert (Event : in out Probe_Event_Type) is
       begin
          if Current = null then
             Current := new Event_Block;
