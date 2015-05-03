@@ -59,9 +59,9 @@ condition :
         T_IN direct name
             {
                if $2.bval then
-                  $$.expr := MAT.Expressions.Create_Inside ($3.name, MAT.Expressions.INSIDE_DIRECT_FILE);
+                  $$.expr := MAT.Expressions.Create_Inside ($3.name, MAT.Expressions.INSIDE_DIRECT_REGION);
                else
-                  $$.expr := MAT.Expressions.Create_Inside ($3.name, MAT.Expressions.INSIDE_FILE);
+                  $$.expr := MAT.Expressions.Create_Inside ($3.name, MAT.Expressions.INSIDE_REGION);
                end if;
             }
     |
@@ -233,10 +233,10 @@ time:
 
 direct:
         --  /* Empty */
-                { $$.bval := True;          }
+                { $$.bval := False;          }
     |
         T_DIRECT
-                { $$.bval := False;         }
+                { $$.bval := True;           }
     ;
 %%
 package MAT.Expressions.Parser is
