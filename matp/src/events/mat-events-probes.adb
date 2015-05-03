@@ -97,6 +97,19 @@ package body MAT.Events.Probes is
    end Hash;
 
    --  ------------------------------
+   --  Update the Size and Prev_Id information in the event identified by <tt>Id</tt>.
+   --  Update the event represented by <tt>Prev_Id</tt> so that its Next_Id refers
+   --  to the <tt>Id</tt> event.
+   --  ------------------------------
+   procedure Update_Event (Probe   : in Probe_Type;
+                           Id      : in MAT.Events.Targets.Event_Id_Type;
+                           Size    : in MAT.Types.Target_Size;
+                           Prev_Id : in MAT.Events.Targets.Event_Id_Type) is
+   begin
+      Probe.Owner.Get_Target_Events.Update_Event (Id, Size, Prev_Id);
+   end Update_Event;
+
+   --  ------------------------------
    --  Initialize the manager instance.
    --  ------------------------------
    overriding
