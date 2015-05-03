@@ -109,7 +109,7 @@ private
                       N_IN_FUNC, N_IN_FUNC_DIRECT,
                       N_RANGE_SIZE, N_RANGE_ADDR,
                       N_RANGE_TIME, N_EVENT, N_HAS_ADDR,
-                      N_CONDITION, N_THREAD, N_TYPE);
+                      N_CONDITION, N_THREAD, N_TYPE, N_NO_FREE);
 
 
    type Node_Type;
