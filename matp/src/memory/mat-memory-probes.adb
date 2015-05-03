@@ -146,6 +146,7 @@ package body MAT.Memory.Probes is
       Slot.Thread := Event.Thread;
       Slot.Time   := Event.Time;
       Slot.Frame  := Event.Frame;
+      Slot.Event  := Event.Id;
       case Event.Index is
          when MAT.Events.Targets.MSG_MALLOC =>
             Probe.Data.Probe_Malloc (Event.Addr, Slot);
