@@ -179,11 +179,20 @@ package body MAT.Events.Timelines is
          begin
             Info.Count      := Info.Count + 1;
             Info.Last_Event := Event;
+            if Event.Index = MAT.Events.Targets.MSG_MALLOC then
+               Info.Alloc_Size := Info.Alloc_Size + Event.Size;
+            elsif Event.Index = MAT.Events.Targets.MSG_REALLOC then
+               Info.Alloc_Size := Info.Alloc_Size + Event.Size;
+               Info.Free_Size := Info.Alloc_Size + Event.Old_Size;
+            else
+               Info.Free_Size := Info.Alloc_Size + Event.Size;
+            end if;
          end Update_Size;
 
       begin
          --  Look for malloc or realloc events which are selected by the filter.
          if (Event.Index /= MAT.Events.Targets.MSG_MALLOC
+             and Event.Index /= MAT.Events.Targets.MSG_FREE
              and Event.Index /= MAT.Events.Targets.MSG_REALLOC)
            or else not Filter.Is_Selected (Event)
          then
@@ -203,6 +212,14 @@ package body MAT.Events.Timelines is
                   Info.First_Event := Event;
                   Info.Last_Event := Event;
                   Info.Count := 1;
+                  if Event.Index = MAT.Events.Targets.MSG_MALLOC then
+                     Info.Alloc_Size := Event.Size;
+                  elsif Event.Index = MAT.Events.Targets.MSG_REALLOC then
+                     Info.Alloc_Size := Event.Size;
+                     Info.Free_Size := Event.Old_Size;
+                  else
+                     Info.Free_Size := Event.Size;
+                  end if;
                   Sizes.Insert (Event.Size, Info);
                end;
             end if;
