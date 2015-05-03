@@ -167,6 +167,13 @@ private
 
    protected type Event_Collector is
 
+      --  Update the Size and Prev_Id information in the event identified by <tt>Id</tt>.
+      --  Update the event represented by <tt>Prev_Id</tt> so that its Next_Id refers
+      --  to the <tt>Id</tt> event.
+      procedure Update_Event (Id      : in Event_Id_Type;
+                              Size    : in MAT.Types.Target_Size;
+                              Prev_Id : in Event_Id_Type);
+
       --  Add the event in the list of events.
       procedure Insert (Event  : in Probe_Event_Type);
 
