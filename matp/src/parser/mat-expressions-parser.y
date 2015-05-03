@@ -8,6 +8,8 @@
 %token T_MALLOC
 %token T_REALLOC
 %token T_FREE
+%token T_LEAK
+%token T_NO_FREE
 %token T_THREAD
 %token T_RANGE
 %token T_EVENT
@@ -141,6 +143,16 @@ condition :
     	T_REALLOC
     		{
     		  $$.expr := MAT.Expressions.Create_Event_Type (MAT.Events.Targets.MSG_REALLOC);
+    		}
+    |
+    	T_LEAK
+    		{
+              $$.expr := MAT.Expressions.Create_No_Free;
+    		}
+    |
+    	T_NO_FREE
+    		{
+              $$.expr := MAT.Expressions.Create_No_Free;
     		}
     |
         name
