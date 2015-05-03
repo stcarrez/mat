@@ -100,6 +100,12 @@ package MAT.Symbols.Targets is
                                 Addr    : in MAT.Types.Target_Addr;
                                 Symbol  : out Symbol_Info);
 
+   --  Find the symbol in the symbol table and return the start and end address.
+   procedure Find_Symbol_Range (Symbols : in Target_Symbols;
+                                Name    : in String;
+                                From    : out MAT.Types.Target_Addr;
+                                To      : out MAT.Types.Target_Addr);
+
    package Target_Symbols_Refs is
      new Util.Refs.References (Target_Symbols, Target_Symbols_Access);
 
