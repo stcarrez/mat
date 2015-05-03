@@ -224,8 +224,8 @@ package body MAT.Events.Probes is
             MAT.Frames.Insert (Frame  => Client.Frames,
                                Pc     => Client.Frame.Frame (1 .. Client.Frame.Cur_Depth),
                                Result => Client.Event.Frame);
-            Handler.Probe.Execute (Client.Event);
             Client.Events.Insert (Client.Event);
+            Handler.Probe.Execute (Client.Event);
          end;
       end if;
 
