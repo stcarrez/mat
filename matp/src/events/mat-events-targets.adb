@@ -237,9 +237,9 @@ package body MAT.Events.Targets is
             Events.Insert (Event.Time, Current);
             Ids.Insert (Last_Id, Current);
          end if;
+         Event.Id := Last_Id;
          Current.Count := Current.Count + 1;
          Current.Events (Current.Count) := Event;
-         Current.Events (Current.Count).Id := Last_Id;
          Last_Id := Last_Id + 1;
          Current.Finish := Event.Time;
          if Current.Count = Current.Events'Last then
