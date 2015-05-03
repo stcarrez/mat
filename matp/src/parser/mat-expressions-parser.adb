@@ -368,11 +368,11 @@ when 6 => -- #line 60
 yy.value_stack(yy.tos-1).bval then
                   
 yyval.expr := MAT.Expressions.Create_Inside (
-yy.value_stack(yy.tos).name, MAT.Expressions.INSIDE_DIRECT_FILE);
+yy.value_stack(yy.tos).name, MAT.Expressions.INSIDE_DIRECT_REGION);
                else
                   
 yyval.expr := MAT.Expressions.Create_Inside (
-yy.value_stack(yy.tos).name, MAT.Expressions.INSIDE_FILE);
+yy.value_stack(yy.tos).name, MAT.Expressions.INSIDE_REGION);
                end if;
             
 
@@ -600,11 +600,11 @@ yyval.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_D
 
 when 37 => -- #line 236
  
-yyval.bval := True;          
+yyval.bval := False;          
 
 when 38 => -- #line 239
  
-yyval.bval := False;         
+yyval.bval := True;           
 
                     when others => null;
                 end case;
