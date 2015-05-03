@@ -497,4 +497,23 @@ package body MAT.Frames is
       end if;
    end Find;
 
+   --  ------------------------------
+   --  Check whether the frame contains a call to the function described by the address range.
+   --  ------------------------------
+   function In_Function (Frame : in Frame_Type;
+                         From  : in MAT.Types.Target_Addr;
+                         To    : in MAT.Types.Target_Addr) return Boolean is
+      Current : Frame_Type := Frame;
+   begin
+      while Current /= null loop
+         for I in 1 .. Current.Local_Depth loop
+            if Current.Calls (I) >= From and Current.Calls (I) <= To then
+               return True;
+            end if;
+         end loop;
+         Current := Current.Parent;
+      end loop;
+      return False;
+   end In_Function;
+
 end MAT.Frames;
