@@ -81,6 +81,13 @@ package MAT.Frames is
                          From  : in MAT.Types.Target_Addr;
                          To    : in MAT.Types.Target_Addr) return Boolean;
 
+   --  Check whether the inner most frame contains a call to the function described by
+   --  the address range.  This function looks only at the inner most frame and not the
+   --  whole stack frame.
+   function By_Function (Frame : in Frame_Type;
+                         From  : in MAT.Types.Target_Addr;
+                         To    : in MAT.Types.Target_Addr) return Boolean;
+
 private
 
    Frame_Group_Size : constant Natural := 4;
