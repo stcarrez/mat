@@ -53,6 +53,10 @@ package MAT.Memory.Targets is
                    To     : in MAT.Types.Target_Addr;
                    Into   : in out MAT.Memory.Region_Info_Map);
 
+   --  Find the region that matches the given name.
+   function Find_Region (Memory : in Target_Memory;
+                         Name   : in String) return Region_Info;
+
    --  Take into account a malloc probe.  The memory slot [Addr .. Slot.Size] is inserted
    --  in the used slots map.  The freed slots that intersect the malloc'ed region are
    --  removed from the freed map.
