@@ -516,4 +516,24 @@ package body MAT.Frames is
       return False;
    end In_Function;
 
+   --  ------------------------------
+   --  Check whether the inner most frame contains a call to the function described by
+   --  the address range.  This function looks only at the inner most frame and not the
+   --  whole stack frame.
+   --  ------------------------------
+   function By_Function (Frame : in Frame_Type;
+                         From  : in MAT.Types.Target_Addr;
+                         To    : in MAT.Types.Target_Addr) return Boolean is
+      Pc : MAT.Types.Target_Addr;
+   begin
+      if Frame /= null then
+         Pc := Frame.Calls (Frame.Local_Depth);
+         if Pc >= From and Pc <= To then
+            return True;
+         end if;
+      end if;
+      return False;
+   end By_Function;
+
+
 end MAT.Frames;
