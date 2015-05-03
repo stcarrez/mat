@@ -226,14 +226,18 @@ package body MAT.Symbols.Targets is
          declare
             Syms : constant Region_Symbols_Ref := Symbols_Maps.Element (Iter);
             Sym  : Bfd.Symbols.Symbol;
+            Sec  : Bfd.Sections.Section;
          begin
             if not Syms.Is_Null and then Bfd.Files.Is_Open (Syms.Value.File) then
                Sym := Bfd.Symbols.Get_Symbol (Syms.Value.Symbols, Name);
                if Sym /= Bfd.Symbols.Null_Symbol then
-                  From := MAT.Types.Target_Addr (Bfd.Symbols.Get_Value (Sym));
-                  From := From + Syms.Value.Offset;
-                  To := From + MAT.Types.Target_Addr (Bfd.Symbols.Get_Symbol_Size (Sym));
-                  return;
+                  Sec := Bfd.Symbols.Get_Section (Sym);
+                  if not Bfd.Sections.Is_Undefined_Section (Sec) then
+                     From := MAT.Types.Target_Addr (Bfd.Symbols.Get_Value (Sym));
+                     From := From + Syms.Value.Offset;
+                     To := From + MAT.Types.Target_Addr (Bfd.Symbols.Get_Symbol_Size (Sym));
+                     return;
+                  end if;
                end if;
             end if;
          end;
