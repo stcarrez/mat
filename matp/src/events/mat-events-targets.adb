@@ -73,6 +73,19 @@ package body MAT.Events.Targets is
       Util.Concurrent.Counters.Increment (Target.Event_Count);
    end Insert;
 
+   --  ------------------------------
+   --  Update the Size and Prev_Id information in the event identified by <tt>Id</tt>.
+   --  Update the event represented by <tt>Prev_Id</tt> so that its Next_Id refers
+   --  to the <tt>Id</tt> event.
+   --  ------------------------------
+   procedure Update_Event (Target  : in out Target_Events;
+                           Id      : in Event_Id_Type;
+                           Size    : in MAT.Types.Target_Size;
+                           Prev_Id : in Event_Id_Type) is
+   begin
+      Target.Events.Update_Event (Id, Size, Prev_Id);
+   end Update_Event;
+
    procedure Get_Events (Target : in out Target_Events;
                          Start  : in MAT.Types.Target_Time;
                          Finish : in MAT.Types.Target_Time;
