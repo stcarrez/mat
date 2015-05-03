@@ -28,7 +28,7 @@ package body MAT.Expressions is
    --  Destroy recursively the node, releasing the storage.
    procedure Destroy (Node : in out Node_Type_Access);
 
-   Symbols : MAT.Symbols.Targets.Target_Symbols_Ref;
+   Resolver : Resolver_Type_Access;
 
    --  ------------------------------
    --  Create a NOT expression node.
@@ -81,19 +81,29 @@ package body MAT.Expressions is
    function Create_Inside (Name : in Ada.Strings.Unbounded.Unbounded_String;
                            Kind : in Inside_Type) return Expression_Type is
       Result : Expression_Type;
-      From   : MAT.Types.Target_Addr;
-      To     : MAT.Types.Target_Addr;
+      Region : MAT.Memory.Region_Info;
    begin
-      if not Symbols.Is_Null then
-         Symbols.Value.Find_Symbol_Range (Ada.Strings.Unbounded.To_String (Name), From, To);
-      else
-         From := 0;
-         To   := 0;
+      if Resolver /= null then
+         case Kind is
+            when INSIDE_REGION | INSIDE_DIRECT_REGION =>
+               Region := Resolver.Find_Region (Ada.Strings.Unbounded.To_String (Name));
+
+            when others =>
+               Region := Resolver.Find_Symbol (Ada.Strings.Unbounded.To_String (Name));
+
+         end case;
       end if;
-      Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
-                                    Kind        => N_IN_FUNC,
-                                    Min_Addr    => From,
-                                    Max_Addr    => To);
+      if Kind = INSIDE_DIRECT_REGION or Kind = INSIDE_DIRECT_FUNCTION then
+         Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
+                                       Kind        => N_IN_FUNC_DIRECT,
+                                       Min_Addr    => Region.Start_Addr,
+                                       Max_Addr    => Region.End_Addr);
+      else
+         Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
+                                       Kind        => N_IN_FUNC,
+                                       Min_Addr    => Region.Start_Addr,
+                                       Max_Addr    => Region.End_Addr);
+      end if;
       return Result;
    end Create_Inside;
 
@@ -323,6 +333,9 @@ package body MAT.Expressions is
          when N_IN_FUNC =>
             return MAT.Frames.In_Function (Event.Frame, Node.Min_Addr, Node.Max_Addr);
 
+         when N_IN_FUNC_DIRECT =>
+            return MAT.Frames.By_Function (Event.Frame, Node.Min_Addr, Node.Max_Addr);
+
          when others =>
             return False;
 
@@ -332,10 +345,10 @@ package body MAT.Expressions is
    --  ------------------------------
    --  Parse the string and return the expression tree.
    --  ------------------------------
-   function Parse (Expr    : in String;
-                   Symbols : in MAT.Symbols.Targets.Target_Symbols_Ref) return Expression_Type is
+   function Parse (Expr     : in String;
+                   Resolver : in Resolver_Type_Access) return Expression_Type is
    begin
-      MAT.Expressions.Symbols := Symbols;
+      MAT.Expressions.Resolver := Resolver;
       return MAT.Expressions.Parser.Parse (Expr);
    end Parse;
 
