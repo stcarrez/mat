@@ -576,11 +576,11 @@ yy.value_stack(yy.tos).low;
 
 when 31 => -- #line 210
  
-yyval.low := 0;              
+yyval.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);  
 
 when 32 => -- #line 213
  
-yyval.low := 0;              
+yyval.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);  
 
 when 33 => -- #line 218
  
