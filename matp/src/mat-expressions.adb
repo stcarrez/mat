@@ -170,6 +170,17 @@ package body MAT.Expressions is
    end Create_Event;
 
    --  ------------------------------
+   --  Create an expression node to keep allocation events which don't have any associated free.
+   --  ------------------------------
+   function Create_No_Free return Expression_Type is
+      Result : Expression_Type;
+   begin
+      Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
+                                    Kind        => N_NO_FREE);
+      return Result;
+   end Create_No_Free;
+
+   --  ------------------------------
    --  Evaluate the expression to check if the memory slot described by the
    --  context is selected.  Returns True if the memory slot is selected.
    --  ------------------------------
