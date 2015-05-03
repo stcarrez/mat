@@ -207,10 +207,10 @@ compare:
 
 name:
         T_STRING
-                { $$.low := 0;              }
+                { $$.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);  }
     |
         T_NAME
-                { $$.low := 0;              }
+                { $$.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);  }
     ;
 
 count:
