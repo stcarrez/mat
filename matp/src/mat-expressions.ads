@@ -23,16 +23,26 @@ private with Util.Concurrent.Counters;
 with MAT.Types;
 with MAT.Memory;
 with MAT.Events.Targets;
-with MAT.Symbols.Targets;
 package MAT.Expressions is
+
+   type Resolver_Type is limited interface;
+   type Resolver_Type_Access is access all Resolver_Type'Class;
+
+   --  Find the region that matches the given name.
+   function Find_Region (Resolver : in Resolver_Type;
+                         Name     : in String) return MAT.Memory.Region_Info is abstract;
+
+   --  Find the symbol in the symbol table and return the start and end address.
+   function Find_Symbol (Resolver : in Resolver_Type;
+                         Name     : in String) return MAT.Memory.Region_Info is abstract;
 
    type Context_Type is record
       Addr       : MAT.Types.Target_Addr;
       Allocation : MAT.Memory.Allocation;
    end record;
 
-   type Inside_Type is (INSIDE_FILE,
-                        INSIDE_DIRECT_FILE,
+   type Inside_Type is (INSIDE_REGION,
+                        INSIDE_DIRECT_REGION,
                         INSIDE_FUNCTION,
                         INSIDE_DIRECT_FUNCTION);
 
@@ -92,8 +102,8 @@ package MAT.Expressions is
                          Event      : in MAT.Events.Targets.Probe_Event_Type) return Boolean;
 
    --  Parse the string and return the expression tree.
-   function Parse (Expr    : in String;
-                   Symbols : in MAT.Symbols.Targets.Target_Symbols_Ref) return Expression_Type;
+   function Parse (Expr     : in String;
+                   Resolver : in Resolver_Type_Access) return Expression_Type;
 
    --  Empty expression.
    EMPTY : constant Expression_Type;
@@ -129,7 +139,7 @@ private
          when N_OR | N_AND =>
             Left, Right : Node_Type_Access;
 
-         when N_INSIDE | N_IN_FILE | N_IN_FILE_DIRECT | N_IN_FUNC_DIRECT =>
+         when N_INSIDE | N_IN_FILE | N_IN_FILE_DIRECT =>
             Name   : Ada.Strings.Unbounded.Unbounded_String;
             Inside : Inside_Type;
 
@@ -137,7 +147,8 @@ private
             Min_Size : MAT.Types.Target_Size;
             Max_Size : MAT.Types.Target_Size;
 
-         when N_RANGE_ADDR | N_CALL_ADDR | N_CALL_ADDR_DIRECT | N_HAS_ADDR | N_IN_FUNC =>
+         when N_RANGE_ADDR | N_CALL_ADDR | N_CALL_ADDR_DIRECT | N_HAS_ADDR
+            | N_IN_FUNC | N_IN_FUNC_DIRECT =>
             Min_Addr : MAT.Types.Target_Addr;
             Max_Addr : MAT.Types.Target_Addr;
 
