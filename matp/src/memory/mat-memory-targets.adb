@@ -78,9 +78,11 @@ package body MAT.Memory.Targets is
    --  ------------------------------
    procedure Probe_Free (Memory : in out Target_Memory;
                          Addr   : in MAT.Types.Target_Addr;
-                         Slot   : in out Allocation) is
+                         Slot   : in Allocation;
+                         Size   : out MAT.Types.Target_Size;
+                         By     : out MAT.Events.Targets.Event_Id_Type) is
    begin
-      Memory.Memory.Probe_Free (Addr, Slot);
+      Memory.Memory.Probe_Free (Addr, Slot, Size, By);
    end Probe_Free;
 
    --  ------------------------------
@@ -92,9 +94,10 @@ package body MAT.Memory.Targets is
                             Addr     : in MAT.Types.Target_Addr;
                             Old_Addr : in MAT.Types.Target_Addr;
                             Slot     : in Allocation;
-                            Old_Size : out MAT.Types.Target_Size) is
+                            Old_Size : out MAT.Types.Target_Size;
+                            By       : out MAT.Events.Targets.Event_Id_Type) is
    begin
-      Memory.Memory.Probe_Realloc (Addr, Old_Addr, Slot, Old_Size);
+      Memory.Memory.Probe_Realloc (Addr, Old_Addr, Slot, Old_Size, By);
    end Probe_Realloc;
 
    --  ------------------------------
@@ -259,7 +262,9 @@ package body MAT.Memory.Targets is
       --  the slot from the used slots map.
       --  ------------------------------
       procedure Probe_Free (Addr   : in MAT.Types.Target_Addr;
-                            Slot   : in out Allocation) is
+                            Slot   : in Allocation;
+                            Size   : out MAT.Types.Target_Size;
+                            By     : out MAT.Events.Targets.Event_Id_Type) is
          Item : Allocation;
          Iter : Allocation_Cursor;
       begin
@@ -270,7 +275,8 @@ package body MAT.Memory.Targets is
          Iter := Used_Slots.Find (Addr);
          if Allocation_Maps.Has_Element (Iter) then
             Item := Allocation_Maps.Element (Iter);
-            Slot.Size := Item.Size;
+            Size := Item.Size;
+            By   := Item.Event;
             if Stats.Total_Alloc >= Item.Size then
                Stats.Total_Alloc := Stats.Total_Alloc - Item.Size;
             else
@@ -284,6 +290,9 @@ package body MAT.Memory.Targets is
             if not Allocation_Maps.Has_Element (Iter) then
                Freed_Slots.Insert (Addr, Item);
             end if;
+         else
+            Size := 0;
+            By   := 0;
          end if;
 
       exception
@@ -300,7 +309,8 @@ package body MAT.Memory.Targets is
       procedure Probe_Realloc (Addr     : in MAT.Types.Target_Addr;
                                Old_Addr : in MAT.Types.Target_Addr;
                                Slot     : in Allocation;
-                               Old_Size : out MAT.Types.Target_Size) is
+                               Old_Size : out MAT.Types.Target_Size;
+                               By       : out MAT.Events.Targets.Event_Id_Type) is
          procedure Update_Size (Key     : in MAT.Types.Target_Addr;
                                 Element : in out Allocation);
 
@@ -314,9 +324,11 @@ package body MAT.Memory.Targets is
                Stats.Total_Alloc := 0;
             end if;
             Old_Size := Element.Size;
+            By       := Element.Event;
             Element.Size := Slot.Size;
             MAT.Frames.Release (Element.Frame);
             Element.Frame := Slot.Frame;
+            Element.Event := Slot.Event;
          end Update_Size;
 
          Pos      : Allocation_Cursor;
@@ -326,6 +338,7 @@ package body MAT.Memory.Targets is
                        MAT.Types.Hex_Image (Addr), MAT.Types.Target_Size'Image (Slot.Size));
          end if;
          Old_Size := 0;
+         By       := 0;
          Stats.Realloc_Count := Stats.Realloc_Count + 1;
          if Addr /= 0 then
             Stats.Total_Alloc := Stats.Total_Alloc + Slot.Size;
@@ -335,6 +348,7 @@ package body MAT.Memory.Targets is
                   Used_Slots.Update_Element (Pos, Update_Size'Access);
                else
                   Old_Size := Allocation_Maps.Element (Pos).Size;
+                  By := Allocation_Maps.Element (Pos).Event;
                   Stats.Total_Alloc := Stats.Total_Alloc - Old_Size;
                   Used_Slots.Delete (Pos);
                   Used_Slots.Insert (Addr, Slot);
