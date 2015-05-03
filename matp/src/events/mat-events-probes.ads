@@ -45,6 +45,14 @@ package MAT.Events.Probes is
    procedure Execute (Probe : in Probe_Type;
                       Event : in out Probe_Event_Type) is abstract;
 
+   --  Update the Size and Prev_Id information in the event identified by <tt>Id</tt>.
+   --  Update the event represented by <tt>Prev_Id</tt> so that its Next_Id refers
+   --  to the <tt>Id</tt> event.
+   procedure Update_Event (Probe   : in Probe_Type;
+                           Id      : in MAT.Events.Targets.Event_Id_Type;
+                           Size    : in MAT.Types.Target_Size;
+                           Prev_Id : in MAT.Events.Targets.Event_Id_Type);
+
    -----------------
    --  Probe Manager
    -----------------
