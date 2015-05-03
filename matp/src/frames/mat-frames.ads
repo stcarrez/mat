@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-frames - Representation of stack frames
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -75,6 +75,12 @@ package MAT.Frames is
                    Pc      : in Frame_Table;
                    Result  : out Frame_Type;
                    Last_Pc : out Natural);
+
+   --  Check whether the frame contains a call to the function described by the address range.
+   function In_Function (Frame : in Frame_Type;
+                         From  : in MAT.Types.Target_Addr;
+                         To    : in MAT.Types.Target_Addr) return Boolean;
+
 private
 
    Frame_Group_Size : constant Natural := 4;
