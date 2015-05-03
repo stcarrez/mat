@@ -98,8 +98,9 @@ package MAT.Events.Targets is
    type Target_Events_Access is access all Target_Events'Class;
 
    --  Add the event in the list of events and increment the event counter.
+   --  Update the event instance to allocate the event Id.
    procedure Insert (Target : in out Target_Events;
-                     Event  : in Probe_Event_Type);
+                     Event  : in out Probe_Event_Type);
 
    procedure Get_Events (Target : in out Target_Events;
                          Start  : in MAT.Types.Target_Time;
@@ -175,7 +176,8 @@ private
                               Prev_Id : in Event_Id_Type);
 
       --  Add the event in the list of events.
-      procedure Insert (Event  : in Probe_Event_Type);
+      --  Update the event instance to allocate the event Id.
+      procedure Insert (Event  : in out Probe_Event_Type);
 
       procedure Get_Events (Start  : in MAT.Types.Target_Time;
                             Finish : in MAT.Types.Target_Time;
