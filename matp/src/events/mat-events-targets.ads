@@ -39,6 +39,8 @@ package MAT.Events.Targets is
 
    type Probe_Event_Type is record
       Id       : Event_Id_Type;
+      Next_Id  : Event_Id_Type := 0;
+      Prev_Id  : Event_Id_Type := 0;
       Event    : MAT.Types.Uint16;
       Index    : Probe_Index_Type;
       Time     : MAT.Types.Target_Tick_Ref;
