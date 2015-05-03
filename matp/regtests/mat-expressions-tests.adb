@@ -41,27 +41,27 @@ package body MAT.Expressions.Tests is
    procedure Test_Parse_Expression (T : in out Test) is
       Result : MAT.Expressions.Expression_Type;
    begin
-      Result := MAT.Expressions.Parse ("by foo");
+      Result := MAT.Expressions.Parse ("by foo", null);
       T.Assert (Result.Node /= null, "Parse 'by foo' must return a expression");
       Assert_Equals_Kind (T, N_INSIDE, Result.Node.Kind, "Invalid node kind");
 
-      Result := MAT.Expressions.Parse ("by direct foo");
+      Result := MAT.Expressions.Parse ("by direct foo", null);
       T.Assert (Result.Node /= null, "Parse 'by direct foo' must return a expression");
       Assert_Equals_Kind (T, N_INSIDE, Result.Node.Kind, "Invalid node kind");
 
-      Result := MAT.Expressions.Parse ("after foo");
+      Result := MAT.Expressions.Parse ("after foo", null);
       T.Assert (Result.Node /= null, "Parse 'after foo' must return a expression");
 --        Assert_Equals_Kind (T, N_INSIDE, Result.Node.Kind, "Invalid node kind");
 
-      Result := MAT.Expressions.Parse ("before foo");
+      Result := MAT.Expressions.Parse ("before foo", null);
       T.Assert (Result.Node /= null, "Parse 'before foo' must return a expression");
       --        Assert_Equals_Kind (T, N_INSIDE, Result.Node.Kind, "Invalid node kind");
 
-      Result := MAT.Expressions.Parse ("with size in [10,100]");
+      Result := MAT.Expressions.Parse ("with size in [10,100]", null);
       T.Assert (Result.Node /= null, "Parse 'by direct foo' must return a expression");
       Assert_Equals_Kind (T, N_RANGE_SIZE, Result.Node.Kind, "Invalid node kind");
 
-      Result := MAT.Expressions.Parse ("with size in [10..100]");
+      Result := MAT.Expressions.Parse ("with size in [10..100]", null);
       T.Assert (Result.Node /= null, "Parse 'by direct foo' must return a expression");
       Assert_Equals_Kind (T, N_RANGE_SIZE, Result.Node.Kind, "Invalid node kind");
 
