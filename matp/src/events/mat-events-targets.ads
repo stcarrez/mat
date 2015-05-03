@@ -70,6 +70,8 @@ package MAT.Events.Targets is
       Last_Event  : Target_Event;
       Frame_Addr  : MAT.Types.Target_Addr;
       Count       : Natural;
+      Alloc_Size  : MAT.Types.Target_Size := 0;
+      Free_Size   : MAT.Types.Target_Size := 0;
    end record;
 
    package Size_Event_Info_Maps is
