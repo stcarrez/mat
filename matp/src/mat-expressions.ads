@@ -76,6 +76,9 @@ package MAT.Expressions is
    function Create_Event_Type (Event_Kind : in MAT.Events.Targets.Probe_Index_Type)
                                return Expression_Type;
 
+   --  Create an expression node to keep allocation events which don't have any associated free.
+   function Create_No_Free return Expression_Type;
+
    --  Evaluate the expression to check if the memory slot described by the
    --  context is selected.  Returns True if the memory slot is selected.
    function Is_Selected (Node       : in Expression_Type;
