@@ -22,6 +22,8 @@ with MAT.Memory.Tools;
 with MAT.Expressions;
 package MAT.Memory.Targets is
 
+   Not_Found : exception;
+
    --  Define some global statistics about the memory slots.
    type Memory_Stat is record
       Thread_Count  : Natural := 0;
@@ -122,6 +124,9 @@ private
 
       --  Add the memory region from the list of memory region managed by the program.
       procedure Add_Region (Region : in Region_Info);
+
+      --  Find the region that matches the given name.
+      function Find_Region (Name   : in String) return Region_Info;
 
       --  Find the memory region that intersect the given section described by <tt>From</tt>
       --  and <tt>To</tt>.  Each memory region that intersects is added to the <tt>Into</tt>
