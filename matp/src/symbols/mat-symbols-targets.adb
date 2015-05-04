@@ -17,7 +17,10 @@
 -----------------------------------------------------------------------
 with Bfd.Sections;
 with ELF;
+with Util.Strings;
+with Util.Files;
 with Util.Log.Loggers;
+with Ada.Directories;
 
 package body MAT.Symbols.Targets is
 
@@ -31,22 +34,32 @@ package body MAT.Symbols.Targets is
                    Path    : in String) is
    begin
       Log.Info ("Loading symbols from {0}", Path);
-
-      Bfd.Files.Open (Symbols.File, Path, "");
-      if Bfd.Files.Check_Format (Symbols.File, Bfd.Files.OBJECT) then
-         Bfd.Symbols.Read_Symbols (Symbols.File, Symbols.Symbols);
-      end if;
+--
+--        Bfd.Files.Open (Symbols.File, Path, "");
+--        if Bfd.Files.Check_Format (Symbols.File, Bfd.Files.OBJECT) then
+--           Bfd.Symbols.Read_Symbols (Symbols.File, Symbols.Symbols);
+--        end if;
    end Open;
 
    --  ------------------------------
    --  Load the symbol table for the associated region.
    --  ------------------------------
-   procedure Open (Symbols : in out Region_Symbols;
-                   Path    : in String) is
+   procedure Open (Symbols     : in out Region_Symbols;
+                   Path        : in String;
+                   Search_Path : in String) is
+      Pos : Natural;
    begin
       Log.Info ("Loading symbols from {0}", Path);
 
-      Bfd.Files.Open (Symbols.File, Path, "");
+      if Ada.Directories.Exists (Path) then
+         Bfd.Files.Open (Symbols.File, Path, "");
+      else
+         Pos := Util.Strings.Rindex (Path, '/');
+         if Pos > 0 then
+            Bfd.Files.Open (Symbols.File,
+              Util.Files.Find_File_Path (Path (Pos + 1 .. Path'Last), Search_Path));
+         end if;
+      end if;
       if Bfd.Files.Check_Format (Symbols.File, Bfd.Files.OBJECT) then
          Bfd.Symbols.Read_Symbols (Symbols.File, Symbols.Symbols);
       end if;
@@ -70,7 +83,8 @@ package body MAT.Symbols.Targets is
          Syms := Symbols_Maps.Element (Pos);
       end if;
       if Ada.Strings.Unbounded.Length (Region.Path) > 0 then
-         Open (Syms.Value.all, Ada.Strings.Unbounded.To_String (Region.Path));
+         Open (Syms.Value.all, Ada.Strings.Unbounded.To_String (Region.Path),
+               Ada.Strings.Unbounded.To_String (Symbols.Search_Path));
       end if;
    end Load_Symbols;
 
@@ -188,21 +202,21 @@ package body MAT.Symbols.Targets is
             end if;
          end;
       end if;
-      if Bfd.Files.Is_Open (Symbols.File) then
-         Text_Section := Bfd.Sections.Find_Section (Symbols.File, ".text");
-         Bfd.Symbols.Find_Nearest_Line (File    => Symbols.File,
-                                        Sec     => Text_Section,
-                                        Symbols => Symbols.Symbols,
-                                        Addr    => Bfd.Vma_Type (Addr),
-                                        Name    => Symbol.File,
-                                        Func    => Symbol.Name,
-                                        Line    => Symbol.Line);
-         Demangle (Symbols, Symbol);
-      else
+--        if Bfd.Files.Is_Open (Symbols.File) then
+--           Text_Section := Bfd.Sections.Find_Section (Symbols.File, ".text");
+--           Bfd.Symbols.Find_Nearest_Line (File    => Symbols.File,
+--                                          Sec     => Text_Section,
+--                                          Symbols => Symbols.Symbols,
+--                                          Addr    => Bfd.Vma_Type (Addr),
+--                                          Name    => Symbol.File,
+--                                          Func    => Symbol.Name,
+--                                          Line    => Symbol.Line);
+--           Demangle (Symbols, Symbol);
+--        else
          Symbol.Line := 0;
          Symbol.File := Ada.Strings.Unbounded.To_Unbounded_String ("");
          Symbol.Name := Ada.Strings.Unbounded.To_Unbounded_String ("");
-      end if;
+--        end if;
 
    exception
       when Bfd.NOT_FOUND =>
