@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-targets - Representation of target information
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,6 +49,9 @@ package MAT.Targets is
 
       --  Print the events as they are received.
       Print_Events : Boolean := False;
+
+      --  The library search path.
+      Search_Path  : Ada.Strings.Unbounded.Unbounded_String;
 
       --  Define the server listening address.
       Address      : GNAT.Sockets.Sock_Addr_Type := (Port => 4096, others => <>);
@@ -116,6 +119,10 @@ package MAT.Targets is
    --  Iterate over the list of connected processes and execute the <tt>Process</tt> procedure.
    procedure Iterator (Target  : in Target_Type;
                        Process : access procedure (Proc : in Target_Process_Type'Class));
+
+   --  Add a search path for the library and symbol loader.
+   procedure Add_Search_Path (Target : in out MAT.Targets.Target_Type;
+                              Path   : in String);
 
    --  Parse the command line arguments and configure the target instance.
    procedure Initialize_Options (Target  : in out Target_Type);
