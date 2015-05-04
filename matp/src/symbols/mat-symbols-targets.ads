@@ -41,8 +41,9 @@ package MAT.Symbols.Targets is
    type Region_Symbols_Access is access all Region_Symbols;
 
    --  Load the symbol table for the associated region.
-   procedure Open (Symbols : in out Region_Symbols;
-                   Path    : in String);
+   procedure Open (Symbols     : in out Region_Symbols;
+                   Path        : in String;
+                   Search_Path : in String);
 
    package Region_Symbols_Refs is
      new Util.Refs.References (Region_Symbols, Region_Symbols_Access);
