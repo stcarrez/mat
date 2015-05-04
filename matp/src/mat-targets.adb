@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  Clients - Abstract representation of client information
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -125,6 +125,7 @@ package body MAT.Targets is
          Process.Path := Path;
          Process.Symbols := MAT.Symbols.Targets.Target_Symbols_Refs.Create;
          Process.Symbols.Value.Console := Target.Console;
+         Process.Symbols.Value.Search_Path := Target.Options.Search_Path;
          Target.Processes.Insert (Pid, Process);
          Target.Console.Notice (MAT.Consoles.N_PID_INFO,
                                 "Process" & MAT.Types.Target_Process_Ref'Image (Pid) & " created");
