@@ -1,5 +1,5 @@
 /*  gp-malloc.c -- Malloc operations
---  Copyright (C) 2011, 2012, 2013, 2014 Stephane Carrez
+--  Copyright (C) 2011, 2012, 2013, 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 */
 
 #include "mat-config.h"
+#define _GNU_SOURCE 1
 #include <dlfcn.h>
 #include "mat-remote.h"
 #include "mat-probe.h"
@@ -50,11 +51,12 @@ static mat_free_t _free;
 # define LIBC_FREE_SYM     "free"
 #endif
 
-static void __attribute__ ((constructor)) init (void)
+static void
+load_symbols (void)
 {
-  _malloc = (mat_malloc_t) dlsym(RTLD_NEXT, LIBC_MALLOC_SYM);
-  _realloc = (mat_realloc_t) dlsym(RTLD_NEXT, LIBC_REALLOC_SYM);
-  _free = (mat_free_t) dlsym(RTLD_NEXT, LIBC_FREE_SYM);
+  _malloc = (mat_malloc_t) dlsym (RTLD_NEXT, LIBC_MALLOC_SYM);
+  _realloc = (mat_realloc_t) dlsym (RTLD_NEXT, LIBC_REALLOC_SYM);
+  _free = (mat_free_t) dlsym (RTLD_NEXT, LIBC_FREE_SYM);
 }
 
 /**
@@ -75,7 +77,7 @@ __libc_malloc (size_t size)
 
   if (_malloc == 0)
     {
-      _malloc = (mat_malloc_t) dlsym (RTLD_NEXT, LIBC_MALLOC_SYM);
+      load_symbols ();
     }
   
   /* Call the real memory allocator.  */
@@ -110,6 +112,10 @@ __libc_realloc (void *ptr, size_t size)
   /* Get the probe information.  */
   has_probe = mat_get_probe (&probe);
 
+  if (_realloc == 0)
+    {
+      load_symbols ();
+    }
   p = _realloc (ptr, size);
 
   if (has_probe)
@@ -149,6 +155,10 @@ __libc_free (void* ptr)
       mat_free_probe (&probe);
     }
 
+  if (_free == 0)
+    {
+      load_symbols ();
+    }
   if (_free != NULL)
     {
       _free (ptr);
