@@ -189,15 +189,30 @@ package body MAT.Targets is
    procedure Usage is
       use Ada.Text_IO;
    begin
-      Put_Line ("Usage: mat [-i] [-e] [-nw] [-ns] [-b [ip:]port] [file.mat]");
+      Put_Line ("Usage: mat [-i] [-e] [-nw] [-ns] [-b [ip:]port] [-s path] [file.mat]");
       Put_Line ("-i            Enable the interactive mode");
       Put_Line ("-e            Print the probe events as they are received");
       Put_Line ("-nw           Disable the graphical mode");
       Put_Line ("-b [ip:]port  Define the port and local address to bind");
       Put_Line ("-ns           Disable the automatic symbols loading");
+      Put_Line ("-s path       Search path to find shared libraries and load their symbols");
       Ada.Command_Line.Set_Exit_Status (2);
       raise Usage_Error;
    end Usage;
+
+   --  ------------------------------
+   --  Add a search path for the library and symbol loader.
+   --  ------------------------------
+   procedure Add_Search_Path (Target : in out MAT.Targets.Target_Type;
+                              Path   : in String) is
+   begin
+      if Ada.Strings.Unbounded.Length (Target.Options.Search_Path) > 0 then
+         Ada.Strings.Unbounded.Append (Target.Options.Search_Path, ";");
+         Ada.Strings.Unbounded.Append (Target.Options.Search_Path, Path);
+      else
+         Target.Options.Search_Path := Ada.Strings.Unbounded.To_Unbounded_String (Path);
+      end if;
+   end Add_Search_Path;
 
    --  ------------------------------
    --  Parse the command line arguments and configure the target instance.
@@ -208,7 +223,7 @@ package body MAT.Targets is
       GNAT.Command_Line.Initialize_Option_Scan (Stop_At_First_Non_Switch => True,
                                                 Section_Delimiters       => "targs");
       loop
-         case GNAT.Command_Line.Getopt ("i e nw ns b:") is
+         case GNAT.Command_Line.Getopt ("i e nw ns b: s:") is
             when ASCII.NUL =>
                exit;
 
@@ -227,6 +242,9 @@ package body MAT.Targets is
                else
                   Target.Options.Load_Symbols := False;
                end if;
+
+            when 's' =>
+               Add_Search_Path (Target, GNAT.Command_Line.Parameter);
 
             when '*' =>
                exit;
