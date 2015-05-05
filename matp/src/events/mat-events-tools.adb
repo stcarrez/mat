@@ -48,6 +48,28 @@ package body MAT.Events.Tools is
    end "<";
 
    --  ------------------------------
+   --  Collect statistics information about events.
+   --  ------------------------------
+   procedure Collect_Info (Into  : in out Event_Info_Type;
+                           Event : in MAT.Events.Target_Event_Type) is
+   begin
+      Into.Last_Event := Event;
+      if Event.Event = 2 then
+         Into.Malloc_Count := Into.Malloc_Count + 1;
+         Into.Alloc_Size := Into.Alloc_Size + Event.Size;
+
+      elsif Event.Event = 3 then
+         Into.Realloc_Count := Into.Realloc_Count + 1;
+         Into.Alloc_Size := Into.Alloc_Size + Event.Size;
+         Into.Free_Size := Into.Free_Size + Event.Old_Size;
+
+      elsif Event.Event = 4 then
+         Into.Free_Count := Into.Free_Count + 1;
+         Into.Free_Size := Into.Free_Size + Event.Size;
+      end if;
+   end Collect_Info;
+
+   --  ------------------------------
    --  Extract from the frame info map, the list of event info sorted on the count.
    --  ------------------------------
    procedure Build_Event_Info (Map  : in Frame_Event_Info_Map;
