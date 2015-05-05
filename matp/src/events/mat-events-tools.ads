@@ -36,8 +36,7 @@ package MAT.Events.Tools is
    type Event_Info_Type is record
       First_Event    : Target_Event_Type;
       Last_Event     : Target_Event_Type;
-      Frame_Addr     : MAT.Types.Target_Addr;
-      Count          : Natural;
+      Count          : Natural := 0;
       Malloc_Count   : Natural := 0;
       Realloc_Count  : Natural := 0;
       Free_Count     : Natural := 0;
