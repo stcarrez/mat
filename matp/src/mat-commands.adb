@@ -361,11 +361,11 @@ package body MAT.Commands is
          Console.Print_Field (MAT.Consoles.F_LEVEL, Natural'Image (Info.Key.Level));
          Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME,
                               MAT.Formats.Location (Symbol.File, Symbol.Line, Symbol.Name));
-         if Info.Info.Alloc_Size > Info.Info.Free_Size then
-            Console.Print_Size (MAT.Consoles.F_SIZE, Info.Info.Alloc_Size - Info.Info.Free_Size);
-         elsif Info.Info.Alloc_Size < Info.Info.Free_Size then
-            Console.Print_Size (MAT.Consoles.F_SIZE, Info.Info.Free_Size - Info.Info.Alloc_Size);
-         end if;
+         Console.Print_Field (MAT.Consoles.F_SIZE,
+                              MAT.Formats.Size (Info.Info.Alloc_Size, Info.Info.Free_Size));
+         Console.Print_Field (MAT.Consoles.F_COUNT,
+                              Info.Info.Count);
+
          Console.End_Row;
          MAT.Events.Tools.Frame_Info_Vectors.Next (Iter);
       end loop;
