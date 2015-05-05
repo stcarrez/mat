@@ -253,6 +253,17 @@ package body MAT.Events.Timelines is
          begin
             Info.Count      := Info.Count + 1;
             Info.Last_Event := Event;
+            if Event.Event = 2 then
+               Info.Malloc_Count := Info.Malloc_Count + 1;
+               Info.Alloc_Size := Info.Alloc_Size + Event.Size;
+            elsif Event.Event = 3 then
+               Info.Realloc_Count := Info.Realloc_Count + 1;
+               Info.Alloc_Size := Info.Alloc_Size + Event.Size;
+               Info.Free_Size := Info.Free_Size + Event.Old_Size;
+            elsif Event.Event = 4 then
+               Info.Free_Count := Info.Free_Count + 1;
+               Info.Free_Size := Info.Free_Size + Event.Size;
+            end if;
          end Update_Size;
 
       begin
@@ -266,7 +277,7 @@ package body MAT.Events.Timelines is
          begin
             for I in Backtrace'Range loop
                exit when I > Depth;
-               Key.Addr  := Backtrace (I);
+               Key.Addr  := Backtrace (Backtrace'Last - I + 1);
                Key.Level := I;
                declare
                   Pos : constant MAT.Events.Tools.Frame_Event_Info_Cursor
