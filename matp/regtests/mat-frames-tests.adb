@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-readers-tests -- Unit tests for MAT readers
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,7 @@ with Ada.Text_IO;
 with Ada.Directories;
 with Util.Test_Caller;
 
+with MAT.Events;
 with MAT.Frames.Print;
 with MAT.Readers.Streams.Files;
 package body MAT.Frames.Tests is
