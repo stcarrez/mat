@@ -44,6 +44,8 @@ with MAT.Events.Tools;
 with MAT.Events.Timelines;
 package body MAT.Commands is
 
+   use type MAT.Types.Target_Size;
+
    --  The logger
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Commands");
 
@@ -326,47 +328,46 @@ package body MAT.Commands is
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Frames  : MAT.Events.Tools.Frame_Event_Info_Map;
-      List    : MAT.Events.Tools.Event_Info_Vector;
-      Iter    : MAT.Events.Tools.Event_Info_Cursor;
+      List    : MAT.Events.Tools.Frame_Info_Vector;
+      Iter    : MAT.Events.Tools.Frame_Info_Cursor;
       Filter  : MAT.Expressions.Expression_Type;
       Depth   : Natural := 3;
       Symbol  : MAT.Symbols.Targets.Symbol_Info;
-      Info    : MAT.Events.Tools.Event_Info_Type;
+      Info    : MAT.Events.Tools.Frame_Info_Type;
    begin
       if Args'Length > 0 then
          Filter := MAT.Expressions.Parse (Args, Process.all'Access);
       end if;
       Console.Start_Title;
-      Console.Print_Title (MAT.Consoles.F_COUNT, "Count", 8);
-      Console.Print_Title (MAT.Consoles.F_EVENT, "Event", 9);
-      Console.Print_Title (MAT.Consoles.F_SIZE, "Size", 10);
+      Console.Print_Title (MAT.Consoles.F_LEVEL, "Level", 6);
       Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 50);
-      Console.Print_Title (MAT.Consoles.F_ID, "Id", 40);
+      Console.Print_Title (MAT.Consoles.F_SIZE, "Size", 10);
+      Console.Print_Title (MAT.Consoles.F_COUNT, "Count", 8);
       Console.End_Title;
 
       MAT.Events.Timelines.Find_Frames (Target => Process.Events.all,
                                         Filter => Filter,
                                         Depth  => Depth,
                                         Frames => Frames);
-      MAT.Events.Tools.Build_Event_Info (Frames, List);
+      MAT.Events.Tools.Build_Frame_Info (Frames, List);
       Iter := List.First;
-      while MAT.Events.Tools.Event_Info_Vectors.Has_Element (Iter) loop
-         Info := MAT.Events.Tools.Event_Info_Vectors.Element (Iter);
+      while MAT.Events.Tools.Frame_Info_Vectors.Has_Element (Iter) loop
+         Info := MAT.Events.Tools.Frame_Info_Vectors.Element (Iter);
          MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Process.Symbols.Value.all,
-                                                Addr    => Info.Frame_Addr,
+                                                Addr    => Info.Key.Addr,
                                                 Symbol  => Symbol);
 
          Console.Start_Row;
-         Console.Print_Field (MAT.Consoles.F_COUNT, Natural'Image (Info.Count));
-         Console.Print_Field (MAT.Consoles.F_EVENT,
-                              MAT.Formats.Event (Info.First_Event, MAT.Formats.BRIEF));
-         Console.Print_Size (MAT.Consoles.F_SIZE, Info.First_Event.Size);
+         Console.Print_Field (MAT.Consoles.F_LEVEL, Natural'Image (Info.Key.Level));
          Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME,
                               MAT.Formats.Location (Symbol.File, Symbol.Line, Symbol.Name));
-         Console.Print_Field (MAT.Consoles.F_ID,
-                              MAT.Formats.Event (Info.First_Event, Info.Last_Event));
+         if Info.Info.Alloc_Size > Info.Info.Free_Size then
+            Console.Print_Size (MAT.Consoles.F_SIZE, Info.Info.Alloc_Size - Info.Info.Free_Size);
+         elsif Info.Info.Alloc_Size < Info.Info.Free_Size then
+            Console.Print_Size (MAT.Consoles.F_SIZE, Info.Info.Free_Size - Info.Info.Alloc_Size);
+         end if;
          Console.End_Row;
-         MAT.Events.Tools.Event_Info_Vectors.Next (Iter);
+         MAT.Events.Tools.Frame_Info_Vectors.Next (Iter);
       end loop;
 
    exception
