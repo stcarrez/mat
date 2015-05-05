@@ -36,6 +36,16 @@ package body MAT.Events.Tools is
       raise Not_Found;
    end Find;
 
+   function "<" (Left, Right : in Frame_Key_Type) return Boolean is
+   begin
+      if Left.Addr < Right.Addr then
+         return True;
+      elsif Left.Addr > Right.Addr then
+         return False;
+      else
+         return Left.Level < Right.Level;
+      end if;
+   end "<";
 
    --  ------------------------------
    --  Extract from the frame info map, the list of event info sorted on the count.

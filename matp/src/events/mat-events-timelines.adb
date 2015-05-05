@@ -243,12 +243,13 @@ package body MAT.Events.Timelines is
       procedure Collect_Event (Event : in MAT.Events.Target_Event_Type);
 
       procedure Collect_Event (Event : in MAT.Events.Target_Event_Type) is
-         procedure Update_Size (Size : in MAT.Types.Target_Size;
+
+         procedure Update_Size (Key  : in MAT.Events.Tools.Frame_Key_Type;
                                 Info : in out MAT.Events.Tools.Event_Info_Type);
 
-         procedure Update_Size (Size : in MAT.Types.Target_Size;
+         procedure Update_Size (Key  : in MAT.Events.Tools.Frame_Key_Type;
                                 Info : in out MAT.Events.Tools.Event_Info_Type) is
-            pragma Unreferenced (Size);
+            pragma Unreferenced (Key);
          begin
             Info.Count      := Info.Count + 1;
             Info.Last_Event := Event;
@@ -261,12 +262,15 @@ package body MAT.Events.Timelines is
          end if;
          declare
             Backtrace : constant MAT.Frames.Frame_Table := MAT.Frames.Backtrace (Event.Frame);
+            Key       : MAT.Events.Tools.Frame_Key_Type;
          begin
             for I in Backtrace'Range loop
                exit when I > Depth;
+               Key.Addr  := Backtrace (I);
+               Key.Level := I;
                declare
                   Pos : constant MAT.Events.Tools.Frame_Event_Info_Cursor
-                    := Frames.Find (Backtrace (I));
+                    := Frames.Find (Key);
                begin
                   if MAT.Events.Tools.Frame_Event_Info_Maps.Has_Element (Pos) then
                      --  Increment the count and update the last event.
@@ -278,9 +282,9 @@ package body MAT.Events.Timelines is
                         --  Insert a new size with the event.
                         Info.First_Event := Event;
                         Info.Last_Event := Event;
-                        Info.Frame_Addr := Backtrace (I);
+                        Info.Frame_Addr := Key.Addr;
                         Info.Count := 1;
-                        Frames.Insert (Backtrace (I), Info);
+                        Frames.Insert (Key, Info);
                      end;
                   end if;
                end;

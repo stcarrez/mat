@@ -48,8 +48,17 @@ package MAT.Events.Tools is
    subtype Size_Event_Info_Map is Size_Event_Info_Maps.Map;
    subtype Size_Event_Info_Cursor is Size_Event_Info_Maps.Cursor;
 
+
+   --  The frame key is composed of the frame address and the frame level.
+   type Frame_Key_Type is record
+      Addr  : MAT.Types.Target_Addr;
+      Level : Natural;
+   end record;
+   function "<" (Left, Right : in Frame_Key_Type) return Boolean;
+
+   --  Ordered map to collect event info statistics by <frame, level> pair.
    package Frame_Event_Info_Maps is
-     new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Addr,
+     new Ada.Containers.Ordered_Maps (Key_Type     => Frame_Key_Type,
                                       Element_Type => Event_Info_Type);
    subtype Frame_Event_Info_Map is Frame_Event_Info_Maps.Map;
    subtype Frame_Event_Info_Cursor is Frame_Event_Info_Maps.Cursor;
