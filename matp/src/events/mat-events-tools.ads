@@ -34,12 +34,15 @@ package MAT.Events.Tools is
 
 
    type Event_Info_Type is record
-      First_Event : Target_Event_Type;
-      Last_Event  : Target_Event_Type;
-      Frame_Addr  : MAT.Types.Target_Addr;
-      Count       : Natural;
-      Alloc_Size  : MAT.Types.Target_Size := 0;
-      Free_Size   : MAT.Types.Target_Size := 0;
+      First_Event    : Target_Event_Type;
+      Last_Event     : Target_Event_Type;
+      Frame_Addr     : MAT.Types.Target_Addr;
+      Count          : Natural;
+      Malloc_Count   : Natural := 0;
+      Realloc_Count  : Natural := 0;
+      Free_Count     : Natural := 0;
+      Alloc_Size     : MAT.Types.Target_Size := 0;
+      Free_Size      : MAT.Types.Target_Size := 0;
    end record;
 
    package Size_Event_Info_Maps is
@@ -83,5 +86,10 @@ package MAT.Events.Tools is
                                  Element_Type => Frame_Info_Type);
    subtype Frame_Info_Vector is Frame_Info_Vectors.Vector;
    subtype Frame_Info_Cursor is Frame_Info_Vectors.Cursor;
+
+   --  Extract from the frame info map, the list of frame event info sorted
+   --  on the frame level and slot size.
+   procedure Build_Frame_Info (Map  : in Frame_Event_Info_Map;
+                               List : in out Frame_Info_Vector);
 
 end MAT.Events.Tools;
