@@ -22,7 +22,7 @@ private with Util.Concurrent.Counters;
 
 with MAT.Types;
 with MAT.Memory;
-with MAT.Events.Targets;
+with MAT.Events;
 package MAT.Expressions is
 
    type Resolver_Type is limited interface;
