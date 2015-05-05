@@ -45,6 +45,10 @@ package MAT.Events.Tools is
       Free_Size      : MAT.Types.Target_Size := 0;
    end record;
 
+   --  Collect statistics information about events.
+   procedure Collect_Info (Into  : in out Event_Info_Type;
+                           Event : in MAT.Events.Target_Event_Type);
+
    package Size_Event_Info_Maps is
      new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Size,
                                       Element_Type => Event_Info_Type);
