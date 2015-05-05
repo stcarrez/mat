@@ -53,17 +53,18 @@ package body MAT.Events.Tools is
    procedure Collect_Info (Into  : in out Event_Info_Type;
                            Event : in MAT.Events.Target_Event_Type) is
    begin
+      Into.Count := Into.Count + 1;
       Into.Last_Event := Event;
-      if Event.Event = 2 then
+      if Event.Index = MAT.Events.MSG_MALLOC then
          Into.Malloc_Count := Into.Malloc_Count + 1;
          Into.Alloc_Size := Into.Alloc_Size + Event.Size;
 
-      elsif Event.Event = 3 then
+      elsif Event.Index = MAT.Events.MSG_REALLOC then
          Into.Realloc_Count := Into.Realloc_Count + 1;
          Into.Alloc_Size := Into.Alloc_Size + Event.Size;
          Into.Free_Size := Into.Free_Size + Event.Old_Size;
 
-      elsif Event.Event = 4 then
+      elsif Event.Index = MAT.Events.MSG_FREE then
          Into.Free_Count := Into.Free_Count + 1;
          Into.Free_Size := Into.Free_Size + Event.Size;
       end if;
