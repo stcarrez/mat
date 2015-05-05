@@ -18,12 +18,38 @@
 with Interfaces;
 with Ada.Strings.Unbounded;
 with MAT.Types;
+with MAT.Frames;
 with Util.Strings;
 package MAT.Events is
 
    use Interfaces;
 
    type Event_Id_Type is new Natural;
+
+   type Probe_Index_Type is (MSG_BEGIN,
+                             MSG_END,
+                             MSG_LIBRARY,
+                             MSG_MALLOC,
+                             MSG_FREE,
+                             MSG_REALLOC
+                            );
+
+   type Target_Event_Type is record
+      Id       : Event_Id_Type;
+      Next_Id  : Event_Id_Type := 0;
+      Prev_Id  : Event_Id_Type := 0;
+      Event    : MAT.Types.Uint16;
+      Index    : Probe_Index_Type;
+      Time     : MAT.Types.Target_Tick_Ref;
+      Thread   : MAT.Types.Target_Thread_Ref;
+      Frame    : MAT.Frames.Frame_Type;
+      Addr     : MAT.Types.Target_Addr;
+      Size     : MAT.Types.Target_Size;
+      Old_Addr : MAT.Types.Target_Addr;
+      Old_Size : MAT.Types.Target_Size;
+   end record;
+
+--     subtype Target_Event is Probe_Event_Type;
 
    type Attribute_Type is (T_UINT8,
                            T_UINT16,
@@ -61,7 +87,7 @@ package MAT.Events is
    type Event_Description_Access is access all Event_Description;
 
 --     subtype Addr is MAT.Types.Uint32;
-   type Frame_Table is array (Natural range <>) of MAT.Types.Target_Addr;
+   subtype Frame_Table is MAT.Frames.Frame_Table;
 
    type Rusage_Info is record
       Minflt : Unsigned_32;

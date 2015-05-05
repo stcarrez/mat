@@ -475,19 +475,19 @@ yy.value_stack(yy.tos).high));
 when 18 => -- #line 134
 
     		  
-yyval.expr := MAT.Expressions.Create_Event_Type (MAT.Events.Targets.MSG_MALLOC);
+yyval.expr := MAT.Expressions.Create_Event_Type (MAT.Events.MSG_MALLOC);
     		
 
 when 19 => -- #line 139
 
     		  
-yyval.expr := MAT.Expressions.Create_Event_Type (MAT.Events.Targets.MSG_FREE);
+yyval.expr := MAT.Expressions.Create_Event_Type (MAT.Events.MSG_FREE);
     		
 
 when 20 => -- #line 144
 
     		  
-yyval.expr := MAT.Expressions.Create_Event_Type (MAT.Events.Targets.MSG_REALLOC);
+yyval.expr := MAT.Expressions.Create_Event_Type (MAT.Events.MSG_REALLOC);
     		
 
 when 21 => -- #line 149

@@ -26,15 +26,15 @@ package body MAT.Events.Timelines is
                       Into   : in out Timeline_Info_Vector) is
       use type MAT.Types.Target_Time;
       use type MAT.Types.Target_Size;
-      procedure Collect (Event : in MAT.Events.Targets.Probe_Event_Type);
+      procedure Collect (Event : in MAT.Events.Target_Event_Type);
 
-      First_Event : MAT.Events.Targets.Probe_Event_Type;
-      Last_Event  : MAT.Events.Targets.Probe_Event_Type;
-      Prev_Event  : MAT.Events.Targets.Probe_Event_Type;
+      First_Event : MAT.Events.Target_Event_Type;
+      Last_Event  : MAT.Events.Target_Event_Type;
+      Prev_Event  : MAT.Events.Target_Event_Type;
       Info        : Timeline_Info;
       First_Id    : MAT.Events.Event_Id_Type;
 
-      procedure Collect (Event : in MAT.Events.Targets.Probe_Event_Type) is
+      procedure Collect (Event : in MAT.Events.Target_Event_Type) is
          Dt : constant MAT.Types.Target_Time := Event.Time - Prev_Event.Time;
       begin
          if Dt > 500_000 then
@@ -81,28 +81,28 @@ package body MAT.Events.Timelines is
    --  Collect at most <tt>Max</tt> events.
    --  ------------------------------
    procedure Find_Related (Target : in out MAT.Events.Targets.Target_Events'Class;
-                           Event  : in MAT.Events.Targets.Probe_Event_Type;
+                           Event  : in MAT.Events.Target_Event_Type;
                            Max    : in Positive;
                            List   : in out MAT.Events.Targets.Target_Event_Vector) is
 
-      procedure Collect_Free (Event : in MAT.Events.Targets.Probe_Event_Type);
-      procedure Collect_Alloc (Event : in MAT.Events.Targets.Probe_Event_Type);
+      procedure Collect_Free (Event : in MAT.Events.Target_Event_Type);
+      procedure Collect_Alloc (Event : in MAT.Events.Target_Event_Type);
 
       First_Id    : MAT.Events.Event_Id_Type;
       Last_Id     : MAT.Events.Event_Id_Type;
-      First_Event : MAT.Events.Targets.Probe_Event_Type;
-      Last_Event  : MAT.Events.Targets.Probe_Event_Type;
+      First_Event : MAT.Events.Target_Event_Type;
+      Last_Event  : MAT.Events.Target_Event_Type;
       Addr        : MAT.Types.Target_Addr := Event.Addr;
 
       Done : exception;
 
-      procedure Collect_Free (Event : in MAT.Events.Targets.Probe_Event_Type) is
+      procedure Collect_Free (Event : in MAT.Events.Target_Event_Type) is
       begin
-         if Event.Index = MAT.Events.Targets.MSG_FREE and then Event.Addr = Addr then
+         if Event.Index = MAT.Events.MSG_FREE and then Event.Addr = Addr then
             List.Append (Event);
             raise Done;
          end if;
-         if Event.Index = MAT.Events.Targets.MSG_REALLOC and then Event.Old_Addr = Addr then
+         if Event.Index = MAT.Events.MSG_REALLOC and then Event.Old_Addr = Addr then
             List.Append (Event);
             if Positive (List.Length) >= Max then
                raise Done;
@@ -111,13 +111,13 @@ package body MAT.Events.Timelines is
          end if;
       end Collect_Free;
 
-      procedure Collect_Alloc (Event : in MAT.Events.Targets.Probe_Event_Type) is
+      procedure Collect_Alloc (Event : in MAT.Events.Target_Event_Type) is
       begin
-         if Event.Index = MAT.Events.Targets.MSG_MALLOC and then Event.Addr = Addr then
+         if Event.Index = MAT.Events.MSG_MALLOC and then Event.Addr = Addr then
             List.Append (Event);
             raise Done;
          end if;
-         if Event.Index = MAT.Events.Targets.MSG_REALLOC and then Event.Addr = Addr then
+         if Event.Index = MAT.Events.MSG_REALLOC and then Event.Addr = Addr then
             List.Append (Event);
             if Positive (List.Length) >= Max then
                raise Done;
@@ -129,7 +129,7 @@ package body MAT.Events.Timelines is
    begin
       Target.Get_Limits (First_Event, Last_Event);
       First_Id := Event.Id;
-      if Event.Index = MAT.Events.Targets.MSG_FREE then
+      if Event.Index = MAT.Events.MSG_FREE then
          --  Search backward for MSG_MALLOC and MSG_REALLOC.
          First_Id := First_Id - 1;
          while First_Id > First_Event.Id loop
@@ -167,9 +167,9 @@ package body MAT.Events.Timelines is
    procedure Find_Sizes (Target : in out MAT.Events.Targets.Target_Events'Class;
                          Filter : in MAT.Expressions.Expression_Type;
                          Sizes  : in out MAT.Events.Targets.Size_Event_Info_Map) is
-      procedure Collect_Event (Event : in MAT.Events.Targets.Target_Event);
+      procedure Collect_Event (Event : in MAT.Events.Target_Event_Type);
 
-      procedure Collect_Event (Event : in MAT.Events.Targets.Target_Event) is
+      procedure Collect_Event (Event : in MAT.Events.Target_Event_Type) is
          procedure Update_Size (Size : in MAT.Types.Target_Size;
                                 Info : in out MAT.Events.Targets.Event_Info_Type);
 
@@ -179,9 +179,9 @@ package body MAT.Events.Timelines is
          begin
             Info.Count      := Info.Count + 1;
             Info.Last_Event := Event;
-            if Event.Index = MAT.Events.Targets.MSG_MALLOC then
+            if Event.Index = MAT.Events.MSG_MALLOC then
                Info.Alloc_Size := Info.Alloc_Size + Event.Size;
-            elsif Event.Index = MAT.Events.Targets.MSG_REALLOC then
+            elsif Event.Index = MAT.Events.MSG_REALLOC then
                Info.Alloc_Size := Info.Alloc_Size + Event.Size;
                Info.Free_Size := Info.Alloc_Size + Event.Old_Size;
             else
@@ -191,9 +191,9 @@ package body MAT.Events.Timelines is
 
       begin
          --  Look for malloc or realloc events which are selected by the filter.
-         if (Event.Index /= MAT.Events.Targets.MSG_MALLOC
-             and Event.Index /= MAT.Events.Targets.MSG_FREE
-             and Event.Index /= MAT.Events.Targets.MSG_REALLOC)
+         if (Event.Index /= MAT.Events.MSG_MALLOC
+             and Event.Index /= MAT.Events.MSG_FREE
+             and Event.Index /= MAT.Events.MSG_REALLOC)
            or else not Filter.Is_Selected (Event)
          then
             return;
@@ -212,9 +212,9 @@ package body MAT.Events.Timelines is
                   Info.First_Event := Event;
                   Info.Last_Event := Event;
                   Info.Count := 1;
-                  if Event.Index = MAT.Events.Targets.MSG_MALLOC then
+                  if Event.Index = MAT.Events.MSG_MALLOC then
                      Info.Alloc_Size := Event.Size;
-                  elsif Event.Index = MAT.Events.Targets.MSG_REALLOC then
+                  elsif Event.Index = MAT.Events.MSG_REALLOC then
                      Info.Alloc_Size := Event.Size;
                      Info.Free_Size := Event.Old_Size;
                   else
@@ -240,9 +240,9 @@ package body MAT.Events.Timelines is
                           Filter : in MAT.Expressions.Expression_Type;
                           Depth  : in Natural;
                           Frames : in out MAT.Events.Targets.Frame_Event_Info_Map) is
-      procedure Collect_Event (Event : in MAT.Events.Targets.Target_Event);
+      procedure Collect_Event (Event : in MAT.Events.Target_Event_Type);
 
-      procedure Collect_Event (Event : in MAT.Events.Targets.Target_Event) is
+      procedure Collect_Event (Event : in MAT.Events.Target_Event_Type) is
          procedure Update_Size (Size : in MAT.Types.Target_Size;
                                 Info : in out MAT.Events.Targets.Event_Info_Type);
 

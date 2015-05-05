@@ -68,11 +68,11 @@ package body MAT.Memory.Probes is
    procedure Register (Into  : in out MAT.Events.Probes.Probe_Manager_Type'Class;
                        Probe : in Memory_Probe_Type_Access) is
    begin
-      Into.Register_Probe (Probe.all'Access, "malloc", MAT.Events.Targets.MSG_MALLOC,
+      Into.Register_Probe (Probe.all'Access, "malloc", MAT.Events.MSG_MALLOC,
                            Memory_Attributes'Access);
-      Into.Register_Probe (Probe.all'Access, "free", MAT.Events.Targets.MSG_FREE,
+      Into.Register_Probe (Probe.all'Access, "free", MAT.Events.MSG_FREE,
                            Memory_Attributes'Access);
-      Into.Register_Probe (Probe.all'Access, "realloc", MAT.Events.Targets.MSG_REALLOC,
+      Into.Register_Probe (Probe.all'Access, "realloc", MAT.Events.MSG_REALLOC,
                            Memory_Attributes'Access);
    end Register;
 
@@ -118,28 +118,29 @@ package body MAT.Memory.Probes is
    procedure Extract (Probe   : in Memory_Probe_Type;
                       Params  : in MAT.Events.Const_Attribute_Table_Access;
                       Msg     : in out MAT.Readers.Message_Type;
-                      Event   : in out MAT.Events.Targets.Probe_Event_Type) is
+                      Event   : in out MAT.Events.Target_Event_Type) is
+      pragma Unreferenced (Probe);
    begin
       case Event.Index is
-         when MAT.Events.Targets.MSG_MALLOC =>
+         when MAT.Events.MSG_MALLOC =>
             Unmarshall_Allocation (Msg, Event.Size, Event.Addr, Event.Old_Addr, Params.all);
 
-         when MAT.Events.Targets.MSG_FREE =>
+         when MAT.Events.MSG_FREE =>
             Unmarshall_Allocation (Msg, Event.Size, Event.Addr, Event.Old_Addr, Params.all);
 
-         when MAT.Events.Targets.MSG_REALLOC =>
+         when MAT.Events.MSG_REALLOC =>
             Unmarshall_Allocation (Msg, Event.Size, Event.Addr, Event.Old_Addr, Params.all);
 
          when others =>
             Log.Error ("Invalid event {0} for memory extract probe",
-                       MAT.Events.Targets.Probe_Index_Type'Image (Event.Index));
+                       MAT.Events.Probe_Index_Type'Image (Event.Index));
             raise Program_Error;
 
       end case;
    end Extract;
 
    procedure Execute (Probe : in Memory_Probe_Type;
-                      Event : in out MAT.Events.Targets.Probe_Event_Type) is
+                      Event : in out MAT.Events.Target_Event_Type) is
       Slot     : Allocation;
    begin
       Slot.Size   := Event.Size;
@@ -148,21 +149,21 @@ package body MAT.Memory.Probes is
       Slot.Frame  := Event.Frame;
       Slot.Event  := Event.Id;
       case Event.Index is
-         when MAT.Events.Targets.MSG_MALLOC =>
+         when MAT.Events.MSG_MALLOC =>
             Probe.Data.Probe_Malloc (Event.Addr, Slot);
 
-         when MAT.Events.Targets.MSG_FREE =>
+         when MAT.Events.MSG_FREE =>
             Probe.Data.Probe_Free (Event.Addr, Slot, Event.Size, Event.Prev_Id);
             Probe.Update_Event (Event.Id, Event.Size, Event.Prev_Id);
 
-         when MAT.Events.Targets.MSG_REALLOC =>
+         when MAT.Events.MSG_REALLOC =>
             Probe.Data.Probe_Realloc (Event.Addr, Event.Old_Addr, Slot,
                                       Event.Old_Size, Event.Prev_Id);
             Probe.Update_Event (Event.Id, Event.Old_Size, Event.Prev_Id);
 
          when others =>
             Log.Error ("Invalid event {0} for memory execute probe",
-                       MAT.Events.Targets.Probe_Index_Type'Image (Event.Index));
+                       MAT.Events.Probe_Index_Type'Image (Event.Index));
             raise Program_Error;
 
       end case;

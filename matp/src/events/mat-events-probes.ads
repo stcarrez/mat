@@ -28,8 +28,6 @@ with MAT.Readers;
 with MAT.Frames;
 package MAT.Events.Probes is
 
-   subtype Probe_Event_Type is MAT.Events.Targets.Probe_Event_Type;
-
    -----------------
    --  Abstract probe definition
    -----------------
@@ -40,10 +38,10 @@ package MAT.Events.Probes is
    procedure Extract (Probe  : in Probe_Type;
                       Params : in MAT.Events.Const_Attribute_Table_Access;
                       Msg    : in out MAT.Readers.Message_Type;
-                      Event  : in out Probe_Event_Type) is abstract;
+                      Event  : in out Target_Event_Type) is abstract;
 
    procedure Execute (Probe : in Probe_Type;
-                      Event : in out Probe_Event_Type) is abstract;
+                      Event : in out Target_Event_Type) is abstract;
 
    --  Update the Size and Prev_Id information in the event identified by <tt>Id</tt>.
    --  Update the event represented by <tt>Prev_Id</tt> so that its Next_Id refers
@@ -69,7 +67,7 @@ package MAT.Events.Probes is
    procedure Register_Probe (Into   : in out Probe_Manager_Type;
                              Probe  : in Probe_Type_Access;
                              Name   : in String;
-                             Id     : in MAT.Events.Targets.Probe_Index_Type;
+                             Id     : in MAT.Events.Probe_Index_Type;
                              Model  : in MAT.Events.Const_Attribute_Table_Access);
 
    procedure Dispatch_Message (Client : in out Probe_Manager_Type;
@@ -103,7 +101,7 @@ private
    --  Record a probe
    type Probe_Handler is record
       Probe       : Probe_Type_Access;
-      Id          : MAT.Events.Targets.Probe_Index_Type;
+      Id          : MAT.Events.Probe_Index_Type;
       Attributes  : MAT.Events.Const_Attribute_Table_Access;
       Mapping     : MAT.Events.Attribute_Table_Ptr;
    end record;
@@ -131,7 +129,7 @@ private
       Probe       : MAT.Events.Attribute_Table_Ptr;
       Frame       : access MAT.Events.Frame_Info;
       Events      : MAT.Events.Targets.Target_Events_Access;
-      Event       : Probe_Event_Type;
+      Event       : Target_Event_Type;
       Frames      : MAT.Frames.Frame_Type;
    end record;
 

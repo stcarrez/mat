@@ -45,15 +45,15 @@ package MAT.Formats is
                       Func : in Ada.Strings.Unbounded.Unbounded_String) return String;
 
    --  Format an event range description.
-   function Event (First : in MAT.Events.Targets.Probe_Event_Type;
-                   Last  : in MAT.Events.Targets.Probe_Event_Type) return String;
+   function Event (First : in MAT.Events.Target_Event_Type;
+                   Last  : in MAT.Events.Target_Event_Type) return String;
 
    --  Format a short description of the event.
-   function Event (Item : in MAT.Events.Targets.Probe_Event_Type;
+   function Event (Item : in MAT.Events.Target_Event_Type;
                    Mode : in Format_Type := NORMAL) return String;
 
    --  Format a short description of the event.
-   function Event (Item       : in MAT.Events.Targets.Probe_Event_Type;
+   function Event (Item       : in MAT.Events.Target_Event_Type;
                    Related    : in MAT.Events.Targets.Target_Event_Vector;
                    Start_Time : in MAT.Types.Target_Tick_Ref) return String;
 

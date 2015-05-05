@@ -92,7 +92,7 @@ package body MAT.Targets.Probes is
    procedure Probe_Begin (Probe : in Process_Probe_Type;
                           Defs  : in MAT.Events.Attribute_Table;
                           Msg   : in out MAT.Readers.Message;
-                          Event : in out MAT.Events.Targets.Probe_Event_Type) is
+                          Event : in out MAT.Events.Target_Event_Type) is
       use type MAT.Types.Target_Addr;
 
       Pid  : MAT.Types.Target_Process_Ref := 0;
@@ -138,7 +138,7 @@ package body MAT.Targets.Probes is
    procedure Probe_Library (Probe : in Process_Probe_Type;
                             Defs  : in MAT.Events.Attribute_Table;
                             Msg   : in out MAT.Readers.Message;
-                            Event : in out MAT.Events.Targets.Probe_Event_Type) is
+                            Event : in out MAT.Events.Target_Event_Type) is
       use type MAT.Types.Target_Addr;
 
       Count : MAT.Types.Target_Size := 0;
@@ -226,18 +226,18 @@ package body MAT.Targets.Probes is
    procedure Extract (Probe  : in Process_Probe_Type;
                       Params : in MAT.Events.Const_Attribute_Table_Access;
                       Msg    : in out MAT.Readers.Message_Type;
-                      Event  : in out MAT.Events.Targets.Probe_Event_Type) is
-      use type MAT.Events.Targets.Probe_Index_Type;
+                      Event  : in out MAT.Events.Target_Event_Type) is
+      use type MAT.Events.Probe_Index_Type;
    begin
-      if Event.Index = MAT.Events.Targets.MSG_BEGIN then
+      if Event.Index = MAT.Events.MSG_BEGIN then
          Probe.Probe_Begin (Params.all, Msg, Event);
-      elsif Event.Index = MAT.Events.Targets.MSG_LIBRARY then
+      elsif Event.Index = MAT.Events.MSG_LIBRARY then
          Probe.Probe_Library (Params.all, Msg, Event);
       end if;
    end Extract;
 
    procedure Execute (Probe : in Process_Probe_Type;
-                      Event : in out MAT.Events.Targets.Probe_Event_Type) is
+                      Event : in out MAT.Events.Target_Event_Type) is
    begin
       null;
    end Execute;
@@ -249,11 +249,11 @@ package body MAT.Targets.Probes is
                        Probe : in Process_Probe_Type_Access) is
    begin
       Probe.Manager := Into'Unchecked_Access;
-      Into.Register_Probe (Probe.all'Access, "begin", MAT.Events.Targets.MSG_BEGIN,
+      Into.Register_Probe (Probe.all'Access, "begin", MAT.Events.MSG_BEGIN,
                            Process_Attributes'Access);
-      Into.Register_Probe (Probe.all'Access, "end", MAT.Events.Targets.MSG_END,
+      Into.Register_Probe (Probe.all'Access, "end", MAT.Events.MSG_END,
                            Process_Attributes'Access);
-      Into.Register_Probe (Probe.all'Access, "shlib", MAT.Events.Targets.MSG_LIBRARY,
+      Into.Register_Probe (Probe.all'Access, "shlib", MAT.Events.MSG_LIBRARY,
                            Library_Attributes'Access);
    end Register;
 

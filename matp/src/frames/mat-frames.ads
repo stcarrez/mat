@@ -16,14 +16,15 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with MAT.Types;
-with MAT.Events;
+--  with MAT.Events;
 package MAT.Frames is
 
    Not_Found : exception;
 
    type Frame_Type is private;
+   type Frame_Table is array (Natural range <>) of MAT.Types.Target_Addr;
 
-   subtype Frame_Table is MAT.Events.Frame_Table;
+--     subtype Frame_Table is MAT.Events.Frame_Table;
 
    --  Return the parent frame.
    function Parent (Frame : in Frame_Type) return Frame_Type;

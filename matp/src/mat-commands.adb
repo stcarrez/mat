@@ -474,7 +474,7 @@ package body MAT.Commands is
          declare
             use type MAT.Types.Target_Tick_Ref;
 
-            Event : constant MAT.Events.Targets.Probe_Event_Type
+            Event : constant MAT.Events.Target_Event_Type
               := MAT.Events.Targets.Target_Event_Vectors.Element (Iter);
             Time  : constant MAT.Types.Target_Tick_Ref := Event.Time - Start;
          begin
@@ -508,7 +508,7 @@ package body MAT.Commands is
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Id      : MAT.Events.Event_Id_Type;
-      Event   : MAT.Events.Targets.Probe_Event_Type;
+      Event   : MAT.Events.Target_Event_Type;
       Start, Finish : MAT.Types.Target_Tick_Ref;
       Related : MAT.Events.Targets.Target_Event_Vector;
    begin
@@ -653,8 +653,8 @@ package body MAT.Commands is
 
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
-      Start   : MAT.Events.Targets.Probe_Event_Type;
-      Finish  : MAT.Events.Targets.Probe_Event_Type;
+      Start   : MAT.Events.Target_Event_Type;
+      Finish  : MAT.Events.Target_Event_Type;
       Maps    : MAT.Memory.Region_Info_Map;
       Stats   : MAT.Memory.Targets.Memory_Stat;
    begin

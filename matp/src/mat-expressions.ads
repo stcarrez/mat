@@ -84,7 +84,7 @@ package MAT.Expressions is
                            Max : in MAT.Types.Target_Thread_Ref) return Expression_Type;
 
    --  Create a event type expression check.
-   function Create_Event_Type (Event_Kind : in MAT.Events.Targets.Probe_Index_Type)
+   function Create_Event_Type (Event_Kind : in MAT.Events.Probe_Index_Type)
                                return Expression_Type;
 
    --  Create an expression node to keep allocation events which don't have any associated free.
@@ -99,7 +99,7 @@ package MAT.Expressions is
    --  Evaluate the expression to check if the event described by the
    --  context is selected.  Returns True if the event is selected.
    function Is_Selected (Node       : in Expression_Type;
-                         Event      : in MAT.Events.Targets.Probe_Event_Type) return Boolean;
+                         Event      : in MAT.Events.Target_Event_Type) return Boolean;
 
    --  Parse the string and return the expression tree.
    function Parse (Expr     : in String;
@@ -165,7 +165,7 @@ private
             Max_Event : MAT.Events.Event_Id_Type;
 
          when N_TYPE =>
-            Event_Kind : MAT.Events.Targets.Probe_Index_Type;
+            Event_Kind : MAT.Events.Probe_Index_Type;
 
          when others =>
             null;
@@ -181,7 +181,7 @@ private
    --  Evaluate the expression to check if the event described by the
    --  context is selected.  Returns True if the event is selected.
    function Is_Selected (Node       : in Node_Type;
-                         Event      : in MAT.Events.Targets.Probe_Event_Type) return Boolean;
+                         Event      : in MAT.Events.Target_Event_Type) return Boolean;
 
    type Expression_Type is new Ada.Finalization.Controlled with record
       Node : Node_Type_Access;

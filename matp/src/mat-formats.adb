@@ -26,11 +26,11 @@ package body MAT.Formats is
 
    function Location (File : in Ada.Strings.Unbounded.Unbounded_String) return String;
 
-   function Event_Malloc (Item       : in MAT.Events.Targets.Probe_Event_Type;
+   function Event_Malloc (Item       : in MAT.Events.Target_Event_Type;
                           Related    : in MAT.Events.Targets.Target_Event_Vector;
                           Start_Time : in MAT.Types.Target_Tick_Ref) return String;
 
-   function Event_Free (Item       : in MAT.Events.Targets.Probe_Event_Type;
+   function Event_Free (Item       : in MAT.Events.Target_Event_Type;
                         Related    : in MAT.Events.Targets.Target_Event_Vector;
                         Start_Time : in MAT.Types.Target_Tick_Ref) return String;
 
@@ -161,8 +161,8 @@ package body MAT.Formats is
    --  ------------------------------
    --  Format an event range description.
    --  ------------------------------
-   function Event (First : in MAT.Events.Targets.Probe_Event_Type;
-                   Last  : in MAT.Events.Targets.Probe_Event_Type) return String is
+   function Event (First : in MAT.Events.Target_Event_Type;
+                   Last  : in MAT.Events.Target_Event_Type) return String is
       use type MAT.Events.Event_Id_Type;
 
       Id1 : constant String := MAT.Events.Event_Id_Type'Image (First.Id);
@@ -178,19 +178,19 @@ package body MAT.Formats is
    --  ------------------------------
    --  Format a short description of the event.
    --  ------------------------------
-   function Event (Item : in MAT.Events.Targets.Probe_Event_Type;
+   function Event (Item : in MAT.Events.Target_Event_Type;
                    Mode : in Format_Type := NORMAL) return String is
       use type MAT.Types.Target_Addr;
    begin
       case Item.Index is
-         when MAT.Events.Targets.MSG_MALLOC =>
+         when MAT.Events.MSG_MALLOC =>
             if Mode = BRIEF then
                return "malloc";
             else
                return "malloc(" & Size (Item.Size) & ") = " & Addr (Item.Addr);
             end if;
 
-         when MAT.Events.Targets.MSG_REALLOC =>
+         when MAT.Events.MSG_REALLOC =>
             if Mode = BRIEF then
                if Item.Old_Addr = 0 then
                   return "realloc";
@@ -207,31 +207,31 @@ package body MAT.Formats is
                end if;
             end if;
 
-         when MAT.Events.Targets.MSG_FREE =>
+         when MAT.Events.MSG_FREE =>
             if Mode = BRIEF then
                return "free";
             else
                return "free(" & Addr (Item.Addr) & "), " & Size (Item.Size);
             end if;
 
-         when MAT.Events.Targets.MSG_BEGIN =>
+         when MAT.Events.MSG_BEGIN =>
             return "begin";
 
-         when MAT.Events.Targets.MSG_END =>
+         when MAT.Events.MSG_END =>
             return "end";
 
-         when MAT.Events.Targets.MSG_LIBRARY =>
+         when MAT.Events.MSG_LIBRARY =>
             return "library";
 
       end case;
    end Event;
 
-   function Event_Malloc (Item       : in MAT.Events.Targets.Probe_Event_Type;
+   function Event_Malloc (Item       : in MAT.Events.Target_Event_Type;
                           Related    : in MAT.Events.Targets.Target_Event_Vector;
                           Start_Time : in MAT.Types.Target_Tick_Ref) return String is
-      Free_Event : MAT.Events.Targets.Probe_Event_Type;
+      Free_Event : MAT.Events.Target_Event_Type;
    begin
-      Free_Event := MAT.Events.Targets.Find (Related, MAT.Events.Targets.MSG_FREE);
+      Free_Event := MAT.Events.Targets.Find (Related, MAT.Events.MSG_FREE);
 
       return Size (Item.Size) & " bytes allocated after " & Duration (Item.Time - Start_Time)
         & ", freed " & Duration (Free_Event.Time - Item.Time)
@@ -244,12 +244,12 @@ package body MAT.Formats is
 
    end Event_Malloc;
 
-   function Event_Free (Item       : in MAT.Events.Targets.Probe_Event_Type;
+   function Event_Free (Item       : in MAT.Events.Target_Event_Type;
                         Related    : in MAT.Events.Targets.Target_Event_Vector;
                         Start_Time : in MAT.Types.Target_Tick_Ref) return String is
-      Alloc_Event : MAT.Events.Targets.Probe_Event_Type;
+      Alloc_Event : MAT.Events.Target_Event_Type;
    begin
-      Alloc_Event := MAT.Events.Targets.Find (Related, MAT.Events.Targets.MSG_MALLOC);
+      Alloc_Event := MAT.Events.Targets.Find (Related, MAT.Events.MSG_MALLOC);
 
       return Size (Alloc_Event.Size) & " bytes freed after " & Duration (Item.Time - Start_Time)
         & ", alloc'ed for " & Duration (Item.Time - Alloc_Event.Time)
@@ -264,27 +264,27 @@ package body MAT.Formats is
    --  ------------------------------
    --  Format a short description of the event.
    --  ------------------------------
-   function Event (Item       : in MAT.Events.Targets.Probe_Event_Type;
+   function Event (Item       : in MAT.Events.Target_Event_Type;
                    Related    : in MAT.Events.Targets.Target_Event_Vector;
                    Start_Time : in MAT.Types.Target_Tick_Ref) return String is
    begin
       case Item.Index is
-         when MAT.Events.Targets.MSG_MALLOC =>
+         when MAT.Events.MSG_MALLOC =>
             return Event_Malloc (Item, Related, Start_Time);
 
-         when MAT.Events.Targets.MSG_REALLOC =>
+         when MAT.Events.MSG_REALLOC =>
             return Size (Item.Size) & " bytes reallocated";
 
-         when MAT.Events.Targets.MSG_FREE =>
+         when MAT.Events.MSG_FREE =>
             return Event_Free (Item, Related, Start_Time);
 
-         when MAT.Events.Targets.MSG_BEGIN =>
+         when MAT.Events.MSG_BEGIN =>
             return "Begin event";
 
-         when MAT.Events.Targets.MSG_END =>
+         when MAT.Events.MSG_END =>
             return "End event";
 
-         when MAT.Events.Targets.MSG_LIBRARY =>
+         when MAT.Events.MSG_LIBRARY =>
             return "Library information event";
 
       end case;

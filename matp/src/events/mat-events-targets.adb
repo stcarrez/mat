@@ -25,9 +25,9 @@ package body MAT.Events.Targets is
    --  Raise <tt>Not_Found</tt> if the list does not contain such event.
    --  ------------------------------
    function Find (List : in Target_Event_Vector;
-                  Kind : in Probe_Index_Type) return Probe_Event_Type is
+                  Kind : in Probe_Index_Type) return Target_Event_Type is
       Iter  : Target_Event_Cursor := List.First;
-      Event : Target_Event;
+      Event : Target_Event_Type;
    begin
       while Target_Event_Vectors.Has_Element (Iter) loop
          Event := Target_Event_Vectors.Element (Iter);
@@ -67,7 +67,7 @@ package body MAT.Events.Targets is
    --  Update the event instance to allocate the event Id.
    --  ------------------------------
    procedure Insert (Target : in out Target_Events;
-                     Event  : in out Probe_Event_Type) is
+                     Event  : in out Target_Event_Type) is
    begin
       Target.Events.Insert (Event);
       Util.Concurrent.Counters.Increment (Target.Event_Count);
@@ -108,8 +108,8 @@ package body MAT.Events.Targets is
    --  Get the first and last event that have been received.
    --  ------------------------------
    procedure Get_Limits (Target : in out Target_Events;
-                         First  : out Probe_Event_Type;
-                         Last   : out Probe_Event_Type) is
+                         First  : out Target_Event_Type;
+                         Last   : out Target_Event_Type) is
    begin
       Target.Events.Get_Limits (First, Last);
    end Get_Limits;
@@ -118,7 +118,7 @@ package body MAT.Events.Targets is
    --  Get the probe event with the given allocated unique id.
    --  ------------------------------
    function Get_Event (Target : in Target_Events;
-                       Id     : in Event_Id_Type) return Probe_Event_Type is
+                       Id     : in Event_Id_Type) return Target_Event_Type is
    begin
       return Target.Events.Get_Event (Id);
    end Get_Event;
@@ -139,7 +139,7 @@ package body MAT.Events.Targets is
    procedure Iterate (Target  : in out Target_Events;
                       Start   : in Event_Id_Type;
                       Finish  : in Event_Id_Type;
-                      Process : access procedure (Event : in Probe_Event_Type)) is
+                      Process : access procedure (Event : in Target_Event_Type)) is
    begin
       Target.Events.Iterate (Start, Finish, Process);
    end Iterate;
@@ -149,9 +149,9 @@ package body MAT.Events.Targets is
    --  Execute the <tt>Process</tt> procedure with each event instance.
    --  ------------------------------
    procedure Iterate (Target  : in out Target_Events;
-                      Process : access procedure (Event : in Target_Event)) is
-      First_Event : Target_Event;
-      Last_Event  : Target_Event;
+                      Process : access procedure (Event : in Target_Event_Type)) is
+      First_Event : Target_Event_Type;
+      Last_Event  : Target_Event_Type;
       First_Id    : Event_Id_Type;
    begin
       Target.Get_Limits (First_Event, Last_Event);
@@ -178,13 +178,13 @@ package body MAT.Events.Targets is
    protected body Event_Collector is
 
       procedure Update (Id      : in Event_Id_Type;
-                        Process : not null access procedure (Event : in out Probe_Event_Type));
+                        Process : not null access procedure (Event : in out Target_Event_Type));
 
       --  ------------------------------
       --  Internal operation to update the event represented by <tt>Id</tt>.
       --  ------------------------------
       procedure Update (Id      : in Event_Id_Type;
-                        Process : not null access procedure (Event : in out Probe_Event_Type)) is
+                        Process : not null access procedure (Event : in out Target_Event_Type)) is
          Iter  : constant Event_Id_Cursor := Ids.Floor (Id);
          Block : Event_Block_Access;
          Pos   : Event_Id_Type;
@@ -206,16 +206,16 @@ package body MAT.Events.Targets is
       procedure Update_Event (Id      : in Event_Id_Type;
                               Size    : in MAT.Types.Target_Size;
                               Prev_Id : in Event_Id_Type) is
-         procedure Update_Size (Event : in out Probe_Event_Type);
-         procedure Update_Next (Event : in out Probe_Event_Type);
+         procedure Update_Size (Event : in out Target_Event_Type);
+         procedure Update_Next (Event : in out Target_Event_Type);
 
-         procedure Update_Size (Event : in out Probe_Event_Type) is
+         procedure Update_Size (Event : in out Target_Event_Type) is
          begin
             Event.Size    := Size;
             Event.Prev_Id := Prev_Id;
          end Update_Size;
 
-         procedure Update_Next (Event : in out Probe_Event_Type) is
+         procedure Update_Next (Event : in out Target_Event_Type) is
          begin
             Event.Next_Id := Id;
          end Update_Next;
@@ -229,7 +229,7 @@ package body MAT.Events.Targets is
       --  Add the event in the list of events.
       --  Update the event instance to allocate the event Id.
       --  ------------------------------
-      procedure Insert (Event : in out Probe_Event_Type) is
+      procedure Insert (Event : in out Target_Event_Type) is
       begin
          if Current = null then
             Current := new Event_Block;
@@ -281,8 +281,8 @@ package body MAT.Events.Targets is
       --  ------------------------------
       --  Get the first and last event that have been received.
       --  ------------------------------
-      procedure Get_Limits (First : out Probe_Event_Type;
-                            Last  : out Probe_Event_Type) is
+      procedure Get_Limits (First : out Target_Event_Type;
+                            Last  : out Target_Event_Type) is
          First_Block : constant Event_Block_Access := Events.First_Element;
          Last_Block  : constant Event_Block_Access := Events.Last_Element;
       begin
@@ -293,7 +293,7 @@ package body MAT.Events.Targets is
       --  ------------------------------
       --  Get the probe event with the given allocated unique id.
       --  ------------------------------
-      function Get_Event (Id : in Event_Id_Type) return Probe_Event_Type is
+      function Get_Event (Id : in Event_Id_Type) return Target_Event_Type is
          Iter  : Event_Id_Cursor := Ids.Floor (Id);
          Block : Event_Block_Access;
          Pos   : Event_Id_Type;
@@ -317,7 +317,7 @@ package body MAT.Events.Targets is
       --  ------------------------------
       procedure Iterate (Start   : in Event_Id_Type;
                          Finish  : in Event_Id_Type;
-                         Process : access procedure (Event : in Probe_Event_Type)) is
+                         Process : access procedure (Event : in Target_Event_Type)) is
          Iter  : Event_Id_Cursor := Ids.Floor (Start);
          Block : Event_Block_Access;
          Pos   : Event_Id_Type;

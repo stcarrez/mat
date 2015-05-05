@@ -166,7 +166,7 @@ package body MAT.Expressions is
    --  ------------------------------
    --  Create a event type expression check.
    --  ------------------------------
-   function Create_Event_Type (Event_Kind : in MAT.Events.Targets.Probe_Index_Type)
+   function Create_Event_Type (Event_Kind : in MAT.Events.Probe_Index_Type)
                                return Expression_Type is
       Result : Expression_Type;
    begin
@@ -221,7 +221,7 @@ package body MAT.Expressions is
    --  context is selected.  Returns True if the event is selected.
    --  ------------------------------
    function Is_Selected (Node       : in Expression_Type;
-                         Event      : in MAT.Events.Targets.Probe_Event_Type) return Boolean is
+                         Event      : in MAT.Events.Target_Event_Type) return Boolean is
    begin
       return Is_Selected (Node.Node.all, Event);
    end Is_Selected;
@@ -271,12 +271,12 @@ package body MAT.Expressions is
    --  context is selected.  Returns True if the event is selected.
    --  ------------------------------
    function Is_Selected (Node       : in Node_Type;
-                         Event      : in MAT.Events.Targets.Probe_Event_Type) return Boolean is
+                         Event      : in MAT.Events.Target_Event_Type) return Boolean is
       use type MAT.Types.Target_Size;
       use type MAT.Types.Target_Tick_Ref;
       use type MAT.Types.Target_Thread_Ref;
       use type MAT.Events.Event_Id_Type;
-      use type MAT.Events.Targets.Probe_Index_Type;
+      use type MAT.Events.Probe_Index_Type;
    begin
       case Node.Kind is
          when N_NOT =>
@@ -314,16 +314,16 @@ package body MAT.Expressions is
             return Event.Index = Node.Event_Kind;
 
          when N_HAS_ADDR =>
-            if Event.Index = MAT.Events.Targets.MSG_MALLOC
-              or Event.Index = MAT.Events.Targets.MSG_REALLOC
+            if Event.Index = MAT.Events.MSG_MALLOC
+              or Event.Index = MAT.Events.MSG_REALLOC
             then
                return Event.Addr <= Node.Min_Addr and Event.Addr + Event.Size >= Node.Max_Addr;
             end if;
             return False;
 
          when N_NO_FREE =>
-            if Event.Index = MAT.Events.Targets.MSG_MALLOC
-              or Event.Index = MAT.Events.Targets.MSG_REALLOC
+            if Event.Index = MAT.Events.MSG_MALLOC
+              or Event.Index = MAT.Events.MSG_REALLOC
             then
                return Event.Next_Id = 0;
             else

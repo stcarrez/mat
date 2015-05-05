@@ -127,7 +127,7 @@ package body MAT.Events.Probes is
    procedure Register_Probe (Into   : in out Probe_Manager_Type;
                              Probe  : in Probe_Type_Access;
                              Name   : in String;
-                             Id     : in MAT.Events.Targets.Probe_Index_Type;
+                             Id     : in MAT.Events.Probe_Index_Type;
                              Model  : in MAT.Events.Const_Attribute_Table_Access) is
       Handler : Probe_Handler;
    begin

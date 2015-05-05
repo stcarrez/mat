@@ -37,10 +37,10 @@ package MAT.Targets.Probes is
    procedure Extract (Probe  : in Process_Probe_Type;
                       Params : in MAT.Events.Const_Attribute_Table_Access;
                       Msg    : in out MAT.Readers.Message_Type;
-                      Event  : in out MAT.Events.Targets.Probe_Event_Type);
+                      Event  : in out MAT.Events.Target_Event_Type);
 
    procedure Execute (Probe : in Process_Probe_Type;
-                      Event : in out MAT.Events.Targets.Probe_Event_Type);
+                      Event : in out MAT.Events.Target_Event_Type);
 
    --  Register the reader to extract and analyze process events.
    procedure Register (Into  : in out MAT.Events.Probes.Probe_Manager_Type'Class;
@@ -55,12 +55,12 @@ private
    procedure Probe_Begin (Probe : in Process_Probe_Type;
                           Defs  : in MAT.Events.Attribute_Table;
                           Msg   : in out MAT.Readers.Message;
-                          Event : in out MAT.Events.Targets.Probe_Event_Type);
+                          Event : in out MAT.Events.Target_Event_Type);
 
    --  Extract the information from the 'library' event.
    procedure Probe_Library (Probe : in Process_Probe_Type;
                             Defs  : in MAT.Events.Attribute_Table;
                             Msg   : in out MAT.Readers.Message;
-                            Event : in out MAT.Events.Targets.Probe_Event_Type);
+                            Event : in out MAT.Events.Target_Event_Type);
 
 end MAT.Targets.Probes;

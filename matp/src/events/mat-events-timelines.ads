@@ -26,8 +26,8 @@ package MAT.Events.Timelines is
    --  The timeline section gives the duration and some statistics about memory
    --  allocation made in the section.
    type Timeline_Info is record
-      First_Event    : MAT.Events.Targets.Probe_Event_Type;
-      Last_Event     : MAT.Events.Targets.Probe_Event_Type;
+      First_Event    : MAT.Events.Target_Event_Type;
+      Last_Event     : MAT.Events.Target_Event_Type;
       Duration       : MAT.Types.Target_Time := 0;
       Malloc_Count   : Natural := 0;
       Realloc_Count  : Natural := 0;
@@ -50,7 +50,7 @@ package MAT.Events.Timelines is
    --  and free events.  When the event is a free, find the associated allocations.
    --  Collect at most <tt>Max</tt> events.
    procedure Find_Related (Target : in out MAT.Events.Targets.Target_Events'Class;
-                           Event  : in MAT.Events.Targets.Probe_Event_Type;
+                           Event  : in MAT.Events.Target_Event_Type;
                            Max    : in Positive;
                            List   : in out MAT.Events.Targets.Target_Event_Vector);
 
