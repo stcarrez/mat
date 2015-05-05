@@ -73,4 +73,15 @@ package MAT.Events.Tools is
    procedure Build_Event_Info (Map : in Frame_Event_Info_Map;
                                List : in out Event_Info_Vector);
 
+   type Frame_Info_Type is record
+      Key  : Frame_Key_Type;
+      Info : Event_Info_Type;
+   end record;
+
+   package Frame_Info_Vectors is
+     new Ada.Containers.Vectors (Index_Type   => Positive,
+                                 Element_Type => Frame_Info_Type);
+   subtype Frame_Info_Vector is Frame_Info_Vectors.Vector;
+   subtype Frame_Info_Cursor is Frame_Info_Vectors.Cursor;
+
 end MAT.Events.Tools;
