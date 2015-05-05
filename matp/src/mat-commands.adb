@@ -325,13 +325,13 @@ package body MAT.Commands is
                                    Args   : in String) is
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
-      Frames  : MAT.Events.Targets.Frame_Event_Info_Map;
-      List    : MAT.Events.Targets.Event_Info_Vector;
-      Iter    : MAT.Events.Targets.Event_Info_Cursor;
+      Frames  : MAT.Events.Tools.Frame_Event_Info_Map;
+      List    : MAT.Events.Tools.Event_Info_Vector;
+      Iter    : MAT.Events.Tools.Event_Info_Cursor;
       Filter  : MAT.Expressions.Expression_Type;
       Depth   : Natural := 3;
       Symbol  : MAT.Symbols.Targets.Symbol_Info;
-      Info    : MAT.Events.Targets.Event_Info_Type;
+      Info    : MAT.Events.Tools.Event_Info_Type;
    begin
       if Args'Length > 0 then
          Filter := MAT.Expressions.Parse (Args, Process.all'Access);
@@ -348,10 +348,10 @@ package body MAT.Commands is
                                         Filter => Filter,
                                         Depth  => Depth,
                                         Frames => Frames);
-      MAT.Events.Targets.Build_Event_Info (Frames, List);
+      MAT.Events.Tools.Build_Event_Info (Frames, List);
       Iter := List.First;
-      while MAT.Events.Targets.Event_Info_Vectors.Has_Element (Iter) loop
-         Info := MAT.Events.Targets.Event_Info_Vectors.Element (Iter);
+      while MAT.Events.Tools.Event_Info_Vectors.Has_Element (Iter) loop
+         Info := MAT.Events.Tools.Event_Info_Vectors.Element (Iter);
          MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Process.Symbols.Value.all,
                                                 Addr    => Info.Frame_Addr,
                                                 Symbol  => Symbol);
@@ -366,7 +366,7 @@ package body MAT.Commands is
          Console.Print_Field (MAT.Consoles.F_ID,
                               MAT.Formats.Event (Info.First_Event, Info.Last_Event));
          Console.End_Row;
-         MAT.Events.Targets.Event_Info_Vectors.Next (Iter);
+         MAT.Events.Tools.Event_Info_Vectors.Next (Iter);
       end loop;
 
    exception
@@ -386,9 +386,9 @@ package body MAT.Commands is
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Start, Finish : MAT.Types.Target_Tick_Ref;
-      Sizes   : MAT.Events.Targets.Size_Event_Info_Map;
+      Sizes   : MAT.Events.Tools.Size_Event_Info_Map;
       Filter  : MAT.Expressions.Expression_Type;
-      Iter    : MAT.Events.Targets.Size_Event_Info_Cursor;
+      Iter    : MAT.Events.Tools.Size_Event_Info_Cursor;
    begin
       if Args'Length > 0 then
          Filter := MAT.Expressions.Parse (Args, Process.all'Access);
@@ -408,14 +408,14 @@ package body MAT.Commands is
                                        Filter => Filter,
                                        Sizes  => Sizes);
       Iter := Sizes.First;
-      while MAT.Events.Targets.Size_Event_Info_Maps.Has_Element (Iter) loop
+      while MAT.Events.Tools.Size_Event_Info_Maps.Has_Element (Iter) loop
          declare
             use type MAT.Types.Target_Tick_Ref;
 
             Size  : constant MAT.Types.Target_Size
-              := MAT.Events.Targets.Size_Event_Info_Maps.Key (Iter);
-            Info  : constant MAT.Events.Targets.Event_Info_Type
-              := MAT.Events.Targets.Size_Event_Info_Maps.Element (Iter);
+              := MAT.Events.Tools.Size_Event_Info_Maps.Key (Iter);
+            Info  : constant MAT.Events.Tools.Event_Info_Type
+              := MAT.Events.Tools.Size_Event_Info_Maps.Element (Iter);
             Time  : constant MAT.Types.Target_Tick_Ref := Info.First_Event.Time - Start;
          begin
             Console.Start_Row;
@@ -437,7 +437,7 @@ package body MAT.Commands is
             end if;
             Console.End_Row;
          end;
-         MAT.Events.Targets.Size_Event_Info_Maps.Next (Iter);
+         MAT.Events.Tools.Size_Event_Info_Maps.Next (Iter);
       end loop;
 
    exception

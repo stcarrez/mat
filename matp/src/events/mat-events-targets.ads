@@ -16,45 +16,12 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.Containers.Ordered_Maps;
-with Ada.Containers.Vectors;
 with Ada.Finalization;
 
 with Util.Concurrent.Counters;
 
-with MAT.Frames;
 with MAT.Events.Tools;
 package MAT.Events.Targets is
-
-   type Event_Info_Type is record
-      First_Event : Target_Event_Type;
-      Last_Event  : Target_Event_Type;
-      Frame_Addr  : MAT.Types.Target_Addr;
-      Count       : Natural;
-      Alloc_Size  : MAT.Types.Target_Size := 0;
-      Free_Size   : MAT.Types.Target_Size := 0;
-   end record;
-
-   package Size_Event_Info_Maps is
-     new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Size,
-                                      Element_Type => Event_Info_Type);
-   subtype Size_Event_Info_Map is Size_Event_Info_Maps.Map;
-   subtype Size_Event_Info_Cursor is Size_Event_Info_Maps.Cursor;
-
-   package Frame_Event_Info_Maps is
-     new Ada.Containers.Ordered_Maps (Key_Type     => MAT.Types.Target_Addr,
-                                      Element_Type => Event_Info_Type);
-   subtype Frame_Event_Info_Map is Frame_Event_Info_Maps.Map;
-   subtype Frame_Event_Info_Cursor is Frame_Event_Info_Maps.Cursor;
-
-   package Event_Info_Vectors is
-     new Ada.Containers.Vectors (Index_Type   => Positive,
-                                 Element_Type => Event_Info_Type);
-   subtype Event_Info_Vector is Event_Info_Vectors.Vector;
-   subtype Event_Info_Cursor is Event_Info_Vectors.Cursor;
-
-   --  Extract from the frame info map, the list of event info sorted on the count.
-   procedure Build_Event_Info (Map : in Frame_Event_Info_Map;
-                               List : in out Event_Info_Vector);
 
    type Target_Events is tagged limited private;
    type Target_Events_Access is access all Target_Events'Class;

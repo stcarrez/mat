@@ -60,7 +60,7 @@ package MAT.Events.Timelines is
    --  the number of events found for the corresponding size.
    procedure Find_Sizes (Target : in out MAT.Events.Targets.Target_Events'Class;
                          Filter : in MAT.Expressions.Expression_Type;
-                         Sizes  : in out MAT.Events.Targets.Size_Event_Info_Map);
+                         Sizes  : in out MAT.Events.Tools.Size_Event_Info_Map);
 
    --  Find the function address from the call event frames for the events which is selected
    --  by the given filter.  The function addresses are collected up to the given frame depth.
@@ -69,6 +69,6 @@ package MAT.Events.Timelines is
    procedure Find_Frames (Target : in out MAT.Events.Targets.Target_Events'Class;
                           Filter : in MAT.Expressions.Expression_Type;
                           Depth  : in Natural;
-                          Frames : in out MAT.Events.Targets.Frame_Event_Info_Map);
+                          Frames : in out MAT.Events.Tools.Frame_Event_Info_Map);
 
 end MAT.Events.Timelines;

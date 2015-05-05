@@ -21,29 +21,6 @@ package body MAT.Events.Targets is
    ITERATE_COUNT : constant Event_Id_Type := 10_000;
 
    --  ------------------------------
-   --  Extract from the frame info map, the list of event info sorted on the count.
-   --  ------------------------------
-   procedure Build_Event_Info (Map  : in Frame_Event_Info_Map;
-                               List : in out Event_Info_Vector) is
-
-      function "<" (Left, Right : in Event_Info_Type) return Boolean is
-      begin
-         return Left.Count < Right.Count;
-      end "<";
-
-      package Sort_Event_Info is new Event_Info_Vectors.Generic_Sorting;
-      Iter : Frame_Event_Info_Cursor := Map.First;
-      Item : Event_Info_Type;
-   begin
-      while Frame_Event_Info_Maps.Has_Element (Iter) loop
-         Item := Frame_Event_Info_Maps.Element (Iter);
-         List.Append (Item);
-         Frame_Event_Info_Maps.Next (Iter);
-      end loop;
-      Sort_Event_Info.Sort (List);
-   end Build_Event_Info;
-
-   --  ------------------------------
    --  Add the event in the list of events and increment the event counter.
    --  Update the event instance to allocate the event Id.
    --  ------------------------------
