@@ -32,6 +32,10 @@ package MAT.Formats is
    --  Format the size into a string.
    function Size (Value : in MAT.Types.Target_Size) return String;
 
+   --  Format the memory growth size into a string.
+   function Size (Alloced : in MAT.Types.Target_Size;
+                  Freed   : in MAT.Types.Target_Size) return String;
+
    --  Format the time relative to the start time.
    function Time (Value : in MAT.Types.Target_Tick_Ref;
                   Start : in MAT.Types.Target_Tick_Ref) return String;
