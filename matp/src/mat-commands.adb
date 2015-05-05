@@ -481,7 +481,7 @@ package body MAT.Commands is
             if Filter.Is_Selected (Event) then
                Console.Start_Row;
                Console.Print_Field (MAT.Consoles.F_ID,
-                                    MAT.Events.Targets.Event_Id_Type'Image (Event.Id));
+                                    MAT.Events.Event_Id_Type'Image (Event.Id));
                Console.Print_Duration (MAT.Consoles.F_TIME, Time);
                Console.Print_Field (MAT.Consoles.F_EVENT, MAT.Formats.Event (Event));
                Console.End_Row;
@@ -507,12 +507,12 @@ package body MAT.Commands is
 
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
-      Id      : MAT.Events.Targets.Event_Id_Type;
+      Id      : MAT.Events.Event_Id_Type;
       Event   : MAT.Events.Targets.Probe_Event_Type;
       Start, Finish : MAT.Types.Target_Tick_Ref;
       Related : MAT.Events.Targets.Target_Event_Vector;
    begin
-      Id := MAT.Events.Targets.Event_Id_Type'Value (Args);
+      Id := MAT.Events.Event_Id_Type'Value (Args);
       Event := Process.Events.Get_Event (Id);
       MAT.Events.Timelines.Find_Related (Process.Events.all, Event, 10, Related);
       Process.Events.Get_Time_Range (Start, Finish);
@@ -543,7 +543,7 @@ package body MAT.Commands is
 
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
-      Id      : MAT.Events.Targets.Event_Id_Type;
+      Id      : MAT.Events.Event_Id_Type;
       Start, Finish : MAT.Types.Target_Tick_Ref;
       Groups  : MAT.Events.Timelines.Timeline_Info_Vector;
       Iter    : MAT.Events.Timelines.Timeline_Info_Cursor;

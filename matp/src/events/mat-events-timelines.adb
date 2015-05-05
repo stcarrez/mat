@@ -20,7 +20,7 @@ package body MAT.Events.Timelines is
 
    use MAT.Events.Targets;
 
-   ITERATE_COUNT : constant MAT.Events.Targets.Event_Id_Type := 10_000;
+   ITERATE_COUNT : constant MAT.Events.Event_Id_Type := 10_000;
 
    procedure Extract (Target : in out MAT.Events.Targets.Target_Events'Class;
                       Into   : in out Timeline_Info_Vector) is
@@ -32,7 +32,7 @@ package body MAT.Events.Timelines is
       Last_Event  : MAT.Events.Targets.Probe_Event_Type;
       Prev_Event  : MAT.Events.Targets.Probe_Event_Type;
       Info        : Timeline_Info;
-      First_Id    : MAT.Events.Targets.Event_Id_Type;
+      First_Id    : MAT.Events.Event_Id_Type;
 
       procedure Collect (Event : in MAT.Events.Targets.Probe_Event_Type) is
          Dt : constant MAT.Types.Target_Time := Event.Time - Prev_Event.Time;
@@ -88,8 +88,8 @@ package body MAT.Events.Timelines is
       procedure Collect_Free (Event : in MAT.Events.Targets.Probe_Event_Type);
       procedure Collect_Alloc (Event : in MAT.Events.Targets.Probe_Event_Type);
 
-      First_Id    : MAT.Events.Targets.Event_Id_Type;
-      Last_Id     : MAT.Events.Targets.Event_Id_Type;
+      First_Id    : MAT.Events.Event_Id_Type;
+      Last_Id     : MAT.Events.Event_Id_Type;
       First_Event : MAT.Events.Targets.Probe_Event_Type;
       Last_Event  : MAT.Events.Targets.Probe_Event_Type;
       Addr        : MAT.Types.Target_Addr := Event.Addr;

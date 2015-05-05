@@ -23,6 +23,8 @@ package MAT.Events is
 
    use Interfaces;
 
+   type Event_Id_Type is new Natural;
+
    type Attribute_Type is (T_UINT8,
                            T_UINT16,
                            T_UINT32,

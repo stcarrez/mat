@@ -179,8 +179,8 @@ package body MAT.Expressions is
    --  ------------------------------
    --  Create an event ID range expression node.
    --  ------------------------------
-   function Create_Event (Min : in MAT.Events.Targets.Event_Id_Type;
-                          Max : in MAT.Events.Targets.Event_Id_Type) return Expression_Type is
+   function Create_Event (Min : in MAT.Events.Event_Id_Type;
+                          Max : in MAT.Events.Event_Id_Type) return Expression_Type is
       Result : Expression_Type;
    begin
       Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
@@ -275,7 +275,7 @@ package body MAT.Expressions is
       use type MAT.Types.Target_Size;
       use type MAT.Types.Target_Tick_Ref;
       use type MAT.Types.Target_Thread_Ref;
-      use type MAT.Events.Targets.Event_Id_Type;
+      use type MAT.Events.Event_Id_Type;
       use type MAT.Events.Targets.Probe_Index_Type;
    begin
       case Node.Kind is

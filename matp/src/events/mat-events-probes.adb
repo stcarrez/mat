@@ -102,9 +102,9 @@ package body MAT.Events.Probes is
    --  to the <tt>Id</tt> event.
    --  ------------------------------
    procedure Update_Event (Probe   : in Probe_Type;
-                           Id      : in MAT.Events.Targets.Event_Id_Type;
+                           Id      : in MAT.Events.Event_Id_Type;
                            Size    : in MAT.Types.Target_Size;
-                           Prev_Id : in MAT.Events.Targets.Event_Id_Type) is
+                           Prev_Id : in MAT.Events.Event_Id_Type) is
    begin
       Probe.Owner.Get_Target_Events.Update_Event (Id, Size, Prev_Id);
    end Update_Event;

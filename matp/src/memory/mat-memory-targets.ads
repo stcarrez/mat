@@ -72,7 +72,7 @@ package MAT.Memory.Targets is
                          Addr   : in MAT.Types.Target_Addr;
                          Slot   : in Allocation;
                          Size   : out MAT.Types.Target_Size;
-                         By     : out MAT.Events.Targets.Event_Id_Type);
+                         By     : out MAT.Events.Event_Id_Type);
 
    --  Take into account a realloc probe.  The old memory slot represented by Old_Addr is
    --  removed from the used slots maps and the new memory slot [Addr .. Slot.Size] is
@@ -82,7 +82,7 @@ package MAT.Memory.Targets is
                             Old_Addr : in MAT.Types.Target_Addr;
                             Slot     : in Allocation;
                             Old_Size : out MAT.Types.Target_Size;
-                            By       : out MAT.Events.Targets.Event_Id_Type);
+                            By       : out MAT.Events.Event_Id_Type);
 
    --  Insert in the frame tree the new stack frame represented by <tt>Pc</tt>.
    --  If the frame is already known, the frame reference counter is incremented.
@@ -146,7 +146,7 @@ private
       procedure Probe_Free (Addr   : in MAT.Types.Target_Addr;
                             Slot   : in Allocation;
                             Size   : out MAT.Types.Target_Size;
-                            By     : out MAT.Events.Targets.Event_Id_Type);
+                            By     : out MAT.Events.Event_Id_Type);
 
       --  Take into account a realloc probe.  The old memory slot represented by Old_Addr is
       --  removed from the used slots maps and the new memory slot [Addr .. Slot.Size] is
@@ -155,7 +155,7 @@ private
                                Old_Addr : in MAT.Types.Target_Addr;
                                Slot     : in Allocation;
                                Old_Size : out MAT.Types.Target_Size;
-                               By       : out MAT.Events.Targets.Event_Id_Type);
+                               By       : out MAT.Events.Event_Id_Type);
 
       --  Insert in the frame tree the new stack frame represented by <tt>Pc</tt>.
       --  If the frame is already known, the frame reference counter is incremented.

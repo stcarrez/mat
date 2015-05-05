@@ -76,8 +76,8 @@ package MAT.Expressions is
                          Max : in MAT.Types.Target_Tick_Ref) return Expression_Type;
 
    --  Create an event ID range expression node.
-   function Create_Event (Min : in MAT.Events.Targets.Event_Id_Type;
-                          Max : in MAT.Events.Targets.Event_Id_Type) return Expression_Type;
+   function Create_Event (Min : in MAT.Events.Event_Id_Type;
+                          Max : in MAT.Events.Event_Id_Type) return Expression_Type;
 
    --  Create a thread ID range expression node.
    function Create_Thread (Min : in MAT.Types.Target_Thread_Ref;
@@ -161,8 +161,8 @@ private
             Max_Thread : MAT.Types.Target_Thread_Ref;
 
          when N_EVENT =>
-            Min_Event : MAT.Events.Targets.Event_Id_Type;
-            Max_Event : MAT.Events.Targets.Event_Id_Type;
+            Min_Event : MAT.Events.Event_Id_Type;
+            Max_Event : MAT.Events.Event_Id_Type;
 
          when N_TYPE =>
             Event_Kind : MAT.Events.Targets.Probe_Index_Type;

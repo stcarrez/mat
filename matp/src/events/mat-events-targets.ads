@@ -35,8 +35,6 @@ package MAT.Events.Targets is
                              MSG_REALLOC
                              );
 
-   type Event_Id_Type is new Natural;
-
    type Probe_Event_Type is record
       Id       : Event_Id_Type;
       Next_Id  : Event_Id_Type := 0;

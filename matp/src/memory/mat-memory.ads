@@ -30,7 +30,7 @@ package MAT.Memory is
       Frame  : Frames.Frame_Type;
       Time   : MAT.Types.Target_Tick_Ref;
       Thread : MAT.Types.Target_Thread_Ref;
-      Event  : MAT.Events.Targets.Event_Id_Type;
+      Event  : MAT.Events.Event_Id_Type;
    end record;
 
    --  Statistics about memory allocation.

@@ -14,25 +14,25 @@ package body MAT.Expressions.Parser is
    use MAT.Expressions.Lexer;
    use type Ada.Text_IO.Count;
    use type MAT.Types.Target_Tick_Ref;
-   use type MAT.Events.Targets.Event_Id_Type;
+   use type MAT.Events.Event_Id_Type;
    use type Interfaces.Unsigned_64;
 
    procedure yyparse;
 
    procedure yyerror (Message : in String := "syntax error");
 
-   function To_Event_Id_Type (Value : in MAT.Types.Uint64) return MAT.Events.Targets.Event_Id_Type;
+   function To_Event_Id_Type (Value : in MAT.Types.Uint64) return MAT.Events.Event_Id_Type;
    function To_Thread_Ref (Value : in MAT.Types.Uint64) return MAT.Types.Target_Thread_Ref;
 
    Expr : MAT.Expressions.Expression_Type;
 
    function To_Event_Id_Type (Value : in MAT.Types.Uint64)
-      return MAT.Events.Targets.Event_Id_Type is
+      return MAT.Events.Event_Id_Type is
    begin
-      if Value > MAT.Types.Uint64 (MAT.Events.Targets.Event_Id_Type'Last) then
-         return MAT.Events.Targets.Event_Id_Type'Last;
+      if Value > MAT.Types.Uint64 (MAT.Events.Event_Id_Type'Last) then
+         return MAT.Events.Event_Id_Type'Last;
       else
-         return MAT.Events.Targets.Event_Id_Type (Value);
+         return MAT.Events.Event_Id_Type (Value);
       end if;
    end To_Event_Id_Type;
 

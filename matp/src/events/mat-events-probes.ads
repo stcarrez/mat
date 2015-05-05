@@ -49,9 +49,9 @@ package MAT.Events.Probes is
    --  Update the event represented by <tt>Prev_Id</tt> so that its Next_Id refers
    --  to the <tt>Id</tt> event.
    procedure Update_Event (Probe   : in Probe_Type;
-                           Id      : in MAT.Events.Targets.Event_Id_Type;
+                           Id      : in MAT.Events.Event_Id_Type;
                            Size    : in MAT.Types.Target_Size;
-                           Prev_Id : in MAT.Events.Targets.Event_Id_Type);
+                           Prev_Id : in MAT.Events.Event_Id_Type);
 
    -----------------
    --  Probe Manager

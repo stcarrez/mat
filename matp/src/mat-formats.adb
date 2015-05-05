@@ -163,10 +163,10 @@ package body MAT.Formats is
    --  ------------------------------
    function Event (First : in MAT.Events.Targets.Probe_Event_Type;
                    Last  : in MAT.Events.Targets.Probe_Event_Type) return String is
-      use type MAT.Events.Targets.Event_Id_Type;
+      use type MAT.Events.Event_Id_Type;
 
-      Id1 : constant String := MAT.Events.Targets.Event_Id_Type'Image (First.Id);
-      Id2 : constant String := MAT.Events.Targets.Event_Id_Type'Image (Last.Id);
+      Id1 : constant String := MAT.Events.Event_Id_Type'Image (First.Id);
+      Id2 : constant String := MAT.Events.Event_Id_Type'Image (Last.Id);
    begin
       if First.Id = Last.Id then
          return Id1 (Id1'First + 1 .. Id1'Last);
@@ -235,7 +235,7 @@ package body MAT.Formats is
 
       return Size (Item.Size) & " bytes allocated after " & Duration (Item.Time - Start_Time)
         & ", freed " & Duration (Free_Event.Time - Item.Time)
-        & " after by event" & MAT.Events.Targets.Event_Id_Type'Image (Free_Event.Id)
+        & " after by event" & MAT.Events.Event_Id_Type'Image (Free_Event.Id)
       ;
 
    exception
@@ -253,7 +253,7 @@ package body MAT.Formats is
 
       return Size (Alloc_Event.Size) & " bytes freed after " & Duration (Item.Time - Start_Time)
         & ", alloc'ed for " & Duration (Item.Time - Alloc_Event.Time)
-        & " by event" & MAT.Events.Targets.Event_Id_Type'Image (Alloc_Event.Id);
+        & " by event" & MAT.Events.Event_Id_Type'Image (Alloc_Event.Id);
 
    exception
       when MAT.Events.Targets.Not_Found =>

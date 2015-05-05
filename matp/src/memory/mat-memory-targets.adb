@@ -90,7 +90,7 @@ package body MAT.Memory.Targets is
                          Addr   : in MAT.Types.Target_Addr;
                          Slot   : in Allocation;
                          Size   : out MAT.Types.Target_Size;
-                         By     : out MAT.Events.Targets.Event_Id_Type) is
+                         By     : out MAT.Events.Event_Id_Type) is
    begin
       Memory.Memory.Probe_Free (Addr, Slot, Size, By);
    end Probe_Free;
@@ -105,7 +105,7 @@ package body MAT.Memory.Targets is
                             Old_Addr : in MAT.Types.Target_Addr;
                             Slot     : in Allocation;
                             Old_Size : out MAT.Types.Target_Size;
-                            By       : out MAT.Events.Targets.Event_Id_Type) is
+                            By       : out MAT.Events.Event_Id_Type) is
    begin
       Memory.Memory.Probe_Realloc (Addr, Old_Addr, Slot, Old_Size, By);
    end Probe_Realloc;
@@ -298,7 +298,7 @@ package body MAT.Memory.Targets is
       procedure Probe_Free (Addr   : in MAT.Types.Target_Addr;
                             Slot   : in Allocation;
                             Size   : out MAT.Types.Target_Size;
-                            By     : out MAT.Events.Targets.Event_Id_Type) is
+                            By     : out MAT.Events.Event_Id_Type) is
          Item : Allocation;
          Iter : Allocation_Cursor;
       begin
@@ -344,7 +344,7 @@ package body MAT.Memory.Targets is
                                Old_Addr : in MAT.Types.Target_Addr;
                                Slot     : in Allocation;
                                Old_Size : out MAT.Types.Target_Size;
-                               By       : out MAT.Events.Targets.Event_Id_Type) is
+                               By       : out MAT.Events.Event_Id_Type) is
          procedure Update_Size (Key     : in MAT.Types.Target_Addr;
                                 Element : in out Allocation);
 
