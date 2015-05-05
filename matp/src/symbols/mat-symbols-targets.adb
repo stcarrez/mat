@@ -21,7 +21,7 @@ with Util.Strings;
 with Util.Files;
 with Util.Log.Loggers;
 with Ada.Directories;
-
+with MAT.Formats;
 package body MAT.Symbols.Targets is
 
    --  The logger
@@ -185,7 +185,6 @@ package body MAT.Symbols.Targets is
       use Ada.Strings.Unbounded;
 
       Pos  : constant Symbols_Cursor := Symbols.Libraries.Floor (Addr);
-      Text_Section : Bfd.Sections.Section;
    begin
       Symbol.Line := 0;
       if Symbols_Maps.Has_Element (Pos) then
@@ -202,27 +201,15 @@ package body MAT.Symbols.Targets is
             end if;
          end;
       end if;
---        if Bfd.Files.Is_Open (Symbols.File) then
---           Text_Section := Bfd.Sections.Find_Section (Symbols.File, ".text");
---           Bfd.Symbols.Find_Nearest_Line (File    => Symbols.File,
---                                          Sec     => Text_Section,
---                                          Symbols => Symbols.Symbols,
---                                          Addr    => Bfd.Vma_Type (Addr),
---                                          Name    => Symbol.File,
---                                          Func    => Symbol.Name,
---                                          Line    => Symbol.Line);
---           Demangle (Symbols, Symbol);
---        else
-         Symbol.Line := 0;
-         Symbol.File := Ada.Strings.Unbounded.To_Unbounded_String ("");
-         Symbol.Name := Ada.Strings.Unbounded.To_Unbounded_String ("");
---        end if;
+      Symbol.Line := 0;
+      Symbol.File := Ada.Strings.Unbounded.To_Unbounded_String ("");
+      Symbol.Name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Formats.Addr (Addr));
 
    exception
       when Bfd.NOT_FOUND =>
          Symbol.Line := 0;
          Symbol.File := Ada.Strings.Unbounded.To_Unbounded_String ("");
-         Symbol.Name := Ada.Strings.Unbounded.To_Unbounded_String ("");
+         Symbol.Name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Formats.Addr (Addr));
    end Find_Nearest_Line;
 
    --  ------------------------------
