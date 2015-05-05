@@ -18,6 +18,7 @@
 with Ada.Containers.Vectors;
 
 with MAT.Expressions;
+with MAT.Events.Tools;
 with MAT.Events.Targets;
 package MAT.Events.Timelines is
 
@@ -52,7 +53,7 @@ package MAT.Events.Timelines is
    procedure Find_Related (Target : in out MAT.Events.Targets.Target_Events'Class;
                            Event  : in MAT.Events.Target_Event_Type;
                            Max    : in Positive;
-                           List   : in out MAT.Events.Targets.Target_Event_Vector);
+                           List   : in out MAT.Events.Tools.Target_Event_Vector);
 
    --  Find the sizes of malloc and realloc events which is selected by the given filter.
    --  Update the <tt>Sizes</tt> map to keep track of the first event and last event and

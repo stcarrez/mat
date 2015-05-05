@@ -40,6 +40,7 @@ with MAT.Frames;
 with MAT.Events.Targets;
 with MAT.Consoles;
 with MAT.Formats;
+with MAT.Events.Tools;
 with MAT.Events.Timelines;
 package body MAT.Commands is
 
@@ -454,9 +455,9 @@ package body MAT.Commands is
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Start, Finish : MAT.Types.Target_Tick_Ref;
-      Events  : MAT.Events.Targets.Target_Event_Vector;
+      Events  : MAT.Events.Tools.Target_Event_Vector;
       Filter  : MAT.Expressions.Expression_Type;
-      Iter    : MAT.Events.Targets.Target_Event_Cursor;
+      Iter    : MAT.Events.Tools.Target_Event_Cursor;
    begin
       if Args'Length > 0 then
          Filter := MAT.Expressions.Parse (Args, Process.all'Access);
@@ -470,12 +471,12 @@ package body MAT.Commands is
       Process.Events.Get_Time_Range (Start, Finish);
       Process.Events.Get_Events (Start, Finish, Events);
       Iter := Events.First;
-      while MAT.Events.Targets.Target_Event_Vectors.Has_Element (Iter) loop
+      while MAT.Events.Tools.Target_Event_Vectors.Has_Element (Iter) loop
          declare
             use type MAT.Types.Target_Tick_Ref;
 
             Event : constant MAT.Events.Target_Event_Type
-              := MAT.Events.Targets.Target_Event_Vectors.Element (Iter);
+              := MAT.Events.Tools.Target_Event_Vectors.Element (Iter);
             Time  : constant MAT.Types.Target_Tick_Ref := Event.Time - Start;
          begin
             if Filter.Is_Selected (Event) then
@@ -487,7 +488,7 @@ package body MAT.Commands is
                Console.End_Row;
             end if;
          end;
-         MAT.Events.Targets.Target_Event_Vectors.Next (Iter);
+         MAT.Events.Tools.Target_Event_Vectors.Next (Iter);
       end loop;
 
    exception
@@ -510,7 +511,7 @@ package body MAT.Commands is
       Id      : MAT.Events.Event_Id_Type;
       Event   : MAT.Events.Target_Event_Type;
       Start, Finish : MAT.Types.Target_Tick_Ref;
-      Related : MAT.Events.Targets.Target_Event_Vector;
+      Related : MAT.Events.Tools.Target_Event_Vector;
    begin
       Id := MAT.Events.Event_Id_Type'Value (Args);
       Event := Process.Events.Get_Event (Id);
@@ -527,7 +528,7 @@ package body MAT.Commands is
       Print_Frame (Console, Event.Frame, Process.Symbols);
 
    exception
-      when MAT.Events.Targets.Not_Found =>
+      when MAT.Events.Tools.Not_Found =>
          Console.Error ("Event " & Args & " not found");
 
    end Event_Command;

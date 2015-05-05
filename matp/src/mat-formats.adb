@@ -27,11 +27,11 @@ package body MAT.Formats is
    function Location (File : in Ada.Strings.Unbounded.Unbounded_String) return String;
 
    function Event_Malloc (Item       : in MAT.Events.Target_Event_Type;
-                          Related    : in MAT.Events.Targets.Target_Event_Vector;
+                          Related    : in MAT.Events.Tools.Target_Event_Vector;
                           Start_Time : in MAT.Types.Target_Tick_Ref) return String;
 
    function Event_Free (Item       : in MAT.Events.Target_Event_Type;
-                        Related    : in MAT.Events.Targets.Target_Event_Vector;
+                        Related    : in MAT.Events.Tools.Target_Event_Vector;
                         Start_Time : in MAT.Types.Target_Tick_Ref) return String;
 
    --  ------------------------------
@@ -227,11 +227,11 @@ package body MAT.Formats is
    end Event;
 
    function Event_Malloc (Item       : in MAT.Events.Target_Event_Type;
-                          Related    : in MAT.Events.Targets.Target_Event_Vector;
+                          Related    : in MAT.Events.Tools.Target_Event_Vector;
                           Start_Time : in MAT.Types.Target_Tick_Ref) return String is
       Free_Event : MAT.Events.Target_Event_Type;
    begin
-      Free_Event := MAT.Events.Targets.Find (Related, MAT.Events.MSG_FREE);
+      Free_Event := MAT.Events.Tools.Find (Related, MAT.Events.MSG_FREE);
 
       return Size (Item.Size) & " bytes allocated after " & Duration (Item.Time - Start_Time)
         & ", freed " & Duration (Free_Event.Time - Item.Time)
@@ -239,24 +239,24 @@ package body MAT.Formats is
       ;
 
    exception
-      when MAT.Events.Targets.Not_Found =>
+      when MAT.Events.Tools.Not_Found =>
          return Size (Item.Size) & " bytes allocated (never freed)";
 
    end Event_Malloc;
 
    function Event_Free (Item       : in MAT.Events.Target_Event_Type;
-                        Related    : in MAT.Events.Targets.Target_Event_Vector;
+                        Related    : in MAT.Events.Tools.Target_Event_Vector;
                         Start_Time : in MAT.Types.Target_Tick_Ref) return String is
       Alloc_Event : MAT.Events.Target_Event_Type;
    begin
-      Alloc_Event := MAT.Events.Targets.Find (Related, MAT.Events.MSG_MALLOC);
+      Alloc_Event := MAT.Events.Tools.Find (Related, MAT.Events.MSG_MALLOC);
 
       return Size (Alloc_Event.Size) & " bytes freed after " & Duration (Item.Time - Start_Time)
         & ", alloc'ed for " & Duration (Item.Time - Alloc_Event.Time)
         & " by event" & MAT.Events.Event_Id_Type'Image (Alloc_Event.Id);
 
    exception
-      when MAT.Events.Targets.Not_Found =>
+      when MAT.Events.Tools.Not_Found =>
          return Size (Item.Size) & " bytes freed";
 
    end Event_Free;
@@ -265,7 +265,7 @@ package body MAT.Formats is
    --  Format a short description of the event.
    --  ------------------------------
    function Event (Item       : in MAT.Events.Target_Event_Type;
-                   Related    : in MAT.Events.Targets.Target_Event_Vector;
+                   Related    : in MAT.Events.Tools.Target_Event_Vector;
                    Start_Time : in MAT.Types.Target_Tick_Ref) return String is
    begin
       case Item.Index is

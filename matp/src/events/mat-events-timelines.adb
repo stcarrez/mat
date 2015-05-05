@@ -83,7 +83,7 @@ package body MAT.Events.Timelines is
    procedure Find_Related (Target : in out MAT.Events.Targets.Target_Events'Class;
                            Event  : in MAT.Events.Target_Event_Type;
                            Max    : in Positive;
-                           List   : in out MAT.Events.Targets.Target_Event_Vector) is
+                           List   : in out MAT.Events.Tools.Target_Event_Vector) is
 
       procedure Collect_Free (Event : in MAT.Events.Target_Event_Type);
       procedure Collect_Alloc (Event : in MAT.Events.Target_Event_Type);

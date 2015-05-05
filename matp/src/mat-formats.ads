@@ -18,7 +18,7 @@
 with Ada.Strings.Unbounded;
 
 with MAT.Types;
-with MAT.Events.Targets;
+with MAT.Events.Tools;
 package MAT.Formats is
 
    type Format_Type is (BRIEF, NORMAL);
@@ -54,7 +54,7 @@ package MAT.Formats is
 
    --  Format a short description of the event.
    function Event (Item       : in MAT.Events.Target_Event_Type;
-                   Related    : in MAT.Events.Targets.Target_Event_Vector;
+                   Related    : in MAT.Events.Tools.Target_Event_Vector;
                    Start_Time : in MAT.Types.Target_Tick_Ref) return String;
 
 end MAT.Formats;

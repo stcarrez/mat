@@ -22,20 +22,8 @@ with Ada.Finalization;
 with Util.Concurrent.Counters;
 
 with MAT.Frames;
+with MAT.Events.Tools;
 package MAT.Events.Targets is
-
-   Not_Found : exception;
-
-   package Target_Event_Vectors is
-     new Ada.Containers.Vectors (Positive, Target_Event_Type);
-
-   subtype Target_Event_Vector is Target_Event_Vectors.Vector;
-   subtype Target_Event_Cursor is Target_Event_Vectors.Cursor;
-
-   --  Find in the list the first event with the given type.
-   --  Raise <tt>Not_Found</tt> if the list does not contain such event.
-   function Find (List : in Target_Event_Vector;
-                  Kind : in Probe_Index_Type) return Target_Event_Type;
 
    type Event_Info_Type is record
       First_Event : Target_Event_Type;
@@ -87,7 +75,7 @@ package MAT.Events.Targets is
    procedure Get_Events (Target : in out Target_Events;
                          Start  : in MAT.Types.Target_Time;
                          Finish : in MAT.Types.Target_Time;
-                         Into   : in out Target_Event_Vector);
+                         Into   : in out MAT.Events.Tools.Target_Event_Vector);
 
    --  Get the start and finish time for the events that have been received.
    procedure Get_Time_Range (Target : in out Target_Events;
@@ -163,7 +151,7 @@ private
 
       procedure Get_Events (Start  : in MAT.Types.Target_Time;
                             Finish : in MAT.Types.Target_Time;
-                            Into   : in out Target_Event_Vector);
+                            Into   : in out MAT.Events.Tools.Target_Event_Vector);
 
       --  Get the first and last event that have been received.
       procedure Get_Limits (First : out Target_Event_Type;

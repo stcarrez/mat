@@ -21,25 +21,6 @@ package body MAT.Events.Targets is
    ITERATE_COUNT : constant Event_Id_Type := 10_000;
 
    --  ------------------------------
-   --  Find in the list the first event with the given type.
-   --  Raise <tt>Not_Found</tt> if the list does not contain such event.
-   --  ------------------------------
-   function Find (List : in Target_Event_Vector;
-                  Kind : in Probe_Index_Type) return Target_Event_Type is
-      Iter  : Target_Event_Cursor := List.First;
-      Event : Target_Event_Type;
-   begin
-      while Target_Event_Vectors.Has_Element (Iter) loop
-         Event := Target_Event_Vectors.Element (Iter);
-         if Event.Index = Kind then
-            return Event;
-         end if;
-         Target_Event_Vectors.Next (Iter);
-      end loop;
-      raise Not_Found;
-   end Find;
-
-   --  ------------------------------
    --  Extract from the frame info map, the list of event info sorted on the count.
    --  ------------------------------
    procedure Build_Event_Info (Map  : in Frame_Event_Info_Map;
@@ -89,7 +70,7 @@ package body MAT.Events.Targets is
    procedure Get_Events (Target : in out Target_Events;
                          Start  : in MAT.Types.Target_Time;
                          Finish : in MAT.Types.Target_Time;
-                         Into   : in out Target_Event_Vector) is
+                         Into   : in out MAT.Events.Tools.Target_Event_Vector) is
    begin
       Target.Events.Get_Events (Start, Finish, Into);
    end Get_Events;
@@ -249,7 +230,7 @@ package body MAT.Events.Targets is
 
       procedure Get_Events (Start  : in MAT.Types.Target_Time;
                             Finish : in MAT.Types.Target_Time;
-                            Into   : in out Target_Event_Vector) is
+                            Into   : in out MAT.Events.Tools.Target_Event_Vector) is
          Iter  : Event_Cursor := Events.Floor (Start);
          Block : Event_Block_Access;
       begin
@@ -307,7 +288,7 @@ package body MAT.Events.Targets is
             end if;
             Event_Id_Maps.Next (Iter);
          end loop;
-         raise Not_Found;
+         raise MAT.Events.Tools.Not_Found;
       end Get_Event;
 
       --  ------------------------------
