@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-memory-tests -- Unit tests for MAT memory
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -101,7 +101,7 @@ package body MAT.Memory.Tests is
       S    : Allocation;
       R    : Allocation_Map;
       Size : MAT.Types.Target_Size;
-      Id   : MAT.Events.Targets.Event_Id_Type;
+      Id   : MAT.Events.Event_Id_Type;
    begin
       S.Size :=  4;
       M.Create_Frame (Frame_1_0, S.Frame);
