@@ -29,6 +29,7 @@ package MAT.Consoles is
                        F_MAX_ADDR,
                        F_THREAD,
                        F_COUNT,
+                       F_LEVEL,
                        F_FILE_NAME,
                        F_FUNCTION_NAME,
                        F_LINE_NUMBER,
