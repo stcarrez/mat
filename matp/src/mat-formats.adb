@@ -69,6 +69,22 @@ package body MAT.Formats is
    end Size;
 
    --  ------------------------------
+   --  Format the memory growth size into a string.
+   --  ------------------------------
+   function Size (Alloced : in MAT.Types.Target_Size;
+                  Freed   : in MAT.Types.Target_Size) return String is
+      use type MAT.Types.Target_Size;
+   begin
+      if Alloced > Freed then
+         return Size (Alloced - Freed);
+      elsif Alloced < Freed then
+         return "-" & Size (Freed - Alloced);
+      else
+         return "=" & Size (Alloced);
+      end if;
+   end Size;
+
+   --  ------------------------------
    --  Format the time relative to the start time.
    --  ------------------------------
    function Time (Value : in MAT.Types.Target_Tick_Ref;
