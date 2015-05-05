@@ -70,4 +70,36 @@ package body MAT.Events.Tools is
       Sort_Event_Info.Sort (List);
    end Build_Event_Info;
 
+   --  ------------------------------
+   --  Extract from the frame info map, the list of frame event info sorted
+   --  on the frame level and slot size.
+   --  ------------------------------
+   procedure Build_Frame_Info (Map  : in Frame_Event_Info_Map;
+                               List : in out Frame_Info_Vector) is
+
+      function "<" (Left, Right : in Frame_Info_Type) return Boolean;
+
+      function "<" (Left, Right : in Frame_Info_Type) return Boolean is
+      begin
+         if Left.Key.Level < Right.Key.Level then
+            return True;
+         else
+            return False;
+         end if;
+      end "<";
+
+      package Sort_Frame_Info is new Frame_Info_Vectors.Generic_Sorting;
+
+      Iter : Frame_Event_Info_Cursor := Map.First;
+      Item : Frame_Info_Type;
+   begin
+      while Frame_Event_Info_Maps.Has_Element (Iter) loop
+         Item.Key  := Frame_Event_Info_Maps.Key (Iter);
+         Item.Info := Frame_Event_Info_Maps.Element (Iter);
+         List.Append (Item);
+         Frame_Event_Info_Maps.Next (Iter);
+      end loop;
+      Sort_Frame_Info.Sort (List);
+   end Build_Frame_Info;
+
 end MAT.Events.Tools;
