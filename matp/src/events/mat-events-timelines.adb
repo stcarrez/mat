@@ -210,16 +210,7 @@ package body MAT.Events.Timelines is
                begin
                   --  Insert a new size with the event.
                   Info.First_Event := Event;
-                  Info.Last_Event := Event;
-                  Info.Count := 1;
-                  if Event.Index = MAT.Events.MSG_MALLOC then
-                     Info.Alloc_Size := Event.Size;
-                  elsif Event.Index = MAT.Events.MSG_REALLOC then
-                     Info.Alloc_Size := Event.Size;
-                     Info.Free_Size := Event.Old_Size;
-                  else
-                     Info.Free_Size := Event.Size;
-                  end if;
+                  MAT.Events.Tools.Collect_Info (Info, Event);
                   Sizes.Insert (Event.Size, Info);
                end;
             end if;
@@ -251,19 +242,7 @@ package body MAT.Events.Timelines is
                                 Info : in out MAT.Events.Tools.Event_Info_Type) is
             pragma Unreferenced (Key);
          begin
-            Info.Count      := Info.Count + 1;
-            Info.Last_Event := Event;
-            if Event.Event = 2 then
-               Info.Malloc_Count := Info.Malloc_Count + 1;
-               Info.Alloc_Size := Info.Alloc_Size + Event.Size;
-            elsif Event.Event = 3 then
-               Info.Realloc_Count := Info.Realloc_Count + 1;
-               Info.Alloc_Size := Info.Alloc_Size + Event.Size;
-               Info.Free_Size := Info.Free_Size + Event.Old_Size;
-            elsif Event.Event = 4 then
-               Info.Free_Count := Info.Free_Count + 1;
-               Info.Free_Size := Info.Free_Size + Event.Size;
-            end if;
+            MAT.Events.Tools.Collect_Info (Info, Event);
          end Update_Size;
 
       begin
@@ -292,9 +271,8 @@ package body MAT.Events.Timelines is
                      begin
                         --  Insert a new size with the event.
                         Info.First_Event := Event;
-                        Info.Last_Event := Event;
-                        Info.Frame_Addr := Key.Addr;
-                        Info.Count := 1;
+                        Info.Count := 0;
+                        MAT.Events.Tools.Collect_Info (Info, Event);
                         Frames.Insert (Key, Info);
                      end;
                   end if;
