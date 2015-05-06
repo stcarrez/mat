@@ -306,4 +306,16 @@ package body MAT.Formats is
       end case;
    end Event;
 
+   --  ------------------------------
+   --  Format a short description of the memory allocation slot.
+   --  ------------------------------
+   function Slot (Value      : in MAT.Types.Target_Addr;
+                  Item       : in MAT.Memory.Allocation;
+                  Start_Time : in MAT.Types.Target_Tick_Ref) return String is
+   begin
+      return Addr (Value) & " is " & Size (Item.Size)
+        & " bytes allocated after " & Duration (Item.Time - Start_Time)
+        & " by event" & MAT.Events.Event_Id_Type'Image (Item.Event);
+   end Slot;
+
 end MAT.Formats;
