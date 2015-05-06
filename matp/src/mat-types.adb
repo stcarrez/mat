@@ -111,9 +111,9 @@ package body MAT.Types is
             if C >= '0' and C <= '9' then
                Result := (Result * 16) + (Character'Pos (C) - Character'Pos ('0'));
             elsif C >= 'A' and C <= 'F' then
-               Result := (Result * 16) + (Character'Pos (C) - Character'Pos ('F') + 10);
+               Result := (Result * 16) + (Character'Pos (C) - Character'Pos ('A') + 10);
             elsif C >= 'a' and C <= 'f' then
-               Result := (Result * 16) + (Character'Pos (C) - Character'Pos ('f') + 10);
+               Result := (Result * 16) + (Character'Pos (C) - Character'Pos ('a') + 10);
             else
                raise Constraint_Error with "Invalid character: " & C;
             end if;
