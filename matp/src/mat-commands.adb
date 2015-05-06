@@ -807,10 +807,13 @@ package body MAT.Commands is
    procedure Execute (Target : in out MAT.Targets.Target_Type'Class;
                       Line   : in String) is
       Command : constant String := Get_Command (Line);
-      Index   : constant Natural := Util.Strings.Index (Line, ' ');
+      Index   : Natural := Util.Strings.Index (Line, ' ');
       Pos     : constant Command_Map.Cursor := Commands.Find (Command);
    begin
       if Command_Map.Has_Element (Pos) then
+         if Index = 0 then
+            Index := Line'Last + 1;
+         end if;
          Command_Map.Element (Pos) (Target, Line (Index + 1 .. Line'Last));
       elsif Command'Length > 0 then
          Target.Console.Error ("Command '" & Command
