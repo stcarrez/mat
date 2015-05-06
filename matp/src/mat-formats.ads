@@ -18,6 +18,7 @@
 with Ada.Strings.Unbounded;
 
 with MAT.Types;
+with MAT.Memory;
 with MAT.Events.Tools;
 package MAT.Formats is
 
@@ -60,5 +61,10 @@ package MAT.Formats is
    function Event (Item       : in MAT.Events.Target_Event_Type;
                    Related    : in MAT.Events.Tools.Target_Event_Vector;
                    Start_Time : in MAT.Types.Target_Tick_Ref) return String;
+
+   --  Format a short description of the memory allocation slot.
+   function Slot (Value      : in MAT.Types.Target_Addr;
+                  Item       : in MAT.Memory.Allocation;
+                  Start_Time : in MAT.Types.Target_Tick_Ref) return String;
 
 end MAT.Formats;
