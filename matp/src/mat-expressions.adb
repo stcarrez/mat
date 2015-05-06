@@ -264,6 +264,9 @@ package body MAT.Expressions is
             return Allocation.Time >= Node.Min_Time
               and Allocation.Time <= Node.Max_Time;
 
+         when N_HAS_ADDR =>
+            return Addr <= Node.Min_Addr and Addr + Allocation.Size >= Node.Max_Addr;
+
          when N_IN_FUNC =>
             return MAT.Frames.In_Function (Allocation.Frame, Node.Min_Addr, Node.Max_Addr);
 
