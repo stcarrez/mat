@@ -120,6 +120,7 @@ package body MAT.Commands is
       Iter    : MAT.Memory.Allocation_Cursor;
       Symbols : constant MAT.Symbols.Targets.Target_Symbols_Ref := Target.Process.Symbols;
       Console : constant MAT.Consoles.Console_Access := Target.Console;
+      Start, Finish : MAT.Types.Target_Tick_Ref;
 
       procedure Print (Addr : in MAT.Types.Target_Addr;
                        Slot : in MAT.Memory.Allocation) is
@@ -128,14 +129,8 @@ package body MAT.Commands is
 
          Symbol : MAT.Symbols.Targets.Symbol_Info;
       begin
-         Ada.Text_IO.Put (MAT.Types.Hex_Image (Addr));
-         Ada.Text_IO.Set_Col (14);
-         Ada.Text_IO.Put (MAT.Types.Target_Size'Image (Slot.Size));
-         Ada.Text_IO.Set_Col (30);
-         Ada.Text_IO.Put (MAT.Types.Target_Thread_Ref'Image (Slot.Thread));
-         Ada.Text_IO.Set_Col (50);
-         Ada.Text_IO.Put (MAT.Types.Target_Tick_Ref'Image (Slot.Time));
-         Ada.Text_IO.New_Line;
+         Console.Start_Row;
+         Console.Notice (Consoles.N_EVENT_ID, MAT.Formats.Slot (Addr, Slot, Start));
          for I in Backtrace'Range loop
             Console.Start_Row;
             Console.Print_Field (Consoles.F_ID, I);
@@ -147,11 +142,14 @@ package body MAT.Commands is
                                  MAT.Formats.Location (Symbol.File, Symbol.Line, Symbol.Name));
             Console.End_Row;
          end loop;
+         Console.End_Row;
       end Print;
 
       Filter  : MAT.Expressions.Expression_Type;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
    begin
+      Process.Events.Get_Time_Range (Start, Finish);
+
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_ID, "Id", 4);
       Console.Print_Title (MAT.Consoles.F_ADDR, "Address", 22);
