@@ -15,14 +15,11 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
---  with Ada.Containers;
---  with Ada.Finalization;
 
 with System;
 
 with Util.Streams.Buffered;
 
---  with MAT.Types;
 with MAT.Events;
 package MAT.Readers is
 
