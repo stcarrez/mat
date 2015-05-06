@@ -68,7 +68,8 @@ package MAT.Events.Timelines is
    --  the number of events found for the corresponding frame address.
    procedure Find_Frames (Target : in out MAT.Events.Targets.Target_Events'Class;
                           Filter : in MAT.Expressions.Expression_Type;
-                          Depth  : in Natural;
+                          Depth  : in Positive;
+                          Exact  : in Boolean;
                           Frames : in out MAT.Events.Tools.Frame_Event_Info_Map);
 
 end MAT.Events.Timelines;
