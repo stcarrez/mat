@@ -549,6 +549,9 @@ package body MAT.Commands is
       Print_Frame (Console, Event.Frame, Process.Symbols);
 
    exception
+      when Constraint_Error =>
+         Console.Error ("Invalid event '" & Args & "'");
+
       when MAT.Events.Tools.Not_Found =>
          Console.Error ("Event " & Args & " not found");
 
@@ -799,7 +802,7 @@ package body MAT.Commands is
                       & " filtered by the selection");
       Console.Notice (N_HELP, "sizes <selection>       Print a summary of sizes "
                       & "filtered by the selection");
-      Console.Notice (N_HELP, "frames <level>          Print the stack frames up"
+      Console.Notice (N_HELP, "frames <level> [<filter>] Print the stack frames up"
                       & " to the given level");
       Console.Notice (N_HELP, "open <file>             Load the mat file to analyze");
       Console.Notice (N_HELP, "symbol <file>           Load the executable symbol file");
@@ -810,6 +813,8 @@ package body MAT.Commands is
       Console.Notice (N_HELP, "  has 0x4a7281                  Allocations with the given address");
       Console.Notice (N_HELP, "  event >= 200 and event <= 300 Event range selection");
       Console.Notice (N_HELP, "  malloc or realloc             Malloc or realloc events");
+      Console.Notice (N_HELP, "  by printf and not by foo      Event produced by a function");
+      Console.Notice (N_HELP, "  in libz.so.1                  Event produced by a shared library");
    end Help_Command;
 
    function Get_Command (Line : in String) return String is
