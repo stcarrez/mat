@@ -229,7 +229,8 @@ package body MAT.Events.Timelines is
    --  ------------------------------
    procedure Find_Frames (Target : in out MAT.Events.Targets.Target_Events'Class;
                           Filter : in MAT.Expressions.Expression_Type;
-                          Depth  : in Natural;
+                          Depth  : in Positive;
+                          Exact  : in Boolean;
                           Frames : in out MAT.Events.Tools.Frame_Event_Info_Map) is
       procedure Collect_Event (Event : in MAT.Events.Target_Event_Type);
 
@@ -253,9 +254,20 @@ package body MAT.Events.Timelines is
          declare
             Backtrace : constant MAT.Frames.Frame_Table := MAT.Frames.Backtrace (Event.Frame);
             Key       : MAT.Events.Tools.Frame_Key_Type;
+            First     : Natural;
+            Last      : Natural;
          begin
-            for I in Backtrace'Range loop
-               exit when I > Depth;
+            if Exact then
+               First := Depth;
+            else
+               First := Backtrace'First;
+            end if;
+            if Depth < Backtrace'Last then
+               Last := Depth;
+            else
+               Last := Backtrace'Last;
+            end if;
+            for I in First .. Last loop
                Key.Addr  := Backtrace (Backtrace'Last - I + 1);
                Key.Level := I;
                declare
