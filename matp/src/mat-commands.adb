@@ -489,38 +489,9 @@ package body MAT.Commands is
       Events  : MAT.Events.Tools.Target_Event_Vector;
       Filter  : MAT.Expressions.Expression_Type;
       Iter    : MAT.Events.Tools.Target_Event_Cursor;
-      Pos     : Natural := Util.Strings.Index (Args, ' ');
-      Exact_Depth : Boolean := False;
-      Depth       : Positive := 3;
    begin
-      if Pos = 0 then
-         Pos := Args'Last;
-      end if;
-      if Pos < Args'Last then
-         --  Parse the number that identifies the frame depth to print.
-         --  When that number is preceeded by '=', only that frame depth is reported.
-         begin
-            if Args (Args'First) = '=' then
-               Exact_Depth := True;
-               Depth := Positive'Value (Args (Args'First + 1 .. Pos - 1));
-            else
-               Depth := Positive'Value (Args (Args'First .. Pos - 1));
-            end if;
-
-         exception
-            when Constraint_Error =>
-               Target.Console.Error ("Invalid frame depth '" & Args (Args'First .. Pos - 1));
-               return;
-         end;
-
-         --  Skip spaces before the optional filter expression.
-         while Pos < Args'Last loop
-            exit when Args (Pos) /= ' ';
-            Pos := Pos + 1;
-         end loop;
-         if Pos < Args'Last then
-            Filter := MAT.Expressions.Parse (Args, Process.all'Access);
-         end if;
+      if Args'Length > 0 then
+         Filter := MAT.Expressions.Parse (Args, Process.all'Access);
       end if;
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_ID, "Id", 10);
