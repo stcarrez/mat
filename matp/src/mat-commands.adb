@@ -22,7 +22,6 @@ with Ada.Containers.Indefinite_Hashed_Maps;
 with Ada.Strings.Hash;
 with Ada.Exceptions;
 with Ada.IO_Exceptions;
-with Ada.Text_IO;
 with Ada.Strings.Unbounded;
 
 with GNAT.Command_Line;
@@ -37,7 +36,6 @@ with MAT.Memory.Targets;
 with MAT.Symbols.Targets;
 with MAT.Expressions;
 with MAT.Frames;
-with MAT.Events.Targets;
 with MAT.Consoles;
 with MAT.Formats;
 with MAT.Events.Tools;
@@ -199,7 +197,6 @@ package body MAT.Commands is
       while MAT.Memory.Tools.Size_Info_Maps.Has_Element (Iter) loop
          declare
             use MAT.Memory.Tools;
-            use type MAT.Types.Target_Size;
 
             Size  : constant MAT.Types.Target_Size := MAT.Memory.Tools.Size_Info_Maps.Key (Iter);
             Info  : constant Size_Info_Type := Memory.Tools.Size_Info_Maps.Element (Iter);
@@ -243,8 +240,6 @@ package body MAT.Commands is
       Iter := Threads.First;
       while MAT.Memory.Memory_Info_Maps.Has_Element (Iter) loop
          declare
-            use type MAT.Types.Target_Size;
-
             Thread : constant Types.Target_Thread_Ref := MAT.Memory.Memory_Info_Maps.Key (Iter);
             Info   : constant Memory.Memory_Info := MAT.Memory.Memory_Info_Maps.Element (Iter);
          begin
@@ -293,8 +288,6 @@ package body MAT.Commands is
       Iter := Frames.First;
       while MAT.Memory.Frame_Info_Maps.Has_Element (Iter) loop
          declare
-            use type MAT.Types.Target_Size;
-
             Func   : constant Types.Target_Addr := MAT.Memory.Frame_Info_Maps.Key (Iter);
             Info   : constant Memory.Frame_Info := MAT.Memory.Frame_Info_Maps.Element (Iter);
             Symbol : MAT.Symbols.Targets.Symbol_Info;
@@ -410,7 +403,6 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Event_Sizes_Command (Target : in out MAT.Targets.Target_Type'Class;
                                   Args   : in String) is
-      use type MAT.Types.Target_Size;
 
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
@@ -568,12 +560,11 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Timeline_Command (Target : in out MAT.Targets.Target_Type'Class;
                                Args   : in String) is
+      pragma Unreferenced (Args);
       use type MAT.Types.Target_Tick_Ref;
-      use type MAT.Types.Target_Size;
 
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
-      Id      : MAT.Events.Event_Id_Type;
       Start, Finish : MAT.Types.Target_Tick_Ref;
       Groups  : MAT.Events.Timelines.Timeline_Info_Vector;
       Iter    : MAT.Events.Timelines.Timeline_Info_Cursor;
@@ -677,6 +668,8 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Info_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String) is
+      pragma Unreferenced (Args);
+
       use type MAT.Targets.Target_Process_Type_Access;
       use type MAT.Types.Target_Tick_Ref;
       use Ada.Strings.Unbounded;
