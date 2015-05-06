@@ -223,7 +223,11 @@ package body MAT.Expressions is
    function Is_Selected (Node       : in Expression_Type;
                          Event      : in MAT.Events.Target_Event_Type) return Boolean is
    begin
-      return Is_Selected (Node.Node.all, Event);
+      if Node.Node = null then
+         return True;
+      else
+         return Is_Selected (Node.Node.all, Event);
+      end if;
    end Is_Selected;
 
    --  ------------------------------
