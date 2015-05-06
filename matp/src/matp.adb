@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
---  mat-types -- Global types
---  Copyright (C) 2014 Stephane Carrez
+--  matp -- Main program
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
