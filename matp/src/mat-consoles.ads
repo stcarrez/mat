@@ -45,6 +45,8 @@ package MAT.Consoles is
                        F_TIME,
                        F_DURATION,
                        F_EVENT,
+                       F_NEXT,
+                       F_PREVIOUS,
                        F_MODE,
                        F_FRAME_ID,
                        F_RANGE_ADDR,
