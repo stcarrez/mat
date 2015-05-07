@@ -666,19 +666,54 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Addr_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String) is
+      use type ELF.Elf32_Word;
+
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Addr    : MAT.Types.Target_Addr;
       Maps    : MAT.Memory.Region_Info_Map;
+      Region  : MAT.Memory.Region_Info;
    begin
-      Addr := MAT.Types.Hex_Value (Args);
+      if Args'Length >= 3 and then Args (Args'First .. Args'First + 1) = "0x" then
+         Addr := MAT.Types.Hex_Value (Args (Args'First + 2 .. Args'Last));
+      else
+         Addr := MAT.Types.Hex_Value (Args);
+      end if;
 
       --  Find out the memory regions for that address.
       MAT.Memory.Targets.Find (Memory => Process.Memory,
                                From   => Addr,
                                To     => Addr,
                                Into   => Maps);
+      if Maps.Is_Empty then
+         Console.Error ("Address '" & Args & "' is not in any memory region.");
+         return;
+      end if;
+
+      --  Print the memory region.
       Print_Regions (Target.Console, Maps);
+      Region := Maps.First_Element;
+
+      --  If this is an executable region, find the symbol and print it.
+      if (Region.Flags and ELF.PF_X) /= 0 then
+         declare
+            Symbol : MAT.Symbols.Targets.Symbol_Info;
+         begin
+            MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Process.Symbols.Value.all,
+                                                   Addr    => Addr,
+                                                   Symbol  => Symbol);
+         end;
+      else
+         declare
+            Filter  : MAT.Expressions.Expression_Type;
+            Start, Finish : MAT.Types.Target_Tick_Ref;
+            Events  : MAT.Events.Tools.Target_Event_Vector;
+         begin
+            Filter := MAT.Expressions.Create_Addr (Addr, Addr);
+            Process.Events.Get_Time_Range (Start, Finish);
+            Process.Events.Get_Events (Start, Finish, Events);
+         end;
+      end if;
 
    exception
       when Constraint_Error =>
