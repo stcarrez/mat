@@ -306,7 +306,7 @@ package body MAT.Frames is
       F.Calls (1 .. F.Local_Depth - Pos) := F.Calls (Pos + 1 .. F.Local_Depth);
       F.Parent         := New_Parent;
       F.Next           := null;
-      F.Used           := F.Used - 1;
+      F.Used           := 1;
       New_Parent.Depth := F.Depth - F.Local_Depth + Pos;
       F.Local_Depth    := F.Local_Depth - Pos;
 
