@@ -72,6 +72,10 @@ package body MAT.Commands is
                           Frame   : in MAT.Frames.Frame_Type;
                           Symbols : in MAT.Symbols.Targets.Target_Symbols_Ref);
 
+   --  Print the memory regions described by the Regions map.
+   procedure Print_Regions (Console : in MAT.Consoles.Console_Access;
+                            Regions : in MAT.Memory.Region_Info_Map);
+
    package Command_Map is
      new Ada.Containers.Indefinite_Hashed_Maps (Key_Type        => String,
                                                 Element_Type    => Command_Handler,
@@ -103,6 +107,46 @@ package body MAT.Commands is
          Console.End_Row;
       end loop;
    end Print_Frame;
+
+   --  ------------------------------
+   --  Print the memory regions described by the Regions map.
+   --  ------------------------------
+   procedure Print_Regions (Console : in MAT.Consoles.Console_Access;
+                            Regions : in MAT.Memory.Region_Info_Map) is
+      use type ELF.Elf32_Word;
+      Iter    : MAT.Memory.Region_Info_Cursor;
+      Region  : MAT.Memory.Region_Info;
+   begin
+      Console.Start_Title;
+      Console.Print_Title (MAT.Consoles.F_RANGE_ADDR, "Address range", 39);
+      Console.Print_Title (MAT.Consoles.F_MODE, "Flags", 6);
+      Console.Print_Title (MAT.Consoles.F_FILE_NAME, "Path", 40);
+      Console.End_Title;
+
+      Iter := Regions.First;
+      while MAT.Memory.Region_Info_Maps.Has_Element (Iter) loop
+         Region := MAT.Memory.Region_Info_Maps.Element (Iter);
+         declare
+            Flags  : String (1 .. 3) := "---";
+         begin
+            if (Region.Flags and ELF.PF_R) /= 0 then
+               Flags (1) := 'r';
+            end if;
+            if (Region.Flags and ELF.PF_W) /= 0 then
+               Flags (2) := 'w';
+            end if;
+            if (Region.Flags and ELF.PF_X) /= 0 then
+               Flags (3) := 'x';
+            end if;
+            Console.Start_Row;
+            Console.Print_Field (MAT.Consoles.F_RANGE_ADDR, Region.Start_Addr, Region.End_Addr);
+            Console.Print_Field (MAT.Consoles.F_MODE, Flags);
+            Console.Print_Field (MAT.Consoles.F_FILE_NAME, Region.Path);
+            Console.End_Row;
+         end;
+         MAT.Memory.Region_Info_Maps.Next (Iter);
+      end loop;
+   end Print_Regions;
 
    --  ------------------------------
    --  Sizes command.
@@ -618,52 +662,44 @@ package body MAT.Commands is
    end Timeline_Command;
 
    --  ------------------------------
+   --  Addr command to print a description of an address.
+   --  ------------------------------
+   procedure Addr_Command (Target : in out MAT.Targets.Target_Type'Class;
+                           Args   : in String) is
+      Console : constant MAT.Consoles.Console_Access := Target.Console;
+      Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
+      Addr    : MAT.Types.Target_Addr;
+      Maps    : MAT.Memory.Region_Info_Map;
+   begin
+      Addr := MAT.Types.Hex_Value (Args);
+
+      --  Find out the memory regions for that address.
+      MAT.Memory.Targets.Find (Memory => Process.Memory,
+                               From   => Addr,
+                               To     => Addr,
+                               Into   => Maps);
+      Print_Regions (Target.Console, Maps);
+
+   exception
+      when Constraint_Error =>
+         Console.Error ("Invalid address '" & Args & "'");
+   end Addr_Command;
+
+   --  ------------------------------
    --  Maps command to dump the memory maps of the program.
    --  ------------------------------
    procedure Maps_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String) is
       pragma Unreferenced (Args);
-      use type ELF.Elf32_Word;
 
-      Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Maps    : MAT.Memory.Region_Info_Map;
-      Iter    : MAT.Memory.Region_Info_Cursor;
-      Region  : MAT.Memory.Region_Info;
    begin
       MAT.Memory.Targets.Find (Memory => Process.Memory,
                                From   => MAT.Types.Target_Addr'First,
                                To     => MAT.Types.Target_Addr'Last,
                                Into   => Maps);
-      Console.Start_Title;
-      Console.Print_Title (MAT.Consoles.F_RANGE_ADDR, "Address range", 39);
-      Console.Print_Title (MAT.Consoles.F_MODE, "Flags", 6);
-      Console.Print_Title (MAT.Consoles.F_FILE_NAME, "Path", 40);
-      Console.End_Title;
-
-      Iter := Maps.First;
-      while MAT.Memory.Region_Info_Maps.Has_Element (Iter) loop
-         Region := MAT.Memory.Region_Info_Maps.Element (Iter);
-         declare
-            Flags  : String (1 .. 3) := "---";
-         begin
-            if (Region.Flags and ELF.PF_R) /= 0 then
-               Flags (1) := 'r';
-            end if;
-            if (Region.Flags and ELF.PF_W) /= 0 then
-               Flags (2) := 'w';
-            end if;
-            if (Region.Flags and ELF.PF_X) /= 0 then
-               Flags (3) := 'x';
-            end if;
-            Console.Start_Row;
-            Console.Print_Field (MAT.Consoles.F_RANGE_ADDR, Region.Start_Addr, Region.End_Addr);
-            Console.Print_Field (MAT.Consoles.F_MODE, Flags);
-            Console.Print_Field (MAT.Consoles.F_FILE_NAME, Region.Path);
-            Console.End_Row;
-         end;
-         MAT.Memory.Region_Info_Maps.Next (Iter);
-      end loop;
+      Print_Regions (Target.Console, Maps);
    end Maps_Command;
 
    --  ------------------------------
@@ -888,4 +924,5 @@ begin
    Commands.Insert ("help", Help_Command'Access);
    Commands.Insert ("maps", Maps_Command'Access);
    Commands.Insert ("info", Info_Command'Access);
+   Commands.Insert ("addr", Addr_Command'Access);
 end MAT.Commands;
