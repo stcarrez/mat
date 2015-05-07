@@ -404,6 +404,7 @@ package body MAT.Frames is
             Pos     := Pos + 1;
          end if;
       end loop;
+      Current.Used := Current.Used + 1;
       if Lpos <= Current.Local_Depth then
          Split (Current, Lpos - 1);
       end if;
