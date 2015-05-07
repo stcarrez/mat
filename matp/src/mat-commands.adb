@@ -702,6 +702,10 @@ package body MAT.Commands is
             MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Process.Symbols.Value.all,
                                                    Addr    => Addr,
                                                    Symbol  => Symbol);
+            if Ada.Strings.Unbounded.Length (Symbol.File) /= 0 then
+               Console.Notice (MAT.Consoles.N_INFO,
+                               MAT.Formats.Location (Symbol.File, Symbol.Line, Symbol.Name));
+            end if;
          end;
       else
          declare
