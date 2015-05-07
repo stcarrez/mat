@@ -218,7 +218,10 @@ package body MAT.Memory.Targets is
                       Into : in out MAT.Memory.Region_Info_Map) is
          Iter : Region_Info_Cursor;
       begin
-         Iter := Regions.Ceiling (From);
+         Iter := Regions.Floor (From);
+         if not Region_Info_Maps.Has_Element (Iter) then
+            Iter := Regions.First;
+         end if;
          while Region_Info_Maps.Has_Element (Iter) loop
             declare
                Start  : constant MAT.Types.Target_Addr := Region_Info_Maps.Key (Iter);
