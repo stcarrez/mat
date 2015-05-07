@@ -67,4 +67,8 @@ package MAT.Commands is
    procedure Timeline_Command (Target : in out MAT.Targets.Target_Type'Class;
                                Args   : in String);
 
+   --  Addr command to print a description of an address.
+   procedure Addr_Command (Target : in out MAT.Targets.Target_Type'Class;
+                           Args   : in String);
+
 end MAT.Commands;
