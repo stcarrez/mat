@@ -517,6 +517,8 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Events_Command (Target : in out MAT.Targets.Target_Type'Class;
                              Args   : in String) is
+      use type MAT.Events.Event_Id_Type;
+
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Start, Finish : MAT.Types.Target_Tick_Ref;
@@ -528,7 +530,9 @@ package body MAT.Commands is
          Filter := MAT.Expressions.Parse (Args, Process.all'Access);
       end if;
       Console.Start_Title;
+      Console.Print_Title (MAT.Consoles.F_PREVIOUS, "Previous", 10);
       Console.Print_Title (MAT.Consoles.F_ID, "Id", 10);
+      Console.Print_Title (MAT.Consoles.F_NEXT, "Next", 10);
       Console.Print_Title (MAT.Consoles.F_TIME, "Time", 10);
       Console.Print_Title (MAT.Consoles.F_EVENT, "Event", 60);
       Console.End_Title;
@@ -546,8 +550,20 @@ package body MAT.Commands is
          begin
             if Filter.Is_Selected (Event) then
                Console.Start_Row;
+               if Event.Prev_Id /= 0 then
+                  Console.Print_Field (MAT.Consoles.F_PREVIOUS,
+                                       MAT.Events.Event_Id_Type'Image (Event.Prev_Id));
+               else
+                  Console.Print_Field (MAT.Consoles.F_PREVIOUS, "");
+               end if;
                Console.Print_Field (MAT.Consoles.F_ID,
                                     MAT.Events.Event_Id_Type'Image (Event.Id));
+               if Event.Next_Id /= 0 then
+                  Console.Print_Field (MAT.Consoles.F_NEXT,
+                                       MAT.Events.Event_Id_Type'Image (Event.Next_Id));
+               else
+                  Console.Print_Field (MAT.Consoles.F_NEXT, "");
+               end if;
                Console.Print_Duration (MAT.Consoles.F_TIME, Time);
                Console.Print_Field (MAT.Consoles.F_EVENT, MAT.Formats.Event (Event));
                Console.End_Row;
