@@ -71,6 +71,8 @@ package body MAT.Symbols.Targets is
    procedure Load_Symbols (Symbols     : in out Target_Symbols;
                            Region      : in MAT.Memory.Region_Info;
                            Offset_Addr : in MAT.Types.Target_Addr) is
+      use type Bfd.File_Flags;
+
       Pos  : constant Symbols_Cursor := Symbols.Libraries.Find (Region.Start_Addr);
       Syms : Region_Symbols_Ref;
    begin
@@ -85,6 +87,9 @@ package body MAT.Symbols.Targets is
       if Ada.Strings.Unbounded.Length (Region.Path) > 0 then
          Open (Syms.Value.all, Ada.Strings.Unbounded.To_String (Region.Path),
                Ada.Strings.Unbounded.To_String (Symbols.Search_Path));
+         if (Bfd.Files.Get_File_Flags (Syms.Value.File) and Bfd.Files.EXEC_P) /= 0 then
+            Syms.Value.Offset := 0;
+         end if;
       end if;
    end Load_Symbols;
 
