@@ -144,6 +144,9 @@ package MAT.Consoles is
                           Value   : in Ada.Strings.Unbounded.Unbounded_String;
                           Justify : in Justify_Type := J_LEFT);
 
+   --  Get the field count that was setup through the Print_Title calls.
+   function Get_Field_Count (Console : in Console_Type) return Natural;
+
 private
 
    type Field_Size_Array is array (Field_Type) of Natural;
