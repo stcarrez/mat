@@ -53,8 +53,6 @@ package MAT.Types is
    --  Format the target time to a printable representation.
    function Tick_Image (Value : in Target_Tick_Ref) return String;
 
-   function "-" (Left, Right : in Target_Tick_Ref) return Target_Tick_Ref;
-
    --  Convert the hexadecimal string into an unsigned integer.
    function Hex_Value (Value : in String) return Uint64;
 
