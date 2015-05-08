@@ -22,6 +22,8 @@ package body MAT.Formats is
 
    Hex_Prefix : Boolean := True;
 
+   Hex_Length : Positive := 16;
+
    Conversion : constant String (1 .. 10) := "0123456789";
 
    function Location (File : in Ada.Strings.Unbounded.Unbounded_String) return String;
@@ -46,7 +48,7 @@ package body MAT.Formats is
    --  Format the address into a string.
    --  ------------------------------
    function Addr (Value : in MAT.Types.Target_Addr) return String is
-      Hex : constant String := MAT.Types.Hex_Image (Value);
+      Hex : constant String := MAT.Types.Hex_Image (Value, Hex_Length);
    begin
       if Hex_Prefix then
          return "0x" & Hex;
