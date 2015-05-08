@@ -62,6 +62,10 @@ package MAT.Formats is
                    Related    : in MAT.Events.Tools.Target_Event_Vector;
                    Start_Time : in MAT.Types.Target_Tick_Ref) return String;
 
+   --  Format the difference between two event IDs (offset).
+   function Offset (First  : in MAT.Events.Event_Id_Type;
+                    Second : in MAT.Events.Event_Id_Type) return String;
+
    --  Format a short description of the memory allocation slot.
    function Slot (Value      : in MAT.Types.Target_Addr;
                   Item       : in MAT.Memory.Allocation;
