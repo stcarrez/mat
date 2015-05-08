@@ -128,4 +128,12 @@ package body MAT.Consoles is
       end if;
    end Print_Field;
 
+   --  ------------------------------
+   --  Get the field count that was setup through the Print_Title calls.
+   --  ------------------------------
+   function Get_Field_Count (Console : in Console_Type) return Natural is
+   begin
+      return Console.Field_Count;
+   end Get_Field_Count;
+
 end MAT.Consoles;
