@@ -351,6 +351,19 @@ package body MAT.Events.Probes is
          Read_Definition (Client, Msg);
       end loop;
 
+      --  Look at the probe definition to gather the target address size.
+      Client.Addr_Size := MAT.Events.T_UINT32;
+      for I in Client.Probe'Range loop
+         declare
+            Def : MAT.Events.Attribute renames Client.Probe (I);
+         begin
+            if Def.Ref = P_THREAD_SP or Def.Ref = P_FRAME_PC then
+               Client.Addr_Size := Def.Kind;
+               exit;
+            end if;
+         end;
+      end loop;
+
    exception
       when E : MAT.Readers.Marshaller.Buffer_Underflow_Error =>
          Log.Error ("Not enough data in the message", E, True);
@@ -360,7 +373,7 @@ package body MAT.Events.Probes is
    --  ------------------------------
    --  Get the size of a target address (4 or 8 bytes).
    --  ------------------------------
-   function Get_Address_Size (Client : in Probe_Manager_Type) return MAT.Types.Target_Size is
+   function Get_Address_Size (Client : in Probe_Manager_Type) return MAT.Events.Attribute_Type is
    begin
       return Client.Addr_Size;
    end Get_Address_Size;
