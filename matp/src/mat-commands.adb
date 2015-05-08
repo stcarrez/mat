@@ -615,7 +615,6 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Timeline_Command (Target : in out MAT.Targets.Target_Type'Class;
                                Args   : in String) is
-      pragma Unreferenced (Args);
       use type MAT.Types.Target_Tick_Ref;
 
       Console : constant MAT.Consoles.Console_Access := Target.Console;
@@ -623,8 +622,19 @@ package body MAT.Commands is
       Start, Finish : MAT.Types.Target_Tick_Ref;
       Groups  : MAT.Events.Timelines.Timeline_Info_Vector;
       Iter    : MAT.Events.Timelines.Timeline_Info_Cursor;
+      Level   : Positive := 1;
    begin
-      MAT.Events.Timelines.Extract (Process.Events.all, Groups);
+      if Args'Length > 0 then
+         begin
+            Level := Positive'Value (Args);
+
+         exception
+            when Constraint_Error =>
+               Console.Error ("Invalid level '" & Args & "'");
+               return;
+         end;
+      end if;
+      MAT.Events.Timelines.Extract (Process.Events.all, Level, Groups);
 
       Process.Events.Get_Time_Range (Start, Finish);
       Console.Start_Title;
