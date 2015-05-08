@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 
+with Bfd;
 with ELF;
 with MAT.Readers.Marshaller;
 package body MAT.Targets.Probes is
@@ -215,6 +216,12 @@ package body MAT.Targets.Probes is
                if Probe.Target.Options.Load_Symbols then
                   begin
                      Probe.Target.Process.Symbols.Value.Load_Symbols (Region, Offset);
+
+                  exception
+                     when Bfd.OPEN_ERROR =>
+                        Probe.Target.Console.Error
+                          ("Cannot open symbol library file '"
+                           & Ada.Strings.Unbounded.To_String (Region.Path) & "'");
                   end;
                end if;
             end if;
