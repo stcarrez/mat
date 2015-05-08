@@ -290,4 +290,23 @@ package body MAT.Events.Timelines is
       Target.Iterate (Process => Collect_Event'Access);
    end Find_Frames;
 
+   --  ------------------------------
+   --  Collect the events that match the filter and append them to the events vector.
+   --  ------------------------------
+   procedure Filter_Events (Target : in out MAT.Events.Targets.Target_Events'Class;
+                            Filter : in MAT.Expressions.Expression_Type;
+                            Events : in out MAT.Events.Tools.Target_Event_Vector) is
+      procedure Collect_Event (Event : in MAT.Events.Target_Event_Type);
+
+      procedure Collect_Event (Event : in MAT.Events.Target_Event_Type) is
+      begin
+         if Filter.Is_Selected (Event) then
+            Events.Append (Event);
+         end if;
+      end Collect_Event;
+
+   begin
+      Target.Iterate (Process => Collect_Event'Access);
+   end Filter_Events;
+
 end MAT.Events.Timelines;
