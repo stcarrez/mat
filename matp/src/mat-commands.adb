@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Util.Strings;
+with Util.Strings.Tokenizers;
 with Util.Log.Loggers;
 
 with Ada.Containers.Indefinite_Hashed_Maps;
@@ -213,6 +214,14 @@ package body MAT.Commands is
 
       Symbol : MAT.Symbols.Targets.Symbol_Info;
    begin
+      if Console.Get_Field_Count = 0 then
+         Console.Start_Title;
+         Console.Print_Title (MAT.Consoles.F_ID, "Id", 4);
+         Console.Print_Title (MAT.Consoles.F_ADDR, "Address", 22);
+         Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 80);
+         Console.End_Title;
+      end if;
+
       Console.Start_Row;
       Console.Notice (Consoles.N_EVENT_ID, MAT.Formats.Slot (Addr, Slot, Start));
       for I in Backtrace'Range loop
@@ -229,6 +238,40 @@ package body MAT.Commands is
       Console.End_Row;
    end Print_Slot;
 
+   procedure Get_Arguments (Args       : in String;
+                            Long_Flag  : out Boolean;
+                            Count_Flag : out Boolean;
+                            Pos        : out Natural) is
+      procedure Check_Argument (Token : in String;
+                                Done  : out Boolean);
+
+      procedure Check_Argument (Token : in String;
+                                Done  : out Boolean) is
+      begin
+         if Token'Length = 0 or else Token (Token'First) /= '-' then
+            Done := True;
+         elsif Token = "-l" then
+            Long_Flag := True;
+            Done := False;
+            Pos := Pos + Token'Length + 1;
+         elsif Token = "-c" then
+            Count_Flag := True;
+            Done := False;
+            Pos := Pos + Token'Length + 1;
+         else
+            Done := True;
+         end if;
+      end Check_Argument;
+
+   begin
+      Long_Flag := False;
+      Count_Flag := False;
+      Pos := Args'First;
+      Util.Strings.Tokenizers.Iterate_Tokens (Content => Args,
+                                              Pattern => " ",
+                                              Process => Check_Argument'Access);
+   end Get_Arguments;
+
    --  ------------------------------
    --  Sizes command.
    --  Collect statistics about the used memory slots and report the different slot
@@ -236,40 +279,38 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Slot_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String) is
-      procedure Print (Addr : in MAT.Types.Target_Addr;
-                       Slot : in MAT.Memory.Allocation);
-
-      Slots   : MAT.Memory.Allocation_Map;
-      Iter    : MAT.Memory.Allocation_Cursor;
-      Symbols : constant MAT.Symbols.Targets.Target_Symbols_Ref := Target.Process.Symbols;
-      Console : constant MAT.Consoles.Console_Access := Target.Console;
+      Slots      : MAT.Memory.Allocation_Map;
+      Iter       : MAT.Memory.Allocation_Cursor;
+      Symbols    : constant MAT.Symbols.Targets.Target_Symbols_Ref := Target.Process.Symbols;
+      Console    : constant MAT.Consoles.Console_Access := Target.Console;
       Start, Finish : MAT.Types.Target_Tick_Ref;
-
-      procedure Print (Addr : in MAT.Types.Target_Addr;
-                       Slot : in MAT.Memory.Allocation) is
-      begin
-         Print_Slot (Console, Addr, Slot, Symbols, Start);
-      end Print;
-
-      Filter  : MAT.Expressions.Expression_Type;
-      Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
+      Filter     : MAT.Expressions.Expression_Type;
+      Process    : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
+      Pos        : Natural;
+      Long_Flag  : Boolean;
+      Count_Flag : Boolean;
    begin
+      Get_Arguments (Args, Long_Flag, Count_Flag, Pos);
+
       Process.Events.Get_Time_Range (Start, Finish);
 
-      Console.Start_Title;
-      Console.Print_Title (MAT.Consoles.F_ID, "Id", 4);
-      Console.Print_Title (MAT.Consoles.F_ADDR, "Address", 22);
-      Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 80);
-      Console.End_Title;
-
-      Filter := MAT.Expressions.Parse (Args, Process.all'Access);
+      Filter := MAT.Expressions.Parse (Args (Pos .. Args'Last), Process.all'Access);
       Process.Memory.Find (From   => MAT.Types.Target_Addr'First,
                            To     => MAT.Types.Target_Addr'Last,
                            Filter => Filter,
                            Into   => Slots);
       Iter := Slots.First;
       while MAT.Memory.Allocation_Maps.Has_Element (Iter) loop
-         MAT.Memory.Allocation_Maps.Query_Element (Iter, Print'Access);
+         declare
+            Addr : constant MAT.Types.Target_Addr := MAT.Memory.Allocation_Maps.Key (Iter);
+            Slot : constant MAT.Memory.Allocation := MAT.Memory.Allocation_Maps.Element (Iter);
+         begin
+            if not Long_Flag then
+               Console.Notice (Consoles.N_EVENT_ID, MAT.Formats.Slot (Addr, Slot, Start));
+            else
+               Print_Slot (Console, Addr, Slot, Symbols, Start);
+            end if;
+         end;
          MAT.Memory.Allocation_Maps.Next (Iter);
       end loop;
 
