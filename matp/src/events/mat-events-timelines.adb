@@ -177,16 +177,7 @@ package body MAT.Events.Timelines is
                                 Info : in out MAT.Events.Tools.Event_Info_Type) is
             pragma Unreferenced (Size);
          begin
-            Info.Count      := Info.Count + 1;
-            Info.Last_Event := Event;
-            if Event.Index = MAT.Events.MSG_MALLOC then
-               Info.Alloc_Size := Info.Alloc_Size + Event.Size;
-            elsif Event.Index = MAT.Events.MSG_REALLOC then
-               Info.Alloc_Size := Info.Alloc_Size + Event.Size;
-               Info.Free_Size := Info.Alloc_Size + Event.Old_Size;
-            else
-               Info.Free_Size := Info.Alloc_Size + Event.Size;
-            end if;
+            MAT.Events.Tools.Collect_Info (Info, Event);
          end Update_Size;
 
       begin
