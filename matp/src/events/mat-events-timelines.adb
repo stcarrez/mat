@@ -23,6 +23,7 @@ package body MAT.Events.Timelines is
    ITERATE_COUNT : constant MAT.Events.Event_Id_Type := 10_000;
 
    procedure Extract (Target : in out MAT.Events.Targets.Target_Events'Class;
+                      Level  : in Positive;
                       Into   : in out Timeline_Info_Vector) is
       use type MAT.Types.Target_Time;
       use type MAT.Types.Target_Size;
@@ -33,11 +34,12 @@ package body MAT.Events.Timelines is
       Prev_Event  : MAT.Events.Target_Event_Type;
       Info        : Timeline_Info;
       First_Id    : MAT.Events.Event_Id_Type;
+      Limit       : MAT.Types.Target_Time := MAT.Types.Target_Time (Level * 1_000_000);
 
       procedure Collect (Event : in MAT.Events.Target_Event_Type) is
          Dt : constant MAT.Types.Target_Time := Event.Time - Prev_Event.Time;
       begin
-         if Dt > 500_000 then
+         if Dt > Limit then
             Into.Append (Info);
             Info.Malloc_Count := 0;
             Info.Realloc_Count := 0;
