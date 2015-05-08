@@ -81,6 +81,13 @@ package body MAT.Commands is
                            Events  : in MAT.Events.Tools.Target_Event_Vector;
                            Start   : in MAT.Types.Target_Tick_Ref);
 
+   --  Print the full description of a memory slot that is currently allocated.
+   procedure Print_Slot (Console : in MAT.Consoles.Console_Access;
+                         Addr    : in MAT.Types.Target_Addr;
+                         Slot    : in MAT.Memory.Allocation;
+                         Symbols : in MAT.Symbols.Targets.Target_Symbols_Ref;
+                         Start   : in MAT.Types.Target_Tick_Ref);
+
    package Command_Map is
      new Ada.Containers.Indefinite_Hashed_Maps (Key_Type        => String,
                                                 Element_Type    => Command_Handler,
@@ -194,6 +201,35 @@ package body MAT.Commands is
    end Print_Events;
 
    --  ------------------------------
+   --  Print the full description of a memory slot that is currently allocated.
+   --  ------------------------------
+   procedure Print_Slot (Console : in MAT.Consoles.Console_Access;
+                         Addr    : in MAT.Types.Target_Addr;
+                         Slot    : in MAT.Memory.Allocation;
+                         Symbols : in MAT.Symbols.Targets.Target_Symbols_Ref;
+                         Start   : in MAT.Types.Target_Tick_Ref) is
+      use type MAT.Frames.Frame_Type;
+      Backtrace : constant MAT.Frames.Frame_Table := MAT.Frames.Backtrace (Slot.Frame);
+
+      Symbol : MAT.Symbols.Targets.Symbol_Info;
+   begin
+      Console.Start_Row;
+      Console.Notice (Consoles.N_EVENT_ID, MAT.Formats.Slot (Addr, Slot, Start));
+      for I in Backtrace'Range loop
+         Console.Start_Row;
+         Console.Print_Field (Consoles.F_ID, I);
+         Console.Print_Field (Consoles.F_ADDR, MAT.Formats.Addr (Backtrace (I)));
+         MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Symbols.Value.all,
+                                                Addr    => Backtrace (I),
+                                                Symbol  => Symbol);
+         Console.Print_Field (Consoles.F_FUNCTION_NAME,
+                              MAT.Formats.Location (Symbol.File, Symbol.Line, Symbol.Name));
+         Console.End_Row;
+      end loop;
+      Console.End_Row;
+   end Print_Slot;
+
+   --  ------------------------------
    --  Sizes command.
    --  Collect statistics about the used memory slots and report the different slot
    --  sizes with count.
@@ -211,25 +247,8 @@ package body MAT.Commands is
 
       procedure Print (Addr : in MAT.Types.Target_Addr;
                        Slot : in MAT.Memory.Allocation) is
-         use type MAT.Frames.Frame_Type;
-         Backtrace : constant MAT.Frames.Frame_Table := MAT.Frames.Backtrace (Slot.Frame);
-
-         Symbol : MAT.Symbols.Targets.Symbol_Info;
       begin
-         Console.Start_Row;
-         Console.Notice (Consoles.N_EVENT_ID, MAT.Formats.Slot (Addr, Slot, Start));
-         for I in Backtrace'Range loop
-            Console.Start_Row;
-            Console.Print_Field (Consoles.F_ID, I);
-            Console.Print_Field (Consoles.F_ADDR, MAT.Formats.Addr (Backtrace (I)));
-            MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Symbols.Value.all,
-                                                   Addr    => Backtrace (I),
-                                                   Symbol  => Symbol);
-            Console.Print_Field (Consoles.F_FUNCTION_NAME,
-                                 MAT.Formats.Location (Symbol.File, Symbol.Line, Symbol.Name));
-            Console.End_Row;
-         end loop;
-         Console.End_Row;
+         Print_Slot (Console, Addr, Slot, Symbols, Start);
       end Print;
 
       Filter  : MAT.Expressions.Expression_Type;
