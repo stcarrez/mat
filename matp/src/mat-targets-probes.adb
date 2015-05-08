@@ -18,6 +18,8 @@
 
 with Bfd;
 with ELF;
+
+with MAT.Formats;
 with MAT.Readers.Marshaller;
 package body MAT.Targets.Probes is
 
@@ -95,6 +97,7 @@ package body MAT.Targets.Probes is
                           Msg   : in out MAT.Readers.Message;
                           Event : in out MAT.Events.Target_Event_Type) is
       use type MAT.Types.Target_Addr;
+      use type MAT.Events.Attribute_Type;
 
       Pid  : MAT.Types.Target_Process_Ref := 0;
       Path : Ada.Strings.Unbounded.Unbounded_String;
@@ -131,6 +134,11 @@ package body MAT.Targets.Probes is
       Probe.Manager.Read_Event_Definitions (Msg);
       Probe.Target.Process.Memory.Add_Region (Heap);
       Probe.Target.Process.Endian := MAT.Readers.Get_Endian (Msg);
+      if Probe.Manager.Get_Address_Size = MAT.Events.T_UINT32 then
+         MAT.Formats.Set_Address_Size (8);
+      else
+         MAT.Formats.Set_Address_Size (16);
+      end if;
    end Probe_Begin;
 
    --  ------------------------------
