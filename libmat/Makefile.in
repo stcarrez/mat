@@ -91,7 +91,7 @@ $(LIBNAME):		$(OBJS)
 install:
 	mkdir -p ${libdir}
 	$(INSTALL) $(LIBNAME) ${libdir}/$(LIBNAME).$(LIBVER)
-	rm -f ${libdir}/$(LIBNAME).$(LIBEXT)
+	rm -f ${libdir}/$(LIBNAME)
 	${LN_S} $(LIBNAME).$(LIBVER) ${libdir}/$(LIBNAME)
 
 .c.o:
