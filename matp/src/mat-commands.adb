@@ -550,20 +550,12 @@ package body MAT.Commands is
          begin
             if Filter.Is_Selected (Event) then
                Console.Start_Row;
-               if Event.Prev_Id /= 0 then
-                  Console.Print_Field (MAT.Consoles.F_PREVIOUS,
-                                       MAT.Events.Event_Id_Type'Image (Event.Prev_Id));
-               else
-                  Console.Print_Field (MAT.Consoles.F_PREVIOUS, "");
-               end if;
+               Console.Print_Field (MAT.Consoles.F_PREVIOUS,
+                                    MAT.Formats.Offset (Event.Prev_Id, Event.Id));
                Console.Print_Field (MAT.Consoles.F_ID,
                                     MAT.Events.Event_Id_Type'Image (Event.Id));
-               if Event.Next_Id /= 0 then
-                  Console.Print_Field (MAT.Consoles.F_NEXT,
-                                       MAT.Events.Event_Id_Type'Image (Event.Next_Id));
-               else
-                  Console.Print_Field (MAT.Consoles.F_NEXT, "");
-               end if;
+               Console.Print_Field (MAT.Consoles.F_NEXT,
+                                    MAT.Formats.Offset (Event.Next_Id, Event.Id));
                Console.Print_Duration (MAT.Consoles.F_TIME, Time);
                Console.Print_Field (MAT.Consoles.F_EVENT, MAT.Formats.Event (Event));
                Console.End_Row;
