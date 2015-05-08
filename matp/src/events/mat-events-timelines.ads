@@ -44,6 +44,7 @@ package MAT.Events.Timelines is
    subtype Timeline_Info_Cursor is Timeline_Info_Vectors.Cursor;
 
    procedure Extract (Target : in out MAT.Events.Targets.Target_Events'Class;
+                      Level  : in Positive;
                       Into   : in out Timeline_Info_Vector);
 
    --  Find in the events stream the events which are associated with a given event.
