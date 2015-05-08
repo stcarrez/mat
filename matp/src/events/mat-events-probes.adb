@@ -357,4 +357,12 @@ package body MAT.Events.Probes is
 
    end Read_Event_Definitions;
 
+   --  ------------------------------
+   --  Get the size of a target address (4 or 8 bytes).
+   --  ------------------------------
+   function Get_Address_Size (Client : in Probe_Manager_Type) return MAT.Types.Target_Size is
+   begin
+      return Client.Addr_Size;
+   end Get_Address_Size;
+
 end MAT.Events.Probes;
