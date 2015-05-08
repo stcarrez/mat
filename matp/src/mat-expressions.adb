@@ -239,6 +239,7 @@ package body MAT.Expressions is
                          Allocation : in MAT.Memory.Allocation) return Boolean is
       use type MAT.Types.Target_Size;
       use type MAT.Types.Target_Tick_Ref;
+      use type MAT.Types.Target_Thread_Ref;
    begin
       case Node.Kind is
          when N_NOT =>
@@ -272,6 +273,9 @@ package body MAT.Expressions is
 
          when N_IN_FUNC_DIRECT =>
             return MAT.Frames.By_Function (Allocation.Frame, Node.Min_Addr, Node.Max_Addr);
+
+         when N_THREAD =>
+            return Allocation.Thread >= Node.Min_Thread and Allocation.Thread <= Node.Max_Thread;
 
          when others =>
             return False;
