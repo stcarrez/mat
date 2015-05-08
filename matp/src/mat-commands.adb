@@ -76,6 +76,11 @@ package body MAT.Commands is
    procedure Print_Regions (Console : in MAT.Consoles.Console_Access;
                             Regions : in MAT.Memory.Region_Info_Map);
 
+   --  Print the events with a short description.
+   procedure Print_Events (Console : in MAT.Consoles.Console_Access;
+                           Events  : in MAT.Events.Tools.Target_Event_Vector;
+                           Start   : in MAT.Types.Target_Tick_Ref);
+
    package Command_Map is
      new Ada.Containers.Indefinite_Hashed_Maps (Key_Type        => String,
                                                 Element_Type    => Command_Handler,
@@ -147,6 +152,46 @@ package body MAT.Commands is
          MAT.Memory.Region_Info_Maps.Next (Iter);
       end loop;
    end Print_Regions;
+
+   --  ------------------------------
+   --  Print the events with a short description.
+   --  ------------------------------
+   procedure Print_Events (Console : in MAT.Consoles.Console_Access;
+                           Events  : in MAT.Events.Tools.Target_Event_Vector;
+                           Start   : in MAT.Types.Target_Tick_Ref) is
+      Iter : MAT.Events.Tools.Target_Event_Cursor;
+   begin
+      Console.Start_Title;
+      Console.Print_Title (MAT.Consoles.F_PREVIOUS, "Previous", 10);
+      Console.Print_Title (MAT.Consoles.F_ID, "Id", 10);
+      Console.Print_Title (MAT.Consoles.F_NEXT, "Next", 10);
+      Console.Print_Title (MAT.Consoles.F_TIME, "Time", 10);
+      Console.Print_Title (MAT.Consoles.F_EVENT, "Event", 60);
+      Console.End_Title;
+
+      Iter := Events.First;
+      while MAT.Events.Tools.Target_Event_Vectors.Has_Element (Iter) loop
+         declare
+            use type MAT.Types.Target_Tick_Ref;
+
+            Event : constant MAT.Events.Target_Event_Type
+              := MAT.Events.Tools.Target_Event_Vectors.Element (Iter);
+            Time  : constant MAT.Types.Target_Tick_Ref := Event.Time - Start;
+         begin
+            Console.Start_Row;
+            Console.Print_Field (MAT.Consoles.F_PREVIOUS,
+                                 MAT.Formats.Offset (Event.Prev_Id, Event.Id));
+            Console.Print_Field (MAT.Consoles.F_ID,
+                                 MAT.Events.Event_Id_Type'Image (Event.Id));
+            Console.Print_Field (MAT.Consoles.F_NEXT,
+                                 MAT.Formats.Offset (Event.Next_Id, Event.Id));
+            Console.Print_Duration (MAT.Consoles.F_TIME, Time);
+            Console.Print_Field (MAT.Consoles.F_EVENT, MAT.Formats.Event (Event));
+            Console.End_Row;
+         end;
+         MAT.Events.Tools.Target_Event_Vectors.Next (Iter);
+      end loop;
+   end Print_Events;
 
    --  ------------------------------
    --  Sizes command.
@@ -524,7 +569,6 @@ package body MAT.Commands is
       Start, Finish : MAT.Types.Target_Tick_Ref;
       Events  : MAT.Events.Tools.Target_Event_Vector;
       Filter  : MAT.Expressions.Expression_Type;
-      Iter    : MAT.Events.Tools.Target_Event_Cursor;
    begin
       if Args'Length > 0 then
          Filter := MAT.Expressions.Parse (Args, Process.all'Access);
@@ -538,31 +582,8 @@ package body MAT.Commands is
       Console.End_Title;
 
       Process.Events.Get_Time_Range (Start, Finish);
-      Process.Events.Get_Events (Start, Finish, Events);
-      Iter := Events.First;
-      while MAT.Events.Tools.Target_Event_Vectors.Has_Element (Iter) loop
-         declare
-            use type MAT.Types.Target_Tick_Ref;
-
-            Event : constant MAT.Events.Target_Event_Type
-              := MAT.Events.Tools.Target_Event_Vectors.Element (Iter);
-            Time  : constant MAT.Types.Target_Tick_Ref := Event.Time - Start;
-         begin
-            if Filter.Is_Selected (Event) then
-               Console.Start_Row;
-               Console.Print_Field (MAT.Consoles.F_PREVIOUS,
-                                    MAT.Formats.Offset (Event.Prev_Id, Event.Id));
-               Console.Print_Field (MAT.Consoles.F_ID,
-                                    MAT.Events.Event_Id_Type'Image (Event.Id));
-               Console.Print_Field (MAT.Consoles.F_NEXT,
-                                    MAT.Formats.Offset (Event.Next_Id, Event.Id));
-               Console.Print_Duration (MAT.Consoles.F_TIME, Time);
-               Console.Print_Field (MAT.Consoles.F_EVENT, MAT.Formats.Event (Event));
-               Console.End_Row;
-            end if;
-         end;
-         MAT.Events.Tools.Target_Event_Vectors.Next (Iter);
-      end loop;
+      MAT.Events.Timelines.Filter_Events (Process.Events.all, Filter, Events);
+      Print_Events (Console, Events, Start);
 
    exception
       when E : others =>
@@ -733,7 +754,8 @@ package body MAT.Commands is
          begin
             Filter := MAT.Expressions.Create_Addr (Addr, Addr);
             Process.Events.Get_Time_Range (Start, Finish);
-            Process.Events.Get_Events (Start, Finish, Events);
+            MAT.Events.Timelines.Filter_Events (Process.Events.all, Filter, Events);
+            Print_Events (Console, Events, Start);
          end;
       end if;
 
