@@ -233,6 +233,7 @@ package body MAT.Events.Probes is
             Handler : constant Probe_Handler := Handler_Maps.Element (Pos);
          begin
             Client.Event.Prev_Id := 0;
+            Client.Event.Old_Size := 0;
             Client.Event.Event := Event;
             Client.Event.Index := Handler.Id;
             Handler.Probe.Extract (Handler.Mapping.all'Access, Msg, Client.Event);
