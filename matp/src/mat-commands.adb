@@ -283,22 +283,30 @@ package body MAT.Commands is
       Iter       : MAT.Memory.Allocation_Cursor;
       Symbols    : constant MAT.Symbols.Targets.Target_Symbols_Ref := Target.Process.Symbols;
       Console    : constant MAT.Consoles.Console_Access := Target.Console;
+      Process    : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Start, Finish : MAT.Types.Target_Tick_Ref;
       Filter     : MAT.Expressions.Expression_Type;
-      Process    : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Pos        : Natural;
       Long_Flag  : Boolean;
       Count_Flag : Boolean;
    begin
       Get_Arguments (Args, Long_Flag, Count_Flag, Pos);
 
-      Process.Events.Get_Time_Range (Start, Finish);
-
-      Filter := MAT.Expressions.Parse (Args (Pos .. Args'Last), Process.all'Access);
+      if Pos < Args'Last then
+         Filter := MAT.Expressions.Parse (Args (Pos .. Args'Last), Process.all'Access);
+      end if;
       Process.Memory.Find (From   => MAT.Types.Target_Addr'First,
                            To     => MAT.Types.Target_Addr'Last,
                            Filter => Filter,
                            Into   => Slots);
+      if Count_Flag then
+         Console.Notice (Consoles.N_INFO, "Found"
+                         & Natural'Image (Natural (Slots.Length))
+                         & " memory slots");
+         return;
+      end if;
+
+      Process.Events.Get_Time_Range (Start, Finish);
       Iter := Slots.First;
       while MAT.Memory.Allocation_Maps.Has_Element (Iter) loop
          declare
@@ -629,20 +637,24 @@ package body MAT.Commands is
       Start, Finish : MAT.Types.Target_Tick_Ref;
       Events  : MAT.Events.Tools.Target_Event_Vector;
       Filter  : MAT.Expressions.Expression_Type;
+      Pos        : Natural;
+      Long_Flag  : Boolean;
+      Count_Flag : Boolean;
    begin
-      if Args'Length > 0 then
-         Filter := MAT.Expressions.Parse (Args, Process.all'Access);
+      Get_Arguments (Args, Long_Flag, Count_Flag, Pos);
+      if Pos < Args'Last then
+         Filter := MAT.Expressions.Parse (Args (Pos .. Args'Last), Process.all'Access);
       end if;
-      Console.Start_Title;
-      Console.Print_Title (MAT.Consoles.F_PREVIOUS, "Previous", 10);
-      Console.Print_Title (MAT.Consoles.F_ID, "Id", 10);
-      Console.Print_Title (MAT.Consoles.F_NEXT, "Next", 10);
-      Console.Print_Title (MAT.Consoles.F_TIME, "Time", 10);
-      Console.Print_Title (MAT.Consoles.F_EVENT, "Event", 60);
-      Console.End_Title;
+
+      MAT.Events.Timelines.Filter_Events (Process.Events.all, Filter, Events);
+      if Count_Flag then
+         Console.Notice (Consoles.N_INFO, "Found"
+                         & Natural'Image (Natural (Events.Length))
+                         & " events");
+         return;
+      end if;
 
       Process.Events.Get_Time_Range (Start, Finish);
-      MAT.Events.Timelines.Filter_Events (Process.Events.all, Filter, Events);
       Print_Events (Console, Events, Start);
 
    exception
