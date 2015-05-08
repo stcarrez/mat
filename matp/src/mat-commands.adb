@@ -449,9 +449,9 @@ package body MAT.Commands is
 
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_LEVEL, "Level", 6);
-      Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 50);
       Console.Print_Title (MAT.Consoles.F_SIZE, "Size", 10);
       Console.Print_Title (MAT.Consoles.F_COUNT, "Count", 8);
+      Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 60);
       Console.End_Title;
 
       MAT.Events.Timelines.Find_Frames (Target => Process.Events.all,
@@ -469,12 +469,12 @@ package body MAT.Commands is
 
          Console.Start_Row;
          Console.Print_Field (MAT.Consoles.F_LEVEL, Natural'Image (Info.Key.Level));
-         Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME,
-                              MAT.Formats.Location (Symbol.File, Symbol.Line, Symbol.Name));
          Console.Print_Field (MAT.Consoles.F_SIZE,
                               MAT.Formats.Size (Info.Info.Alloc_Size, Info.Info.Free_Size));
          Console.Print_Field (MAT.Consoles.F_COUNT,
                               Info.Info.Count);
+         Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME,
+                              MAT.Formats.Location (Symbol.File, Symbol.Line, Symbol.Name));
 
          Console.End_Row;
          MAT.Events.Tools.Frame_Info_Vectors.Next (Iter);
