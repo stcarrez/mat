@@ -78,21 +78,6 @@ package body MAT.Types is
       return Interfaces.Unsigned_32'Image (Sec) & "." & Img;
    end Tick_Image;
 
-   function "-" (Left, Right : in Target_Tick_Ref) return Target_Tick_Ref is
-      use Interfaces;
-
-      Res   : Target_Tick_Ref := Target_Tick_Ref (Uint64 (Left) - Uint64 (Right));
-      Usec1 : constant Unsigned_32 := Interfaces.Unsigned_32 (Left and 16#0ffffffff#);
-      Usec2 : constant Unsigned_32 := Interfaces.Unsigned_32 (Right and 16#0ffffffff#);
-   begin
-      if Usec1 < Usec2 then
-         Res := Res and 16#ffffffff00000000#;
-         Res := Target_Tick_Ref (Uint64 (Res) - 16#100000000#);
-         Res := Res or Target_Tick_Ref (1000000 - (Usec2 - Usec1));
-      end if;
-      return Res;
-   end "-";
-
    --  ------------------------------
    --  Convert the hexadecimal string into an unsigned integer.
    --  ------------------------------
