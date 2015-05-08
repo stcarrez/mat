@@ -85,7 +85,7 @@ package MAT.Events.Probes is
                            Msg    : in out MAT.Readers.Message_Type) is abstract;
 
    --  Get the size of a target address (4 or 8 bytes).
-   function Get_Address_Size (Client : in Probe_Manager_Type) return MAT.Types.Target_Size;
+   function Get_Address_Size (Client : in Probe_Manager_Type) return MAT.Events.Attribute_Type;
 
    type Reader_List_Type is limited interface;
    type Reader_List_Type_Access is access all Reader_List_Type'Class;
@@ -129,7 +129,7 @@ private
       Handlers    : Handler_Maps.Map;
       Version     : MAT.Types.Uint16;
       Flags       : MAT.Types.Uint16;
-      Addr_Size   : MAT.Types.Target_Size;
+      Addr_Size   : MAT.Events.Attribute_Type;
       Probe       : MAT.Events.Attribute_Table_Ptr;
       Frame       : access MAT.Events.Frame_Info;
       Events      : MAT.Events.Targets.Target_Events_Access;
