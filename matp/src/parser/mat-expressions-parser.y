@@ -124,6 +124,12 @@ condition :
                                                        To_Event_Id_Type ($2.high));
             }
     |
+        integer T_RANGE integer
+            {
+              $$.expr := MAT.Expressions.Create_Event (To_Event_Id_Type ($1.low),
+                                                       To_Event_Id_Type ($3.low));
+            }
+    |
         T_TIME compare
             {
               $$.expr := MAT.Expressions.Create_Event (To_Event_Id_Type ($2.low),
@@ -132,17 +138,17 @@ condition :
     |
     	T_MALLOC
     		{
-    		  $$.expr := MAT.Expressions.Create_Event_Type (MAT.Events.Targets.MSG_MALLOC);
+    		  $$.expr := MAT.Expressions.Create_Event_Type (MAT.Events.MSG_MALLOC);
     		}
     |
     	T_FREE
     		{
-    		  $$.expr := MAT.Expressions.Create_Event_Type (MAT.Events.Targets.MSG_FREE);
+    		  $$.expr := MAT.Expressions.Create_Event_Type (MAT.Events.MSG_FREE);
     		}
     |
     	T_REALLOC
     		{
-    		  $$.expr := MAT.Expressions.Create_Event_Type (MAT.Events.Targets.MSG_REALLOC);
+    		  $$.expr := MAT.Expressions.Create_Event_Type (MAT.Events.MSG_REALLOC);
     		}
     |
     	T_LEAK
@@ -277,12 +283,12 @@ package body MAT.Expressions.Parser is
    Expr : MAT.Expressions.Expression_Type;
 
    function To_Event_Id_Type (Value : in MAT.Types.Uint64)
-      return MAT.Events.Targets.Event_Id_Type is
+      return MAT.Events.Event_Id_Type is
    begin
-      if Value > MAT.Types.Uint64 (MAT.Events.Targets.Event_Id_Type'Last) then
-         return MAT.Events.Targets.Event_Id_Type'Last;
+      if Value > MAT.Types.Uint64 (MAT.Events.Event_Id_Type'Last) then
+         return MAT.Events.Event_Id_Type'Last;
       else
-         return MAT.Events.Targets.Event_Id_Type (Value);
+         return MAT.Events.Event_Id_Type (Value);
       end if;
    end To_Event_Id_Type;
 
