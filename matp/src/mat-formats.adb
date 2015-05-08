@@ -307,6 +307,22 @@ package body MAT.Formats is
    end Event;
 
    --  ------------------------------
+   --  Format the difference between two event IDs (offset).
+   --  ------------------------------
+   function Offset (First  : in MAT.Events.Event_Id_Type;
+                    Second : in MAT.Events.Event_Id_Type) return String is
+      use type MAT.Events.Event_Id_Type;
+   begin
+      if First = Second or First = 0 or Second = 0 then
+         return "";
+      elsif First > Second then
+         return "+" & Util.Strings.Image (Natural (First - Second));
+      else
+         return "-" & Util.Strings.Image (Natural (Second - First));
+      end if;
+   end Offset;
+
+   --  ------------------------------
    --  Format a short description of the memory allocation slot.
    --  ------------------------------
    function Slot (Value      : in MAT.Types.Target_Addr;
