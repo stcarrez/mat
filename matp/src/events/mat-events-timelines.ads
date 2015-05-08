@@ -73,4 +73,9 @@ package MAT.Events.Timelines is
                           Exact  : in Boolean;
                           Frames : in out MAT.Events.Tools.Frame_Event_Info_Map);
 
+   --  Collect the events that match the filter and append them to the events vector.
+   procedure Filter_Events (Target : in out MAT.Events.Targets.Target_Events'Class;
+                            Filter : in MAT.Expressions.Expression_Type;
+                            Events : in out MAT.Events.Tools.Target_Event_Vector);
+
 end MAT.Events.Timelines;
