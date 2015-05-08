@@ -24,6 +24,9 @@ package MAT.Formats is
 
    type Format_Type is (BRIEF, NORMAL);
 
+   --  Set the size of a target address to format them.
+   procedure Set_Address_Size (Size : in Positive);
+
    --  Format the PID into a string.
    function Pid (Value : in MAT.Types.Target_Process_Ref) return String;
 
