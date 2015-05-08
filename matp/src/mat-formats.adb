@@ -37,6 +37,14 @@ package body MAT.Formats is
                         Start_Time : in MAT.Types.Target_Tick_Ref) return String;
 
    --  ------------------------------
+   --  Set the size of a target address to format them.
+   --  ------------------------------
+   procedure Set_Address_Size (Size : in Positive) is
+   begin
+      Hex_Length := Size;
+   end Set_Address_Size;
+
+   --  ------------------------------
    --  Format the PID into a string.
    --  ------------------------------
    function Pid (Value : in MAT.Types.Target_Process_Ref) return String is
