@@ -49,9 +49,7 @@ private
       Frames : Frames_Type;
    end record;
 
-   overriding
-   procedure Initialize (Frames : in out Target_Frames);
-
+   --  Release all the stack frames.
    overriding
    procedure Finalize (Frames : in out Target_Frames);
 
