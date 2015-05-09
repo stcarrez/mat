@@ -24,6 +24,7 @@ package MAT.Targets.Probes is
       Target  : Target_Type_Access;
       Manager : MAT.Events.Probes.Probe_Manager_Type_Access;
       Events  : MAT.Events.Targets.Target_Events_Access;
+      Frames  : MAT.Frames.Targets.Target_Frames_Access;
    end record;
    type Process_Probe_Type_Access is access all Process_Probe_Type'Class;
 
