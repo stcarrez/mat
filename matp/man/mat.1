@@ -1,11 +1,11 @@
 .\"
 .\"
-.TH MAT 1 "Apr 19, 2015" "Memory Analysis Tool"
+.TH MAT 1 "May 9, 2015" "Memory Analysis Tool"
 .SH NAME
 mat - Memory Analysis Tool
 .SH SYNOPSIS
 .B mat
-[ -i ] [ -b
+[ -i ] [-s path] [ -b
 .I ip[:port]
 ] [ -ns ] [
 .I mat-event-file
@@ -58,6 +58,9 @@ The following options are recognized by \fImat\fR:
 .TP 5
 .B -i
 Enable the interactive mode.
+.TP 5
+.B -s [path]
+Define one or several search paths to load symbols for the shared libraries.
 .TP 5
 .B -b [ip:]port
 .br
@@ -125,6 +128,166 @@ First the event type is filtered easily by using one of the event types
 or
 .BR free .
 The memory allocation can further be filtered by the size or the address.
+.P
+You can use logical operators such as
+.BR and ,
+.BR or ,
+and
+.B not
+to create complex selection.
+.\"
+.SS Filtering on the event type
+.TP 5
+malloc
+Report only
+.B malloc
+events.
+.TP 5
+realloc
+Report only
+.B realloc
+events.
+.TP 5
+free
+Report only
+.B free
+events.
+.TP 5
+nofree
+Report memory allocation events that don't have an associated
+.I free
+event.  The alias
+.B leak
+can also be used (although this is not a memory leak detection).
+.\"
+.SS Filtering on the event ID
+When
+.I mat
+reads events, it allocates a unique increasing number for each event.
+Several
+.I mat
+commands report the event ID or a range of event IDs so that you can
+easily create filters on them.
+.TP 5
+event < \fInumber\fP
+.TP 5
+event <= \fInumber\fP
+Report events whose ID is less than the given number.
+.TP 5
+event > \fInumber\fP
+.TP 5
+event >= \fInumber\fP
+Report events whose ID is greater than the given number.
+.TP 5
+event = \fInumber\fP
+Report events whose ID is equal to the given number.
+.TP 5
+\fIlow\fP .. \fIhigh\fP
+.TP 5
+event = \fIlow\fP .. \fIhigh\fP
+Report events whose ID is in the range range [\fIlow\fP .. \fIhigh\fP].
+.\"
+.SS Filtering on the address
+.TP 5
+has \fIaddress\fP
+Report events whose associated memory slot contains the given address.  This filter is useful
+if you want to know the events that allocated or freed some memory address.  The address may
+be within the memory slot (it does not need to be the exact malloc or free address).
+.TP 5
+addr < \fIaddress\fP
+.TP 5
+addr <= \fIaddress\fP
+Report events whose allocation address is less than the given address.  The address being
+checked is the address returned by
+.I malloc
+or
+.I realloc
+or the address given to the
+.I free
+function.
+.TP 5
+addr > \fIaddress\fP
+.TP 5
+addr >= \fIaddress\fP
+Report events whose allocation address is greater than the given address.
+.TP 5
+addr = \fIaddress\fP
+Report events whose address is equal to the given address.
+.\"
+.SS Filtering on the size
+.TP 5
+size < \fInumber\fP
+.TP 5
+size <= \fInumber\fP
+Report events whose size is less than the given number.
+.TP 5
+size > \fInumber\fP
+.TP 5
+size >= \fInumber\fP
+Report events whose size is greater than the given number.
+.TP 5
+size = \fInumber\fP
+Report events whose size is equal to the given number.
+.TP 5
+size = \fIlow\fP .. \fIhigh\fP
+Report events whose size is in the range range [\fIlow\fP .. \fIhigh\fP].
+.\"
+.SS Filtering on the time
+Each event recorded by
+.I libmat.so
+is associated with a timestamp that was obtained with
+.IR gettimeofday (2).
+.I mat
+will use relative time from the program start so that you know when some event occured in time,
+relative to the start.  The relative time is always printed and defined in seconds with fractional
+digits (such as \fI3.14\fP).
+.TP 5
+after \fItime\fP
+Report only events that occured after the relative time.
+.TP 5
+before \fItime\fP
+Report only events that occured before the relative time.
+.TP 5
+from \fItime\fP to \fItime\fP
+Report only events that occured within the given time range.
+.\"
+.SS Filtering on the stack frame
+For each event,
+.I mat
+knows the stack frame and thread that triggered the event.
+You can filter events by looking at the stack frame and keep only the events
+in the function or area of code you are interested in.
+.TP 5
+by \fIsymbol\fP
+.TP 5
+by direct \fIsymbol\fP
+Report only events whose stack frame contains calls to the given symbol.  When the
+.B direct
+keyword is added, only the stack frame at level 1 is looked, which means
+that the function must directly call one of the
+.IR malloc ,
+.I realloc
+or
+.I free
+operations.  The
+.B by
+filter uses the symbol table and debugging information so that it is necessary
+to build your program with
+.IR -g .
+.\"
+.TP 5
+in \fIname\fP
+.TP 5
+in direct \fIname\fP
+The
+.B in
+filter is similar to the
+.B by
+filter but it uses the name of a memory region detected by
+.IR mat .
+The name of the memory region is either the program name or the name of a shared library.
+Such filter is useful if you want to exclude or take into account all the memory allocation
+made by a shared library.
 .\"
 .SH COMMANDS
 The interactive mode of
