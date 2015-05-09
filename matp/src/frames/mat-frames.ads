@@ -16,15 +16,12 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with MAT.Types;
---  with MAT.Events;
 package MAT.Frames is
 
    Not_Found : exception;
 
    type Frame_Type is private;
    type Frame_Table is array (Natural range <>) of MAT.Types.Target_Addr;
-
---     subtype Frame_Table is MAT.Events.Frame_Table;
 
    --  Return the parent frame.
    function Parent (Frame : in Frame_Type) return Frame_Type;
@@ -46,36 +43,10 @@ package MAT.Frames is
    --  to reach the frame).
    function Current_Depth (Frame : in Frame_Type) return Natural;
 
-   --  Create a root for stack frame representation.
-   function Create_Root return Frame_Type;
-
-   --  Destroy the frame tree recursively.
-   procedure Destroy (Frame : in out Frame_Type);
-
-   --  Release the frame when its reference is no longer necessary.
-   procedure Release (Frame : in Frame_Type);
-
-   --  Insert in the frame tree the new stack frame represented by <tt>Pc</tt>.
-   --  If the frame is already known, the frame reference counter is incremented.
-   --  The frame represented by <tt>Pc</tt> is returned in <tt>Result</tt>.
-   procedure Insert (Frame  : in Frame_Type;
-                     Pc     : in Frame_Table;
-                     Result : out Frame_Type);
-
    --  Find the child frame which has the given PC address.
    --  Returns that frame pointer or raises the Not_Found exception.
    function Find (Frame : in Frame_Type;
                   Pc    : in MAT.Types.Target_Addr) return Frame_Type;
-
-   function Find (Frame : in Frame_Type;
-                  Pc    : in Frame_Table) return Frame_Type;
-
-   --  Find the child frame which has the given PC address.
-   --  Returns that frame pointer or raises the Not_Found exception.
-   procedure Find (Frame   : in Frame_Type;
-                   Pc      : in Frame_Table;
-                   Result  : out Frame_Type;
-                   Last_Pc : out Natural);
 
    --  Check whether the frame contains a call to the function described by the address range.
    function In_Function (Frame : in Frame_Type;
@@ -88,26 +59,36 @@ package MAT.Frames is
    function By_Function (Frame : in Frame_Type;
                          From  : in MAT.Types.Target_Addr;
                          To    : in MAT.Types.Target_Addr) return Boolean;
+   procedure Verify_Frames;
 
 private
-
-   Frame_Group_Size : constant Natural := 4;
-
-   subtype Local_Depth_Type is Natural range 0 .. Frame_Group_Size;
-
-   subtype Mini_Frame_Table is Frame_Table (1 .. Local_Depth_Type'Last);
 
    type Frame;
    type Frame_Type is access all Frame;
 
-   type Frame is record
-      Parent   : Frame_Type := null;
+   --  The frame information is readonly and we can safely use the By_Function, In_Function
+   --  and Backtrace without protection.  Insertion and creation of stack frame must be
+   --  protected through a protected type managed by Target_Frames.  All the frame instances
+   --  are released when the Target_Frames protected type is released.
+   type Frame (Parent : Frame_Type;
+               Depth  : Natural;
+               Pc     : MAT.Types.Target_Addr) is limited record
       Next     : Frame_Type := null;
       Children : Frame_Type := null;
       Used     : Natural   := 0;
-      Depth    : Natural   := 0;
-      Calls    : Mini_Frame_Table;
-      Local_Depth : Local_Depth_Type := 0;
    end record;
+
+   --  Create a root for stack frame representation.
+   function Create_Root return Frame_Type;
+
+   --  Insert in the frame tree the new stack frame represented by <tt>Pc</tt>.
+   --  If the frame is already known, the frame reference counter is incremented.
+   --  The frame represented by <tt>Pc</tt> is returned in <tt>Result</tt>.
+   procedure Insert (Frame  : in Frame_Type;
+                     Pc     : in Frame_Table;
+                     Result : out Frame_Type);
+
+   --  Destroy the frame tree recursively.
+   procedure Destroy (Frame : in out Frame_Type);
 
 end MAT.Frames;
