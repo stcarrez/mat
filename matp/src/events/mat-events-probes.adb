@@ -116,7 +116,6 @@ package body MAT.Events.Probes is
    procedure Initialize (Manager : in out Probe_Manager_Type) is
    begin
       Manager.Events := new MAT.Events.Targets.Target_Events;
-      Manager.Frames := MAT.Frames.Create_Root;
    end Initialize;
 
    --  ------------------------------
@@ -237,9 +236,8 @@ package body MAT.Events.Probes is
             Client.Event.Event := Event;
             Client.Event.Index := Handler.Id;
             Handler.Probe.Extract (Handler.Mapping.all'Access, Msg, Client.Event);
-            MAT.Frames.Insert (Frame  => Client.Frames,
-                               Pc     => Client.Frame.Frame (1 .. Client.Frame.Cur_Depth),
-                               Result => Client.Event.Frame);
+            Client.Frames.Insert (Pc     => Client.Frame.Frame (1 .. Client.Frame.Cur_Depth),
+                                  Result => Client.Event.Frame);
             Client.Events.Insert (Client.Event);
             Handler.Probe.Execute (Client.Event);
          end;
