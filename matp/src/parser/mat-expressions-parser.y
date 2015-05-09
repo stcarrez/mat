@@ -76,17 +76,20 @@ condition :
     |
         T_FROM time T_TO time
             {
-              $$ := $2;
+              $$.expr := MAT.Expressions.Create_Time (MAT.Types.Target_Tick_Ref ($2.low),
+                                                      MAT.Types.Target_Tick_Ref ($4.low));
             }
     |
         T_AFTER time
             {
-              $$ := $2;
+              $$.expr := MAT.Expressions.Create_Time (MAT.Types.Target_Tick_Ref ($2.low),
+                                                      MAT.Types.Target_Tick_Ref'Last);
             }
     |
         T_BEFORE time
             {
-              $$ := $2;
+              $$.expr := MAT.Expressions.Create_Time (MAT.Types.Target_Tick_Ref'First,
+                                                      MAT.Types.Target_Tick_Ref ($2.low));
             }
     |
         T_WITHIN name
@@ -132,8 +135,8 @@ condition :
     |
         T_TIME compare
             {
-              $$.expr := MAT.Expressions.Create_Event (To_Event_Id_Type ($2.low),
-                                                       To_Event_Id_Type ($2.high));
+              $$.expr := MAT.Expressions.Create_Time (MAT.Types.Target_Tick_Ref ($2.low),
+                                                      MAT.Types.Target_Tick_Ref ($2.high));
             }
     |
     	T_MALLOC
@@ -233,8 +236,11 @@ integer:
     ;
 
 time:
-        name
-                { $$.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);  }
+        T_TIME
+                { $$ := MAT.Expressions.Parser_Tokens.YYLval; }
+    |
+        T_INT
+                { $$ := MAT.Expressions.Parser_Tokens.YYLval; $$.low := $$.low * 1_000_000; }
     ;
 
 direct:
@@ -246,8 +252,6 @@ direct:
     ;
 %%
 package MAT.Expressions.Parser is
-
-   pragma Elaborary_Body;
 
    error_count : Natural := 0;
 
