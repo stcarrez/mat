@@ -80,6 +80,11 @@ package MAT.Events.Probes is
    --  Get the target events.
    function Get_Target_Events (Client : in Probe_Manager_Type)
                                return MAT.Events.Targets.Target_Events_Access;
+
+   --  Get the target frames.
+   function Get_Target_Frames (Client : in Probe_Manager_Type)
+                               return MAT.Frames.Targets.Target_Frames_Access;
+
    --  Read a message from the stream.
    procedure Read_Message (Reader : in out Probe_Manager_Type;
                            Msg    : in out MAT.Readers.Message_Type) is abstract;
@@ -134,7 +139,7 @@ private
       Frame       : access MAT.Events.Frame_Info;
       Events      : MAT.Events.Targets.Target_Events_Access;
       Event       : Target_Event_Type;
-      Frames      : MAT.Frames.Targets.Target_Frames;
+      Frames      : MAT.Frames.Targets.Target_Frames_Access;
    end record;
 
    --  Read an event definition from the stream and configure the reader.
