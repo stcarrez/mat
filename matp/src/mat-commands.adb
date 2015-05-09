@@ -1037,6 +1037,10 @@ package body MAT.Commands is
       when Stop_Interp =>
          raise;
 
+      when Usage_Error =>
+         Target.Console.Error ("Invalid argument '" & Line (Index + 1 .. Line'Last)
+                               & "' for command " & Command);
+
       when E : others =>
          Log.Error ("Exception: ", E, True);
          Target.Console.Error ("Exception while processing command");
