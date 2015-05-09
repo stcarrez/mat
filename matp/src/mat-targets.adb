@@ -73,6 +73,19 @@ package body MAT.Targets is
    end Find_Symbol;
 
    --  ------------------------------
+   --  Get the start time for the tick reference.
+   --  ------------------------------
+   overriding
+   function Get_Start_Time (Resolver : in Target_Process_Type)
+                            return MAT.Types.Target_Tick_Ref is
+      Start  : MAT.Types.Target_Tick_Ref;
+      Finish : MAT.Types.Target_Tick_Ref;
+   begin
+      Resolver.Events.Get_Time_Range (Start, Finish);
+      return Start;
+   end Get_Start_Time;
+
+   --  ------------------------------
    --  Get the console instance.
    --  ------------------------------
    function Console (Target : in Target_Type) return MAT.Consoles.Console_Access is
