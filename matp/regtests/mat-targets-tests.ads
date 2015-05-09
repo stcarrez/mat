@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-targets-tests -- Unit tests for MAT targets
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,5 +25,8 @@ package MAT.Targets.Tests is
    type Test is new Util.Tests.Test with null record;
 
    procedure Test_Read_File (T : in out Test);
+
+   --  Test various type conversions.
+   procedure Test_Conversions (T : in out Test);
 
 end MAT.Targets.Tests;
