@@ -25,7 +25,7 @@ procedure MAT.Frames.Print (File : in File_Type;
    use MAT.Types;
    use Interfaces;
 
-   Depth : Natural := F.Depth - F.Local_Depth + 1;
+   Depth : Natural := F.Depth;
    Child : Frame_Type;
 
    procedure Print_Address (File : in File_Type;
@@ -64,12 +64,9 @@ begin
       Put_Line (File, "F " & Natural'Image (F.Used) & " - " & System.Address_Image (F.all'Address)
                 & " - P=" & System.Address_Image (F.Parent.all'Address));
    end if;
-   for I in 1 .. F.Local_Depth loop
-      Set_Col (File, Positive_Count (Depth));
-      Print_Address (File, F.Calls (I));
-      Put_Line (File, " D " & Natural'Image (Depth));
-      Depth := Depth + 1;
-   end loop;
+   Set_Col (File, Positive_Count (Depth));
+   Print_Address (File, F.Pc);
+   Put_Line (File, " D " & Natural'Image (Depth));
    Child := F.Children;
    while Child /= null loop
       Print (File, Child);
