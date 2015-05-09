@@ -83,6 +83,11 @@ package MAT.Targets is
    function Find_Symbol (Resolver : in Target_Process_Type;
                          Name     : in String) return MAT.Memory.Region_Info;
 
+   --  Get the start time for the tick reference.
+   overriding
+   function Get_Start_Time (Resolver : in Target_Process_Type)
+                            return MAT.Types.Target_Tick_Ref;
+
    type Target_Type is new Ada.Finalization.Limited_Controlled
      and MAT.Events.Probes.Reader_List_Type with private;
 
