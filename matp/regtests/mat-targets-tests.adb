@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-readers-tests -- Unit tests for MAT readers
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,8 @@ package body MAT.Targets.Tests is
    begin
       Caller.Add_Test (Suite, "Test MAT.Targets.Read_File",
                        Test_Read_File'Access);
+      Caller.Add_Test (Suite, "Test MAT.Types.Tick_Value",
+                       Test_Conversions'Access);
    end Add_Tests;
 
    --  ------------------------------
@@ -45,5 +47,23 @@ package body MAT.Targets.Tests is
       Reader.Open (Path);
       Reader.Read_All;
    end Test_Read_File;
+
+   --  ------------------------------
+   --  Test various type conversions.
+   --  ------------------------------
+   procedure Test_Conversions (T : in out Test) is
+      use MAT.Types;
+      Time : MAT.Types.Target_Tick_Ref;
+   begin
+      Time := MAT.Types.Tick_Value ("1.1");
+      Util.Tests.Assert_Equals (T, 1, Natural (Time / 1_000000), "Invalid Tick_Value conversion");
+      Util.Tests.Assert_Equals (T, 100_000, Natural (Time mod 1_000000),
+                                "Invalid Tick_Value conversion");
+
+      Time := MAT.Types.Tick_Value ("12.001234");
+      Util.Tests.Assert_Equals (T, 12, Natural (Time / 1_000000), "Invalid Tick_Value conversion");
+      Util.Tests.Assert_Equals (T, 1_234, Natural (Time mod 1_000000),
+                                "Invalid Tick_Value conversion");
+   end Test_Conversions;
 
 end MAT.Targets.Tests;
