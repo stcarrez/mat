@@ -308,7 +308,6 @@ package body MAT.Memory.Targets is
                Stats.Total_Alloc := 0;
             end if;
             Stats.Total_Free := Stats.Total_Free + Item.Size;
-            MAT.Frames.Release (Item.Frame);
             Used_Slots.Delete (Iter);
             Item.Frame := Slot.Frame;
             Iter := Freed_Slots.Find (Addr);
@@ -351,7 +350,6 @@ package body MAT.Memory.Targets is
             Old_Size := Element.Size;
             By       := Element.Event;
             Element.Size := Slot.Size;
-            MAT.Frames.Release (Element.Frame);
             Element.Frame := Slot.Frame;
             Element.Event := Slot.Event;
          end Update_Size;
