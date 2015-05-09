@@ -15,6 +15,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with Util.Strings;
 package body MAT.Types is
 
    --  ------------------------------
@@ -77,6 +78,33 @@ package body MAT.Types is
       Img (Img'Last - Frac'Length + 2 .. Img'Last) := Frac (Frac'First + 1 .. Frac'Last);
       return Interfaces.Unsigned_32'Image (Sec) & "." & Img;
    end Tick_Image;
+
+   --  ------------------------------
+   --  Convert the string in the form NN.MM into a tick value.
+   --  ------------------------------
+   function Tick_Value (Value : in String) return Target_Tick_Ref is
+      use Interfaces;
+
+      Pos  : Natural := Util.Strings.Index (Value, '.');
+      Frac : Uint64;
+      Val  : Uint64;
+   begin
+      if Pos > 0 then
+         Frac := Uint64'Value (Value (Pos + 1 .. Value'Last));
+         for I in 1 .. 6 - (Value'Last - Pos) loop
+            Frac := Frac * 10;
+         end loop;
+         if Pos > Value'First then
+            Val := Uint64'Value (Value (Value'First .. Pos - 1));
+         else
+            Val := 0;
+         end if;
+      else
+         Frac := 0;
+         Val := Uint64'Value (Value);
+      end if;
+      return Target_Tick_Ref (Val * 1_000_000 + Frac);
+   end Tick_Value;
 
    --  ------------------------------
    --  Convert the hexadecimal string into an unsigned integer.
