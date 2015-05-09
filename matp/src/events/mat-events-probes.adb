@@ -116,6 +116,7 @@ package body MAT.Events.Probes is
    procedure Initialize (Manager : in out Probe_Manager_Type) is
    begin
       Manager.Events := new MAT.Events.Targets.Target_Events;
+      Manager.Frames := new MAT.Frames.Targets.Target_Frames;
    end Initialize;
 
    --  ------------------------------
@@ -146,6 +147,15 @@ package body MAT.Events.Probes is
    begin
       return Client.Events;
    end Get_Target_Events;
+
+   --  ------------------------------
+   --  Get the target frames.
+   --  ------------------------------
+   function Get_Target_Frames (Client : in Probe_Manager_Type)
+                               return MAT.Frames.Targets.Target_Frames_Access is
+   begin
+      return Client.Frames;
+   end Get_Target_Frames;
 
    procedure Read_Probe (Client : in out Probe_Manager_Type;
                          Msg    : in out MAT.Readers.Message) is
