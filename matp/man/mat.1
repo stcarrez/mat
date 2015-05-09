@@ -295,18 +295,25 @@ The interactive mode of
 provides the following commands:
 .\"
 .TP 5
-event
+event \fIid\fP
 .\"
 The
 .B event
 command prints the full description of an event with the complete stack frame.
 .\"
 .TP 5
-events <filter>
+events \fI[-c] [-l]\fP \fI[filter]\fP
 .\"
 The
 .B events
-command lists the events which are matched by the filter.  For each event, it indicates
+command lists the events which are matched by the filter.
+The
+.B -c
+option prints only the number of events matched by the filter.
+The
+.B -l
+option prints a more detailed description of events.
+For each event, it indicates
 the event nnumber, the relative time, the event type (
 .IR malloc ,
 .IR realloc ,
@@ -318,7 +325,7 @@ Having the event number, the
 command is then used to get more information.
 .\"
 .TP 5
-sizes <filter>
+sizes \fI[-c] [-l]\fP \fI[filter]\fP
 .\"
 The
 .B sizes
@@ -335,7 +342,7 @@ print the detailed event information with the
 command.
 .\"
 .TP 5
-frames level
+frames level \fI[-c] [-l]\fP \fI[filter]\fP
 .\"
 The
 .B frames
@@ -356,7 +363,7 @@ flags), and the path of the shared library.  The memory regions are used interna
 to load the symbols from the shared libraries and resolv their symbol names.
 .\"
 .TP 5
-slots [filter]
+slots \fI[-c] [-l]\fP \fI[filter]\fP
 .\"
 The
 .B slots
