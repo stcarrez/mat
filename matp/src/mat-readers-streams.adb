@@ -26,7 +26,7 @@ package body MAT.Readers.Streams is
    --  The logger
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Readers.Files");
 
-   MAX_MSG_SIZE : constant Ada.Streams.Stream_Element_Offset := 2048;
+   MAX_MSG_SIZE : constant Ada.Streams.Stream_Element_Offset := 4096;
 
    --  ------------------------------
    --  Read a message from the stream.
