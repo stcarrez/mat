@@ -16,6 +16,8 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.Unchecked_Deallocation;
+with Ada.Containers.Ordered_Maps;
+with System;
 
 with Util.Log.Loggers;
 package body MAT.Frames is
@@ -27,9 +29,6 @@ package body MAT.Frames is
 
    --  The logger
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Frames.Targets");
-
-   procedure Split (F     : in out Frame_Type;
-                    Pos   : in Positive);
 
    procedure Add_Frame (F      : in Frame_Type;
                         Pc     : in Frame_Table;
@@ -103,18 +102,11 @@ package body MAT.Frames is
       declare
          Current : Frame_Type := Frame;
          Pos     : Natural    := Length;
-         New_Pos : Natural;
          Pc      : Frame_Table (1 .. Length);
       begin
          while Current /= null and Pos /= 0 loop
-            if Pos >= Current.Local_Depth then
-               New_Pos := Pos - Current.Local_Depth + 1;
-               Pc (New_Pos .. Pos) := Current.Calls (1 .. Current.Local_Depth);
-               Pos     := New_Pos - 1;
-            else
-               Pc (1 .. Pos) := Current.Calls (Current.Local_Depth - Pos + 1 .. Current.Local_Depth);
-               Pos := 0;
-            end if;
+            Pc (Pos) := Current.Pc;
+            Pos := Pos - 1;
             Current := Current.Parent;
          end loop;
          return Pc;
@@ -163,7 +155,7 @@ package body MAT.Frames is
             Pos   : Natural   := 1;
          begin
             while Child /= null loop
-               Pc (Pos) := Child.Calls (1);
+               Pc (Pos) := Child.Pc;
                Pos   := Pos + 1;
                Child := Child.Next;
             end loop;
@@ -190,7 +182,7 @@ package body MAT.Frames is
    --  ------------------------------
    function Create_Root return Frame_Type is
    begin
-      return new Frame;
+      return new Frame '(Parent => null, Depth => 0, Pc => 0, others => <>);
    end Create_Root;
 
    --  ------------------------------
@@ -205,155 +197,117 @@ package body MAT.Frames is
       --  Destroy its children recursively.
       while Frame.Children /= null loop
          F := Frame.Children;
+         Frame.Children := F.Next;
          Destroy (F);
       end loop;
-
-      --  Unlink from parent list.
-      if Frame.Parent /= null then
-         F := Frame.Parent.Children;
-         if F = Frame then
-            Frame.Parent.Children := Frame.Next;
-         else
-            while F /= null and then F.Next /= Frame loop
-               F := F.Next;
-            end loop;
-            if F = null then
---                 Log.Error ("Frame is not linked to the correct parent");
---                 if not Check (Get_Root (Frame)) then
---                    Log.Error ("Check failed");
---                 else
---                    Log.Error ("Check is ok");
---                 end if;
---                 MAT.Frames.Print (Ada.Text_IO.Standard_Output, Get_Root (Frame));
-               return;
-            else
-               F.Next := Frame.Next;
-            end if;
-         end if;
-      end if;
---        Free (Frame);
+      Free (Frame);
    end Destroy;
-
-   --  ------------------------------
-   --  Release the frame when its reference is no longer necessary.
-   --  ------------------------------
-   procedure Release (Frame : in Frame_Type) is
-      Current : Frame_Type := Frame;
-   begin
-      --  Scan the frame until the root is reached
-      --  and decrement the used counter.  Free the frames
-      --  when the used counter reaches 0.
-      while Current /= null loop
-         if Current.Used <= 1 then
-            declare
-               Tree : Frame_Type := Current;
-            begin
-               Current := Current.Parent;
-               Destroy (Tree);
-            end;
-         else
-            Current.Used := Current.Used - 1;
-            Current := Current.Parent;
-         end if;
-      end loop;
---        if not Check (Get_Root (Frame)) then
---           Log.Error ("Frame is invalid");
---        end if;
-   end Release;
-
-   --  ------------------------------
-   --  Split the node pointed to by `F' at the position `Pos'
-   --  in the caller chain.  A new parent is created for the node
-   --  and the brothers of the node become the brothers of the
-   --  new parent.
-   --
-   --  Returns in `F' the new parent node.
-   --  ------------------------------
-   procedure Split (F     : in out Frame_Type;
-                    Pos   : in Positive) is
-
-      --  Before:                       After:
-      --
-      --    +-------+             +-------+
-      --  /-|  P    |           /-|  P    |
-      --  | +-------+           | +-------+
-      --  |       ^             |       ^
-      --  |   +-------+         |    +-------+
-      --  ...>| node  |...      ....>|  new  |...        (0..N brothers)
-      --      +-------+              +-------+
-      --       |     ^              |      ^
-      --       | +-------+          | +-------+
-      --       ->|  c    |          ->| node  |-->0      (0 brother)
-      --         +-------+            +-------+
-      --                                    |
-      --                                +-------+
-      --                                |   c   |
-      --                                +-------+
-      --
-      New_Parent : constant Frame_Type := new Frame '(Parent      => F.Parent,
-                                                      Next        => F.Next,
-                                                      Children    => F,
-                                                      Used        => F.Used - 1,
-                                                      Depth       => F.Depth,
-                                                      Local_Depth => Pos,
-                                                      Calls       => (others => 0));
-      Child : Frame_Type := F.Parent.Children;
-   begin
-      Log.Debug ("Split frame");
-
-      --  Move the PC values in the new parent.
-      New_Parent.Calls (1 .. Pos) := F.Calls (1 .. Pos);
-      F.Calls (1 .. F.Local_Depth - Pos) := F.Calls (Pos + 1 .. F.Local_Depth);
-      F.Parent         := New_Parent;
-      F.Next           := null;
-      F.Used           := 1;
-      New_Parent.Depth := F.Depth - F.Local_Depth + Pos;
-      F.Local_Depth    := F.Local_Depth - Pos;
-
-      --  Remove F from its parent children list and replace if with New_Parent.
-      if Child = F then
-         New_Parent.Parent.Children := New_Parent;
-      else
-         while Child.Next /= F loop
-            Child := Child.Next;
-         end loop;
-         Child.Next := New_Parent;
-      end if;
-      F := New_Parent;
---        if not Check (Get_Root (F)) then
---           Log.Error ("Error when splitting frame");
---        end if;
-   end Split;
 
    procedure Add_Frame (F      : in Frame_Type;
                         Pc     : in Frame_Table;
                         Result : out Frame_Type) is
-      Child         : Frame_Type := F;
+      Child         : Frame_Type := F.Children;
+      Parent        : Frame_Type := F;
       Pos           : Positive   := Pc'First;
       Current_Depth : Natural    := F.Depth;
-      Cnt           : Local_Depth_Type;
    begin
       while Pos <= Pc'Last loop
-         Cnt := Frame_Group_Size;
-         if Pos + Cnt > Pc'Last then
-            Cnt := Pc'Last - Pos + 1;
-         end if;
-         Current_Depth := Current_Depth + Cnt;
-         Child := new Frame '(Parent      => Child,
-                              Next        => Child.Children,
+         Current_Depth := Current_Depth + 1;
+         Child := new Frame '(Parent      => Parent,
+                              Next        => Child,
                               Children    => null,
                               Used        => 1,
                               Depth       => Current_Depth,
-                              Local_Depth => Cnt,
-                              Calls       => (others => 0));
-         Child.Calls (1 .. Cnt) := Pc (Pos .. Pos + Cnt - 1);
-         Pos := Pos + Cnt;
-         Child.Parent.Children := Child;
---           if not Check (Get_Root (Child)) then
---              Log.Error ("Error when adding frame");
---           end if;
+                              Pc          => Pc (Pos));
+         Pos := Pos + 1;
+         Parent.Children := Child;
+         Parent := Child;
+         Child := null;
       end loop;
-      Result := Child;
+      Result := Parent;
+   end Add_Frame;
+
+   function "<" (Left, Right : in Frame_Type) return Boolean;
+
+   function "<" (Left, Right : in Frame_Type) return Boolean is
+      use type System.Address;
+   begin
+      return Left.all'Address < Right.all'Address;
+   end "<";
+
+   type Frame_Table_Access is access all Frame_Table;
+   package Check_Maps is
+      new Ada.Containers.Ordered_Maps (Key_Type     => Frame_Type,
+                                       Element_Type => Frame_Table_Access,
+                                       "<"          => "<",
+                                       "="          => "=");
+
+   Map : Check_Maps.Map;
+
+   procedure Verify_Frames is
+      Iter : Check_Maps.Cursor := Map.First;
+   begin
+      Log.Info ("There are {0} frames in the map",
+                Natural'Image (Natural (Map.Length)));
+      while Check_Maps.Has_Element (Iter) loop
+         declare
+            use type MAT.Types.Target_Addr;
+
+            Frame : constant Frame_Type := Check_Maps.Key (Iter);
+            Table : constant Frame_Table_Access := Check_Maps.Element (Iter);
+            Pc    : constant Frame_Table := Backtrace (Frame);
+         begin
+            if Table'Length /= Pc'Length then
+               Log.Error ("Invalid frame length");
+            end if;
+            for I in Pc'Range loop
+               if Table (I) /= Pc (I) then
+                  Log.Error ("Frame at {0} is different", Natural'Image (I));
+               end if;
+            end loop;
+         end;
+         Check_Maps.Next (Iter);
+      end loop;
+   end Verify_Frames;
+
+   procedure Add_Frame (Frame : in Frame_Type;
+                        Pc    : in Frame_Table) is
+   begin
+      if not Map.Contains (Frame) then
+         declare
+            Table : Frame_Table_Access := new Frame_Table '(Pc);
+         begin
+            Map.Include (Frame, Table);
+         end;
+--        else
+--           declare
+--              Iter : Check_Maps.Cursor := Map.First;
+--           begin
+--              while Check_Maps.Has_Element (Iter) loop
+--                 declare
+--                    use type MAT.Types.Target_Addr;
+--
+--                    F     : Frame_Type := Check_Maps.Key (Iter);
+--                    Table : constant Frame_Table_Access := Check_Maps.Element (Iter);
+--                    Found : Boolean := True;
+--                 begin
+--                    if F /= Frame and Table'Length = Pc'Length then
+--                       for I in Pc'Range loop
+--                          if Table (I) /= Pc (I) then
+--                             Found := False;
+--                             exit;
+--                          end if;
+--                       end loop;
+--                       if Found then
+--                         Log.Error ("Stack frame is already inserted by a new Frame is returned");
+--                       end if;
+--                    end if;
+--                 end;
+--                 Check_Maps.Next (Iter);
+--              end loop;
+--           end;
+      end if;
+--        Verify_Frames;
    end Add_Frame;
 
    --  ------------------------------
@@ -364,51 +318,48 @@ package body MAT.Frames is
    procedure Insert (Frame  : in Frame_Type;
                      Pc     : in Frame_Table;
                      Result : out Frame_Type) is
-      Current : Frame_Type := Frame;
-      Child   : Frame_Type;
+      Parent  : Frame_Type := Frame;
+      Current : Frame_Type := Frame.Children;
       Pos     : Positive  := Pc'First;
-      Lpos    : Positive  := 1;
       Addr    : MAT.Types.Target_Addr;
    begin
-      while Pos <= Pc'Last loop
-         Addr := Pc (Pos);
-         if Lpos <= Current.Local_Depth then
-            if Addr = Current.Calls (Lpos) then
-               Lpos := Lpos + 1;
-               Pos  := Pos + 1;
-
-               --  Split this node
-            else
-               Current.Used := Current.Used + 1;
-               if Lpos > 1 then
-                  Split (Current, Lpos - 1);
-               end if;
-               Add_Frame (Current, Pc (Pos .. Pc'Last), Result);
-               return;
-            end if;
-         else
-            --  Find the first child which has the address.
-            Child := Current.Children;
-            while Child /= null loop
-               exit when Child.Calls (1) = Addr;
-               Child := Child.Next;
-            end loop;
-            if Child = null then
-               Current.Used := Current.Used + 1;
-               Add_Frame (Current, Pc (Pos .. Pc'Last), Result);
-               return;
-            end if;
+      if Pc'Length = 0 then
+         Result := Frame;
+         Frame.Used := Frame.Used + 1;
+         return;
+      end if;
+      if Current = null then
+         Add_Frame (Frame, Pc, Result);
+         Add_Frame (Result, Pc);
+         return;
+      end if;
+      Addr := Pc (Pos);
+      loop
+         if Addr = Current.Pc then
             Current.Used := Current.Used + 1;
-            Current := Child;
-            Lpos    := 2;
-            Pos     := Pos + 1;
+            Pos  := Pos + 1;
+            if Pos > Pc'Last then
+               Result := Current;
+               Add_Frame (Result, Pc);
+               return;
+            end if;
+            if Current.Children = null then
+               Add_Frame (Current, Pc (Pos .. Pc'Last), Result);
+               Add_Frame (Result, Pc);
+               return;
+            end if;
+            Parent := Current;
+            Current := Current.Children;
+            Addr := Pc (Pos);
+
+         elsif Current.Next = null then
+            Add_Frame (Parent, Pc (Pos .. Pc'Last), Result);
+            Add_Frame (Result, Pc);
+            return;
+         else
+            Current := Current.Next;
          end if;
       end loop;
-      Current.Used := Current.Used + 1;
-      if Lpos <= Current.Local_Depth then
-         Split (Current, Lpos - 1);
-      end if;
-      Result := Current;
    end Insert;
 
    --  ------------------------------
@@ -420,7 +371,7 @@ package body MAT.Frames is
       Child : Frame_Type := Frame.Children;
    begin
       while Child /= null loop
-         if Child.Local_Depth >= 1 and then Child.Calls (1) = Pc then
+         if Child.Pc = Pc then
             return Child;
          end if;
          Child := Child.Next;
@@ -432,71 +383,69 @@ package body MAT.Frames is
    --  Find the child frame which has the given PC address.
    --  Returns that frame pointer or raises the Not_Found exception.
    --  ------------------------------
-   function Find (Frame : in Frame_Type;
-                  Pc    : in Frame_Table) return Frame_Type is
-      Child : Frame_Type := Frame;
-      Pos   : Positive  := Pc'First;
-      Lpos  : Positive;
-   begin
-      while Pos <= Pc'Last loop
-         Child := Find (Child, Pc (Pos));
-         Pos  := Pos + 1;
-         Lpos := 2;
-         --  All the PC of the child frame must match.
-         while Pos <= Pc'Last and Lpos <= Child.Local_Depth loop
-            if Child.Calls (Lpos) /= Pc (Pos) then
-               raise Not_Found;
-            end if;
-            Lpos := Lpos + 1;
-            Pos  := Pos + 1;
-         end loop;
-      end loop;
-      return Child;
-   end Find;
+--     function Find (Frame : in Frame_Type;
+--                    Pc    : in Frame_Table) return Frame_Type is
+--        Child : Frame_Type := Frame;
+--        Pos   : Positive  := Pc'First;
+--     begin
+--        while Pos <= Pc'Last loop
+--           Child := Find (Child, Pc (Pos));
+--           Pos  := Pos + 1;
+--           --  All the PC of the child frame must match.
+--           while Pos <= Pc'Last and Lpos <= Child.Local_Depth loop
+--              if Child.Calls (Lpos) /= Pc (Pos) then
+--                 raise Not_Found;
+--              end if;
+--              Lpos := Lpos + 1;
+--              Pos  := Pos + 1;
+--           end loop;
+--        end loop;
+--        return Child;
+--     end Find;
 
    --  ------------------------------
    --  Find the child frame which has the given PC address.
    --  Returns that frame pointer or raises the Not_Found exception.
-   --  ------------------------------
-   procedure Find (Frame   : in Frame_Type;
-                   Pc      : in Frame_Table;
-                   Result  : out Frame_Type;
-                   Last_Pc : out Natural) is
-      Current : Frame_Type := Frame;
-      Pos     : Positive  := Pc'First;
-      Lpos    : Positive;
-   begin
-      Main_Search :
-      while Pos <= Pc'Last loop
-         declare
-            Addr  : constant MAT.Types.Target_Addr := Pc (Pos);
-            Child : Frame_Type  := Current.Children;
-         begin
-            --  Find the child which has the corresponding PC.
-            loop
-               exit Main_Search when Child = null;
-               exit when Child.Local_Depth >= 1 and Child.Calls (1) = Addr;
-               Child := Child.Next;
-            end loop;
-
-            Current := Child;
-            Pos  := Pos + 1;
-            Lpos := 2;
-            --  All the PC of the child frame must match.
-            while Pos <= Pc'Last and Lpos <= Current.Local_Depth loop
-               exit Main_Search when Current.Calls (Lpos) /= Pc (Pos);
-               Lpos := Lpos + 1;
-               Pos  := Pos + 1;
-            end loop;
-         end;
-      end loop Main_Search;
-      Result := Current;
-      if Pos > Pc'Last then
-         Last_Pc := 0;
-      else
-         Last_Pc := Pos;
-      end if;
-   end Find;
+--     --  ------------------------------
+--     procedure Find (Frame   : in Frame_Type;
+--                     Pc      : in Frame_Table;
+--                     Result  : out Frame_Type;
+--                     Last_Pc : out Natural) is
+--        Current : Frame_Type := Frame;
+--        Pos     : Positive  := Pc'First;
+--        Lpos    : Positive;
+--     begin
+--        Main_Search :
+--        while Pos <= Pc'Last loop
+--           declare
+--              Addr  : constant MAT.Types.Target_Addr := Pc (Pos);
+--              Child : Frame_Type  := Current.Children;
+--           begin
+--              --  Find the child which has the corresponding PC.
+--              loop
+--                 exit Main_Search when Child = null;
+--                 exit when Child.Pc = Addr;
+--                 Child := Child.Next;
+--              end loop;
+--
+--              Current := Child;
+--              Pos  := Pos + 1;
+--              Lpos := 2;
+--              --  All the PC of the child frame must match.
+--              while Pos <= Pc'Last and Lpos <= Current.Local_Depth loop
+--                 exit Main_Search when Current.Calls (Lpos) /= Pc (Pos);
+--                 Lpos := Lpos + 1;
+--                 Pos  := Pos + 1;
+--              end loop;
+--           end;
+--        end loop Main_Search;
+--        Result := Current;
+--        if Pos > Pc'Last then
+--           Last_Pc := 0;
+--        else
+--           Last_Pc := Pos;
+--        end if;
+--     end Find;
 
    --  ------------------------------
    --  Check whether the frame contains a call to the function described by the address range.
@@ -507,11 +456,9 @@ package body MAT.Frames is
       Current : Frame_Type := Frame;
    begin
       while Current /= null loop
-         for I in 1 .. Current.Local_Depth loop
-            if Current.Calls (I) >= From and Current.Calls (I) <= To then
-               return True;
-            end if;
-         end loop;
+         if Current.Pc >= From and Current.Pc <= To then
+            return True;
+         end if;
          Current := Current.Parent;
       end loop;
       return False;
@@ -525,16 +472,8 @@ package body MAT.Frames is
    function By_Function (Frame : in Frame_Type;
                          From  : in MAT.Types.Target_Addr;
                          To    : in MAT.Types.Target_Addr) return Boolean is
-      Pc : MAT.Types.Target_Addr;
    begin
-      if Frame /= null then
-         Pc := Frame.Calls (Frame.Local_Depth);
-         if Pc >= From and Pc <= To then
-            return True;
-         end if;
-      end if;
-      return False;
+      return Frame /= null and then Frame.Pc >= From and then Frame.Pc <= To;
    end By_Function;
-
 
 end MAT.Frames;
