@@ -26,6 +26,7 @@ with MAT.Memory.Targets;
 with MAT.Symbols.Targets;
 with MAT.Events.Targets;
 with MAT.Events.Probes;
+with MAT.Frames.Targets;
 with MAT.Readers;
 with MAT.Readers.Streams;
 with MAT.Readers.Streams.Sockets;
@@ -65,6 +66,7 @@ package MAT.Targets is
       Memory  : MAT.Memory.Targets.Target_Memory;
       Symbols : MAT.Symbols.Targets.Target_Symbols_Ref;
       Events  : MAT.Events.Targets.Target_Events_Access;
+      Frames  : MAT.Frames.Targets.Target_Frames_Access;
       Console : MAT.Consoles.Console_Access;
    end record;
    type Target_Process_Type_Access is access all Target_Process_Type'Class;
