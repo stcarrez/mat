@@ -35,6 +35,10 @@ package body MAT.Targets is
                                      MAT.Events.Targets.Target_Events_Access);
 
    procedure Free is
+     new Ada.Unchecked_Deallocation (MAT.Frames.Targets.Target_Frames'Class,
+                                     MAT.Frames.Targets.Target_Frames_Access);
+
+   procedure Free is
      new Ada.Unchecked_Deallocation (Target_Process_Type'Class,
                                      Target_Process_Type_Access);
 
@@ -45,6 +49,7 @@ package body MAT.Targets is
    procedure Finalize (Target : in out Target_Process_Type) is
    begin
       Free (Target.Events);
+      Free (Target.Frames);
    end Finalize;
 
    --  ------------------------------
