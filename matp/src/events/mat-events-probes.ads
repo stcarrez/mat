@@ -25,7 +25,7 @@ with MAT.Types;
 with MAT.Events;
 with MAT.Events.Targets;
 with MAT.Readers;
-with MAT.Frames;
+with MAT.Frames.Targets;
 package MAT.Events.Probes is
 
    -----------------
@@ -134,7 +134,7 @@ private
       Frame       : access MAT.Events.Frame_Info;
       Events      : MAT.Events.Targets.Target_Events_Access;
       Event       : Target_Event_Type;
-      Frames      : MAT.Frames.Frame_Type;
+      Frames      : MAT.Frames.Targets.Target_Frames;
    end record;
 
    --  Read an event definition from the stream and configure the reader.
