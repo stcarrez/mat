@@ -19,7 +19,13 @@
 with MAT.Targets;
 package MAT.Commands is
 
-   Stop_Interp : exception;
+   Stop_Interp  : exception;
+
+   --  Exception raised by a command when a filter expression is invalid.
+   Filter_Error : exception;
+
+   --  Exception raised by a command when some command argument is invalid.
+   Usage_Error : exception;
 
    --  Procedure that defines a command handler.
    type Command_Handler is access procedure (Target : in out MAT.Targets.Target_Type'Class;
