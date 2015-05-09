@@ -53,6 +53,9 @@ package MAT.Types is
    --  Format the target time to a printable representation.
    function Tick_Image (Value : in Target_Tick_Ref) return String;
 
+   --  Convert the string in the form NN.MM into a tick value.
+   function Tick_Value (Value : in String) return Target_Tick_Ref;
+
    --  Convert the hexadecimal string into an unsigned integer.
    function Hex_Value (Value : in String) return Uint64;
 
