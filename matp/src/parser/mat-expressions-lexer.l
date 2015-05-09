@@ -52,6 +52,10 @@ has             return T_HAS;
 		           yylval.low := MAT.Types.Uint64'Value (YYText);
 		           return T_INT;
 		}
+[0-9]+\.[0-9]+	{
+                   yylval.low := MAT.Types.Uint64 (MAT.Types.Tick_Value (YYText));
+		           return T_TIME;
+		}
 \"		{
 		  return T_STRING;
 		}
@@ -84,7 +88,7 @@ package body MAT.Expressions.Lexer is
    use MAT.Expressions.Parser_IO;
 
    Line_Number : Natural := 0;
- 
+
    pragma Style_Checks (Off);
    pragma Warnings (Off);
 ##
