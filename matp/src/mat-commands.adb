@@ -36,6 +36,7 @@ with MAT.Memory.Tools;
 with MAT.Memory.Targets;
 with MAT.Symbols.Targets;
 with MAT.Expressions;
+with MAT.Expressions.Parser_Tokens;
 with MAT.Frames;
 with MAT.Consoles;
 with MAT.Formats;
@@ -238,12 +239,15 @@ package body MAT.Commands is
       Console.End_Row;
    end Print_Slot;
 
-   procedure Get_Arguments (Args       : in String;
+   procedure Get_Arguments (Process    : in MAT.Targets.Target_Process_Type_Access;
+                            Args       : in String;
                             Long_Flag  : out Boolean;
                             Count_Flag : out Boolean;
-                            Pos        : out Natural) is
+                            Filter     : in out MAT.Expressions.Expression_Type) is
       procedure Check_Argument (Token : in String;
                                 Done  : out Boolean);
+
+      Pos : Natural := Args'First;
 
       procedure Check_Argument (Token : in String;
                                 Done  : out Boolean) is
@@ -259,7 +263,7 @@ package body MAT.Commands is
             Done := False;
             Pos := Pos + Token'Length + 1;
          else
-            Done := True;
+            raise Usage_Error;
          end if;
       end Check_Argument;
 
@@ -270,6 +274,14 @@ package body MAT.Commands is
       Util.Strings.Tokenizers.Iterate_Tokens (Content => Args,
                                               Pattern => " ",
                                               Process => Check_Argument'Access);
+      if Pos < Args'Last then
+         Filter := MAT.Expressions.Parse (Args (Pos .. Args'Last), Process.all'Access);
+      end if;
+
+   exception
+      when MAT.Expressions.Parser_Tokens.Syntax_Error =>
+         raise Filter_Error with Args (Pos .. Args'Last);
+
    end Get_Arguments;
 
    --  ------------------------------
@@ -286,15 +298,11 @@ package body MAT.Commands is
       Process    : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Start, Finish : MAT.Types.Target_Tick_Ref;
       Filter     : MAT.Expressions.Expression_Type;
-      Pos        : Natural;
       Long_Flag  : Boolean;
       Count_Flag : Boolean;
    begin
-      Get_Arguments (Args, Long_Flag, Count_Flag, Pos);
+      Get_Arguments (Process, Args, Long_Flag, Count_Flag, Filter);
 
-      if Pos < Args'Last then
-         Filter := MAT.Expressions.Parse (Args (Pos .. Args'Last), Process.all'Access);
-      end if;
       Process.Memory.Find (From   => MAT.Types.Target_Addr'First,
                            To     => MAT.Types.Target_Addr'Last,
                            Filter => Filter,
@@ -321,11 +329,6 @@ package body MAT.Commands is
          end;
          MAT.Memory.Allocation_Maps.Next (Iter);
       end loop;
-
-   exception
-      when E : others =>
-         Log.Error ("Exception when evaluating " & Args, E);
-         Target.Console.Error ("Invalid selection");
    end Slot_Command;
 
    --  ------------------------------
@@ -547,11 +550,6 @@ package body MAT.Commands is
          Console.End_Row;
          MAT.Events.Tools.Frame_Info_Vectors.Next (Iter);
       end loop;
-
-   exception
-      when E : others =>
-         Log.Error ("Exception when evaluating " & Args, E);
-         Target.Console.Error ("Invalid selection");
    end Event_Frames_Command;
 
    --  ------------------------------
@@ -567,10 +565,11 @@ package body MAT.Commands is
       Sizes   : MAT.Events.Tools.Size_Event_Info_Map;
       Filter  : MAT.Expressions.Expression_Type;
       Iter    : MAT.Events.Tools.Size_Event_Info_Cursor;
+      Long_Flag  : Boolean;
+      Count_Flag : Boolean;
    begin
-      if Args'Length > 0 then
-         Filter := MAT.Expressions.Parse (Args, Process.all'Access);
-      end if;
+      Get_Arguments (Process, Args, Long_Flag, Count_Flag, Filter);
+
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_ID, "Event Id range", 30);
       Console.Print_Title (MAT.Consoles.F_TIME, "Time", 10);
@@ -617,11 +616,6 @@ package body MAT.Commands is
          end;
          MAT.Events.Tools.Size_Event_Info_Maps.Next (Iter);
       end loop;
-
-   exception
-      when E : others =>
-         Log.Error ("Exception when evaluating " & Args, E);
-         Target.Console.Error ("Invalid selection");
    end Event_Sizes_Command;
 
    --  ------------------------------
@@ -632,19 +626,15 @@ package body MAT.Commands is
                              Args   : in String) is
       use type MAT.Events.Event_Id_Type;
 
-      Console : constant MAT.Consoles.Console_Access := Target.Console;
-      Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
+      Console    : constant MAT.Consoles.Console_Access := Target.Console;
+      Process    : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Start, Finish : MAT.Types.Target_Tick_Ref;
-      Events  : MAT.Events.Tools.Target_Event_Vector;
-      Filter  : MAT.Expressions.Expression_Type;
-      Pos        : Natural;
+      Events     : MAT.Events.Tools.Target_Event_Vector;
+      Filter     : MAT.Expressions.Expression_Type;
       Long_Flag  : Boolean;
       Count_Flag : Boolean;
    begin
-      Get_Arguments (Args, Long_Flag, Count_Flag, Pos);
-      if Pos < Args'Last then
-         Filter := MAT.Expressions.Parse (Args (Pos .. Args'Last), Process.all'Access);
-      end if;
+      Get_Arguments (Process, Args, Long_Flag, Count_Flag, Filter);
 
       MAT.Events.Timelines.Filter_Events (Process.Events.all, Filter, Events);
       if Count_Flag then
@@ -656,11 +646,6 @@ package body MAT.Commands is
 
       Process.Events.Get_Time_Range (Start, Finish);
       Print_Events (Console, Events, Start);
-
-   exception
-      when E : others =>
-         Log.Error ("Exception when evaluating " & Args, E);
-         Target.Console.Error ("Invalid selection");
    end Events_Command;
 
    --  ------------------------------
@@ -1040,6 +1025,10 @@ package body MAT.Commands is
       when Usage_Error =>
          Target.Console.Error ("Invalid argument '" & Line (Index + 1 .. Line'Last)
                                & "' for command " & Command);
+
+      when E : Filter_Error =>
+         Target.Console.Error ("Invalid filter '"
+                               & Ada.Exceptions.Exception_Message (E) & "'");
 
       when E : others =>
          Log.Error ("Exception: ", E, True);
