@@ -16,7 +16,6 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 
-with Ada.Directories;
 with Util.Test_Caller;
 with Util.Assertions;
 
@@ -49,13 +48,17 @@ package body MAT.Expressions.Tests is
       T.Assert (Result.Node /= null, "Parse 'by direct foo' must return a expression");
       Assert_Equals_Kind (T, N_IN_FUNC_DIRECT, Result.Node.Kind, "Invalid node kind");
 
-      Result := MAT.Expressions.Parse ("after foo", null);
-      T.Assert (Result.Node /= null, "Parse 'after foo' must return a expression");
---        Assert_Equals_Kind (T, N_INSIDE, Result.Node.Kind, "Invalid node kind");
+      Result := MAT.Expressions.Parse ("after 10.2", null);
+      T.Assert (Result.Node /= null, "Parse 'after 10.2' must return a expression");
+      Assert_Equals_Kind (T, N_RANGE_TIME, Result.Node.Kind, "Invalid node kind");
 
-      Result := MAT.Expressions.Parse ("before foo", null);
-      T.Assert (Result.Node /= null, "Parse 'before foo' must return a expression");
-      --        Assert_Equals_Kind (T, N_INSIDE, Result.Node.Kind, "Invalid node kind");
+      Result := MAT.Expressions.Parse ("before 3.5", null);
+      T.Assert (Result.Node /= null, "Parse 'before 3.5' must return a expression");
+      Assert_Equals_Kind (T, N_RANGE_TIME, Result.Node.Kind, "Invalid node kind");
+
+      Result := MAT.Expressions.Parse ("from 2.2 to 3.3", null);
+      T.Assert (Result.Node /= null, "Parse 'from 2.2 to 3.3' must return a expression");
+      Assert_Equals_Kind (T, N_RANGE_TIME, Result.Node.Kind, "Invalid node kind");
 
       Result := MAT.Expressions.Parse ("size = 10", null);
       T.Assert (Result.Node /= null, "Parse 'size = 10' must return a expression");
