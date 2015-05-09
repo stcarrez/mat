@@ -20,6 +20,7 @@ with Ada.Finalization;
 package MAT.Frames.Targets is
 
    type Target_Frames is tagged limited private;
+   type Target_Frames_Access is access all Target_Frames'Class;
 
    --  Insert in the frame tree the new stack frame represented by <tt>Pc</tt>.
    --  If the frame is already known, the frame reference counter is incremented.
@@ -27,6 +28,9 @@ package MAT.Frames.Targets is
    procedure Insert (Frame  : in out Target_Frames;
                      Pc     : in Frame_Table;
                      Result : out Frame_Type);
+
+   --  Get the number of different stack frames which have been registered.
+   function Get_Frame_Count (Frame : in Target_Frames) return Natural;
 
 private
 
