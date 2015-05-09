@@ -19,6 +19,7 @@
 with Util.Test_Caller;
 
 with MAT.Expressions;
+with MAT.Frames.Targets;
 with MAT.Memory.Targets;
 package body MAT.Memory.Tests is
 
@@ -45,9 +46,10 @@ package body MAT.Memory.Tests is
       M    : MAT.Memory.Targets.Target_Memory;
       S    : Allocation;
       R    : Allocation_Map;
+      F    : MAT.Frames.Targets.Target_Frames;
    begin
       S.Size :=  4;
-      M.Create_Frame (Frame_1_0, S.Frame);
+      F.Insert (Frame_1_0, S.Frame);
 
       --  Create memory slots:
       --   [10 .. 14] [20 .. 24] [30 ..34] .. [100 .. 104]
@@ -102,9 +104,10 @@ package body MAT.Memory.Tests is
       R    : Allocation_Map;
       Size : MAT.Types.Target_Size;
       Id   : MAT.Events.Event_Id_Type;
+      F    : MAT.Frames.Targets.Target_Frames;
    begin
       S.Size :=  4;
-      M.Create_Frame (Frame_1_0, S.Frame);
+      F.Insert (Frame_1_0, S.Frame);
 
       --  Malloc followed by a free.
       M.Probe_Malloc (10, S);

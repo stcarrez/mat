@@ -17,12 +17,10 @@
 -----------------------------------------------------------------------
 
 with Ada.Text_IO;
-with Ada.Directories;
 with Util.Test_Caller;
 
 with MAT.Events;
 with MAT.Frames.Print;
-with MAT.Readers.Streams.Files;
 package body MAT.Frames.Tests is
 
    use Util.Tests;
@@ -57,6 +55,27 @@ package body MAT.Frames.Tests is
    Frame_2_3 : constant Frame_Table (1 .. 10) :=
      (2_0, 2_1, 2_2, 2_1, 2_1, 2_3, 2_1, 2_1, 2_1, 2_1);
 
+   Frame_3_0 : constant Frame_Table (1 .. 10) :=
+     (3_0, 3_1, 3_2, 3_3, 3_3, 3_4, 3_5, 3_6, 3_7, 3_8);
+
+   Frame_3_1 : constant Frame_Table (1 .. 10) :=
+     (3_0, 3_1, 3_2, 3_30, 3_3, 3_4, 3_5, 3_6, 3_7, 3_8);
+
+   Frame_3_2 : constant Frame_Table (1 .. 10) :=
+     (3_0, 3_1, 3_2, 3_31, 3_3, 3_4, 3_5, 3_6, 3_7, 3_8);
+
+   Frame_3_3 : constant Frame_Table (1 .. 10) :=
+     (3_0, 3_1, 3_2, 3_32, 3_3, 3_4, 3_5, 3_6, 3_7, 3_8);
+
+   Frame_3_4 : constant Frame_Table (1 .. 10) :=
+     (3_0, 3_1, 3_2, 3_32, 3_3, 3_4, 3_5, 3_61, 3_7, 3_8);
+
+   Frame_3_5 : constant Frame_Table (1 .. 10) :=
+     (3_0, 3_1, 3_2, 3_32, 3_3, 3_4, 3_5, 3_62, 3_7, 3_8);
+
+   Frame_3_6 : constant Frame_Table (1 .. 10) :=
+     (3_0, 3_1, 3_2, 3_32, 3_3, 3_4, 3_5, 3_63, 3_7, 3_8);
+
    procedure Add_Tests (Suite : in Util.Tests.Access_Test_Suite) is
    begin
       Caller.Add_Test (Suite, "Test MAT.Frames.Insert",
@@ -68,6 +87,21 @@ package body MAT.Frames.Tests is
       Caller.Add_Test (Suite, "Test MAT.Frames.Release",
                        Test_Release_Frames'Access);
    end Add_Tests;
+
+   procedure Verify_Frame (T : in out Test;
+                           F : in Frame_Type;
+                           Expect : in Frame_Table;
+                           Message : in String) is
+      use type MAT.Types.Target_Addr;
+
+      Len : constant Natural := Expect'Length;
+      Pc  : constant Frame_Table := MAT.Frames.Backtrace (F);
+   begin
+      Util.Tests.Assert_Equals (T, Len, Pc'Length, "Invalid Backtrace length " & Message);
+      for I in Expect'Range loop
+         T.Assert (Expect (I) = Pc (I), "Backtrace PC " & Natural'Image (I) & " " & Message);
+      end loop;
+   end Verify_Frame;
 
    --  ------------------------------
    --  Create a tree with the well known test frames.
@@ -93,6 +127,13 @@ package body MAT.Frames.Tests is
    procedure Test_Simple_Frames (T : in out Test) is
       Root : Frame_Type := Create_Root;
       F    : Frame_Type;
+      F_3_0 : Frame_Type;
+      F_3_1 : Frame_Type;
+      F_3_2 : Frame_Type;
+      F_3_3 : Frame_Type;
+      F_3_4 : Frame_Type;
+      F_3_5 : Frame_Type;
+      F_3_6 : Frame_Type;
    begin
       --  Consistency check on empty tree.
       Util.Tests.Assert_Equals (T, 0, Count_Children (Root),
@@ -106,6 +147,8 @@ package body MAT.Frames.Tests is
                                 "Simple frame: Count_Children must return 1");
       Util.Tests.Assert_Equals (T, 10, Current_Depth (F),
                                 "Simple frame: Current_Depth must return 10");
+      Verify_Frame (T, F, Frame_1_0, "Frame_1_0");
+
 --        Expect (Msg    => "Frames.Count_Children",
 --                Val    => 1,
 --                Result => Count_Children (Root));
@@ -117,8 +160,11 @@ package body MAT.Frames.Tests is
 --                Result => Current_Depth (F));
 
       Insert (Root, Frame_1_1, F);
+      Verify_Frame (T, F, Frame_1_1, "Frame_1_1");
       Insert (Root, Frame_1_2, F);
+      Verify_Frame (T, F, Frame_1_2, "Frame_1_2");
       Insert (Root, Frame_1_3, F);
+      Verify_Frame (T, F, Frame_1_3, "Frame_1_3");
       if Verbose then
          MAT.Frames.Print (Ada.Text_IO.Standard_Output, Root);
       end if;
@@ -130,9 +176,13 @@ package body MAT.Frames.Tests is
                                 "Simple frame: Current_Depth must return 15");
 
       Insert (Root, Frame_2_0, F);
+      Verify_Frame (T, F, Frame_2_0, "Frame_2_0");
       Insert (Root, Frame_2_1, F);
+      Verify_Frame (T, F, Frame_2_1, "Frame_2_1");
       Insert (Root, Frame_2_2, F);
+      Verify_Frame (T, F, Frame_2_2, "Frame_2_2");
       Insert (Root, Frame_2_3, F);
+      Verify_Frame (T, F, Frame_2_3, "Frame_2_3");
       if Verbose then
          MAT.Frames.Print (Ada.Text_IO.Standard_Output, Root);
       end if;
@@ -143,6 +193,33 @@ package body MAT.Frames.Tests is
       Util.Tests.Assert_Equals (T, 10, Current_Depth (F),
                                 "Simple frame: Current_Depth must return 10");
 
+      Insert (Root, Frame_3_0, F_3_0);
+      Verify_Frame (T, F_3_0, Frame_3_0, "Frame_3_0");
+
+      Insert (Root, Frame_3_1, F_3_1);
+      Verify_Frame (T, F_3_1, Frame_3_1, "Frame_3_1");
+
+      Insert (Root, Frame_3_2, F_3_2);
+      Verify_Frame (T, F_3_2, Frame_3_2, "Frame_3_2");
+
+      Insert (Root, Frame_3_3, F_3_3);
+      Verify_Frame (T, F_3_3, Frame_3_3, "Frame_3_3");
+
+      Insert (Root, Frame_3_4, F_3_4);
+      Verify_Frame (T, F_3_4, Frame_3_4, "Frame_3_4");
+
+      Insert (Root, Frame_3_5, F_3_5);
+      Verify_Frame (T, F_3_5, Frame_3_5, "Frame_3_5");
+
+      Insert (Root, Frame_3_6, F_3_6);
+      Verify_Frame (T, F_3_6, Frame_3_6, "Frame_3_6");
+      Verify_Frame (T, F_3_5, Frame_3_5, "Frame_3_5");
+      Verify_Frame (T, F_3_4, Frame_3_4, "Frame_3_4");
+      Verify_Frame (T, F_3_3, Frame_3_3, "Frame_3_3");
+      Verify_Frame (T, F_3_2, Frame_3_2, "Frame_3_2");
+      Verify_Frame (T, F_3_1, Frame_3_1, "Frame_3_1");
+      Verify_Frame (T, F_3_0, Frame_3_0, "Frame_3_0");
+      Verify_Frames;
       Destroy (Root);
    end Test_Simple_Frames;
 
@@ -155,14 +232,14 @@ package body MAT.Frames.Tests is
       Last_Pc : Natural;
    begin
       --  Find exact frame.
-      Find (Root, Frame_2_3, Result, Last_Pc);
+--        Find (Root, Frame_2_3, Result, Last_Pc);
       T.Assert (Result /= Root, "Frames.Find must return a valid frame");
       T.Assert (Last_Pc = 0, "Frames.Find must return a 0 Last_Pc");
 
       declare
          Pc : Frame_Table (1 .. 8) := Frame_2_3 (1 .. 8);
       begin
-         Find (Root, Pc, Result, Last_Pc);
+--           Find (Root, Pc, Result, Last_Pc);
 
          T.Assert (Result /= Root, "Frames.Find must return a valid frame");
 --           Expect (Msg    => "Frames.Find (Last_Pc param)",
@@ -202,7 +279,7 @@ package body MAT.Frames.Tests is
          end if;
 
          declare
-            Read_Pc : Frame_Table := Backtrace (F);
+            Read_Pc : constant Frame_Table := Backtrace (F);
          begin
             T.Assert (Read_Pc = Pc (1 .. Depth), "Frames.backtrace (same as inserted)");
             if Verbose then
@@ -215,10 +292,11 @@ package body MAT.Frames.Tests is
       end Create_Frame;
 
    begin
-      Create_Frame (1);
+      Create_Frame (4);
       if Verbose then
          MAT.Frames.Print (Ada.Text_IO.Standard_Output, Root);
       end if;
+      Verify_Frames;
       Destroy (Root);
    end Test_Complex_Frames;
 
@@ -239,7 +317,6 @@ package body MAT.Frames.Tests is
       Insert (Root, Frame_1_3, F3);
       MAT.Frames.Print (Ada.Text_IO.Standard_Output, Root);
       Ada.Text_IO.Put_Line (Ada.Text_IO.Standard_Output, "Release frame F1");
-      Release (F1);
       MAT.Frames.Print (Ada.Text_IO.Standard_Output, Root);
       T.Assert (F2.Used > 0, "Release must not change other frames");
       T.Assert (Root.Used > 0, "Release must not change root frame");
