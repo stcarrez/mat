@@ -111,18 +111,6 @@ package body MAT.Memory.Targets is
    end Probe_Realloc;
 
    --  ------------------------------
-   --  Insert in the frame tree the new stack frame represented by <tt>Pc</tt>.
-   --  If the frame is already known, the frame reference counter is incremented.
-   --  The frame represented by <tt>Pc</tt> is returned in <tt>Result</tt>.
-   --  ------------------------------
-   procedure Create_Frame (Memory : in out Target_Memory;
-                           Pc     : in MAT.Frames.Frame_Table;
-                           Result : out MAT.Frames.Frame_Type) is
-   begin
-      Memory.Memory.Create_Frame (Pc, Result);
-   end Create_Frame;
-
-   --  ------------------------------
    --  Collect the information about memory slot sizes allocated by the application.
    --  ------------------------------
    procedure Size_Information (Memory : in out Target_Memory;
@@ -396,17 +384,6 @@ package body MAT.Memory.Targets is
             Remove_Free (Addr, Slot.Size);
          end if;
       end Probe_Realloc;
-
-      --  ------------------------------
-      --  Insert in the frame tree the new stack frame represented by <tt>Pc</tt>.
-      --  If the frame is already known, the frame reference counter is incremented.
-      --  The frame represented by <tt>Pc</tt> is returned in <tt>Result</tt>.
-      --  ------------------------------
-      procedure Create_Frame (Pc     : in MAT.Frames.Frame_Table;
-                              Result : out MAT.Frames.Frame_Type) is
-      begin
-         MAT.Frames.Insert (Frames, Pc, Result);
-      end Create_Frame;
 
       --  ------------------------------
       --  Collect the information about memory slot sizes allocated by the application.
