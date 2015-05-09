@@ -84,13 +84,6 @@ package MAT.Memory.Targets is
                             Old_Size : out MAT.Types.Target_Size;
                             By       : out MAT.Events.Event_Id_Type);
 
-   --  Insert in the frame tree the new stack frame represented by <tt>Pc</tt>.
-   --  If the frame is already known, the frame reference counter is incremented.
-   --  The frame represented by <tt>Pc</tt> is returned in <tt>Result</tt>.
-   procedure Create_Frame (Memory : in out Target_Memory;
-                           Pc     : in MAT.Frames.Frame_Table;
-                           Result : out MAT.Frames.Frame_Type);
-
    --  Collect the information about memory slot sizes allocated by the application.
    procedure Size_Information (Memory : in out Target_Memory;
                                Sizes  : in out MAT.Memory.Tools.Size_Info_Map);
@@ -157,12 +150,6 @@ private
                                Old_Size : out MAT.Types.Target_Size;
                                By       : out MAT.Events.Event_Id_Type);
 
-      --  Insert in the frame tree the new stack frame represented by <tt>Pc</tt>.
-      --  If the frame is already known, the frame reference counter is incremented.
-      --  The frame represented by <tt>Pc</tt> is returned in <tt>Result</tt>.
-      procedure Create_Frame (Pc     : in MAT.Frames.Frame_Table;
-                              Result : out MAT.Frames.Frame_Type);
-
       --  Collect the information about memory slot sizes allocated by the application.
       procedure Size_Information (Sizes  : in out MAT.Memory.Tools.Size_Info_Map);
 
@@ -190,7 +177,6 @@ private
       Freed_Slots   : Allocation_Map;
       Regions       : Region_Info_Map;
       Stats         : Memory_Stat;
-      Frames        : MAT.Frames.Frame_Type := MAT.Frames.Create_Root;
    end Memory_Allocator;
 
    type Target_Memory is tagged limited record
