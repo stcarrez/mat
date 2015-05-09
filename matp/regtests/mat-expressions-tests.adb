@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-expressions-tests -- Unit tests for MAT expressions
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,11 +43,11 @@ package body MAT.Expressions.Tests is
    begin
       Result := MAT.Expressions.Parse ("by foo", null);
       T.Assert (Result.Node /= null, "Parse 'by foo' must return a expression");
-      Assert_Equals_Kind (T, N_INSIDE, Result.Node.Kind, "Invalid node kind");
+      Assert_Equals_Kind (T, N_IN_FUNC, Result.Node.Kind, "Invalid node kind");
 
       Result := MAT.Expressions.Parse ("by direct foo", null);
       T.Assert (Result.Node /= null, "Parse 'by direct foo' must return a expression");
-      Assert_Equals_Kind (T, N_INSIDE, Result.Node.Kind, "Invalid node kind");
+      Assert_Equals_Kind (T, N_IN_FUNC_DIRECT, Result.Node.Kind, "Invalid node kind");
 
       Result := MAT.Expressions.Parse ("after foo", null);
       T.Assert (Result.Node /= null, "Parse 'after foo' must return a expression");
@@ -57,13 +57,25 @@ package body MAT.Expressions.Tests is
       T.Assert (Result.Node /= null, "Parse 'before foo' must return a expression");
       --        Assert_Equals_Kind (T, N_INSIDE, Result.Node.Kind, "Invalid node kind");
 
-      Result := MAT.Expressions.Parse ("with size in [10,100]", null);
-      T.Assert (Result.Node /= null, "Parse 'by direct foo' must return a expression");
+      Result := MAT.Expressions.Parse ("size = 10", null);
+      T.Assert (Result.Node /= null, "Parse 'size = 10' must return a expression");
       Assert_Equals_Kind (T, N_RANGE_SIZE, Result.Node.Kind, "Invalid node kind");
 
-      Result := MAT.Expressions.Parse ("with size in [10..100]", null);
-      T.Assert (Result.Node /= null, "Parse 'by direct foo' must return a expression");
+      Result := MAT.Expressions.Parse ("size > 10", null);
+      T.Assert (Result.Node /= null, "Parse 'size > 10' must return a expression");
       Assert_Equals_Kind (T, N_RANGE_SIZE, Result.Node.Kind, "Invalid node kind");
+
+      Result := MAT.Expressions.Parse ("size < 10", null);
+      T.Assert (Result.Node /= null, "Parse 'size < 10' must return a expression");
+      Assert_Equals_Kind (T, N_RANGE_SIZE, Result.Node.Kind, "Invalid node kind");
+
+      Result := MAT.Expressions.Parse ("event = 23", null);
+      T.Assert (Result.Node /= null, "Parse 'event = 23' must return a expression");
+      Assert_Equals_Kind (T, N_EVENT, Result.Node.Kind, "Invalid node kind");
+
+      Result := MAT.Expressions.Parse ("event = 1..100", null);
+      T.Assert (Result.Node /= null, "Parse 'event = 1..100' must return a expression");
+      Assert_Equals_Kind (T, N_EVENT, Result.Node.Kind, "Invalid node kind");
 
    end Test_Parse_Expression;
 
