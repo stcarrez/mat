@@ -140,12 +140,27 @@ package body MAT.Expressions is
    --  ------------------------------
    function Create_Time (Min : in MAT.Types.Target_Tick_Ref;
                          Max : in MAT.Types.Target_Tick_Ref) return Expression_Type is
+      use type MAT.Types.Target_Tick_Ref;
+
       Result : Expression_Type;
+      Start  : MAT.Types.Target_Tick_Ref;
    begin
-      Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
-                                    Kind        => N_RANGE_TIME,
-                                    Min_Time    => Min,
-                                    Max_Time    => Max);
+      if Resolver /= null then
+         Start := Resolver.Get_Start_Time;
+      else
+         Start := 0;
+      end if;
+      if Max = MAT.Types.Target_Tick_Ref'Last then
+         Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
+                                       Kind        => N_RANGE_TIME,
+                                       Min_Time    => Min + Start,
+                                       Max_Time    => Max);
+      else
+         Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
+                                       Kind        => N_RANGE_TIME,
+                                       Min_Time    => Min + Start,
+                                       Max_Time    => Max + Start);
+      end if;
       return Result;
    end Create_Time;
 
