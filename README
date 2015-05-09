@@ -48,8 +48,8 @@ To build the mat analysis tool, you must have installed the following
 components on your system:
 
 - the GNAT Ada compiler (at least 4.7.3 or higher),
-- the GNU Ada Bfd library,
-- the Ada Utility Library
+- the GNU Ada Bfd library (https://github.com/stcarrez/ada-bfd.git),
+- the Ada Utility Library (https://github.com/stcarrez/ada-util.git)
 
 You must configure and build by using:
 
@@ -65,6 +65,15 @@ You can instrument the memory allocation by using the matl launcher.
 
 While the program runs and the libmat.so collect events,
 it generates a file 'name-<pid>.mat'.
+
+Start mat with the generated file:
+
+  mat name-xxx.mat
+
+Once the memory events are loaded, you can use the interactive
+commands to look at the events.  The first commands you may use
+are 'info', 'timeline' and 'sizes' as they give a short summary
+and analysis of the events.
 
 
 
