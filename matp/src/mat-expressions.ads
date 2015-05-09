@@ -36,6 +36,10 @@ package MAT.Expressions is
    function Find_Symbol (Resolver : in Resolver_Type;
                          Name     : in String) return MAT.Memory.Region_Info is abstract;
 
+   --  Get the start time for the tick reference.
+   function Get_Start_Time (Resolver : in Resolver_Type)
+                            return MAT.Types.Target_Tick_Ref is abstract;
+
    type Context_Type is record
       Addr       : MAT.Types.Target_Addr;
       Allocation : MAT.Memory.Allocation;
