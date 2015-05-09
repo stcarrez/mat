@@ -30,6 +30,14 @@ package body MAT.Frames.Targets is
       Frame.Frames.Insert (Pc, Result);
    end Insert;
 
+   --  ------------------------------
+   --  Get the number of different stack frames which have been registered.
+   --  ------------------------------
+   function Get_Frame_Count (Frame : in Target_Frames) return Natural is
+   begin
+      return Frame.Frames.Get_Frame_Count;
+   end Get_Frame_Count;
+
    protected body Frames_Type is
 
       --  ------------------------------
