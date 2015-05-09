@@ -81,13 +81,14 @@ package body MAT.Targets.Probes is
    --  Create a new process after the begin event is received from the event stream.
    --  ------------------------------
    procedure Create_Process (Probe : in Process_Probe_Type;
-                             Pid         : in MAT.Types.Target_Process_Ref;
-                             Path        : in Ada.Strings.Unbounded.Unbounded_String) is
+                             Pid   : in MAT.Types.Target_Process_Ref;
+                             Path  : in Ada.Strings.Unbounded.Unbounded_String) is
    begin
       Probe.Target.Create_Process (Pid     => Pid,
                                    Path    => Path,
                                    Process => Probe.Target.Current);
       Probe.Target.Process.Events := Probe.Events;
+      Probe.Target.Process.Frames := Probe.Frames;
       MAT.Memory.Targets.Initialize (Memory  => Probe.Target.Process.Memory,
                                      Manager => Probe.Manager.all);
    end Create_Process;
@@ -282,6 +283,7 @@ package body MAT.Targets.Probes is
    begin
       Process_Probe.Target := Target'Unrestricted_Access;
       Process_Probe.Events := Manager.Get_Target_Events;
+      Process_Probe.Frames := Manager.Get_Target_Frames;
       Register (Manager, Process_Probe);
    end Initialize;
 
