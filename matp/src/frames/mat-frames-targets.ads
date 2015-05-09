@@ -36,6 +36,9 @@ private
 
    protected type Frames_Type is
 
+      --  Get the number of different stack frames which have been registered.
+      function Get_Frame_Count return Natural;
+
       --  Insert in the frame tree the new stack frame represented by <tt>Pc</tt>.
       --  If the frame is already known, the frame reference counter is incremented.
       --  The frame represented by <tt>Pc</tt> is returned in <tt>Result</tt>.
