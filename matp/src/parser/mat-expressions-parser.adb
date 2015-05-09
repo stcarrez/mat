@@ -393,32 +393,36 @@ yy.value_stack(yy.tos).name, MAT.Expressions.INSIDE_FUNCTION);
 when 8 => -- #line 78
 
               
-yyval := 
-yy.value_stack(yy.tos-2);
+yyval.expr := MAT.Expressions.Create_Time (MAT.Types.Target_Tick_Ref (
+yy.value_stack(yy.tos-2).low),
+                                                      MAT.Types.Target_Tick_Ref (
+yy.value_stack(yy.tos).low));
             
 
-when 9 => -- #line 83
+when 9 => -- #line 84
 
               
-yyval := 
-yy.value_stack(yy.tos);
+yyval.expr := MAT.Expressions.Create_Time (MAT.Types.Target_Tick_Ref (
+yy.value_stack(yy.tos).low),
+                                                      MAT.Types.Target_Tick_Ref'Last);
             
 
-when 10 => -- #line 88
+when 10 => -- #line 90
 
               
-yyval := 
-yy.value_stack(yy.tos);
+yyval.expr := MAT.Expressions.Create_Time (MAT.Types.Target_Tick_Ref'First,
+                                                      MAT.Types.Target_Tick_Ref (
+yy.value_stack(yy.tos).low));
             
 
-when 11 => -- #line 93
+when 11 => -- #line 96
 
               
 yyval := 
 yy.value_stack(yy.tos); -- new Condition( C_STIME, $2 );
             
 
-when 12 => -- #line 98
+when 12 => -- #line 101
 
               
 yyval.expr := MAT.Expressions.Create_Size (MAT.Types.Target_Size (
@@ -427,7 +431,7 @@ yy.value_stack(yy.tos).low),
 yy.value_stack(yy.tos).high));
             
 
-when 13 => -- #line 104
+when 13 => -- #line 107
 
               
 yyval.expr := MAT.Expressions.Create_Thread (MAT.Types.Target_Thread_Ref (
@@ -436,7 +440,7 @@ yy.value_stack(yy.tos).low),
 yy.value_stack(yy.tos).high));
             
 
-when 14 => -- #line 110
+when 14 => -- #line 113
 
               
 yyval.expr := MAT.Expressions.Create_Addr (MAT.Types.Target_Addr (
@@ -445,7 +449,7 @@ yy.value_stack(yy.tos).low),
 yy.value_stack(yy.tos).low));
             
 
-when 15 => -- #line 116
+when 15 => -- #line 119
 
               
 yyval.expr := MAT.Expressions.Create_Addr (MAT.Types.Target_Addr (
@@ -454,7 +458,7 @@ yy.value_stack(yy.tos).low),
 yy.value_stack(yy.tos).high));
             
 
-when 16 => -- #line 122
+when 16 => -- #line 125
 
               
 yyval.expr := MAT.Expressions.Create_Event (To_Event_Id_Type (
@@ -463,7 +467,7 @@ yy.value_stack(yy.tos).low),
 yy.value_stack(yy.tos).high));
             
 
-when 17 => -- #line 128
+when 17 => -- #line 131
 
               
 yyval.expr := MAT.Expressions.Create_Event (To_Event_Id_Type (
@@ -472,52 +476,52 @@ yy.value_stack(yy.tos-2).low),
 yy.value_stack(yy.tos).low));
             
 
-when 18 => -- #line 134
+when 18 => -- #line 137
 
               
-yyval.expr := MAT.Expressions.Create_Event (To_Event_Id_Type (
+yyval.expr := MAT.Expressions.Create_Time (MAT.Types.Target_Tick_Ref (
 yy.value_stack(yy.tos).low),
-                                                       To_Event_Id_Type (
+                                                      MAT.Types.Target_Tick_Ref (
 yy.value_stack(yy.tos).high));
             
 
-when 19 => -- #line 140
+when 19 => -- #line 143
 
     		  
 yyval.expr := MAT.Expressions.Create_Event_Type (MAT.Events.MSG_MALLOC);
     		
 
-when 20 => -- #line 145
+when 20 => -- #line 148
 
     		  
 yyval.expr := MAT.Expressions.Create_Event_Type (MAT.Events.MSG_FREE);
     		
 
-when 21 => -- #line 150
+when 21 => -- #line 153
 
     		  
 yyval.expr := MAT.Expressions.Create_Event_Type (MAT.Events.MSG_REALLOC);
     		
 
-when 22 => -- #line 155
+when 22 => -- #line 158
 
               
 yyval.expr := MAT.Expressions.Create_No_Free;
     		
 
-when 23 => -- #line 160
+when 23 => -- #line 163
 
               
 yyval.expr := MAT.Expressions.Create_No_Free;
     		
 
-when 24 => -- #line 165
+when 24 => -- #line 168
 
               
 yyval.low := 0;
             
 
-when 25 => -- #line 172
+when 25 => -- #line 175
 
               
 yyval.low  := 0;
@@ -526,7 +530,7 @@ yyval.high :=
 yy.value_stack(yy.tos).low - 1;
             
 
-when 26 => -- #line 178
+when 26 => -- #line 181
 
               
 yyval.low  := 0;
@@ -535,7 +539,7 @@ yyval.high :=
 yy.value_stack(yy.tos).low;
             
 
-when 27 => -- #line 184
+when 27 => -- #line 187
 
               
 yyval.low  := 
@@ -544,7 +548,7 @@ yy.value_stack(yy.tos).low + 1;
 yyval.high := MAT.Types.Uint64'Last;
             
 
-when 28 => -- #line 190
+when 28 => -- #line 193
 
               
 yyval.low  := 
@@ -553,7 +557,7 @@ yy.value_stack(yy.tos).low;
 yyval.high := MAT.Types.Uint64'Last;
             
 
-when 29 => -- #line 196
+when 29 => -- #line 199
 
               
 yyval.low  := 
@@ -563,7 +567,7 @@ yyval.high :=
 yy.value_stack(yy.tos).low;
             
 
-when 30 => -- #line 202
+when 30 => -- #line 205
 
               
 yyval.low  := 
@@ -573,7 +577,7 @@ yyval.high :=
 yy.value_stack(yy.tos).low;
             
 
-when 31 => -- #line 208
+when 31 => -- #line 211
 
               
 yyval.low := 
@@ -583,35 +587,41 @@ yyval.high :=
 yy.value_stack(yy.tos).low;
             
 
-when 32 => -- #line 216
+when 32 => -- #line 219
  
 yyval.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);  
 
-when 33 => -- #line 219
+when 33 => -- #line 222
  
 yyval.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);  
 
-when 34 => -- #line 224
+when 34 => -- #line 227
  
 yyval.low := 1;              
 
-when 35 => -- #line 227
+when 35 => -- #line 230
  
 yyval := MAT.Expressions.Parser_Tokens.YYLval;   
 
-when 36 => -- #line 232
+when 36 => -- #line 235
  
 yyval := MAT.Expressions.Parser_Tokens.YYLval; 
 
-when 37 => -- #line 237
+when 37 => -- #line 240
  
-yyval.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);  
+yyval := MAT.Expressions.Parser_Tokens.YYLval; 
 
-when 38 => -- #line 242
+when 38 => -- #line 243
+ 
+yyval := MAT.Expressions.Parser_Tokens.YYLval; 
+yyval.low := 
+yyval.low * 1_000_000; 
+
+when 39 => -- #line 248
  
 yyval.bval := False;          
 
-when 39 => -- #line 245
+when 40 => -- #line 251
  
 yyval.bval := True;           
 
