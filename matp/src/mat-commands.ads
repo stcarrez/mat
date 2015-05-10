@@ -19,7 +19,11 @@
 with MAT.Targets;
 package MAT.Commands is
 
+   --  Exception raised to stop the program.
    Stop_Interp  : exception;
+
+   --  Exception raised to stop the command (program continues).
+   Stop_Command : exception;
 
    --  Exception raised by a command when a filter expression is invalid.
    Filter_Error : exception;
