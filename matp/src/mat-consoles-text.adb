@@ -15,7 +15,8 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-
+with MAT.Interrupts;
+with MAT.Commands;
 package body MAT.Consoles.Text is
 
    --  ------------------------------
@@ -135,7 +136,9 @@ package body MAT.Consoles.Text is
    procedure Start_Row (Console : in out Console_Type) is
       pragma Unreferenced (Console);
    begin
-      null;
+      if MAT.Interrupts.Is_Interrupted then
+         raise MAT.Commands.Stop_Command;
+      end if;
    end Start_Row;
 
    --  ------------------------------
