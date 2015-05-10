@@ -5,7 +5,7 @@ with "mat";
 
 project Tests is
 
-   Mains := ("mat_harness.adb", "alloc_secondary.adb");
+   Mains := ("mat_harness.adb");
    for Main use Mains;
    for Source_Dirs use ("regtests");
    for Object_Dir use "./" & Config'Object_Dir & "/obj";
