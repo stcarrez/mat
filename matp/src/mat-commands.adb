@@ -387,12 +387,12 @@ package body MAT.Commands is
    begin
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_THREAD, "Thread", 10);
-      Console.Print_Title (MAT.Consoles.F_COUNT, "# Allocation", 12);
+      Console.Print_Title (MAT.Consoles.F_COUNT, "# Allocation", 13);
       Console.Print_Title (MAT.Consoles.F_TOTAL_SIZE, "Total size", 15);
       Console.Print_Title (MAT.Consoles.F_MIN_SIZE, "Min slot size", 15);
       Console.Print_Title (MAT.Consoles.F_MAX_SIZE, "Max slot size", 15);
-      Console.Print_Title (MAT.Consoles.F_MIN_ADDR, "Low address", 15);
-      Console.Print_Title (MAT.Consoles.F_MAX_ADDR, "High address", 15);
+      Console.Print_Title (MAT.Consoles.F_MIN_ADDR, "Low address", 17);
+      Console.Print_Title (MAT.Consoles.F_MAX_ADDR, "High address", 17);
       Console.End_Title;
 
       MAT.Memory.Targets.Thread_Information (Memory  => Process.Memory,
@@ -1010,6 +1010,8 @@ package body MAT.Commands is
       Index   : Natural := Util.Strings.Index (Line, ' ');
       Pos     : constant Command_Map.Cursor := Commands.Find (Command);
    begin
+      Log.Info ("Execute '{0}'", Line);
+
       if Command_Map.Has_Element (Pos) then
          if Index = 0 then
             Index := Line'Last + 1;
