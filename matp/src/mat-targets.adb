@@ -27,6 +27,7 @@ with Util.Strings;
 with Util.Log.Loggers;
 
 with MAT.Commands;
+with MAT.Interrupts;
 with MAT.Targets.Probes;
 package body MAT.Targets is
 
@@ -289,10 +290,12 @@ package body MAT.Targets is
    --  ------------------------------
    procedure Interactive (Target : in out MAT.Targets.Target_Type) is
    begin
+      MAT.Interrupts.Install;
       loop
          declare
             Line : constant String := Readline.Get_Line ("matp>");
          begin
+            MAT.Interrupts.Clear;
             MAT.Commands.Execute (Target, Line);
 
          exception
