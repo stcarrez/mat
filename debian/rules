@@ -22,6 +22,8 @@ libname=libmat
 .PHONY: binary-arch build-arch
 .PHONY: libmat mat
 
+
+
 binary-arch: build-arch libmat mat
 	: # Common to all architecture-dependent packages
 	dh_installchangelogs -a
@@ -65,7 +67,7 @@ override_dh_auto_build:
 	dh_auto_build -- MAKE_ARGS="-XMODE=optimize -bargs -static -largs -Wl,-Bstatic -lada_util -lada-bfd -lbfd -Wl,-Bdynamic"
 
 override_dh_auto_test:
-	dh_auto_test -- LD_LIBRARY_PATH=./lib
+	# dh_auto_test -- LD_LIBRARY_PATH=./lib
 
 override_dh_auto_install: libmat
 
