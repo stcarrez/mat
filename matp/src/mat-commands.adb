@@ -879,6 +879,8 @@ package body MAT.Commands is
       Console.Notice (Consoles.N_INFO, "Duration       : "
                       & MAT.Formats.Duration (Finish.Time - Start.Time));
 
+      Console.Notice (Consoles.N_INFO, "Stack frames   : "
+                        & Natural'Image (Process.Frames.Get_Frame_Count));
       Console.Notice (Consoles.N_INFO, "Malloc count   : "
                       & Natural'Image (Stats.Malloc_Count));
       Console.Notice (Consoles.N_INFO, "Realloc count  : "
@@ -1021,6 +1023,9 @@ package body MAT.Commands is
    exception
       when Stop_Interp =>
          raise;
+
+      when Stop_Command =>
+         Target.Console.Error ("Command was stopped!");
 
       when Usage_Error =>
          Target.Console.Error ("Invalid argument '" & Line (Index + 1 .. Line'Last)
