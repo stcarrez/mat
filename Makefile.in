@@ -40,6 +40,9 @@ rebuild: clean build
 # Files to package in source distribution
 DISTFILES=README LICENSE.txt config.guess configure config.sub \
 configure.ac Makefile.in install-sh \
+matl/Makefile.in \
+matl/matl.1 \
+matl/matl.c \
 matp/Makefile.in \
 matp/src matp/regtests mat/man \
 matp/configure matp/configure.ac \
@@ -59,7 +62,7 @@ dist:
 	here=`cd $(top_builddir) && pwd`; \
 	top_distdir=`cd $(distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
-	mkdir -p $(distdir)/mat $(distdir)/libmat $(distdir)/matp; \
+	mkdir -p $(distdir)/mat $(distdir)/libmat $(distdir)/matp $(distdir)/matl; \
 	for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -71,7 +74,7 @@ dist:
 	  fi; \
 	done
 	-rm -f $(distdir)/bin/*
-	tar --exclude=.svn --exclude="*~" --exclude="*.o" --exclude="*.ali" \
+	tar --exclude=.svn --exclude=.git --exclude="*~" --exclude="*.o" --exclude="*.ali" \
 	    --exclude="*.log" --exclude="*.a" --exclude="*.so" \
 	    -cvzf $(DIST_FILE) $(distdir)
 
