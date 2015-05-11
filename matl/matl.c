@@ -21,7 +21,7 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 
-#define DEFAULT_PORT 4096
+#define DEFAULT_PORT 4606
 
 static int usage(void)
 {
