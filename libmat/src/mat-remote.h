@@ -1,5 +1,5 @@
 /* Remote access
---  Copyright (C) 2011, 2012, 2013, 2014 Stephane Carrez
+--  Copyright (C) 2011, 2012, 2013, 2014, 2015 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +27,7 @@
 # define O_CLOEXEC 0
 #endif
 
-#define DEFAULT_TCP_PORT 4096
+#define DEFAULT_TCP_PORT 4606
 
 struct mat_server;
 struct mat_buffered_server;
