@@ -1,12 +1,12 @@
 .\"
 .\"
-.TH MATL 1 "Apr 11, 2015" "Memory Analysis Tool Launcher"
+.TH MATL 1 "May 11, 2015" "Memory Analysis Tool Launcher"
 .SH NAME
 matl - Memory Analysis Tool Launcher
 .SH SYNOPSIS
 .B matl
 [ -o
-.I file
+.I name
 ] [ -s
 .I host[:port]
 ]
@@ -40,8 +40,9 @@ server.  In that case, the server must be started first.
 .SH OPTIONS
 The following options are recognized by \fImatl\fR:
 .TP 5
-.B -o file
-Instrument the program and write the results in a file.
+.B -o name
+Instrument the program and write the results in a file.  The generated file name
+will contain the process ID and will use the form \fBname\fP-\fIpid\fP.mat
 .TP 5
 .B -s host[:port]
 .br
@@ -50,7 +51,7 @@ Instrument the program by connecting to the
 TCP/IP server.  The host and optional port defines the host name or IP address
 of the host where the
 .I mat
-server is running.  The
+server is running.  The default port is the port 4606.  The
 .I mat
 server must be started first.
 .\"
