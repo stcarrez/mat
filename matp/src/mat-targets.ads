@@ -55,7 +55,7 @@ package MAT.Targets is
       Search_Path  : Ada.Strings.Unbounded.Unbounded_String;
 
       --  Define the server listening address.
-      Address      : GNAT.Sockets.Sock_Addr_Type := (Port => 4096, others => <>);
+      Address      : GNAT.Sockets.Sock_Addr_Type := (Port => 4606, others => <>);
    end record;
 
    type Target_Process_Type is new Ada.Finalization.Limited_Controlled
