@@ -136,4 +136,12 @@ package body MAT.Consoles is
       return Console.Field_Count;
    end Get_Field_Count;
 
+   --  ------------------------------
+   --  Reset the field count.
+   --  ------------------------------
+   procedure Clear_Fields (Console : in out Console_Type) is
+   begin
+      Console.Field_Count := 0;
+   end Clear_Fields;
+
 end MAT.Consoles;
