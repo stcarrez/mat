@@ -807,6 +807,7 @@ package body MAT.Commands is
             Filter  : MAT.Expressions.Expression_Type;
             Start, Finish : MAT.Types.Target_Tick_Ref;
             Events  : MAT.Events.Tools.Target_Event_Vector;
+            Slots   : MAT.Memory.Allocation_Map;
          begin
             Filter := MAT.Expressions.Create_Addr (Addr, Addr);
             Process.Events.Get_Time_Range (Start, Finish);
@@ -815,6 +816,19 @@ package body MAT.Commands is
                Console.Error ("No event references address " & Args);
             else
                Print_Events (Console, Events, Start);
+            end if;
+
+            Process.Memory.Find (From   => Addr,
+                                 To     => Addr,
+                                 Filter => Filter,
+                                 Into   => Slots);
+            if Slots.Is_Empty then
+               Console.Notice (Consoles.N_INFO, "Address " & Args
+                               & " does not match any allocated memory slot");
+            else
+               Console.Clear_Fields;
+               Print_Slot (Console, Slots.First_Key, Slots.First_Element,
+                           Process.Symbols, Start);
             end if;
          end;
       end if;
@@ -1019,6 +1033,7 @@ package body MAT.Commands is
          if Index = 0 then
             Index := Line'Last + 1;
          end if;
+         Target.Console.Clear_Fields;
          Command_Map.Element (Pos) (Target, Line (Index + 1 .. Line'Last));
       elsif Command'Length > 0 then
          Target.Console.Error ("Command '" & Command
