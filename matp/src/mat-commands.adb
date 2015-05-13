@@ -783,12 +783,11 @@ package body MAT.Commands is
                                Into   => Maps);
       if Maps.Is_Empty then
          Console.Error ("Address '" & Args & "' is not in any memory region.");
-         return;
+      else
+         --  Print the memory region.
+         Print_Regions (Target.Console, Maps);
+         Region := Maps.First_Element;
       end if;
-
-      --  Print the memory region.
-      Print_Regions (Target.Console, Maps);
-      Region := Maps.First_Element;
 
       --  If this is an executable region, find the symbol and print it.
       if (Region.Flags and ELF.PF_X) /= 0 then
@@ -812,7 +811,11 @@ package body MAT.Commands is
             Filter := MAT.Expressions.Create_Addr (Addr, Addr);
             Process.Events.Get_Time_Range (Start, Finish);
             MAT.Events.Timelines.Filter_Events (Process.Events.all, Filter, Events);
-            Print_Events (Console, Events, Start);
+            if Events.Is_Empty then
+               Console.Error ("No event references address " & Args);
+            else
+               Print_Events (Console, Events, Start);
+            end if;
          end;
       end if;
 
