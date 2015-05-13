@@ -147,6 +147,9 @@ package MAT.Consoles is
    --  Get the field count that was setup through the Print_Title calls.
    function Get_Field_Count (Console : in Console_Type) return Natural;
 
+   --  Reset the field count.
+   procedure Clear_Fields (Console : in out Console_Type);
+
 private
 
    type Field_Size_Array is array (Field_Type) of Natural;
