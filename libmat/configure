@@ -4288,7 +4288,7 @@ if test "$GCC" = yes; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for specific compilation flags for ${target}" >&5
 $as_echo_n "checking for specific compilation flags for ${target}... " >&6; }
   case "${target}" in
-    mips*)
+    mips*|arm*)
       mach_cflags="-funwind-tables"
 	  mach_result="using $mach_cflags"
       ;;
