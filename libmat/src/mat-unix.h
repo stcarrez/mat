@@ -34,7 +34,6 @@
 #endif
 
 #ifdef HAVE_SYS_SYSCALL_H
-# define _GNU_SOURCE
 # include <unistd.h>
 # include <sys/syscall.h>
 #endif
