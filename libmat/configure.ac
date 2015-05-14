@@ -54,7 +54,7 @@ if test "$GCC" = yes; then
   mach_cflags=
   AC_MSG_CHECKING([for specific compilation flags for ${target}])
   case "${target}" in
-    mips*)
+    mips*|arm*)
       mach_cflags="-funwind-tables"
 	  mach_result="using $mach_cflags"
       ;;
