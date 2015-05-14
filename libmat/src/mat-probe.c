@@ -173,6 +173,8 @@ mat_probe_unlock (void)
 #endif
 }
 
+#ifdef HAVE_TLS
+
 void*
 _Unwind_Find_FDE (void* pc, void* bases)
 {
@@ -233,6 +235,7 @@ pthread_mutex_trylock (pthread_mutex_t* mutex)
 {
   return _trylock(mutex);
 }
+#endif
 
 int
 mat_get_probe (struct mat_probe *gp)
