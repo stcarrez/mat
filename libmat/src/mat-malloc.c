@@ -18,6 +18,10 @@
 #include "mat-config.h"
 #define _GNU_SOURCE 1
 #include <dlfcn.h>
+#include <string.h>
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#endif
 #include "mat-remote.h"
 #include "mat-probe.h"
 #include "mat-events.h"
@@ -59,6 +63,28 @@ load_symbols (void)
   _free = (mat_free_t) dlsym (RTLD_NEXT, LIBC_FREE_SYM);
 }
 
+#ifndef HAVE___LIBC_MALLOC
+/**
+ * @brief Override the calloc for uClibc.
+ *
+ * The uClibc calloc is taking the uClibc malloc lock and then
+ * calls malloc.  This creates deadlock.
+ * The glibc does not have this issue.
+ */
+void*
+calloc (size_t n_elements, size_t elem_size)
+{
+  size_t len = n_elements * elem_size;
+  void* p;
+
+  p = malloc (len);
+  if (p != NULL)
+    memset (p, 0, len);
+
+  return p;
+}
+#endif
+
 /**
  * @brief Overrides the libc malloc.
  *
@@ -88,7 +114,7 @@ __libc_malloc (size_t size)
      could also failed to be open).  */
   if (has_probe) 
     {
-      mat_frame_add_skip (&probe, 2);
+      mat_frame_add_skip (&probe, 1);
       mat_event_malloc (&probe, p, size, CURBRK);
       mat_free_probe (&probe);
     }
@@ -120,7 +146,7 @@ __libc_realloc (void *ptr, size_t size)
 
   if (has_probe)
     {
-      mat_frame_add_skip (&probe, 2);
+      mat_frame_add_skip (&probe, 1);
       mat_event_realloc (&probe, p, ptr, size, CURBRK);
       mat_free_probe (&probe);
     }
@@ -150,7 +176,7 @@ __libc_free (void* ptr)
 
   if (has_probe) 
     {
-      mat_frame_add_skip (&probe, 2);
+      mat_frame_add_skip (&probe, 1);
       mat_event_free (&probe, ptr);
       mat_free_probe (&probe);
     }
