@@ -52,6 +52,8 @@ autobuild:
 # Clean the root project of all build products.
 clean:
 	-$(GNATCLEAN) -q -P "$(GPRPATH)"
+	-rm -rf regtests/result
+	-rm -rf obj
 
 # Check *all* sources for errors, even those not changed.
 # Does not build executables.
@@ -84,6 +86,9 @@ parser:
 	   ayacc -n 256 -v -e .ada mat-expressions-parser.y && \
 	   gnatchop -w mat-expressions-parser.ada && \
 	   rm -f mat-expressions-parser.ada
+	-rm -f src/parser/mat-expressions-lexer_io.ads
+	-rm -f src/parser/mat-expressions-lexer_io.adb
+	-rm -f src/parser/mat-expressions-parser.verbose
 
 lexer:
 	cd src/parser; \
