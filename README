@@ -76,4 +76,11 @@ are 'info', 'timeline' and 'sizes' as they give a short summary
 and analysis of the events.
 
 
-
+Embedded systems
+================
+On embedded systems, you only need to build the libmat.so and matl parts.
+For Mips and ARM, for the backtrace to work, you should compile your program
+with the -funwind-tables gcc option.  Instrument your program and copy
+the generated .mat files on your Linux host.  Make sure your program is
+not stripped and available to the mat program to get the symbols
+(use the -s path option if necessary).
