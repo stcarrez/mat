@@ -886,27 +886,27 @@ package body MAT.Commands is
                                To     => MAT.Types.Target_Addr'Last,
                                Into   => Maps);
 
-      Console.Notice (Consoles.N_INFO, "Pid            : " & MAT.Formats.Pid (Process.Pid));
-      Console.Notice (Consoles.N_INFO, "Path           : " & To_String (Process.Path));
-      Console.Notice (Consoles.N_INFO, "Endianness     : "
+      Console.Notice (Consoles.N_INFO, "Pid              : " & MAT.Formats.Pid (Process.Pid));
+      Console.Notice (Consoles.N_INFO, "Path             : " & To_String (Process.Path));
+      Console.Notice (Consoles.N_INFO, "Endianness       : "
                       & MAT.Readers.Endian_Type'Image (Process.Endian));
-      Console.Notice (Consoles.N_INFO, "Memory regions : "
+      Console.Notice (Consoles.N_INFO, "Memory regions   : "
                       & Util.Strings.Image (Natural (Maps.Length)));
-      Console.Notice (Consoles.N_INFO, "Events         : " & MAT.Formats.Event (Start, Finish));
-      Console.Notice (Consoles.N_INFO, "Duration       : "
+      Console.Notice (Consoles.N_INFO, "Events           : " & MAT.Formats.Event (Start, Finish));
+      Console.Notice (Consoles.N_INFO, "Duration         : "
                       & MAT.Formats.Duration (Finish.Time - Start.Time));
 
-      Console.Notice (Consoles.N_INFO, "Stack frames   : "
+      Console.Notice (Consoles.N_INFO, "Stack frames     : "
                         & Natural'Image (Process.Frames.Get_Frame_Count));
-      Console.Notice (Consoles.N_INFO, "Malloc count   : "
+      Console.Notice (Consoles.N_INFO, "Malloc count     : "
                       & Natural'Image (Stats.Malloc_Count));
-      Console.Notice (Consoles.N_INFO, "Realloc count  : "
+      Console.Notice (Consoles.N_INFO, "Realloc count    : "
                       & Natural'Image (Stats.Realloc_Count));
-      Console.Notice (Consoles.N_INFO, "Free count     : "
+      Console.Notice (Consoles.N_INFO, "Free count       : "
                       & Natural'Image (Stats.Free_Count));
-      Console.Notice (Consoles.N_INFO, "Memory alloced : "
+      Console.Notice (Consoles.N_INFO, "Memory allocated : "
                       & MAT.Formats.Size (Stats.Total_Alloc));
-      Console.Notice (Consoles.N_INFO, "Memory slots   : "
+      Console.Notice (Consoles.N_INFO, "Memory slots     : "
                       & Natural'Image (Stats.Used_Count));
    end Info_Command;
 
