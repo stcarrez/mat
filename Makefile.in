@@ -44,10 +44,10 @@ matl/Makefile.in \
 matl/matl.1 \
 matl/matl.c \
 matp/Makefile.in \
-matp/src matp/regtests mat/man \
+matp/src matp/regtests matp/man \
 matp/configure matp/configure.ac \
 matp/config.guess matp/config.sub \
-mat/Makefile.in matp/install-sh \
+matp/Makefile.in matp/install-sh \
 matp/mat.gpr.in matp/gtkmat.gpr.in matp/tests.gpr.in matp/config.gpr \
 libmat/src \
 libmat/configure libmat/configure.ac \
