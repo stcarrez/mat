@@ -20,7 +20,7 @@ package body MAT.Formats is
 
    use type MAT.Types.Target_Tick_Ref;
 
-   Hex_Prefix : Boolean := True;
+   Hex_Prefix : constant Boolean := True;
 
    Hex_Length : Positive := 16;
 
@@ -28,10 +28,17 @@ package body MAT.Formats is
 
    function Location (File : in Ada.Strings.Unbounded.Unbounded_String) return String;
 
+   --  Format a short description of a malloc event.
    function Event_Malloc (Item       : in MAT.Events.Target_Event_Type;
                           Related    : in MAT.Events.Tools.Target_Event_Vector;
                           Start_Time : in MAT.Types.Target_Tick_Ref) return String;
 
+   --  Format a short description of a realloc event.
+   function Event_Realloc (Item       : in MAT.Events.Target_Event_Type;
+                           Related    : in MAT.Events.Tools.Target_Event_Vector;
+                           Start_Time : in MAT.Types.Target_Tick_Ref) return String;
+
+   --  Format a short description of a free event.
    function Event_Free (Item       : in MAT.Events.Target_Event_Type;
                         Related    : in MAT.Events.Tools.Target_Event_Vector;
                         Start_Time : in MAT.Types.Target_Tick_Ref) return String;
@@ -86,7 +93,7 @@ package body MAT.Formats is
       use type MAT.Types.Target_Size;
    begin
       if Alloced > Freed then
-         return Size (Alloced - Freed);
+         return "+" & Size (Alloced - Freed);
       elsif Alloced < Freed then
          return "-" & Size (Freed - Alloced);
       else
@@ -252,6 +259,9 @@ package body MAT.Formats is
       end case;
    end Event;
 
+   --  ------------------------------
+   --  Format a short description of a malloc event.
+   --  ------------------------------
    function Event_Malloc (Item       : in MAT.Events.Target_Event_Type;
                           Related    : in MAT.Events.Tools.Target_Event_Vector;
                           Start_Time : in MAT.Types.Target_Tick_Ref) return String is
@@ -270,6 +280,36 @@ package body MAT.Formats is
 
    end Event_Malloc;
 
+   --  ------------------------------
+   --  Format a short description of a realloc event.
+   --  ------------------------------
+   function Event_Realloc (Item       : in MAT.Events.Target_Event_Type;
+                           Related    : in MAT.Events.Tools.Target_Event_Vector;
+                           Start_Time : in MAT.Types.Target_Tick_Ref) return String is
+      use type MAT.Events.Event_Id_Type;
+      Free_Event : MAT.Events.Target_Event_Type;
+   begin
+      if Item.Next_Id = 0 and Item.Prev_Id = 0 then
+         return Size (Item.Size) & " bytes reallocated after " & Duration (Item.Time - Start_Time)
+           & " (never freed)";
+      end if;
+
+      Free_Event := MAT.Events.Tools.Find (Related, MAT.Events.MSG_FREE);
+      return Size (Item.Size) & " bytes reallocated after " & Duration (Item.Time - Start_Time)
+        & ", freed " & Duration (Free_Event.Time - Item.Time)
+        & " after by event" & MAT.Events.Event_Id_Type'Image (Free_Event.Id)
+        & " " & Size (Item.Size, Item.Old_Size) & " bytes";
+
+   exception
+      when MAT.Events.Tools.Not_Found =>
+         return Size (Item.Size) & " bytes reallocated after " & Duration (Item.Time - Start_Time)
+           & " (never freed) " & Size (Item.Size, Item.Old_Size) & " bytes";
+
+   end Event_Realloc;
+
+   --  ------------------------------
+   --  Format a short description of a free event.
+   --  ------------------------------
    function Event_Free (Item       : in MAT.Events.Target_Event_Type;
                         Related    : in MAT.Events.Tools.Target_Event_Vector;
                         Start_Time : in MAT.Types.Target_Tick_Ref) return String is
@@ -299,7 +339,7 @@ package body MAT.Formats is
             return Event_Malloc (Item, Related, Start_Time);
 
          when MAT.Events.MSG_REALLOC =>
-            return Size (Item.Size) & " bytes reallocated";
+            return Event_Realloc (Item, Related, Start_Time);
 
          when MAT.Events.MSG_FREE =>
             return Event_Free (Item, Related, Start_Time);
