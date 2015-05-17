@@ -630,7 +630,7 @@ package body MAT.Commands is
       else
          Console.Notice (Consoles.N_INFO,
                          "Found" & Natural'Image (Total.Count) & " different sizes, "
-                         & MAT.Formats.Size (Total.Alloc_Size, Info.Free_Size) & " bytes, with"
+                         & MAT.Formats.Size (Total.Alloc_Size, Total.Free_Size) & " bytes, with"
                          & Natural'Image (Total.Malloc_Count) & " malloc,"
                          & Natural'Image (Total.Realloc_Count) & " realloc,"
                          & Natural'Image (Total.Free_Count) & " free");
