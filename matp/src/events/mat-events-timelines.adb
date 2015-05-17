@@ -50,14 +50,14 @@ package body MAT.Events.Timelines is
             Prev_Event := Event;
          end if;
          Info.Last_Event := Event;
-         if Event.Event = 2 then
+         if Event.Index = MAT.Events.MSG_MALLOC then
             Info.Malloc_Count := Info.Malloc_Count + 1;
             Info.Alloc_Size := Info.Alloc_Size + Event.Size;
-         elsif Event.Event = 3 then
+         elsif Event.Index = MAT.Events.MSG_REALLOC then
             Info.Realloc_Count := Info.Realloc_Count + 1;
             Info.Alloc_Size := Info.Alloc_Size + Event.Size;
             Info.Free_Size := Info.Free_Size + Event.Old_Size;
-         elsif Event.Event = 4 then
+         elsif Event.Index = MAT.Events.MSG_FREE then
             Info.Free_Count := Info.Free_Count + 1;
             Info.Free_Size := Info.Free_Size + Event.Size;
          end if;
