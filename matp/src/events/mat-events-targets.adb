@@ -169,7 +169,11 @@ package body MAT.Events.Targets is
 
          procedure Update_Size (Event : in out Target_Event_Type) is
          begin
-            Event.Size    := Size;
+            if Event.Index = MSG_REALLOC then
+               Event.Old_Size := Size;
+            else
+               Event.Size    := Size;
+            end if;
             Event.Prev_Id := Prev_Id;
          end Update_Size;
 
