@@ -558,6 +558,7 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Event_Sizes_Command (Target : in out MAT.Targets.Target_Type'Class;
                                   Args   : in String) is
+      use type MAT.Types.Target_Tick_Ref;
 
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
@@ -567,34 +568,42 @@ package body MAT.Commands is
       Iter    : MAT.Events.Tools.Size_Event_Info_Cursor;
       Long_Flag  : Boolean;
       Count_Flag : Boolean;
+      Total      : MAT.Events.Tools.Event_Info_Type;
+      Info       : MAT.Events.Tools.Event_Info_Type;
+      Size       : MAT.Types.Target_Size;
+      Time       : MAT.Types.Target_Tick_Ref;
    begin
       Get_Arguments (Process, Args, Long_Flag, Count_Flag, Filter);
 
-      Console.Start_Title;
-      Console.Print_Title (MAT.Consoles.F_ID, "Event Id range", 30);
-      Console.Print_Title (MAT.Consoles.F_TIME, "Time", 10);
-      Console.Print_Title (MAT.Consoles.F_EVENT, "Event", 20);
-      Console.Print_Title (MAT.Consoles.F_SIZE, "Size", 12);
-      Console.Print_Title (MAT.Consoles.F_COUNT, "Count", 8);
-      Console.Print_Title (MAT.Consoles.F_TOTAL_SIZE, "Total size", 12);
-      Console.Print_Title (MAT.Consoles.F_GROW_SIZE, "Memory", 12);
-      Console.End_Title;
+      if not Count_Flag then
+         Console.Start_Title;
+         Console.Print_Title (MAT.Consoles.F_ID, "Event Id range", 30);
+         Console.Print_Title (MAT.Consoles.F_TIME, "Time", 10);
+         Console.Print_Title (MAT.Consoles.F_EVENT, "Event", 20);
+         Console.Print_Title (MAT.Consoles.F_SIZE, "Size", 12);
+         Console.Print_Title (MAT.Consoles.F_COUNT, "Count", 8);
+         Console.Print_Title (MAT.Consoles.F_TOTAL_SIZE, "Total size", 12);
+         Console.Print_Title (MAT.Consoles.F_GROW_SIZE, "Memory", 12);
+         Console.End_Title;
+      end if;
 
       Process.Events.Get_Time_Range (Start, Finish);
       MAT.Events.Timelines.Find_Sizes (Target => Process.Events.all,
                                        Filter => Filter,
                                        Sizes  => Sizes);
+
+      Total.Count := Natural (Sizes.Length);
       Iter := Sizes.First;
       while MAT.Events.Tools.Size_Event_Info_Maps.Has_Element (Iter) loop
-         declare
-            use type MAT.Types.Target_Tick_Ref;
-
-            Size  : constant MAT.Types.Target_Size
-              := MAT.Events.Tools.Size_Event_Info_Maps.Key (Iter);
-            Info  : constant MAT.Events.Tools.Event_Info_Type
-              := MAT.Events.Tools.Size_Event_Info_Maps.Element (Iter);
-            Time  : constant MAT.Types.Target_Tick_Ref := Info.First_Event.Time - Start;
-         begin
+         Size := MAT.Events.Tools.Size_Event_Info_Maps.Key (Iter);
+         Info := MAT.Events.Tools.Size_Event_Info_Maps.Element (Iter);
+         Time := Info.First_Event.Time - Start;
+         Total.Malloc_Count := Total.Malloc_Count + Info.Malloc_Count;
+         Total.Realloc_Count := Total.Realloc_Count + Info.Realloc_Count;
+         Total.Free_Count := Total.Free_Count + Info.Free_Count;
+         Total.Alloc_Size := Total.Alloc_Size + Info.Alloc_Size;
+         Total.Free_Size  := Total.Free_Size + Info.Free_Size;
+         if not Count_Flag then
             Console.Start_Row;
             Console.Print_Field (MAT.Consoles.F_ID,
                                  MAT.Formats.Event (Info.First_Event, Info.Last_Event));
@@ -613,9 +622,19 @@ package body MAT.Commands is
                                     "-" & MAT.Formats.Size (Info.Free_Size - Info.Alloc_Size));
             end if;
             Console.End_Row;
-         end;
+         end if;
          MAT.Events.Tools.Size_Event_Info_Maps.Next (Iter);
       end loop;
+      if Total.Count = 0 then
+         Console.Notice (Consoles.N_INFO, "Found no event");
+      else
+         Console.Notice (Consoles.N_INFO,
+                         "Found" & Natural'Image (Total.Count) & " different sizes, "
+                         & MAT.Formats.Size (Total.Alloc_Size, Info.Free_Size) & " bytes, with"
+                         & Natural'Image (Total.Malloc_Count) & " malloc,"
+                         & Natural'Image (Total.Realloc_Count) & " realloc,"
+                         & Natural'Image (Total.Free_Count) & " free");
+      end if;
    end Event_Sizes_Command;
 
    --  ------------------------------
