@@ -320,7 +320,7 @@ package body MAT.Targets is
       MAT.Interrupts.Install;
       loop
          declare
-            Line : constant String := Readline.Get_Line ("matp>");
+            Line : constant String := Readline.Get_Line ("mat>");
          begin
             MAT.Interrupts.Clear;
             MAT.Commands.Execute (Target, Line);
