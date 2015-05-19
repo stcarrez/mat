@@ -51,6 +51,9 @@ package MAT.Targets is
       --  Print the events as they are received.
       Print_Events : Boolean := False;
 
+      --  When true, start the mat server.
+      Server_Mode  : Boolean := False;
+
       --  The library search path.
       Search_Path  : Ada.Strings.Unbounded.Unbounded_String;
 
