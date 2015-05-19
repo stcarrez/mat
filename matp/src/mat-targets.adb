@@ -281,6 +281,7 @@ package body MAT.Targets is
                Target.Options.Print_Events := True;
 
             when 'b' =>
+               Target.Options.Server_Mode := True;
                Target.Options.Address := To_Sock_Addr_Type (GNAT.Command_Line.Parameter);
 
             when 'n' =>
@@ -337,7 +338,9 @@ package body MAT.Targets is
    --  ------------------------------
    procedure Start (Target : in out Target_Type) is
    begin
-      Target.Server.Start (Target'Unchecked_Access, Target.Options.Address);
+      if Target.Options.Server_Mode then
+         Target.Server.Start (Target'Unchecked_Access, Target.Options.Address);
+      end if;
    end Start;
 
    --  ------------------------------
@@ -345,7 +348,9 @@ package body MAT.Targets is
    --  ------------------------------
    procedure Stop (Target : in out Target_Type) is
    begin
-      Target.Server.Stop;
+      if Target.Options.Server_Mode then
+         Target.Server.Stop;
+      end if;
    end Stop;
 
    --  ------------------------------
