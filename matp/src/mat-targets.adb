@@ -214,13 +214,13 @@ package body MAT.Targets is
    procedure Usage is
       use Ada.Text_IO;
    begin
-      Put_Line ("Usage: mat [-i] [-e] [-nw] [-ns] [-b [ip:]port] [-s path] [file.mat]");
+      Put_Line ("Usage: mat [-i] [-e] [-nw] [-ns] [-b [ip:]port] [-d path] [file.mat]");
       Put_Line ("-i            Enable the interactive mode");
       Put_Line ("-e            Print the probe events as they are received");
       Put_Line ("-nw           Disable the graphical mode");
       Put_Line ("-b [ip:]port  Define the port and local address to bind");
       Put_Line ("-ns           Disable the automatic symbols loading");
-      Put_Line ("-s path       Search path to find shared libraries and load their symbols");
+      Put_Line ("-d path       Search path to find shared libraries and load their symbols");
       Ada.Command_Line.Set_Exit_Status (2);
       raise Usage_Error;
    end Usage;
@@ -270,7 +270,7 @@ package body MAT.Targets is
       GNAT.Command_Line.Initialize_Option_Scan (Stop_At_First_Non_Switch => True,
                                                 Section_Delimiters       => "targs");
       loop
-         case GNAT.Command_Line.Getopt ("i e nw ns b: s:") is
+         case GNAT.Command_Line.Getopt ("i e nw ns b: d:") is
             when ASCII.NUL =>
                exit;
 
@@ -290,7 +290,7 @@ package body MAT.Targets is
                   Target.Options.Load_Symbols := False;
                end if;
 
-            when 's' =>
+            when 'd' =>
                Add_Search_Path (Target, GNAT.Command_Line.Parameter);
 
             when '*' =>
