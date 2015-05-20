@@ -4,7 +4,7 @@
 mat - Memory Analysis Tool
 .SH SYNOPSIS
 .B mat
-[ -i ] [-d path] [ -b
+[ -i ] [-d path] [-s] [ -b
 .I ip[:port]
 ] [ -ns ] [
 .I mat-event-file
@@ -75,6 +75,9 @@ Enable the interactive mode.
 .TP 5
 .B -d [path]
 Define one or several search paths to load symbols for the shared libraries.
+.TP 5
+.B -s
+Start the TCP/IP server to receive the events.
 .TP 5
 .B -b [ip:]port
 .br
