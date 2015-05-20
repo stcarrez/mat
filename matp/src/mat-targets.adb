@@ -214,10 +214,11 @@ package body MAT.Targets is
    procedure Usage is
       use Ada.Text_IO;
    begin
-      Put_Line ("Usage: mat [-i] [-e] [-nw] [-ns] [-b [ip:]port] [-d path] [file.mat]");
+      Put_Line ("Usage: mat [-i] [-e] [-nw] [-ns] [-s] [-b [ip:]port] [-d path] [file.mat]");
       Put_Line ("-i            Enable the interactive mode");
       Put_Line ("-e            Print the probe events as they are received");
       Put_Line ("-nw           Disable the graphical mode");
+      Put_Line ("-s            Start the TCP/IP server to receive events");
       Put_Line ("-b [ip:]port  Define the port and local address to bind");
       Put_Line ("-ns           Disable the automatic symbols loading");
       Put_Line ("-d path       Search path to find shared libraries and load their symbols");
@@ -270,7 +271,7 @@ package body MAT.Targets is
       GNAT.Command_Line.Initialize_Option_Scan (Stop_At_First_Non_Switch => True,
                                                 Section_Delimiters       => "targs");
       loop
-         case GNAT.Command_Line.Getopt ("i e nw ns b: d:") is
+         case GNAT.Command_Line.Getopt ("i e s nw ns b: d:") is
             when ASCII.NUL =>
                exit;
 
@@ -279,6 +280,9 @@ package body MAT.Targets is
 
             when 'e' =>
                Target.Options.Print_Events := True;
+
+            when 's' =>
+               Target.Options.Server_Mode := True;
 
             when 'b' =>
                Target.Options.Server_Mode := True;
