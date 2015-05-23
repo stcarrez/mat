@@ -56,8 +56,8 @@ You must configure and build by using:
   ./configure --enable-mat
   make
 
-Instrumenting you application
-=============================
+Instrumenting your application
+==============================
 
 You can instrument the memory allocation by using the matl launcher.
 
