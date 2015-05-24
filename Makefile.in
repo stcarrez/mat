@@ -59,7 +59,7 @@ matp/configure matp/configure.ac \
 matp/config.guess matp/config.sub \
 matp/Makefile.in matp/install-sh \
 matp/mat.gpr.in matp/gtkmat.gpr.in matp/tests.gpr.in matp/config.gpr \
-libmat/src \
+libmat/src external \
 libmat/configure libmat/configure.ac \
 libmat/config.guess libmat/config.sub \
 libmat/Makefile.in libmat/install-sh \
