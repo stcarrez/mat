@@ -51,10 +51,24 @@ components on your system:
 - the GNU Ada Bfd library (https://github.com/stcarrez/ada-bfd.git),
 - the Ada Utility Library (https://github.com/stcarrez/ada-util.git)
 
-You must configure and build by using:
+On Debian-based systems, you may have to install the following packages:
+
+  sudo apt-get install gnat gprbuild binutils-dev libiberty-dev libreadline6-dev
+
+If you have installed Ada Utility Library and Ada Bfd Library on your
+system, you can configure and build by using:
 
   ./configure --enable-mat
   make
+
+To help you in the build process, you may also use the tar ball contained
+in 'external' directory and you may build by using:
+
+  ./configure --enable-mat --enable-ada-util --enable-ada-bfd
+  make
+
+This will extract the 'ada-bfd-1.1.0.tar.gz' and 'ada-util-1.7.1.tar.gz' in
+the directory and integrate these two packages in the build process.
 
 Instrumenting your application
 ==============================
