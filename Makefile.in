@@ -16,10 +16,20 @@ top_builddir = .
 # Directories of sub-projects in the build order.
 SUBDIRS=@SUBDIRS@
 
+# Directories to be installed.
+SUBDIRS_INSTALL=@SUBDIRS_INSTALL@
+
 # Build executables for all mains defined by the project.
-all build install test:
+all build test:
 	D=`pwd`; \
 	for i in $(SUBDIRS); do \
+	   cd "$$D/$$i" && \
+	   $(MAKE) $@ ; \
+	done
+
+install:
+	D=`pwd`; \
+	for i in $(SUBDIRS_INSTALL); do \
 	   cd "$$D/$$i" && \
 	   $(MAKE) $@ ; \
 	done
