@@ -38,6 +38,18 @@ AC_SUBST(EXEC_PREFIX)
 
 AC_CONFIG_SUBDIRS(libmat)
 
+pwd_option=
+mat_build_root=
+mat_util_configure=
+mat_bfd_configure=
+mat_util_name=ada-util
+mat_bfd_name=ada-bfd
+
+mat_build_pwd=`cd ${mat_build_root} && pwd $pwd_option`
+if test x${mat_build_pwd} != x${mat_build_root}; then
+  mat_build_root=${mat_build_pwd}/
+fi
+
 SUBDIRS="libmat matl"
 SUBDIRS_INSTALL=$SUBDIRS
 
@@ -108,6 +120,7 @@ if test x$ac_enable_matp = 'xyes'; then
 fi
 
 AC_SUBST(SUBDIRS)
+AC_SUBST(SUBDIRS_INSTALL)
 
 AC_OUTPUT(
 Makefile
