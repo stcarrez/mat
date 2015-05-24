@@ -67,6 +67,12 @@ AM_GNAT_FIND_PROJECT([ada-bfd],[Ada Bfd Library],[bfdada],
   ])
 AC_SUBST(BFD_DIR)
 
+CONFIG_DIR=
+if test x"$UTIL_DIR" = x../ada-util-1.7.1/ ; then
+  CONFIG_DIR=$UTIL_DIR
+fi
+AC_SUBST(CONFIG_DIR)
+
 GTKADA_DIR=
 if test x$ac_enable_gtk = 'xyes'; then
 
