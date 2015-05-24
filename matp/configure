@@ -586,6 +586,7 @@ ac_subst_vars='LTLIBOBJS
 LIBOBJS
 GTKADA_DIR
 GPRPATH
+CONFIG_DIR
 BFD_DIR
 UTIL_DIR
 MAT_GTKADA
@@ -3282,6 +3283,12 @@ $as_echo "no" >&6; }
     fi
   fi
 
+
+
+CONFIG_DIR=
+if test x"$UTIL_DIR" = x../ada-util-1.7.1/ ; then
+  CONFIG_DIR=$UTIL_DIR
+fi
 
 
 GTKADA_DIR=
