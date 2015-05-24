@@ -59,7 +59,7 @@ libmat:
 # Add specific link options when the libada_util.so shared library is created.  The -ld is passed but it
 # is lost from the ELF NEEDED list.
 override_dh_auto_configure:
-	dh_auto_configure -- --enable-matp --enable-tls
+	dh_auto_configure -- --enable-matp --enable-tls --enable-ada-util --enable-ada-bfd
 
 override_dh_auto_build:
 	dh_auto_build -- MAKE_ARGS="-XMODE=optimize -bargs -static -largs -Wl,-Bstatic -lada_util -lada-bfd -lbfd -Wl,-Bdynamic"
