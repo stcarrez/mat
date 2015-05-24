@@ -43,11 +43,11 @@ SUBDIRS_INSTALL=$SUBDIRS
 
 ac_enable_ada_util=no
 AC_ARG_ENABLE(ada-util,
-  [  --enable-ada-util       Enable compilation of Ada Utility Library (external/ada-util-1.7.1.tar.gz)],
+  [  --enable-ada-util       Enable compilation of Ada Utility Library (external/ada-util-1.7.2.tar.gz)],
   [case "${enableval}" in
     no|none)  ac_enable_ada_util= ;;
     *)        ac_enable_ada_util=yes
-              SUBDIRS="$SUBDIRS ada-util-1.7.1"
+              SUBDIRS="$SUBDIRS ada-util-1.7.2"
 		  	  ;;
   esac])
 
@@ -72,16 +72,16 @@ AC_ARG_ENABLE(matp,
 			  ;;
     esac])
 
-# Build ada-util-1.7.1 only when --enable-matp and --enable-ada-util are defined.
+# Build ada-util-1.7.2 only when --enable-matp and --enable-ada-util are defined.
 if test x$ac_enable_matp = 'xyes'; then
   if test x$ac_enable_ada_util = 'xyes'; then
-    if test -d ${srcdir}/ada-util-1.7.1 ; then
-      echo "Package ada-util-1.7.1 already extracted."
+    if test -d ${srcdir}/ada-util-1.7.2 ; then
+      echo "Package ada-util-1.7.2 already extracted."
     else
-      echo "Extracting ${srcdir}/external/ada-util-1.7.1.tar.gz"
-      (cd ${srcdir} && tar xzf ${srcdir}/external/ada-util-1.7.1.tar.gz)
+      echo "Extracting ${srcdir}/external/ada-util-1.7.2.tar.gz"
+      (cd ${srcdir} && tar xzf ${srcdir}/external/ada-util-1.7.2.tar.gz)
     fi
-    AC_CONFIG_SUBDIRS(ada-util-1.7.1)
+    AC_CONFIG_SUBDIRS(ada-util-1.7.2)
   fi
 fi
 
@@ -96,7 +96,7 @@ if test x$ac_enable_matp = 'xyes'; then
 
       # Hack to solve duplicate project 'config' issue.
       (cd ${srcdir}/ada-bfd-1.1.0 &&
-	    sed -e 's,"config","../ada-util-1.7.1/config",' < bfdada.gpr.in > bfdada.gpr.in.fix &&
+	    sed -e 's,"config","../ada-util-1.7.2/config",' < bfdada.gpr.in > bfdada.gpr.in.fix &&
         mv bfdada.gpr.in.fix bfdada.gpr.in)
     fi
     AC_CONFIG_SUBDIRS(ada-bfd-1.1.0)
