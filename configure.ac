@@ -39,15 +39,69 @@ AC_SUBST(EXEC_PREFIX)
 AC_CONFIG_SUBDIRS(libmat)
 
 SUBDIRS="libmat matl"
+SUBDIRS_INSTALL=$SUBDIRS
+
+ac_enable_ada_util=no
+AC_ARG_ENABLE(ada-util,
+  [  --enable-ada-util       Enable compilation of Ada Utility Library (external/ada-util-1.7.1.tar.gz)],
+  [case "${enableval}" in
+    no|none)  ac_enable_ada_util= ;;
+    *)        ac_enable_ada_util=yes
+              SUBDIRS="$SUBDIRS ada-util-1.7.1"
+		  	  ;;
+  esac])
+
+ac_enable_ada_bfd=no
+AC_ARG_ENABLE(ada-bfd,
+  [  --enable-ada-bfd        Enable compilation of Ada BFD Library (external/ada-bfd-1.1.0.tar.gz)],
+  [case "${enableval}" in
+    no|none)  ac_enable_ada_bfd= ;;
+    *)        ac_enable_ada_bfd=yes
+              SUBDIRS="$SUBDIRS ada-bfd-1.1.0"
+		  	  ;;
+  esac])
+
 ac_enable_matp=no
 AC_ARG_ENABLE(matp,
-[  --enable-matp         Enable compilation of matp tool which requires GNAT Ada compiler (disabled)],
-[case "${enableval}" in
-  no|none)  ac_enable_matp= ;;
-  *)        ac_enable_matp=yes
-            SUBDIRS="$SUBDIRS matp"
-			;;
-esac])dnl
+  [  --enable-matp           Enable compilation of matp tool which requires GNAT Ada compiler (disabled)],
+  [case "${enableval}" in
+    no|none)  ac_enable_matp= ;;
+    *)        ac_enable_matp=yes
+              SUBDIRS="$SUBDIRS matp"
+			  SUBDIRS_INSTALL="$SUBDIRS_INSTALL matp"
+			  ;;
+    esac])
+
+# Build ada-util-1.7.1 only when --enable-matp and --enable-ada-util are defined.
+if test x$ac_enable_matp = 'xyes'; then
+  if test x$ac_enable_ada_util = 'xyes'; then
+    if test -d ${srcdir}/ada-util-1.7.1 ; then
+      echo "Package ada-util-1.7.1 already extracted."
+    else
+      echo "Extracting ${srcdir}/external/ada-util-1.7.1.tar.gz"
+      (cd ${srcdir} && tar xzf ${srcdir}/external/ada-util-1.7.1.tar.gz)
+    fi
+    AC_CONFIG_SUBDIRS(ada-util-1.7.1)
+  fi
+fi
+
+# Build ada-bfd-1.1.0 only when --enable-matp and --enable-ada-bfd are defined.
+if test x$ac_enable_matp = 'xyes'; then
+  if test x$ac_enable_ada_bfd = 'xyes'; then
+    if test -d ${srcdir}/ada-bfd-1.1.0 ; then
+      echo "Package ada-bfd-1.1.0 already extracted."
+    else
+      echo "Extracting ${srcdir}/external/ada-bfd-1.1.0.tar.gz"
+      (cd ${srcdir} && tar xzf ${srcdir}/external/ada-bfd-1.1.0.tar.gz)
+
+      # Hack to solve duplicate project 'config' issue.
+      (cd ${srcdir}/ada-bfd-1.1.0 &&
+	    sed -e 's,"config","../ada-util-1.7.1/config",' < bfdada.gpr.in > bfdada.gpr.in.fix &&
+        mv bfdada.gpr.in.fix bfdada.gpr.in)
+    fi
+    AC_CONFIG_SUBDIRS(ada-bfd-1.1.0)
+  fi
+fi
 
 if test x$ac_enable_matp = 'xyes'; then
   AC_CONFIG_SUBDIRS(matp)
