@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-readers-marshaller -- Marshalling of data in communication buffer
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2019 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,8 +30,6 @@ package body MAT.Readers.Marshaller is
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Readers.Marshaller");
 
    package Uint8_Access is new System.Address_To_Access_Conversions (MAT.Types.Uint8);
-
-   package Uint32_Access is new System.Address_To_Access_Conversions (MAT.Types.Uint32);
 
    --  ------------------------------
    --  Get an 8-bit value from the buffer.
@@ -80,8 +78,6 @@ package body MAT.Readers.Marshaller is
    --  Get a 32-bit value either from big-endian or little endian.
    --  ------------------------------
    function Get_Uint32 (Buffer : in Buffer_Ptr) return MAT.Types.Uint32 is
-      use Uint32_Access;
-
       Low, High : MAT.Types.Uint16;
    begin
       if Buffer.Size < 4 then
@@ -166,9 +162,10 @@ package body MAT.Readers.Marshaller is
    --  ------------------------------
    procedure Skip (Buffer : in Message_Type;
                    Size   : in Natural) is
+      use System.Storage_Elements;
    begin
       Buffer.Buffer.Size := Buffer.Buffer.Size - Size;
-      Buffer.Buffer.Current := Buffer.Buffer.Current + System.Storage_Elements.Storage_Offset (Size);
+      Buffer.Buffer.Current := Buffer.Buffer.Current + Storage_Offset (Size);
    end Skip;
 
    function Get_Target_Size (Msg  : in Message_Type;
