@@ -1,9 +1,9 @@
 with "@CONFIG_DIR@config";
-with "@UTIL_DIR@util";
-with "@UTIL_DIR@util_unit";
+with "@UTIL_DIR@utilada_sys";
+with "@UTIL_DIR@utilada_unit";
 with "mat";
 
-project Tests is
+project Mat_Tests is
 
    Mains := ("mat_harness.adb");
    for Main use Mains;
@@ -16,4 +16,4 @@ project Tests is
    package Compiler renames Config.Compiler;
    package Linker renames Config.Linker;
 
-end Tests;
+end Mat_Tests;
