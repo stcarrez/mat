@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-events-targets - Events received and collected from a target
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2019 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,7 @@ with Ada.Finalization;
 
 with Util.Concurrent.Counters;
 
+with MAT.Frames.Targets;
 with MAT.Events.Tools;
 package MAT.Events.Targets is
 
