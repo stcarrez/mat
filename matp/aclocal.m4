@@ -1,20 +1,37 @@
+# Check whether we can use gprbuild or gnatmake
+AC_DEFUN(AM_GNAT_CHECK_GPRBUILD,
+[
+  AC_CHECK_PROGS(GPRBUILD, gprbuild, "")
+  if test -n "$GPRBUILD"; then
+    GNATMAKE="$GPRBUILD"
+  else
+    AC_CHECK_PROGS(GNATMAKE, gnatmake, "")
+  fi
+
+  AC_CHECK_PROGS(GPRCLEAN, gprclean, "")
+  if test -n "$GPRCLEAN"; then
+    GNATCLEAN="$GPRCLEAN"
+  else
+    AC_CHECK_PROGS(GNATCLEAN, gnatclean, "")
+  fi
+])
 
 # Check if a GNAT project is available.
 # dnl AM_GNAT_CHECK_PROJECT([name],[path])
 AC_DEFUN(AM_GNAT_CHECK_PROJECT,
 [
   AC_MSG_CHECKING([whether $1 project exists])
-  echo "with \"$2\"; project t is for Source_Dirs use (); end t;" > t.gpr
-  $GNATMAKE -p -Pt >/dev/null 2>/dev/null
-  if test $? -eq 0; then
+  echo "with \"$2\"; project conftest is for Source_Dirs use (); end conftest;" > conftest.gpr
+  if AC_TRY_COMMAND([gnat ls -Pconftest.gpr system.ads > /dev/null 2>conftest.out])
+  then
     gnat_project_$1=yes
     AC_MSG_RESULT([yes, using $2])
     gnat_project_with_$1="with \"$2\";";
   else
     gnat_project_$1=no
     AC_MSG_RESULT(no)
-  fi;
-  rm -f t.gpr
+  fi
+  rm -f conftest.gpr
 ])
 
 # Check if a GNAT project is available.
@@ -35,11 +52,12 @@ AC_DEFUN(AM_GNAT_FIND_PROJECT,
     ])
   AC_MSG_RESULT(trying ${gnat_project_name_$3})
 
+  rm -f conftest.gpr
   # Search in the GNAT project path.
   AC_MSG_CHECKING([whether ${gnat_project_name_$3} project exists in gnatmake's search path])
-  echo "with \"${gnat_project_name_$3}\"; project t is for Source_Dirs use (); end t;" > t.gpr
-  $GNATMAKE -p -Pt >/dev/null 2>/dev/null
-  if test $? -eq 0; then
+  echo "with \"${gnat_project_name_$3}\"; project conftest is for Source_Dirs use (); end conftest;" > conftest.gpr
+  if AC_TRY_COMMAND([gnat ls -Pconftest.gpr system.ads > /dev/null 2>conftest.out])
+  then
     gnat_project_$3=yes
     AC_MSG_RESULT(yes, using ${gnat_project_name_$3})
   else
@@ -51,11 +69,9 @@ AC_DEFUN(AM_GNAT_FIND_PROJECT,
     for name in $files; do
       dir=`dirname $name`
       AC_MSG_CHECKING([for $2 project in ${dir}])
-      echo "with \"${name}\"; project t is for Source_Dirs use (); end t;" > t.gpr
-	  # echo ""
-	  # cat t.gpr
-      $GNATMAKE -p -Pt >/dev/null 2>/dev/null
-      if test $? -eq 0; then
+      echo "with \"${name}\"; project conftest is for Source_Dirs use (); end conftest;" > conftest.gpr
+      if AC_TRY_COMMAND([gnat ls -Pconftest.gpr system.ads > /dev/null 2>conftest.out])
+      then
          gnat_project_$3=yes
 		 gnat_project_name_$3=${name}
          AC_MSG_RESULT(yes, using ${name})
@@ -66,7 +82,7 @@ AC_DEFUN(AM_GNAT_FIND_PROJECT,
       fi
     done
   fi
-  rm -f t.gpr
+  rm -f conftest.gpr
   if test x${gnat_project_$3} = xyes; then
     gnat_project_with_$3="with \"${gnat_project_name_$3}\";";
     gnat_project_dir_$3=`dirname ${gnat_project_name_$3}`
@@ -110,6 +126,54 @@ AC_DEFUN(AM_SHARED_LIBRARY_SUPPORT,
   AC_MSG_RESULT(${ac_enable_shared})
   BUILDS_SHARED=$ac_enable_shared
   AC_SUBST(BUILDS_SHARED)
+])
+
+dnl Check whether the coverage support is enabled.
+AC_DEFUN(AM_COVERAGE_SUPPORT,
+[
+  AC_MSG_CHECKING([coverage support])
+  ac_enable_coverage=no
+  AC_ARG_ENABLE(coverage,
+    [  --enable-coverage       build with coverage support -fprofile-arcs -ftest-coverage (disabled)],
+    [case "${enableval}" in
+      no|none)  ac_enable_coverage=no ;;
+      *)        ac_enable_coverage=yes ;;
+    esac])dnl
+
+  AC_MSG_RESULT(${ac_enable_coverage})
+  BUILDS_COVERAGE=$ac_enable_coverage
+  AC_SUBST(BUILDS_COVERAGE)
+])
+
+dnl Check whether the distrib/debug build is enabled.
+AC_DEFUN(AM_DISTRIB_SUPPORT,
+[
+  AC_MSG_CHECKING([distribution build])
+  ac_enable_distrib=yes
+  ac_quiet_mode=-q
+  ac_build_mode=distrib
+  AC_ARG_ENABLE(distrib,
+    [  --enable-distrib        build for distribution, optimized and strip symbols (enabled)],
+    [case "${enableval}" in
+      no|none)  ac_enable_distrib=no
+                ac_build_mode=debug
+                ac_quiet_mode=
+                ;;
+      *)        ac_enable_distrib=yes
+                ac_build_mode=distrib
+                ac_quiet_mode=-q
+                ;;
+    esac])dnl
+
+  AC_MSG_RESULT(${ac_enable_distrib})
+  BUILDS_DISTRIB=$ac_enable_distrib
+  AC_SUBST(BUILDS_DISTRIB)
+
+  MODE=$ac_build_mode
+  AC_SUBST(MODE)
+  
+  BUILDS_QUIET=$ac_quiet_mode
+  AC_SUBST(BUILDS_QUIET)
 ])
 
 dnl Check whether the AWS support is enabled and find the aws GNAT project.
@@ -159,6 +223,7 @@ AC_DEFUN(AM_UTIL_INSTALL,
 [
   gnat_prefix=
   for dir in $1 $2 $3 $4; do
+    dir=`echo $dir | sed -e 's,\\\\,/,g'`
     # If we have a valid path, try to identify the common path prefix.
     if test x$gnat_prefix = x; then
       gnat_prefix=$dir
@@ -166,10 +231,17 @@ AC_DEFUN(AM_UTIL_INSTALL,
 	  # echo "Dir=$dir"
 	  gnat_old_ifs=$IFS
 	  path=
-	  IFS=/
+	  IFS='/\'
 	  for c in $dir; do
-	    if test x"$path" = x"/"; then
-		  try="/$c"
+	    if test x"$path" = x"/" || test x"$path" = x ; then
+		  case $c in
+		    c:|C:|d:|D:|e:|E:)
+			  try="$c"
+			  ;;
+		    *)
+			  try="/$c"
+			  ;;
+		  esac
 		else
           try="$path/$c"
 		fi
@@ -187,10 +259,10 @@ AC_DEFUN(AM_UTIL_INSTALL,
 	  gnat_prefix=$path
     fi
   done
-  ADA_INC_BASE=`echo $1 | sed -e s,^$gnat_prefix/,,`
-  ADA_ALI_BASE=`echo $2 | sed -e s,^$gnat_prefix/,,`
-  ADA_LIB_BASE=`echo $3 | sed -e s,^$gnat_prefix/,,`
-  ADA_PRJ_BASE=`echo $4 | sed -e s,^$gnat_prefix/,,`
+  ADA_INC_BASE=`echo $1 | sed -e 's,\\\\,/,g' | sed -e s,^$gnat_prefix/,,`
+  ADA_ALI_BASE=`echo $2 | sed -e 's,\\\\,/,g' | sed -e s,^$gnat_prefix/,,`
+  ADA_LIB_BASE=`echo $3 | sed -e 's,\\\\,/,g' | sed -e s,^$gnat_prefix/,,`
+  ADA_PRJ_BASE=`echo $4 | sed -e 's,\\\\,/,g' | sed -e s,^$gnat_prefix/,,`
 
   AC_MSG_CHECKING([installation of Ada source files])
   AC_MSG_RESULT(<prefix>/${ADA_INC_BASE})
@@ -227,6 +299,11 @@ AC_DEFUN(AM_GNAT_CHECK_INSTALL,
   gnat_xml_ali_dir=
   gnat_xml_lib_dir=
   gnat_xml_prl_dir=
+
+  AC_CHECK_PROGS(GPRINSTALL, gprinstall, "")
+  if test x${gnat_xml_ada} = 'x'; then
+     gnat_xml_ada=xmlada-config
+  fi
   gnat_xml_config=`$gnat_xml_ada --sax 2>/dev/null`
 
   # echo "Config: $gnat_xml_config"
@@ -351,6 +428,18 @@ AC_DEFUN(AM_GNAT_CHECK_INSTALL,
   else
     gnat_xml_prj_dir=$gnat_xml_inc_dir
   fi
+  if test x${gnat_xml_inc_dir} = x ; then
+    gnat_xml_inc_dir='include'
+  fi
+  if test x${gnat_xml_lib_dir} = x ; then
+    gnat_xml_lib_dir='lib'
+  fi
+  if test x${gnat_xml_ali_dir} = x ; then
+    gnat_xml_ali_dir='lib'
+  fi
+  if test x${gnat_xml_prj_dir} = x ; then
+    gnat_xml_prj_dir='lib/gnat'
+  fi
   ADA_INC_BASE=`echo $gnat_xml_inc_dir | sed -e s,^$gnat_prefix/,,`
   ADA_LIB_BASE=`echo $gnat_xml_lib_dir | sed -e s,^$gnat_prefix/,,`
   ADA_ALI_BASE=`echo $gnat_xml_ali_dir | sed -e s,^$gnat_prefix/,,`
@@ -361,6 +450,7 @@ AC_DEFUN(AM_GNAT_CHECK_INSTALL,
 dnl Guess the installation path
 AC_DEFUN(AM_UTIL_CHECK_INSTALL,
 [
+  AC_CHECK_PROGS(GPRINSTALL, gprinstall, "")
   AM_GNAT_CHECK_PROJECT([util_config],[util_config])
 
   # Search in the GNAT project path.
@@ -368,7 +458,6 @@ AC_DEFUN(AM_UTIL_CHECK_INSTALL,
   # echo "D:${gnat_project_with_util_config}"
   echo "${gnat_project_with_util_config} project t is for Source_Dirs use (); end t;" > t.gpr
   # cat t.gpr
-  # $GNATMAKE -vP1 -Pt 2>&1
   gnat_util_config_path=`$GNATMAKE -vP1 -Pt 2>&1 | awk '/Parsing.*util_config.gpr/ {print @S|@2}' | sed -e 's,",,g'`
   AC_MSG_RESULT(${gnat_util_config_path})
 
@@ -384,5 +473,108 @@ AC_DEFUN(AM_UTIL_CHECK_INSTALL,
       gnat_prj_dir=`dirname ${gnat_util_config_path}`
     fi
   fi
-  AM_UTIL_INSTALL([${gnat_inc_dir}],[${gnat_ali_dir}],[${gnat_lib_dir}],[${gnat_prj_dir}])
+  if test x${gnat_prj_dir} != x; then
+    AM_UTIL_INSTALL([${gnat_inc_dir}],[${gnat_ali_dir}],[${gnat_lib_dir}],[${gnat_prj_dir}])
+  else
+    AM_GNAT_CHECK_INSTALL
+  fi
 ])
+
+# AM_TRY_ADA and AM_HAS_INTRINSIC_SYNC_COUNTERS are imported from GNATcoll aclocal.m4
+#############################################################
+# Check whether gnatmake can compile, bind and link an Ada program
+#    AM_TRY_ADA(gnatmake,filename,content,success,failure)
+#############################################################
+
+AC_DEFUN(AM_TRY_ADA,
+[
+   cat > conftest.ada <<EOF
+[$3]
+EOF
+   if AC_TRY_COMMAND([gnatchop -q conftest.ada && $1 $2 >/dev/null 2>conftest.out])
+   then
+      : Success
+      $4
+   else
+      : Failure
+      $5
+   fi
+   rm -rf conftest.ada
+])
+
+#############################################################
+# Check whether platform/GNAT supports atomic increment/decrement
+# operations.
+# The following variable is then set:
+#     SYNC_COUNTERS_IMPL
+# to either "intrinsic" or "mutex"
+# Code comes from the PolyORB configure.ac
+#############################################################
+
+AC_DEFUN(AM_HAS_INTRINSIC_SYNC_COUNTERS,
+[
+  AC_MSG_CHECKING([whether platform supports atomic inc/dec])
+  AM_TRY_ADA([gnatmake], [check.adb],
+[
+with Interfaces; use Interfaces;
+procedure Check is
+   function Sync_Add_And_Fetch
+     (Ptr   : access Interfaces.Integer_32;
+      Value : Interfaces.Integer_32) return Interfaces.Integer_32;
+   pragma Import (Intrinsic, Sync_Add_And_Fetch, "__sync_add_and_fetch_4");
+   X : aliased Interfaces.Integer_32;
+   Y : Interfaces.Integer_32 := 0;
+   pragma Volatile (Y);
+   --  On some platforms (e.g. i386), GCC has limited support for
+   --  __sync_add_and_fetch_4 for the case where the result is not used.
+   --  Here we want to test for general availability, so make Y volatile to
+   --  prevent the store operation from being discarded.
+begin
+   Y := Sync_Add_And_Fetch (X'Access, 1);
+end Check;
+],
+[
+   AC_MSG_RESULT(yes)
+   $1
+],[
+   AC_MSG_RESULT(no)
+   $2
+])
+
+   rm -f check.adb check
+])
+
+# Prepare for using the GNAT project 
+# AM_GNAT_LIBRARY_SETUP([name])
+AC_DEFUN(AM_GNAT_LIBRARY_SETUP,
+[
+  AC_MSG_CHECKING([preparing for GNAT project $1])
+  mkdir -p obj/$1/static obj/$1/relocatable lib/$1/static lib/$1/relocatable
+  AC_MSG_RESULT(done)
+])
+
+# Prepare for using the GNAT project 
+# AM_GNAT_LIBRARY_PROJECT([name])
+AC_DEFUN(AM_GNAT_LIBRARY_PROJECT,
+[
+  # checking for local tools
+  AC_CANONICAL_SYSTEM
+  AM_GNAT_CHECK_GPRBUILD
+
+  AC_PROG_MAKE_SET
+  AC_PROG_INSTALL
+  AC_PROG_LN_S
+  AM_SHARED_LIBRARY_SUPPORT
+  AM_DISTRIB_SUPPORT
+  AM_COVERAGE_SUPPORT
+
+  AC_MSG_CHECKING([number of processors])
+  NR_CPUS=`getconf _NPROCESSORS_CONF 2>/dev/null || getconf NPROCESSORS_CONF 2>/dev/null || echo 1`
+  AC_MSG_RESULT($NR_CPUS)
+  AC_SUBST(NR_CPUS)
+
+  AM_UTIL_CHECK_INSTALL
+
+  AM_GNAT_LIBRARY_SETUP($1)
+])
+
