@@ -22,4 +22,7 @@ autom4te.cache
 lib/
 obj/
 libmat/src/mat-config.h
-mat/Makefile.conf
+matp/Makefile.conf
+matp/mat_tests.gpr
+matp/mat_gtk.gpr
+matp/mat.gpr
