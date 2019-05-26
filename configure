@@ -633,6 +633,7 @@ infodir
 docdir
 oldincludedir
 includedir
+runstatedir
 localstatedir
 sharedstatedir
 sysconfdir
@@ -670,7 +671,6 @@ CPPFLAGS
 CPP'
 ac_subdirs_all='libmat
 ada-util-1.7.2
-ada-bfd-1.1.0
 matp'
 
 # Initialize some variables set by options.
@@ -709,6 +709,7 @@ datadir='${datarootdir}'
 sysconfdir='${prefix}/etc'
 sharedstatedir='${prefix}/com'
 localstatedir='${prefix}/var'
+runstatedir='${localstatedir}/run'
 includedir='${prefix}/include'
 oldincludedir='/usr/include'
 docdir='${datarootdir}/doc/${PACKAGE}'
@@ -961,6 +962,15 @@ do
   | -silent | --silent | --silen | --sile | --sil)
     silent=yes ;;
 
+  -runstatedir | --runstatedir | --runstatedi | --runstated \
+  | --runstate | --runstat | --runsta | --runst | --runs \
+  | --run | --ru | --r)
+    ac_prev=runstatedir ;;
+  -runstatedir=* | --runstatedir=* | --runstatedi=* | --runstated=* \
+  | --runstate=* | --runstat=* | --runsta=* | --runst=* | --runs=* \
+  | --run=* | --ru=* | --r=*)
+    runstatedir=$ac_optarg ;;
+
   -sbindir | --sbindir | --sbindi | --sbind | --sbin | --sbi | --sb)
     ac_prev=sbindir ;;
   -sbindir=* | --sbindir=* | --sbindi=* | --sbind=* | --sbin=* \
@@ -1098,7 +1108,7 @@ fi
 for ac_var in	exec_prefix prefix bindir sbindir libexecdir datarootdir \
 		datadir sysconfdir sharedstatedir localstatedir includedir \
 		oldincludedir docdir infodir htmldir dvidir pdfdir psdir \
-		libdir localedir mandir
+		libdir localedir mandir runstatedir
 do
   eval ac_val=\$$ac_var
   # Remove trailing slashes.
@@ -1251,6 +1261,7 @@ Fine tuning of the installation directories:
   --sysconfdir=DIR        read-only single-machine data [PREFIX/etc]
   --sharedstatedir=DIR    modifiable architecture-independent data [PREFIX/com]
   --localstatedir=DIR     modifiable single-machine data [PREFIX/var]
+  --runstatedir=DIR       modifiable per-process data [LOCALSTATEDIR/run]
   --libdir=DIR            object code libraries [EPREFIX/lib]
   --includedir=DIR        C header files [PREFIX/include]
   --oldincludedir=DIR     C header files for non-gcc [/usr/include]
@@ -3074,23 +3085,11 @@ if test x$ac_enable_matp = 'xyes'; then
 fi
 
 # Build ada-bfd-1.1.0 only when --enable-matp and --enable-ada-bfd are defined.
-if test x$ac_enable_matp = 'xyes'; then
-  if test x$ac_enable_ada_bfd = 'xyes'; then
-    if test -d ${srcdir}/ada-bfd-1.1.0 ; then
-      echo "Package ada-bfd-1.1.0 already extracted."
-    else
-      echo "Extracting ${srcdir}/external/ada-bfd-1.1.0.tar.gz"
-      (cd ${srcdir} && tar xzf ${srcdir}/external/ada-bfd-1.1.0.tar.gz)
-
-      # Hack to solve duplicate project 'config' issue.
-      (cd ${srcdir}/ada-bfd-1.1.0 &&
-	    sed -e 's,"config","../ada-util-1.7.2/config",' < bfdada.gpr.in > bfdada.gpr.in.fix &&
-        mv bfdada.gpr.in.fix bfdada.gpr.in)
-    fi
-    subdirs="$subdirs ada-bfd-1.1.0"
-
-  fi
-fi
+#if test x$ac_enable_matp = 'xyes'; then
+  # Hack to solve duplicate project 'config' issue.
+#  (cd ${srcdir}/ada-bfd &&
+#        mv bfdada.gpr.in.fix bfdada.gpr.in)
+#fi
 
 if test x$ac_enable_matp = 'xyes'; then
   subdirs="$subdirs matp"
