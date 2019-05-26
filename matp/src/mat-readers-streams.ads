@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-readers-streams -- Reader for streams
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2019 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +32,7 @@ package MAT.Readers.Streams is
 private
 
    type Stream_Reader_Type is new MAT.Events.Probes.Probe_Manager_Type with record
-      Stream : Util.Streams.Buffered.Buffered_Stream;
+      Stream : Util.Streams.Buffered.Input_Buffer_Stream;
       Data   : Util.Streams.Buffered.Buffer_Access;
    end record;
 
