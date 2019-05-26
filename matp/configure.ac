@@ -106,5 +106,5 @@ AC_SUBST(GPRPATH)
 AC_SUBST(GTKADA_DIR)
 
 AC_OUTPUT(
-Makefile.conf mat.gpr gtkmat.gpr mat_tests.gpr
+Makefile.conf mat.gpr mat_gtk.gpr mat_tests.gpr
 )
