@@ -21,4 +21,5 @@ autom4te.cache
 *.txt
 lib/
 obj/
-libgpmat/src/gp-config.h
+libmat/src/mat-config.h
+mat/Makefile.conf
