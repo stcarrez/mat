@@ -1,5 +1,10 @@
 # Memory Analysis Tool
 
+[![Build Status](https://img.shields.io/jenkins/s/http/jenkins.vacs.fr/Mat.svg)](http://jenkins.vacs.fr/job/Mat/)
+[![Download](https://img.shields.io/badge/download-1.9.0-brightgreen.svg)](http://download.vacs.fr/mat/mat-1.0.0.tar.gz)
+[![License](http://img.shields.io/badge/license-APACHE2-blue.svg)](LICENSE)
+![Commits](https://img.shields.io/github/commits-since/stcarrez/mat/1.0.0.svg)
+
 MAT is a simple memory analysis tool intended to help
 understand where the memory is used in a program.
 
