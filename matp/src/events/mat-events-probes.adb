@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-readers -- Reader
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2019 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -324,7 +324,6 @@ package body MAT.Events.Probes is
                end loop;
             end Read_Attribute;
 
-            use type MAT.Events.Attribute_Table_Ptr;
          begin
             if Probe_Maps.Has_Element (Pos) then
                Client.Probes.Update_Element (Pos, Read_Attribute'Access);
