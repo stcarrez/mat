@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  Memory clients - Client info related to its memory
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2019 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 
-with MAT.Frames;
 with MAT.Events.Probes;
 with MAT.Memory.Tools;
 with MAT.Expressions;
