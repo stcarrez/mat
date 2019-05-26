@@ -21,6 +21,17 @@ memory allocation was made, the timestamp and thread information.
 To use MAT, you'll need to intrument your application
 and then to analyze the results with the tool.
 
+# Using git
+
+The project uses git submodules to integrate several other
+projects.  To get all the sources, use the following commands:
+```
+   git clone git@github.com:stcarrez/mat.git
+   cd mat
+   git submodule init
+   git submodule update
+```
+
 # Building mat
 
 The package is composed of three separate components:
@@ -33,23 +44,32 @@ libmat and matl are written in C and mat is written in Ada which requires
 the GNAT Ada compiler.  By default the mat component is not built.
 If you only need libmat and matl, configure and build as follows:
 
+```
   ./configure
   make
+```
 
 To build a 32-bit or 64-bit version of the shared library you may use:
 
+```
   CC="/usr/bin/gcc -m32" ../mat/configure
   make
+```
 or
+
+```
   CC="/usr/bin/gcc -m64" ../mat/configure
   make
+```
 
 If you're using a cross compilation environment, you should
 indicate to the configure your target host.  For example to
 build for a remote mips system, use:
 
+```
   ./configure --host="mips-uclibc-linux" --target=mips-uclibc-linux
   make
+```
 
 To build the mat analysis tool, you must have installed the following
 components on your system:
@@ -65,30 +85,27 @@ On Debian-based systems, you may have to install the following packages:
 If you have installed Ada Utility Library and Ada Bfd Library on your
 system, you can configure and build by using:
 
+```
   ./configure --enable-mat
   make
-
-To help you in the build process, you may also use the tar ball contained
-in 'external' directory and you may build by using:
-
-  ./configure --enable-mat --enable-ada-util --enable-ada-bfd
-  make
-
-This will extract the 'ada-bfd-1.1.0.tar.gz' and 'ada-util-1.7.1.tar.gz' in
-the directory and integrate these two packages in the build process.
+```
 
 # Instrumenting your application
 
 You can instrument the memory allocation by using the matl launcher.
 
+```
   matl -o name my-program
+```
 
 While the program runs and the libmat.so collect events,
 it generates a file 'name-<pid>.mat'.
 
 Start mat with the generated file:
 
+```
   mat name-xxx.mat
+```
 
 Once the memory events are loaded, you can use the interactive
 commands to look at the events.  The first commands you may use
