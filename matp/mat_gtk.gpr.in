@@ -1,9 +1,9 @@
 with "config";
-with "@UTIL_DIR@util";
+with "@UTIL_DIR@utilada_sys";
 with "@BFD_DIR@bfdada";
 with "@GTKADA_DIR@gtkada";
 
-project gtkmat is
+project mat_gtk is
 
    Mains := ("matp.adb", "gtkmatp.adb");
 
@@ -16,7 +16,7 @@ project gtkmat is
 
    package Naming is
       for Implementation ("MAT.Targets.Gtkmat.Load_UI")
-	     use "mat-events-gtkmat-load_ui_gtk2.adb";
+	     use "mat-events-gtkmat-load_ui_gtk3.adb";
 
    end Naming;
 
@@ -28,4 +28,4 @@ project gtkmat is
    package Compiler renames Config.Compiler;
    package Linker renames Config.Linker;
 
-end gtkmat;
+end mat_gtk;
