@@ -1,3 +1,5 @@
+# Memory Analysis Tool
+
 MAT is a simple memory analysis tool intended to help
 understand where the memory is used in a program.
 
@@ -14,8 +16,8 @@ memory allocation was made, the timestamp and thread information.
 To use MAT, you'll need to intrument your application
 and then to analyze the results with the tool.
 
-Building mat
-============
+# Building mat
+
 The package is composed of three separate components:
 
 - libmat is the shared library that instruments the memory allocation.
@@ -70,8 +72,7 @@ in 'external' directory and you may build by using:
 This will extract the 'ada-bfd-1.1.0.tar.gz' and 'ada-util-1.7.1.tar.gz' in
 the directory and integrate these two packages in the build process.
 
-Instrumenting your application
-==============================
+# Instrumenting your application
 
 You can instrument the memory allocation by using the matl launcher.
 
@@ -90,8 +91,8 @@ are 'info', 'timeline' and 'sizes' as they give a short summary
 and analysis of the events.
 
 
-Embedded systems
-================
+# Embedded systems
+
 On embedded systems, you only need to build the libmat.so and matl parts.
 For Mips and ARM, for the backtrace to work, you should compile your program
 with the -funwind-tables gcc option.  Instrument your program and copy
