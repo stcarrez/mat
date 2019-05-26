@@ -1,5 +1,5 @@
 with "@CONFIG_DIR@config";
-with "@UTIL_DIR@util";
+with "@UTIL_DIR@utilada_sys";
 with "@BFD_DIR@bfdada";
 
 project mat is
