@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-symbols-targets - Symbol files management
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2019 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,6 +26,10 @@ package body MAT.Symbols.Targets is
 
    --  The logger
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Symbols.Targets");
+
+   procedure Find_Nearest_Line (Symbols : in Region_Symbols;
+                                Addr    : in MAT.Types.Target_Addr;
+                                Symbol  : out Symbol_Info);
 
    --  ------------------------------
    --  Open the binary and load the symbols from that file.
@@ -162,8 +166,6 @@ package body MAT.Symbols.Targets is
    procedure Find_Nearest_Line (Symbols : in Region_Symbols;
                                 Addr    : in MAT.Types.Target_Addr;
                                 Symbol  : out Symbol_Info) is
-      use type Bfd.Vma_Type;
-
       Text_Section : Bfd.Sections.Section;
       Pc : constant Bfd.Vma_Type := Bfd.Vma_Type (Addr);
    begin
@@ -187,8 +189,6 @@ package body MAT.Symbols.Targets is
    procedure Find_Nearest_Line (Symbols : in Target_Symbols;
                                 Addr    : in MAT.Types.Target_Addr;
                                 Symbol  : out Symbol_Info) is
-      use Ada.Strings.Unbounded;
-
       Pos  : constant Symbols_Cursor := Symbols.Libraries.Floor (Addr);
    begin
       Symbol.Line := 0;
