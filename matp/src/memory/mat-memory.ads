@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  Memory - Memory slot
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2019 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ with Ada.Strings.Unbounded;
 with ELF;
 with MAT.Types;
 with MAT.Frames;
-with MAT.Events.Targets;
+with MAT.Events;
 
 package MAT.Memory is
 
