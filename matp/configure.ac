@@ -1,36 +1,25 @@
 dnl Autoconf configure script for mat
+
 dnl Process this file with autoconf to produce a configure script.
+
 AC_INIT(src/mat.ads)
-AC_CANONICAL_SYSTEM
-dnl AM_MAINTAINER_MODE
+
 # Current release settings
 MAT_MAJOR_VERSION=0
 MAT_MINOR_VERSION=1
 MAT_MICRO_VERSION=0
 MAT_VERSION=$MAT_MAJOR_VERSION.$MAT_MINOR_VERSION.$MAT_MICRO_VERSION
-# checking for local tools
-AC_PROG_CC
-AC_PROG_MAKE_SET
-AC_PROG_INSTALL
-AC_PROG_LN_S
-AC_CHECK_PROGS(GNATMAKE, gnatmake, "")
-AC_CHECK_PROGS(GNATCLEAN, gnatclean, "")
-# Set the version number of GtkAda
+# Set the version number of the project
 AC_SUBST(MAT_VERSION)
 AC_SUBST(MAT_MAJOR_VERSION)
 AC_SUBST(MAT_MINOR_VERSION)
 AC_SUBST(MAT_MICRO_VERSION)
+
 EXEC_PREFIX="$prefix"
 AC_SUBST(EXEC_PREFIX)
-MAT_LIBDIR="lib"
-AC_SUBST(MAT_LIBDIR)
-
-AC_MSG_CHECKING([number of processors])
-NR_CPUS=`getconf _NPROCESSORS_CONF 2>/dev/null || getconf _NPROCESSORS_CONF 2>/dev/null || echo 1`
-AC_MSG_RESULT($NR_CPUS)
-AC_SUBST(NR_CPUS)
-
-AC_CHECK_PROGS(GNATMAKE, gnatmake, "")
+AM_GNAT_LIBRARY_PROJECT(mat)
+# checking for local tools
+AC_PROG_CC
 
 ac_enable_gtk=no
 AC_ARG_ENABLE(gtk,
@@ -48,11 +37,11 @@ AC_CHECK_LIB([readline],[readline])
 ##########################################
 # Ada Util library
 ##########################################
-AM_GNAT_FIND_PROJECT([ada-util],[Ada Utility Library],[util],
+AM_GNAT_FIND_PROJECT([ada-util],[Ada Utility Library],[utilada_sys],
   [git@github.com:stcarrez/ada-util.git],
-  [Building MAT requires the Ada Utility Library.],
+  [Building mat requires the Ada Utility Library.],
   [
-    UTIL_DIR=${gnat_project_dir_util}
+    UTIL_DIR=${gnat_project_dir_utilada_sys}
   ])
 AC_SUBST(UTIL_DIR)
 
@@ -117,5 +106,5 @@ AC_SUBST(GPRPATH)
 AC_SUBST(GTKADA_DIR)
 
 AC_OUTPUT(
-Makefile mat.gpr gtkmat.gpr tests.gpr
+Makefile.conf mat.gpr gtkmat.gpr mat_tests.gpr
 )
