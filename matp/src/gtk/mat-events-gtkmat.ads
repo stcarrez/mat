@@ -19,12 +19,12 @@
 with Cairo;
 with Gtk.Drawing_Area;
 
-with MAT.Events.Targets;
+with MAT.Events.Tools;
 package MAT.Events.Gtkmat is
 
    type Event_Drawing_Type is record
       Drawing : Gtk.Drawing_Area.Gtk_Drawing_Area;
-      List    : MAT.Events.Targets.Target_Event_Vector;
+      List    : MAT.Events.Tools.Target_Event_Vector;
    end record;
    type Event_Drawing_Type_Access is access Event_Drawing_Type;
 

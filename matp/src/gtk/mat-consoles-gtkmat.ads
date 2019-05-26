@@ -18,8 +18,8 @@
 with Ada.Text_IO;
 with Glib;
 with Gtk.Frame;
-with Gtk.List_Store;
 with Gtk.Tree_Model;
+with Gtk.Tree_Store;
 with Gtk.Cell_Renderer_Text;
 with Gtk.Tree_View;
 with Gtk.Scrolled_Window;
@@ -86,7 +86,7 @@ private
    type Console_Type is new MAT.Consoles.Console_Type with record
       Frame       : Gtk.Frame.Gtk_Frame;
       Scrolled    : Gtk.Scrolled_Window.Gtk_Scrolled_Window;
-      List        : Gtk.List_Store.Gtk_List_Store;
+      List        : Gtk.Tree_Store.Gtk_Tree_Store;
       Current_Row : Gtk.Tree_Model.Gtk_Tree_Iter;
       File        : Ada.Text_IO.File_Type;
       Indexes     : Field_Index_Array;

@@ -191,8 +191,9 @@ package body MAT.Targets.Gtkmat is
 
    procedure Refresh_Events (Target : in out Target_Type) is
    begin
-      Target.Events.List.Clear;
-      MAT.Events.Targets.Get_Events (Target.Current.Events.all, 0, 0, Target.Events.List);
+      --  Target.Events.List.Clear;
+      --  MAT.Events.Targets.Get_Events (Target.Current.Events.all, 0, 0, Target.Events.List);
+      null;
    end Refresh_Events;
 
 end MAT.Targets.Gtkmat;

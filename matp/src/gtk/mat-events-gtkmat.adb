@@ -54,7 +54,7 @@ package body MAT.Events.Gtkmat is
 
       type Thread_Ref_Array is array (1 .. 10) of MAT.Types.Target_Thread_Ref;
 
-      Iter : MAT.Events.Targets.Target_Event_Cursor;
+      Iter : MAT.Events.Tools.Target_Event_Cursor;
 
       Threads : Thread_Ref_Array := (others => 0);
       Start   : MAT.Types.Target_Tick_Ref;
@@ -110,10 +110,10 @@ package body MAT.Events.Gtkmat is
       end if;
       Thread_F := Glib.Gdouble (Height) / 10.0;
       Iter := Onto.List.First;
-      while MAT.Events.Targets.Target_Event_Vectors.Has_Element (Iter) loop
+      while MAT.Events.Tools.Target_Event_Vectors.Has_Element (Iter) loop
          declare
-            Event : MAT.Events.Targets.Target_Event
-              := MAT.Events.Targets.Target_Event_Vectors.Element (Iter);
+            Event : MAT.Events.Target_Event_Type
+              := MAT.Events.Tools.Target_Event_Vectors.Element (Iter);
             Y : Glib.Gdouble := Get_Thread_Pos (Event.Thread);
             X : Glib.Gdouble := Get_Time_Pos (Event.Time);
          begin
@@ -126,7 +126,7 @@ package body MAT.Events.Gtkmat is
             Cairo.Line_To (Cr, X, Y + 10.0);
             Cairo.Stroke (Cr);
          end;
-         MAT.Events.Targets.Target_Event_Vectors.Next (Iter);
+         MAT.Events.Tools.Target_Event_Vectors.Next (Iter);
       end loop;
 --        Cairo.Set_Source_Rgb (Cr, Red => 0.0, Green => 0.0, Blue => 0.0);
 --        for I in 1 .. 10 loop

@@ -66,7 +66,7 @@ package body MAT.Consoles.Gtkmat is
                           Justify : in Justify_Type := J_LEFT) is
    begin
       Log.Debug ("Field {0} - {1}", Field_Type'Image (Field), Value);
-      Gtk.List_Store.Set (Console.List, Console.Current_Row, Console.Indexes (Field), Value);
+      Gtk.Tree_Store.Set (Console.List, Console.Current_Row, Console.Indexes (Field), Value);
    end Print_Field;
 
    --  Print the title for the given field.
@@ -96,18 +96,19 @@ package body MAT.Consoles.Gtkmat is
       use type Glib.Guint;
       use type Glib.Gint;
       use type Gtk.Tree_View.Gtk_Tree_View;
-      use Gtk.List_Store;
+      use Gtk.Tree_Store;
 
       Types : Glib.GType_Array (0 .. Glib.Guint (Console.Field_Count) - 1)
         := (others => Glib.GType_String);
       Col      : Gtk.Tree_View_Column.Gtk_Tree_View_Column;
       Num : Glib.Gint;
    begin
-      Gtk.List_Store.Gtk_New (Console.List, Types);
+      Gtk.Tree_Store.Gtk_New (Console.List, Types);
 
       if Console.Tree /= null then
          Console.Tree.Destroy;
       end if;
+--      Gtk.Tree_View.Gtk_New (Console.Tree, +Console.List);
       Gtk.Tree_View.Gtk_New (Console.Tree);
 
       for I in 1 .. Console.Field_Count loop
@@ -119,7 +120,7 @@ package body MAT.Consoles.Gtkmat is
          Col.Set_Sizing (Gtk.Tree_View_Column.Tree_View_Column_Autosize);
          Col.Add_Attribute (Console.Col_Text, "text", Glib.Gint (I) - 1);
       end loop;
-      Console.Tree.Set_Model (Gtk.Tree_Model.Gtk_Tree_Model (Console.List));
+--      Console.Tree.Set_Model (Gtk.Tree_Model.Gtk_Tree_Model (Console.List));
       Console.Scrolled.Add (Console.Tree);
       Console.Scrolled.Show_All;
    end End_Title;
@@ -128,7 +129,7 @@ package body MAT.Consoles.Gtkmat is
    overriding
    procedure Start_Row (Console : in out Console_Type) is
    begin
-      Console.List.Append (Console.Current_Row);
+      Console.List.Append (Console.Current_Row, Gtk.Tree_Model.Null_Iter);
    end Start_Row;
 
    --  Finish a new row in a report.
