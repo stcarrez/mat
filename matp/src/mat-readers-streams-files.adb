@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-readers-files -- Reader for files
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2019 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,12 +30,12 @@ package body MAT.Readers.Streams.Files is
    --  ------------------------------
    procedure Open (Reader : in out File_Reader_Type;
                    Path   : in String) is
+      Stream : constant access Util.Streams.Input_Stream'Class := Reader.File'Access;
    begin
       Log.Info ("Reading data stream {0}", Path);
 
       Reader.Stream.Initialize (Size   => BUFFER_SIZE,
-                                Input  => Reader.File'Unchecked_Access,
-                                Output => null);
+                                Input  => Stream);
       Reader.File.Open (Mode => Ada.Streams.Stream_IO.In_File,
                         Name => Path);
    end Open;
