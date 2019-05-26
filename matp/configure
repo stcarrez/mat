@@ -3945,7 +3945,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile.conf mat.gpr gtkmat.gpr mat_tests.gpr"
+ac_config_files="$ac_config_files Makefile.conf mat.gpr mat_gtk.gpr mat_tests.gpr"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -4655,7 +4655,7 @@ do
   case $ac_config_target in
     "Makefile.conf") CONFIG_FILES="$CONFIG_FILES Makefile.conf" ;;
     "mat.gpr") CONFIG_FILES="$CONFIG_FILES mat.gpr" ;;
-    "gtkmat.gpr") CONFIG_FILES="$CONFIG_FILES gtkmat.gpr" ;;
+    "mat_gtk.gpr") CONFIG_FILES="$CONFIG_FILES mat_gtk.gpr" ;;
     "mat_tests.gpr") CONFIG_FILES="$CONFIG_FILES mat_tests.gpr" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
