@@ -86,22 +86,11 @@ if test x$ac_enable_matp = 'xyes'; then
 fi
 
 # Build ada-bfd-1.1.0 only when --enable-matp and --enable-ada-bfd are defined.
-if test x$ac_enable_matp = 'xyes'; then
-  if test x$ac_enable_ada_bfd = 'xyes'; then
-    if test -d ${srcdir}/ada-bfd-1.1.0 ; then
-      echo "Package ada-bfd-1.1.0 already extracted."
-    else
-      echo "Extracting ${srcdir}/external/ada-bfd-1.1.0.tar.gz"
-      (cd ${srcdir} && tar xzf ${srcdir}/external/ada-bfd-1.1.0.tar.gz)
-
-      # Hack to solve duplicate project 'config' issue.
-      (cd ${srcdir}/ada-bfd-1.1.0 &&
-	    sed -e 's,"config","../ada-util-1.7.2/config",' < bfdada.gpr.in > bfdada.gpr.in.fix &&
-        mv bfdada.gpr.in.fix bfdada.gpr.in)
-    fi
-    AC_CONFIG_SUBDIRS(ada-bfd-1.1.0)
-  fi
-fi
+#if test x$ac_enable_matp = 'xyes'; then
+  # Hack to solve duplicate project 'config' issue.
+#  (cd ${srcdir}/ada-bfd &&
+#        mv bfdada.gpr.in.fix bfdada.gpr.in)
+#fi
 
 if test x$ac_enable_matp = 'xyes'; then
   AC_CONFIG_SUBDIRS(matp)
