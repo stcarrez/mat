@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-readers-sockets -- Reader for TCP/IP sockets
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2019 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -71,18 +71,17 @@ package body MAT.Readers.Streams.Sockets is
                             Client   : in GNAT.Sockets.Socket_Type;
                             Address  : in GNAT.Sockets.Sock_Addr_Type) is
       Reader : constant Socket_Reader_Type_Access := new Socket_Reader_Type;
+      Stream : constant access Util.Streams.Input_Stream'Class := Reader.Socket'Access;
    begin
       Reader.Client := Client;
-      Reader.Stream.Initialize (Size   => BUFFER_SIZE,
-                                Input  => Reader.Socket'Unchecked_Access,
-                                Output => null);
+      Reader.Stream.Initialize (Input  => Stream,
+                                Size   => BUFFER_SIZE);
       Reader.Server.Start (Reader, Client);
       Listener.List.Initialize (Reader.all);
       Listener.Clients.Append (Reader);
    end Create_Target;
 
    task body Socket_Listener_Task is
-      use type GNAT.Sockets.Socket_Type;
       use type GNAT.Sockets.Selector_Status;
 
       Peer     : GNAT.Sockets.Sock_Addr_Type;
@@ -129,8 +128,6 @@ package body MAT.Readers.Streams.Sockets is
    end Socket_Listener_Task;
 
    task body Socket_Reader_Task is
-      use type GNAT.Sockets.Socket_Type;
-
       Instance : Socket_Reader_Type_Access;
       Socket   : GNAT.Sockets.Socket_Type;
    begin
