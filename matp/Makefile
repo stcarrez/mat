@@ -22,6 +22,14 @@ bin/mat_harness:  bin/matp
 bin/matp:		Makefile.conf $(GPRPATH)
 	$(GNATMAKE) $(GPRFLAGS) -p -P$(NAME) $(MAKE_ARGS)
 
+ifeq ($(HAVE_GTKADA),yes)
+build:: gtk
+
+gtk:
+	$(GNATMAKE) $(GPRFLAGS) -p -P$(NAME)_gtk $(MAKE_ARGS)
+
+endif
+
 test:			bin/mat_harness
 	bin/mat_harness
 
