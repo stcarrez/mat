@@ -14,13 +14,13 @@ MKDIR=mkdir
 CP=cp
 
 # Build executables for all mains defined by the project.
-all build:: bin/matp
+all build::
 
-bin/mat_harness:  bin/matp
-	$(GNATMAKE) $(GPRFLAGS) -p -P$(NAME)_tests $(MAKE_ARGS)
-
-bin/matp:		Makefile.conf $(GPRPATH)
+build::		Makefile.conf $(GPRPATH)
 	$(GNATMAKE) $(GPRFLAGS) -p -P$(NAME) $(MAKE_ARGS)
+
+build-test:: build
+	$(GNATMAKE) $(GPRFLAGS) -p -P$(NAME)_tests $(MAKE_ARGS)
 
 ifeq ($(HAVE_GTKADA),yes)
 build:: gtk
@@ -30,7 +30,7 @@ gtk:
 
 endif
 
-test:			bin/mat_harness
+test:	build-test
 	bin/mat_harness
 
 install::
