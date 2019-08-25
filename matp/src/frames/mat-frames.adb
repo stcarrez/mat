@@ -251,8 +251,6 @@ package body MAT.Frames is
                 Natural'Image (Natural (Map.Length)));
       while Check_Maps.Has_Element (Iter) loop
          declare
-            use type MAT.Types.Target_Addr;
-
             Frame : constant Frame_Type := Check_Maps.Key (Iter);
             Table : constant Frame_Table_Access := Check_Maps.Element (Iter);
             Pc    : constant Frame_Table := Backtrace (Frame);
@@ -275,7 +273,7 @@ package body MAT.Frames is
    begin
       if not Map.Contains (Frame) then
          declare
-            Table : Frame_Table_Access := new Frame_Table '(Pc);
+            Table : constant Frame_Table_Access := new Frame_Table '(Pc);
          begin
             Map.Include (Frame, Table);
          end;

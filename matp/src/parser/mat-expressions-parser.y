@@ -272,7 +272,6 @@ package body MAT.Expressions.Parser is
 
    use Ada;
    use MAT.Expressions.Lexer;
-   use type Ada.Text_IO.Count;
    use type MAT.Types.Target_Tick_Ref;
    use type MAT.Events.Event_Id_Type;
    use type Interfaces.Unsigned_64;

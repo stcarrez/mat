@@ -211,7 +211,7 @@ package body MAT.Events.Probes is
       Frame.Cur_Depth := Count;
 
    exception
-      when E : others =>
+      when others =>
          Log.Error ("Marshaling error, frame count {0}", Natural'Image (Count));
          raise;
 
@@ -219,7 +219,6 @@ package body MAT.Events.Probes is
 
    procedure Dispatch_Message (Client : in out Probe_Manager_Type;
                                Msg    : in out MAT.Readers.Message_Type) is
-      use type MAT.Events.Attribute_Table_Ptr;
       use type MAT.Events.Targets.Target_Events_Access;
 
       Event : constant MAT.Types.Uint16 := MAT.Readers.Marshaller.Get_Uint16 (Msg.Buffer);
@@ -301,7 +300,6 @@ package body MAT.Events.Probes is
             procedure Read_Attribute (Key     : in String;
                                       Element : in out Probe_Handler) is
                pragma Unreferenced (Key);
-               use type MAT.Events.Attribute_Table_Ptr;
             begin
                if Element.Mapping = null then
                   Element.Mapping := new MAT.Events.Attribute_Table (1 .. Natural (Count));

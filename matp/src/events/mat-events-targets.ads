@@ -20,7 +20,6 @@ with Ada.Finalization;
 
 with Util.Concurrent.Counters;
 
-with MAT.Frames.Targets;
 with MAT.Events.Tools;
 package MAT.Events.Targets is
 

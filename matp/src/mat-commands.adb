@@ -112,7 +112,7 @@ package body MAT.Commands is
          Console.Start_Row;
          Console.Print_Field (MAT.Consoles.F_FRAME_ID, I, MAT.Consoles.J_RIGHT);
          Console.Print_Field (MAT.Consoles.F_FRAME_ADDR, Backtrace (I));
-         MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Symbols.Value.all,
+         MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Symbols.Value,
                                                 Addr    => Backtrace (I),
                                                 Symbol  => Symbol);
          Console.Print_Field (MAT.Consoles.F_FUNCTION_NAME,
@@ -210,7 +210,6 @@ package body MAT.Commands is
                          Slot    : in MAT.Memory.Allocation;
                          Symbols : in MAT.Symbols.Targets.Target_Symbols_Ref;
                          Start   : in MAT.Types.Target_Tick_Ref) is
-      use type MAT.Frames.Frame_Type;
       Backtrace : constant MAT.Frames.Frame_Table := MAT.Frames.Backtrace (Slot.Frame);
 
       Symbol : MAT.Symbols.Targets.Symbol_Info;
@@ -229,7 +228,7 @@ package body MAT.Commands is
          Console.Start_Row;
          Console.Print_Field (Consoles.F_ID, I);
          Console.Print_Field (Consoles.F_ADDR, MAT.Formats.Addr (Backtrace (I)));
-         MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Symbols.Value.all,
+         MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Symbols.Value,
                                                 Addr    => Backtrace (I),
                                                 Symbol  => Symbol);
          Console.Print_Field (Consoles.F_FUNCTION_NAME,
@@ -452,7 +451,7 @@ package body MAT.Commands is
             Info   : constant Memory.Frame_Info := MAT.Memory.Frame_Info_Maps.Element (Iter);
             Symbol : MAT.Symbols.Targets.Symbol_Info;
          begin
-            MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Process.Symbols.Value.all,
+            MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Process.Symbols.Value,
                                                    Addr    => Func,
                                                    Symbol  => Symbol);
             Console.Start_Row;
@@ -534,7 +533,7 @@ package body MAT.Commands is
       Iter := List.First;
       while MAT.Events.Tools.Frame_Info_Vectors.Has_Element (Iter) loop
          Info := MAT.Events.Tools.Frame_Info_Vectors.Element (Iter);
-         MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Process.Symbols.Value.all,
+         MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Process.Symbols.Value,
                                                 Addr    => Info.Key.Addr,
                                                 Symbol  => Symbol);
 
@@ -643,8 +642,6 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Events_Command (Target : in out MAT.Targets.Target_Type'Class;
                              Args   : in String) is
-      use type MAT.Events.Event_Id_Type;
-
       Console    : constant MAT.Consoles.Console_Access := Target.Console;
       Process    : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Start, Finish : MAT.Types.Target_Tick_Ref;
@@ -674,7 +671,6 @@ package body MAT.Commands is
    procedure Event_Command (Target : in out MAT.Targets.Target_Type'Class;
                             Args   : in String) is
       use Consoles;
-      use type MAT.Types.Target_Tick_Ref;
 
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
@@ -813,7 +809,7 @@ package body MAT.Commands is
          declare
             Symbol : MAT.Symbols.Targets.Symbol_Info;
          begin
-            MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Process.Symbols.Value.all,
+            MAT.Symbols.Targets.Find_Nearest_Line (Symbols => Process.Symbols.Value,
                                                    Addr    => Addr,
                                                    Symbol  => Symbol);
             if Ada.Strings.Unbounded.Length (Symbol.File) /= 0 then
@@ -935,8 +931,6 @@ package body MAT.Commands is
    --  ------------------------------
    procedure Symbol_Command (Target : in out MAT.Targets.Target_Type'Class;
                              Args   : in String) is
-      use type ELF.Elf32_Word;
-
       Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
       Console : constant MAT.Consoles.Console_Access := Target.Console;
       Maps    : MAT.Memory.Region_Info_Map;
@@ -945,8 +939,8 @@ package body MAT.Commands is
                                From   => MAT.Types.Target_Addr'First,
                                To     => MAT.Types.Target_Addr'Last,
                                Into   => Maps);
-      MAT.Symbols.Targets.Load_Symbols (Process.Symbols.Value.all, Maps);
-      MAT.Symbols.Targets.Open (Process.Symbols.Value.all, Args);
+      MAT.Symbols.Targets.Load_Symbols (Process.Symbols.Value, Maps);
+      MAT.Symbols.Targets.Open (Process.Symbols.Value, Args);
 
    exception
       when Bfd.OPEN_ERROR =>

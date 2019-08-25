@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-types -- Global types
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2019 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -85,7 +85,7 @@ package body MAT.Types is
    function Tick_Value (Value : in String) return Target_Tick_Ref is
       use Interfaces;
 
-      Pos  : Natural := Util.Strings.Index (Value, '.');
+      Pos  : constant Natural := Util.Strings.Index (Value, '.');
       Frac : Uint64;
       Val  : Uint64;
    begin

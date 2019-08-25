@@ -89,7 +89,7 @@ package body MAT.Symbols.Targets is
          Syms := Symbols_Maps.Element (Pos);
       end if;
       if Ada.Strings.Unbounded.Length (Region.Path) > 0 then
-         Open (Syms.Value.all, Ada.Strings.Unbounded.To_String (Region.Path),
+         Open (Syms.Value, Ada.Strings.Unbounded.To_String (Region.Path),
                Ada.Strings.Unbounded.To_String (Symbols.Search_Path));
          if (Bfd.Files.Get_File_Flags (Syms.Value.File) and Bfd.Files.EXEC_P) /= 0 then
             Syms.Value.Offset := 0;
@@ -198,7 +198,7 @@ package body MAT.Symbols.Targets is
          begin
             if Syms.Value.Region.End_Addr > Addr then
                Symbol.Symbols := Syms;
-               Find_Nearest_Line (Symbols => Syms.Value.all,
+               Find_Nearest_Line (Symbols => Syms.Value,
                                   Addr    => Addr - Syms.Value.Offset,
                                   Symbol  => Symbol);
                Demangle (Symbols, Symbol);

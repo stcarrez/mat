@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  Frames - Representation of stack frames
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2019 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,7 @@ procedure MAT.Frames.Print (File : in File_Type;
    use MAT.Types;
    use Interfaces;
 
-   Depth : Natural := F.Depth;
+   Depth : constant Natural := F.Depth;
    Child : Frame_Type;
 
    procedure Print_Address (File : in File_Type;

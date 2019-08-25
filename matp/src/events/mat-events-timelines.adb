@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-events-timelines - Timelines
---  Copyright (C) 2015 Stephane Carrez
+--  Copyright (C) 2015, 2019 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,7 +26,6 @@ package body MAT.Events.Timelines is
                       Level  : in Positive;
                       Into   : in out Timeline_Info_Vector) is
       use type MAT.Types.Target_Time;
-      use type MAT.Types.Target_Size;
       procedure Collect (Event : in MAT.Events.Target_Event_Type);
 
       First_Event : MAT.Events.Target_Event_Type;
@@ -34,7 +33,7 @@ package body MAT.Events.Timelines is
       Prev_Event  : MAT.Events.Target_Event_Type;
       Info        : Timeline_Info;
       First_Id    : MAT.Events.Event_Id_Type;
-      Limit       : MAT.Types.Target_Time := MAT.Types.Target_Time (Level * 1_000_000);
+      Limit       : constant MAT.Types.Target_Time := MAT.Types.Target_Time (Level * 1_000_000);
 
       procedure Collect (Event : in MAT.Events.Target_Event_Type) is
          Dt : constant MAT.Types.Target_Time := Event.Time - Prev_Event.Time;
