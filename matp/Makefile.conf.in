@@ -15,3 +15,5 @@ exec_prefix = @exec_prefix@
 PROCESSORS=@NR_CPUS@
 COVERAGE=@BUILDS_COVERAGE@
 HAVE_GTKADA=@MAT_GTKADA@
+mandir=@mandir@
+datarootdir=@datarootdir@
