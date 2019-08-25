@@ -34,10 +34,10 @@ test:	build-test
 	bin/mat_harness
 
 install::
-	mkdir -p ${bindir}
-	mkdir -p ${mandir}/man1
-	$(INSTALL_PROGRAM) bin/mat $(bindir)/
-	$(INSTALL) man/mat.1 $(mandir)/man1/mat.1
+	mkdir -p $(DESTDIR)${bindir}
+	mkdir -p $(DESTDIR)${mandir}/man1
+	$(INSTALL_PROGRAM) bin/mat $(DESTDIR)$(bindir)/
+	$(INSTALL) man/mat.1 $(DESTDIR)$(mandir)/man1/mat.1
 
 
 # Development targets that requires ayacc and aflex to be installed.
