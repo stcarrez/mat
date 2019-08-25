@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-expressions-tests -- Unit tests for MAT expressions
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2019 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,8 +20,6 @@ with Util.Test_Caller;
 with Util.Assertions;
 
 package body MAT.Expressions.Tests is
-
-   use Util.Tests;
 
    package Caller is new Util.Test_Caller (Test, "Expressions");
 

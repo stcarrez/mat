@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-readers-tests -- Unit tests for MAT readers
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2019 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,10 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 
-with Ada.Directories;
 with Util.Test_Caller;
 
 with MAT.Readers.Streams.Files;
 package body MAT.Targets.Tests is
-
-   use Util.Tests;
 
    package Caller is new Util.Test_Caller (Test, "Files");
 
@@ -39,6 +36,8 @@ package body MAT.Targets.Tests is
    --  Reads this ada source file and checks we have read it correctly
    --  ------------------------------
    procedure Test_Read_File (T : in out Test) is
+      pragma Unreferenced (T);
+
       Path   : constant String := Util.Tests.Get_Test_Path ("regtests/files/file-v1.dat");
       Target : MAT.Targets.Target_Type;
       Reader : MAT.Readers.Streams.Files.File_Reader_Type;

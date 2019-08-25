@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  Util -- Utilities
---  Copyright (C) 2009, 2010 Stephane Carrez
+--  Copyright (C) 2009, 2010, 2019 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,10 @@
 
 with MAT.Testsuite;
 with Util.Tests;
-procedure Util_Harness is
+procedure Mat_Harness is
 
    procedure Harness is new Util.Tests.Harness (MAT.Testsuite.Suite);
 
 begin
-   Harness ("util-tests.xml");
-end Util_Harness;
+   Harness ("mat-tests.xml");
+end Mat_Harness;

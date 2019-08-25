@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-readers-tests -- Unit tests for MAT readers
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2019 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@
 with Ada.Text_IO;
 with Util.Test_Caller;
 
-with MAT.Events;
 with MAT.Frames.Print;
 package body MAT.Frames.Tests is
 
@@ -107,9 +106,10 @@ package body MAT.Frames.Tests is
    --  Create a tree with the well known test frames.
    --  ------------------------------
    function Create_Test_Frames return Frame_Type is
-      Root : Frame_Type := Create_Root;
+      Root : constant Frame_Type := Create_Root;
       F    : Frame_Type;
    begin
+      pragma Warnings (Off);
       Insert (Root, Frame_1_0, F);
       Insert (Root, Frame_1_1, F);
       Insert (Root, Frame_1_2, F);
@@ -118,6 +118,7 @@ package body MAT.Frames.Tests is
       Insert (Root, Frame_2_1, F);
       Insert (Root, Frame_2_2, F);
       Insert (Root, Frame_2_3, F);
+      pragma Warnings (On);
       return Root;
    end Create_Test_Frames;
 
@@ -262,7 +263,6 @@ package body MAT.Frames.Tests is
 
       procedure Create_Frame (Depth : in Natural) is
          use type MAT.Types.Target_Addr;
-         use type MAT.Events.Frame_Table;
 
          F : Frame_Type;
       begin
@@ -310,11 +310,12 @@ package body MAT.Frames.Tests is
       F3   : Frame_Type;
    begin
       Insert (Root, Frame_1_1, F1);
-      T.Assert (Root.Used > 0, "Insert must increment the root used count");
+      T.Assert (F1 /= null and then F1.Used > 0, "Insert must increment the root used count");
       MAT.Frames.Print (Ada.Text_IO.Standard_Output, Root);
       Insert (Root, Frame_1_2, F2);
       MAT.Frames.Print (Ada.Text_IO.Standard_Output, Root);
       Insert (Root, Frame_1_3, F3);
+      T.Assert (F3 /= null, "Insert frame 3 failed");
       MAT.Frames.Print (Ada.Text_IO.Standard_Output, Root);
       Ada.Text_IO.Put_Line (Ada.Text_IO.Standard_Output, "Release frame F1");
       MAT.Frames.Print (Ada.Text_IO.Standard_Output, Root);
