@@ -18,7 +18,7 @@ AC_INIT(Makefile.in)
 
 # Current release settings
 MAT_MAJOR_VERSION=1
-MAT_MINOR_VERSION=0
+MAT_MINOR_VERSION=1
 MAT_MICRO_VERSION=0
 MAT_VERSION=$MAT_MAJOR_VERSION.$MAT_MINOR_VERSION.$MAT_MICRO_VERSION
 AC_SUBST(MAT_VERSION)
@@ -26,28 +26,25 @@ AC_SUBST(MAT_VERSION)
 EXEC_PREFIX="$prefix"
 AC_SUBST(EXEC_PREFIX)
 
-AC_CONFIG_SUBDIRS(libmat)
-
+CONFIG_SUBDIRS="libmat"
 SUBDIRS="libmat matl"
 SUBDIRS_INSTALL=$SUBDIRS
 
 ac_enable_ada_util=no
 AC_ARG_ENABLE(ada-util,
-  [  --enable-ada-util       Enable compilation of Ada Utility Library (external/ada-util-1.7.2.tar.gz)],
+  [  --enable-ada-util       Enable compilation of Ada Utility Library],
   [case "${enableval}" in
     no|none)  ac_enable_ada_util= ;;
     *)        ac_enable_ada_util=yes
-              SUBDIRS="$SUBDIRS ada-util-1.7.2"
 		  	  ;;
   esac])
 
 ac_enable_ada_bfd=no
 AC_ARG_ENABLE(ada-bfd,
-  [  --enable-ada-bfd        Enable compilation of Ada BFD Library (external/ada-bfd-1.1.0.tar.gz)],
+  [  --enable-ada-bfd        Enable compilation of Ada BFD Library],
   [case "${enableval}" in
     no|none)  ac_enable_ada_bfd= ;;
     *)        ac_enable_ada_bfd=yes
-              SUBDIRS="$SUBDIRS ada-bfd-1.1.0"
 		  	  ;;
   esac])
 
@@ -62,29 +59,21 @@ AC_ARG_ENABLE(matp,
 			  ;;
     esac])
 
-# Build ada-util-1.7.2 only when --enable-matp and --enable-ada-util are defined.
+# Build ada-util only when --enable-matp and --enable-ada-util are defined.
 if test x$ac_enable_matp = 'xyes'; then
   if test x$ac_enable_ada_util = 'xyes'; then
-    if test -d ${srcdir}/ada-util-1.7.2 ; then
-      echo "Package ada-util-1.7.2 already extracted."
-    else
-      echo "Extracting ${srcdir}/external/ada-util-1.7.2.tar.gz"
-      (cd ${srcdir} && tar xzf ${srcdir}/external/ada-util-1.7.2.tar.gz)
-    fi
-    AC_CONFIG_SUBDIRS(ada-util-1.7.2)
+    SUBDIRS="$SUBDIRS ada-util ada-bfd"
+    AC_CONFIG_SUBDIRS(ada-util)
   fi
+
+  if test x$ac_enable_ada_bfd = 'xyes'; then
+    SUBDIRS="$SUBDIRS ada-bfd"    
+    AC_CONFIG_SUBDIRS(ada-bfd)
+  fi
+
 fi
 
-# Build ada-bfd-1.1.0 only when --enable-matp and --enable-ada-bfd are defined.
-#if test x$ac_enable_matp = 'xyes'; then
-  # Hack to solve duplicate project 'config' issue.
-#  (cd ${srcdir}/ada-bfd &&
-#        mv bfdada.gpr.in.fix bfdada.gpr.in)
-#fi
-
-if test x$ac_enable_matp = 'xyes'; then
-  AC_CONFIG_SUBDIRS(matp)
-fi
+AC_CONFIG_SUBDIRS(libmat)
 
 AC_SUBST(SUBDIRS)
 AC_SUBST(SUBDIRS_INSTALL)
