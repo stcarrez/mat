@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-readers-tests -- Unit tests for MAT readers
---  Copyright (C) 2014, 2015, 2019 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2019, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,12 @@ package body MAT.Frames.Tests is
    use Util.Tests;
 
    package Caller is new Util.Test_Caller (Test, "Files");
+
+   procedure Verify_Frame (T : in out Test;
+                           F : in Frame_Type;
+                           Expect : in Frame_Table;
+                           Message : in String);
+   function Create_Test_Frames return Frame_Type;
 
    --  Builtin and well known definition of test frames.
    Frame_1_0 : constant Frame_Table (1 .. 10) :=
@@ -220,7 +226,6 @@ package body MAT.Frames.Tests is
       Verify_Frame (T, F_3_2, Frame_3_2, "Frame_3_2");
       Verify_Frame (T, F_3_1, Frame_3_1, "Frame_3_1");
       Verify_Frame (T, F_3_0, Frame_3_0, "Frame_3_0");
-      Verify_Frames;
       Destroy (Root);
    end Test_Simple_Frames;
 
@@ -229,25 +234,17 @@ package body MAT.Frames.Tests is
    --  ------------------------------
    procedure Test_Find_Frames (T : in out Test) is
       Root    : Frame_Type := Create_Test_Frames;
-      Result  : Frame_Type;
-      Last_Pc : Natural;
+      Result  : Frame_Type with Unreferenced;
    begin
-      --  Find exact frame.
---        Find (Root, Frame_2_3, Result, Last_Pc);
-      T.Assert (Result /= Root, "Frames.Find must return a valid frame");
-      T.Assert (Last_Pc = 0, "Frames.Find must return a 0 Last_Pc");
-
-      declare
-         Pc : Frame_Table (1 .. 8) := Frame_2_3 (1 .. 8);
       begin
---           Find (Root, Pc, Result, Last_Pc);
+         Result := Find (Root, 0);
+         T.Fail ("Frames.Find must raise a Not_Found exception");
 
-         T.Assert (Result /= Root, "Frames.Find must return a valid frame");
---           Expect (Msg    => "Frames.Find (Last_Pc param)",
---                   Val    => 0,
---                   Result => Last_Pc);
+      exception
+         when Not_Found =>
+            null;
+
       end;
-
       Destroy (Root);
    end Test_Find_Frames;
 
@@ -256,7 +253,7 @@ package body MAT.Frames.Tests is
    --  ------------------------------
    procedure Test_Complex_Frames (T : in out Test) is
 
-      Pc   : Frame_Table (1 .. 8);
+      Pc   : Frame_Table (1 .. 8) := (others => 0);
       Root : Frame_Type := Create_Root;
 
       procedure Create_Frame (Depth : in Natural);
@@ -296,7 +293,6 @@ package body MAT.Frames.Tests is
       if Verbose then
          MAT.Frames.Print (Ada.Text_IO.Standard_Output, Root);
       end if;
-      Verify_Frames;
       Destroy (Root);
    end Test_Complex_Frames;
 
