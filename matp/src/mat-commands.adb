@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-interp -- Command interpreter
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -1013,12 +1013,18 @@ package body MAT.Commands is
       Console.Notice (N_HELP, "info                    Print some information about the program");
       Console.Notice (N_HELP, "maps                    Print the program memory maps");
       Console.Notice (N_HELP, "Selection examples:");
-      Console.Notice (N_HELP, "  size > 100 and size < 1000    Selection on the allocation size");
-      Console.Notice (N_HELP, "  has 0x4a7281                  Allocations with the given address");
-      Console.Notice (N_HELP, "  event >= 200 and event <= 300 Event range selection");
-      Console.Notice (N_HELP, "  malloc or realloc             Malloc or realloc events");
-      Console.Notice (N_HELP, "  by printf and not by foo      Event produced by a function");
-      Console.Notice (N_HELP, "  in libz.so.1                  Event produced by a shared library");
+      Console.Notice (N_HELP, "  size > 100 and size < 1000    "
+                        & "Selection on the allocation size");
+      Console.Notice (N_HELP, "  has 0x4a7281                  "
+                        & "Allocations with the given address");
+      Console.Notice (N_HELP, "  event >= 200 and event <= 300 "
+                        & "Event range selection");
+      Console.Notice (N_HELP, "  malloc or realloc             "
+                        & "Malloc or realloc events");
+      Console.Notice (N_HELP, "  by printf and not by foo      "
+                        & "Event produced by a function");
+      Console.Notice (N_HELP, "  in libz.so.1                  "
+                        & "Event produced by a shared library");
    end Help_Command;
 
    function Get_Command (Line : in String) return String is
