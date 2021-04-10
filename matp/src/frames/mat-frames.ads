@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-frames - Representation of stack frames
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,7 +59,6 @@ package MAT.Frames is
    function By_Function (Frame : in Frame_Type;
                          From  : in MAT.Types.Target_Addr;
                          To    : in MAT.Types.Target_Addr) return Boolean;
-   procedure Verify_Frames;
 
 private
 
@@ -72,11 +71,12 @@ private
    --  are released when the Target_Frames protected type is released.
    type Frame (Parent : Frame_Type;
                Depth  : Natural;
-               Pc     : MAT.Types.Target_Addr) is limited record
-      Next     : Frame_Type := null;
-      Children : Frame_Type := null;
-      Used     : Natural   := 0;
-   end record;
+               Pc     : MAT.Types.Target_Addr) is limited
+      record
+         Next     : Frame_Type := null;
+         Children : Frame_Type := null;
+         Used     : Natural := 0;
+      end record;
 
    --  Create a root for stack frame representation.
    function Create_Root return Frame_Type;

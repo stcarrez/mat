@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  Frames - Representation of stack frames
---  Copyright (C) 2014, 2019 Stephane Carrez
+--  Copyright (C) 2014, 2019, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@ with MAT.Types;
 with System.Address_Image;
 with Interfaces;
 procedure MAT.Frames.Print (File : in File_Type;
-                                  F : in Frame_Type) is
+                            F : in Frame_Type) is
 
    use MAT.Types;
    use Interfaces;
@@ -57,14 +57,16 @@ procedure MAT.Frames.Print (File : in File_Type;
    end Print_Address;
 
 begin
-   Set_Col (File, Positive_Count (Depth));
+   Set_Col (File, Positive_Count (Depth + 1));
    if F.Parent = null then
-      Put_Line (File, "R " & Natural'Image (F.Used) & " - " & System.Address_Image (F.all'Address));
+      Put_Line (File, "R " & Natural'Image (F.Used) & " - "
+                  & System.Address_Image (F.all'Address));
    else
-      Put_Line (File, "F " & Natural'Image (F.Used) & " - " & System.Address_Image (F.all'Address)
-                & " - P=" & System.Address_Image (F.Parent.all'Address));
+      Put_Line (File, "F " & Natural'Image (F.Used) & " - "
+                  & System.Address_Image (F.all'Address)
+                  & " - P=" & System.Address_Image (F.Parent.all'Address));
    end if;
-   Set_Col (File, Positive_Count (Depth));
+   Set_Col (File, Positive_Count (Depth + 1));
    Print_Address (File, F.Pc);
    Put_Line (File, " D " & Natural'Image (Depth));
    Child := F.Children;

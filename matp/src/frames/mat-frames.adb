@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-frames - Representation of stack frames
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Ada.Unchecked_Deallocation;
-with Ada.Containers.Ordered_Maps;
-with System;
 
-with Util.Log.Loggers;
 package body MAT.Frames is
 
    use type MAT.Types.Target_Addr;
@@ -27,38 +24,9 @@ package body MAT.Frames is
    procedure Free is
      new Ada.Unchecked_Deallocation (Frame, Frame_Type);
 
-   --  The logger
-   Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Frames.Targets");
-
    procedure Add_Frame (F      : in Frame_Type;
                         Pc     : in Frame_Table;
                         Result : out Frame_Type);
-
-   --  Get the root frame object.
-   function Get_Root (Frame : in Frame_Type) return Frame_Type;
-   function Check (Frame : in Frame_Type) return Boolean;
-
-   function Check (Frame : in Frame_Type) return Boolean is
-      Child  : Frame_Type;
-      Result : Boolean := True;
-   begin
-      if Frame = null then
-         return False;
-      end if;
-      Child := Frame.Children;
-      while Child /= null loop
-         if Child.Parent /= Frame then
-            Log.Error ("Invalid parent link");
-            Result := False;
-         end if;
-         if Child.Children /= null and then not Check (Child) then
-            Log.Error ("A child is now invalid");
-            Result := False;
-         end if;
-         Child := Child.Next;
-      end loop;
-      return Result;
-   end Check;
 
    --  ------------------------------
    --  Return the parent frame.
@@ -71,20 +39,6 @@ package body MAT.Frames is
          return Frame.Parent;
       end if;
    end Parent;
-
-   --  ------------------------------
-   --  Get the root frame object.
-   --  ------------------------------
-   function Get_Root (Frame : in Frame_Type) return Frame_Type is
-      Parent : Frame_Type := Frame;
-   begin
-      loop
-         if Parent.Parent = null then
-            return Parent;
-         end if;
-         Parent := Parent.Parent;
-      end loop;
-   end Get_Root;
 
    --  ------------------------------
    --  Returns the backtrace of the current frame (up to the root).
@@ -227,87 +181,6 @@ package body MAT.Frames is
       Result := Parent;
    end Add_Frame;
 
-   function "<" (Left, Right : in Frame_Type) return Boolean;
-
-   function "<" (Left, Right : in Frame_Type) return Boolean is
-      use type System.Address;
-   begin
-      return Left.all'Address < Right.all'Address;
-   end "<";
-
-   type Frame_Table_Access is access all Frame_Table;
-   package Check_Maps is
-      new Ada.Containers.Ordered_Maps (Key_Type     => Frame_Type,
-                                       Element_Type => Frame_Table_Access,
-                                       "<"          => "<",
-                                       "="          => "=");
-
-   Map : Check_Maps.Map;
-
-   procedure Verify_Frames is
-      Iter : Check_Maps.Cursor := Map.First;
-   begin
-      Log.Info ("There are {0} frames in the map",
-                Natural'Image (Natural (Map.Length)));
-      while Check_Maps.Has_Element (Iter) loop
-         declare
-            Frame : constant Frame_Type := Check_Maps.Key (Iter);
-            Table : constant Frame_Table_Access := Check_Maps.Element (Iter);
-            Pc    : constant Frame_Table := Backtrace (Frame);
-         begin
-            if Table'Length /= Pc'Length then
-               Log.Error ("Invalid frame length");
-            end if;
-            for I in Pc'Range loop
-               if Table (I) /= Pc (I) then
-                  Log.Error ("Frame at {0} is different", Natural'Image (I));
-               end if;
-            end loop;
-         end;
-         Check_Maps.Next (Iter);
-      end loop;
-   end Verify_Frames;
-
-   procedure Add_Frame (Frame : in Frame_Type;
-                        Pc    : in Frame_Table) is
-   begin
-      if not Map.Contains (Frame) then
-         declare
-            Table : constant Frame_Table_Access := new Frame_Table '(Pc);
-         begin
-            Map.Include (Frame, Table);
-         end;
---        else
---           declare
---              Iter : Check_Maps.Cursor := Map.First;
---           begin
---              while Check_Maps.Has_Element (Iter) loop
---                 declare
---                    use type MAT.Types.Target_Addr;
---
---                    F     : Frame_Type := Check_Maps.Key (Iter);
---                    Table : constant Frame_Table_Access := Check_Maps.Element (Iter);
---                    Found : Boolean := True;
---                 begin
---                    if F /= Frame and Table'Length = Pc'Length then
---                       for I in Pc'Range loop
---                          if Table (I) /= Pc (I) then
---                             Found := False;
---                             exit;
---                          end if;
---                       end loop;
---                       if Found then
---                         Log.Error ("Stack frame is already inserted by a new Frame is returned");
---                       end if;
---                    end if;
---                 end;
---                 Check_Maps.Next (Iter);
---              end loop;
---           end;
-      end if;
---        Verify_Frames;
-   end Add_Frame;
-
    --  ------------------------------
    --  Insert in the frame tree the new stack frame represented by <tt>Pc</tt>.
    --  If the frame is already known, the frame reference counter is incremented.
@@ -328,7 +201,6 @@ package body MAT.Frames is
       end if;
       if Current = null then
          Add_Frame (Frame, Pc, Result);
-         Add_Frame (Result, Pc);
          return;
       end if;
       Addr := Pc (Pos);
@@ -338,12 +210,10 @@ package body MAT.Frames is
             Pos  := Pos + 1;
             if Pos > Pc'Last then
                Result := Current;
-               Add_Frame (Result, Pc);
                return;
             end if;
             if Current.Children = null then
                Add_Frame (Current, Pc (Pos .. Pc'Last), Result);
-               Add_Frame (Result, Pc);
                return;
             end if;
             Parent := Current;
@@ -352,7 +222,6 @@ package body MAT.Frames is
 
          elsif Current.Next = null then
             Add_Frame (Parent, Pc (Pos .. Pc'Last), Result);
-            Add_Frame (Result, Pc);
             return;
          else
             Current := Current.Next;
