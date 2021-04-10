@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-readers-tests -- Unit tests for MAT readers
---  Copyright (C) 2014, 2019 Stephane Carrez
+--  Copyright (C) 2014, 2019, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +36,7 @@ package body MAT.Readers.Tests is
    procedure Test_Read_File (T : in out Test) is
       pragma Unreferenced (T);
 
-      Path   : constant String := Util.Tests.Get_Test_Path ("regtests/files/file-v1.dat");
+      Path   : constant String := Util.Tests.Get_Path ("regtests/files/file-v1.dat");
       Reader : MAT.Readers.Streams.Files.File_Reader_Type;
    begin
       Reader.Open (Path);
