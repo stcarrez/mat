@@ -74,6 +74,15 @@ condition :
                end if;
             }
     |
+        T_BY direct integer
+            {
+               if $2.bval then
+                  $$.expr := MAT.Expressions.Create_Inside ($3.low, MAT.Expressions.INSIDE_DIRECT_FUNCTION);
+               else
+                  $$.expr := MAT.Expressions.Create_Inside ($3.low, MAT.Expressions.INSIDE_FUNCTION);
+               end if;
+            }
+    |
         T_FROM time T_TO time
             {
               $$.expr := MAT.Expressions.Create_Time (MAT.Types.Target_Tick_Ref ($2.low),
@@ -210,7 +219,7 @@ compare:
         T_NE integer
             {
               $$.low := $2.low;
-			  $$.high := $2.low;
+              $$.high := $2.low;
             }
     ;
 
@@ -272,8 +281,6 @@ package body MAT.Expressions.Parser is
 
    use Ada;
    use MAT.Expressions.Lexer;
-   use type MAT.Types.Target_Tick_Ref;
-   use type MAT.Events.Event_Id_Type;
    use type Interfaces.Unsigned_64;
 
    procedure yyparse;
