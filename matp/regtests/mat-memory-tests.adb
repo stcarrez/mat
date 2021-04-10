@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-memory-tests -- Unit tests for MAT memory
---  Copyright (C) 2014, 2015, 2019 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2019, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -101,14 +101,16 @@ package body MAT.Memory.Tests is
       S    : Allocation;
       R    : Allocation_Map;
       Size : MAT.Types.Target_Size;
-      Id   : MAT.Events.Event_Id_Type;
+      Id   : MAT.Events.Event_Id_Type with Unreferenced;
       F    : MAT.Frames.Targets.Target_Frames;
    begin
       S.Size :=  4;
+      S.Event := 1;
       F.Insert (Frame_1_0, S.Frame);
 
       --  Malloc followed by a free.
       M.Probe_Malloc (10, S);
+      Id := 12;
       M.Probe_Free (10, S, Size, Id);
 
       M.Find (1, 1000, MAT.Expressions.EMPTY, R);
