@@ -19,7 +19,7 @@ all build::
 build::		Makefile.conf $(GPRPATH)
 	$(GNATMAKE) $(GPRFLAGS) -p -P$(NAME) $(MAKE_ARGS)
 
-build-test:: build
+build-test::
 	$(GNATMAKE) $(GPRFLAGS) -p -P$(NAME)_tests $(MAKE_ARGS)
 
 ifeq ($(HAVE_GTKADA),yes)
