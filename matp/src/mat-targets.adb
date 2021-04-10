@@ -84,6 +84,24 @@ package body MAT.Targets is
    end Find_Symbol;
 
    --  ------------------------------
+   --  Find the symbol region in the symbol table that contains the given address
+   --  and return the start and end address of that region.
+   --  ------------------------------
+   overriding
+   function Find_Symbol (Resolver : in Target_Process_Type;
+                         Addr     : in MAT.Types.Target_Addr) return MAT.Memory.Region_Info is
+      Region : MAT.Memory.Region_Info;
+   begin
+      if Resolver.Symbols.Is_Null then
+         Region.Start_Addr := Addr;
+         Region.End_Addr := Addr;
+      else
+         Resolver.Symbols.Value.Find_Symbol_Range (Addr, Region.Start_Addr, Region.End_Addr);
+      end if;
+      return Region;
+   end Find_Symbol;
+
+   --  ------------------------------
    --  Get the start time for the tick reference.
    --  ------------------------------
    overriding
