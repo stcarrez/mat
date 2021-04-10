@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-symbols-targets - Symbol files management
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -104,6 +104,13 @@ package MAT.Symbols.Targets is
    --  Find the symbol in the symbol table and return the start and end address.
    procedure Find_Symbol_Range (Symbols : in Target_Symbols;
                                 Name    : in String;
+                                From    : out MAT.Types.Target_Addr;
+                                To      : out MAT.Types.Target_Addr);
+
+   --  Find the symbol region in the symbol table which contains the given address
+   --  and return the start and end address.
+   procedure Find_Symbol_Range (Symbols : in Target_Symbols;
+                                Addr    : in Mat.Types.Target_Addr;
                                 From    : out MAT.Types.Target_Addr;
                                 To      : out MAT.Types.Target_Addr);
 
