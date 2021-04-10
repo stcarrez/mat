@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-expressions -- Expressions for event and memory slot selection
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,6 +36,11 @@ package MAT.Expressions is
    function Find_Symbol (Resolver : in Resolver_Type;
                          Name     : in String) return MAT.Memory.Region_Info is abstract;
 
+   --  Find the symbol region in the symbol table that contains the given address
+   --  and return the start and end address of that region.
+   function Find_Symbol (Resolver : in Resolver_Type;
+                         Addr     : in MAT.Types.Target_Addr) return MAT.Memory.Region_Info is abstract;
+
    --  Get the start time for the tick reference.
    function Get_Start_Time (Resolver : in Resolver_Type)
                             return MAT.Types.Target_Tick_Ref is abstract;
@@ -65,6 +70,8 @@ package MAT.Expressions is
 
    --  Create an INSIDE expression node.
    function Create_Inside (Name : in Ada.Strings.Unbounded.Unbounded_String;
+                           Kind : in Inside_Type) return Expression_Type;
+   function Create_Inside (Addr : in Mat.Types.Uint64;
                            Kind : in Inside_Type) return Expression_Type;
 
    --  Create an size range expression node.
