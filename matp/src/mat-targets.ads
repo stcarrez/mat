@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-targets - Representation of target information
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -87,6 +87,12 @@ package MAT.Targets is
    overriding
    function Find_Symbol (Resolver : in Target_Process_Type;
                          Name     : in String) return MAT.Memory.Region_Info;
+
+   --  Find the symbol region in the symbol table that contains the given address
+   --  and return the start and end address of that region.
+   overriding
+   function Find_Symbol (Resolver : in Target_Process_Type;
+                         Addr     : in MAT.Types.Target_Addr) return MAT.Memory.Region_Info;
 
    --  Get the start time for the tick reference.
    overriding
