@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-symbols-targets - Symbol files management
---  Copyright (C) 2014, 2015, 2019 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2019, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -91,7 +91,9 @@ package body MAT.Symbols.Targets is
       if Ada.Strings.Unbounded.Length (Region.Path) > 0 then
          Open (Syms.Value, Ada.Strings.Unbounded.To_String (Region.Path),
                Ada.Strings.Unbounded.To_String (Symbols.Search_Path));
-         if (Bfd.Files.Get_File_Flags (Syms.Value.File) and Bfd.Files.EXEC_P) /= 0 then
+         if Bfd.Files.Is_Open (Syms.Value.File) and
+         then (Bfd.Files.Get_File_Flags (Syms.Value.File) and Bfd.Files.EXEC_P) /= 0
+         then
             Syms.Value.Offset := 0;
          end if;
       end if;
@@ -204,17 +206,18 @@ package body MAT.Symbols.Targets is
                Demangle (Symbols, Symbol);
                return;
             end if;
+
+         exception
+            when Bfd.NOT_FOUND =>
+               Symbol.Line := 0;
+               Symbol.File := Syms.Value.Region.Path;
+               Symbol.Name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Formats.Addr (Addr));
+               return;
          end;
       end if;
       Symbol.Line := 0;
       Symbol.File := Ada.Strings.Unbounded.To_Unbounded_String ("");
       Symbol.Name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Formats.Addr (Addr));
-
-   exception
-      when Bfd.NOT_FOUND =>
-         Symbol.Line := 0;
-         Symbol.File := Ada.Strings.Unbounded.To_Unbounded_String ("");
-         Symbol.Name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Formats.Addr (Addr));
    end Find_Nearest_Line;
 
    --  ------------------------------
@@ -249,6 +252,54 @@ package body MAT.Symbols.Targets is
          end;
          Symbols_Maps.Next (Iter);
       end loop;
+   end Find_Symbol_Range;
+   
+   --  ------------------------------
+   --  Find the symbol region in the symbol table which contains the given address
+   --  and return the start and end address.
+   --  ------------------------------
+   procedure Find_Symbol_Range (Symbols : in Target_Symbols;
+                                Addr    : in Mat.Types.Target_Addr;
+                                From    : out MAT.Types.Target_Addr;
+                                To      : out MAT.Types.Target_Addr) is
+      use type Bfd.Symbols.Symbol;
+
+      Pos  : constant Symbols_Cursor := Symbols.Libraries.Floor (Addr);
+   begin
+      if Symbols_Maps.Has_Element (Pos) then
+         declare
+            Syms   : constant Region_Symbols_Ref := Symbols_Maps.Element (Pos);
+            Symbol : Symbol_Info;
+            Sym    : Bfd.Symbols.Symbol;
+            Sec    : Bfd.Sections.Section;
+         begin
+            if Syms.Value.Region.End_Addr > Addr then
+               Symbol.Line := 0;
+               Symbol.Symbols := Syms;
+               Find_Nearest_Line (Symbols => Syms.Value,
+                                  Addr    => Addr - Syms.Value.Offset,
+                                  Symbol  => Symbol);
+
+               Sym := Bfd.Symbols.Get_Symbol (Syms.Value.Symbols, Ada.Strings.Unbounded.To_String (Symbol.Name));
+               if Sym /= Bfd.Symbols.Null_Symbol then
+                  Sec := Bfd.Symbols.Get_Section (Sym);
+                  if not Bfd.Sections.Is_Undefined_Section (Sec) then
+                     From := MAT.Types.Target_Addr (Bfd.Symbols.Get_Value (Sym));
+                     From := From + Syms.Value.Offset;
+                     To := From + MAT.Types.Target_Addr (Bfd.Symbols.Get_Symbol_Size (Sym));
+                     return;
+                  end if;
+               end if;
+            end if;
+         end;
+      end if;
+      From := Addr;
+      To := Addr;
+
+   exception
+      when Bfd.NOT_FOUND =>
+         From := Addr;
+         To := Addr;
    end Find_Symbol_Range;
 
 end MAT.Symbols.Targets;
