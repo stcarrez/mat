@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-events-tools - Profiler Events Description
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -77,9 +77,7 @@ package body MAT.Events.Tools is
                                List : in out Event_Info_Vector) is
 
       function "<" (Left, Right : in Event_Info_Type) return Boolean is
-      begin
-         return Left.Count < Right.Count;
-      end "<";
+         (Left.Count < Right.Count);
 
       package Sort_Event_Info is new Event_Info_Vectors.Generic_Sorting;
       Iter : Frame_Event_Info_Cursor := Map.First;
