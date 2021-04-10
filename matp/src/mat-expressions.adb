@@ -107,6 +107,28 @@ package body MAT.Expressions is
       return Result;
    end Create_Inside;
 
+   function Create_Inside (Addr : in Mat.Types.Uint64;
+                           Kind : in Inside_Type) return Expression_Type is
+      Result : Expression_Type;
+      Region : MAT.Memory.Region_Info;
+   begin
+      if Resolver /= null then
+         Region := Resolver.Find_Symbol (Addr);
+      end if;
+      if Kind = INSIDE_DIRECT_REGION or Kind = INSIDE_DIRECT_FUNCTION then
+         Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
+                                       Kind        => N_IN_FUNC_DIRECT,
+                                       Min_Addr    => Region.Start_Addr,
+                                       Max_Addr    => Region.End_Addr);
+      else
+         Result.Node := new Node_Type'(Ref_Counter => Util.Concurrent.Counters.ONE,
+                                       Kind        => N_IN_FUNC,
+                                       Min_Addr    => Region.Start_Addr,
+                                       Max_Addr    => Region.End_Addr);
+      end if;
+      return Result;
+   end Create_Inside;      
+
    --  ------------------------------
    --  Create an size range expression node.
    --  ------------------------------
