@@ -21,6 +21,11 @@ memory allocation was made, the timestamp and thread information.
 To use MAT, you'll need to intrument your application
 and then to analyze the results with the tool.
 
+## Version 1.1     - Apr 2021
+
+- Update for binutils 2.34 and Ada BFD
+- Update for Ada Utility Library 2.4.0
+
 # Using git
 
 The project uses git submodules to integrate several other
