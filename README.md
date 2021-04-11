@@ -26,10 +26,8 @@ and then to analyze the results with the tool.
 The project uses git submodules to integrate several other
 projects.  To get all the sources, use the following commands:
 ```
-   git clone git@github.com:stcarrez/mat.git
+   git clone --recursive git@github.com:stcarrez/mat.git
    cd mat
-   git submodule init
-   git submodule update
 ```
 
 # Building mat
@@ -80,7 +78,7 @@ components on your system:
 
 On Debian-based systems, you may have to install the following packages:
 
-  sudo apt-get install gnat gprbuild binutils-dev libiberty-dev libreadline6-dev
+  sudo apt-get install gnat gprbuild binutils-dev libiberty-dev libreadline-dev
 
 If you have installed Ada Utility Library and Ada Bfd Library on your
 system, you can configure and build by using:
