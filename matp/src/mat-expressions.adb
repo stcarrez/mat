@@ -107,7 +107,7 @@ package body MAT.Expressions is
       return Result;
    end Create_Inside;
 
-   function Create_Inside (Addr : in Mat.Types.Uint64;
+   function Create_Inside (Addr : in MAT.Types.Uint64;
                            Kind : in Inside_Type) return Expression_Type is
       Result : Expression_Type;
       Region : MAT.Memory.Region_Info;
@@ -127,7 +127,7 @@ package body MAT.Expressions is
                                        Max_Addr    => Region.End_Addr);
       end if;
       return Result;
-   end Create_Inside;      
+   end Create_Inside;
 
    --  ------------------------------
    --  Create an size range expression node.

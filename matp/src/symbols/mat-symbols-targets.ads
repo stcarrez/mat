@@ -110,7 +110,7 @@ package MAT.Symbols.Targets is
    --  Find the symbol region in the symbol table which contains the given address
    --  and return the start and end address.
    procedure Find_Symbol_Range (Symbols : in Target_Symbols;
-                                Addr    : in Mat.Types.Target_Addr;
+                                Addr    : in MAT.Types.Target_Addr;
                                 From    : out MAT.Types.Target_Addr;
                                 To      : out MAT.Types.Target_Addr);
 

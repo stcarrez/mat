@@ -136,7 +136,7 @@ private
       Flags       : MAT.Types.Uint16;
       Addr_Size   : MAT.Events.Attribute_Type;
       Probe       : MAT.Events.Attribute_Table_Ptr;
-      Frame       : access MAT.Events.Frame_Info;
+      Frame       : MAT.Events.Frame_Info_Access;
       Events      : MAT.Events.Targets.Target_Events_Access;
       Event       : Target_Event_Type;
       Frames      : MAT.Frames.Targets.Target_Frames_Access;

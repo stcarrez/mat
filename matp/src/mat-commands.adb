@@ -49,6 +49,11 @@ package body MAT.Commands is
    --  The logger
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Commands");
 
+   procedure Get_Arguments (Process    : in MAT.Targets.Target_Process_Type_Access;
+                            Args       : in String;
+                            Long_Flag  : out Boolean;
+                            Count_Flag : out Boolean;
+                            Filter     : in out MAT.Expressions.Expression_Type);
    function Get_Command (Line : in String) return String;
    procedure Slot_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String);

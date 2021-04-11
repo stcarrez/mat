@@ -24,6 +24,8 @@ with Ada.Directories;
 with MAT.Formats;
 package body MAT.Symbols.Targets is
 
+   use Ada.Strings.Unbounded;
+
    --  The logger
    Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Symbols.Targets");
 
@@ -38,11 +40,11 @@ package body MAT.Symbols.Targets is
                    Path    : in String) is
    begin
       Log.Info ("Loading symbols from {0}", Path);
---
---        Bfd.Files.Open (Symbols.File, Path, "");
---        if Bfd.Files.Check_Format (Symbols.File, Bfd.Files.OBJECT) then
---           Bfd.Symbols.Read_Symbols (Symbols.File, Symbols.Symbols);
---        end if;
+      --
+      --        Bfd.Files.Open (Symbols.File, Path, "");
+      --        if Bfd.Files.Check_Format (Symbols.File, Bfd.Files.OBJECT) then
+      --           Bfd.Symbols.Read_Symbols (Symbols.File, Symbols.Symbols);
+      --        end if;
    end Open;
 
    --  ------------------------------
@@ -61,7 +63,7 @@ package body MAT.Symbols.Targets is
          Pos := Util.Strings.Rindex (Path, '/');
          if Pos > 0 then
             Bfd.Files.Open (Symbols.File,
-              Util.Files.Find_File_Path (Path (Pos + 1 .. Path'Last), Search_Path));
+                            Util.Files.Find_File_Path (Path (Pos + 1 .. Path'Last), Search_Path));
          end if;
       end if;
       if Bfd.Files.Check_Format (Symbols.File, Bfd.Files.OBJECT) then
@@ -92,7 +94,7 @@ package body MAT.Symbols.Targets is
          Open (Syms.Value, Ada.Strings.Unbounded.To_String (Region.Path),
                Ada.Strings.Unbounded.To_String (Symbols.Search_Path));
          if Bfd.Files.Is_Open (Syms.Value.File) and
-         then (Bfd.Files.Get_File_Flags (Syms.Value.File) and Bfd.Files.EXEC_P) /= 0
+           then (Bfd.Files.Get_File_Flags (Syms.Value.File) and Bfd.Files.EXEC_P) /= 0
          then
             Syms.Value.Offset := 0;
          end if;
@@ -127,7 +129,7 @@ package body MAT.Symbols.Targets is
          exception
             when Bfd.OPEN_ERROR =>
                Symbols.Console.Error ("Cannot open symbol library file '"
-                                      & Ada.Strings.Unbounded.To_String (Region.Path) & "'");
+                                        & Ada.Strings.Unbounded.To_String (Region.Path) & "'");
          end;
          MAT.Memory.Region_Info_Maps.Next (Iter);
       end loop;
@@ -139,7 +141,6 @@ package body MAT.Symbols.Targets is
    procedure Demangle (Symbols : in Target_Symbols;
                        Symbol  : in out Symbol_Info) is
       use type Bfd.Demangle_Flags;
-      use Ada.Strings.Unbounded;
 
       Pos : constant Natural := Index (Symbol.File, ".", Ada.Strings.Backward);
    begin
@@ -253,13 +254,13 @@ package body MAT.Symbols.Targets is
          Symbols_Maps.Next (Iter);
       end loop;
    end Find_Symbol_Range;
-   
+
    --  ------------------------------
    --  Find the symbol region in the symbol table which contains the given address
    --  and return the start and end address.
    --  ------------------------------
    procedure Find_Symbol_Range (Symbols : in Target_Symbols;
-                                Addr    : in Mat.Types.Target_Addr;
+                                Addr    : in MAT.Types.Target_Addr;
                                 From    : out MAT.Types.Target_Addr;
                                 To      : out MAT.Types.Target_Addr) is
       use type Bfd.Symbols.Symbol;
@@ -280,7 +281,7 @@ package body MAT.Symbols.Targets is
                                   Addr    => Addr - Syms.Value.Offset,
                                   Symbol  => Symbol);
 
-               Sym := Bfd.Symbols.Get_Symbol (Syms.Value.Symbols, Ada.Strings.Unbounded.To_String (Symbol.Name));
+               Sym := Bfd.Symbols.Get_Symbol (Syms.Value.Symbols, To_String (Symbol.Name));
                if Sym /= Bfd.Symbols.Null_Symbol then
                   Sec := Bfd.Symbols.Get_Section (Sym);
                   if not Bfd.Sections.Is_Undefined_Section (Sec) then

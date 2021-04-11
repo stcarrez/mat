@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  gprofiler-events - Profiler Events Description
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -103,6 +103,7 @@ package MAT.Events is
       Cur_Depth : Natural;
       Frame     : Frame_Table (1 .. Depth);
    end record;
+   type Frame_Info_Access is access all Frame_Info;
 
    type Event_Data is record
       Kind  : Attribute_Type;
