@@ -26,3 +26,5 @@ matp/Makefile.conf
 matp/mat_tests.gpr
 matp/mat_gtk.gpr
 matp/mat.gpr
+matp/regtests/results
+matp/bin
