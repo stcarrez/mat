@@ -599,6 +599,7 @@ CC
 SUBDIRS_INSTALL
 SUBDIRS
 subdirs
+GPRBUILD
 EXEC_PREFIX
 MAT_VERSION
 target_alias
@@ -656,9 +657,10 @@ LDFLAGS
 LIBS
 CPPFLAGS
 CPP'
-ac_subdirs_all='ada-util
+ac_subdirs_all='libmat
+ada-util
 ada-bfd
-libmat'
+matp'
 
 # Initialize some variables set by options.
 ac_init_help=
@@ -1833,24 +1835,66 @@ if test "${enable_ada_bfd+set}" = set; then :
 fi
 
 
-ac_enable_matp=no
+for ac_prog in gprbuild
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_GPRBUILD+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$GPRBUILD"; then
+  ac_cv_prog_GPRBUILD="$GPRBUILD" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_GPRBUILD="$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+GPRBUILD=$ac_cv_prog_GPRBUILD
+if test -n "$GPRBUILD"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GPRBUILD" >&5
+$as_echo "$GPRBUILD" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$GPRBUILD" && break
+done
+test -n "$GPRBUILD" || GPRBUILD=""""
+
+if test -n "$GPRBUILD"; then
+  ac_enable_matp=yes
+else
+  ac_enable_matp=no
+fi
+
 # Check whether --enable-matp was given.
 if test "${enable_matp+set}" = set; then :
   enableval=$enable_matp; case "${enableval}" in
     no|none)  ac_enable_matp= ;;
     *)        ac_enable_matp=yes
-              SUBDIRS="$SUBDIRS matp"
-			  SUBDIRS_INSTALL="$SUBDIRS_INSTALL matp"
-			  ;;
+	      ;;
     esac
 fi
 
 
-# Build ada-util only when --enable-matp and --enable-ada-util are defined.
-if test x$ac_enable_matp = 'xyes'; then
-  if test x$ac_enable_ada_util = 'xyes'; then
-    SUBDIRS="$SUBDIRS ada-util ada-bfd"
-    ac_aux_dir=
+ac_aux_dir=
 for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
   if test -f "$ac_dir/install-sh"; then
     ac_aux_dir=$ac_dir
@@ -1881,7 +1925,14 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 
-subdirs="$subdirs ada-util"
+subdirs="$subdirs libmat"
+
+
+# Build ada-util only when --enable-matp and --enable-ada-util are defined.
+if test x$ac_enable_matp = 'xyes'; then
+  if test x$ac_enable_ada_util = 'xyes'; then
+    SUBDIRS="$SUBDIRS ada-util"
+    subdirs="$subdirs ada-util"
 
   fi
 
@@ -1891,10 +1942,11 @@ subdirs="$subdirs ada-util"
 
   fi
 
+  SUBDIRS="$SUBDIRS matp"
+  SUBDIRS_INSTALL="$SUBDIRS_INSTALL matp"
+  subdirs="$subdirs matp"
+
 fi
-
-subdirs="$subdirs libmat"
-
 
 
 
