@@ -646,7 +646,7 @@ ac_user_opts='
 enable_option_checking
 enable_ada_util
 enable_ada_bfd
-enable_matp
+enable_mat
 '
       ac_precious_vars='build_alias
 host_alias
@@ -660,7 +660,7 @@ CPP'
 ac_subdirs_all='libmat
 ada-util
 ada-bfd
-matp'
+mat'
 
 # Initialize some variables set by options.
 ac_init_help=
@@ -1280,7 +1280,7 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-ada-util       Enable compilation of Ada Utility Library
   --enable-ada-bfd        Enable compilation of Ada BFD Library
-  --enable-matp           Enable compilation of matp tool which requires GNAT Ada compiler (disabled)
+  --enable-mat            Enable compilation of matp tool which requires GNAT Ada compiler (disabled)
 
 Some influential environment variables:
   CC          C compiler command
@@ -1879,16 +1879,16 @@ done
 test -n "$GPRBUILD" || GPRBUILD=""""
 
 if test -n "$GPRBUILD"; then
-  ac_enable_matp=yes
+  ac_enable_mat=yes
 else
-  ac_enable_matp=no
+  ac_enable_mat=no
 fi
 
-# Check whether --enable-matp was given.
-if test "${enable_matp+set}" = set; then :
-  enableval=$enable_matp; case "${enableval}" in
-    no|none)  ac_enable_matp= ;;
-    *)        ac_enable_matp=yes
+# Check whether --enable-mat was given.
+if test "${enable_mat+set}" = set; then :
+  enableval=$enable_mat; case "${enableval}" in
+    no|none)  ac_enable_mat= ;;
+    *)        ac_enable_mat=yes
 	      ;;
     esac
 fi
@@ -1928,8 +1928,8 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 subdirs="$subdirs libmat"
 
 
-# Build ada-util only when --enable-matp and --enable-ada-util are defined.
-if test x$ac_enable_matp = 'xyes'; then
+# Build ada-util only when --enable-mat and --enable-ada-util are defined.
+if test x$ac_enable_mat = 'xyes'; then
   if test x$ac_enable_ada_util = 'xyes'; then
     SUBDIRS="$SUBDIRS ada-util"
     subdirs="$subdirs ada-util"
@@ -1942,9 +1942,9 @@ if test x$ac_enable_matp = 'xyes'; then
 
   fi
 
-  SUBDIRS="$SUBDIRS matp"
-  SUBDIRS_INSTALL="$SUBDIRS_INSTALL matp"
-  subdirs="$subdirs matp"
+  SUBDIRS="$SUBDIRS mat"
+  SUBDIRS_INSTALL="$SUBDIRS_INSTALL mat"
+  subdirs="$subdirs mat"
 
 fi
 
