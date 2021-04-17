@@ -50,23 +50,23 @@ AC_ARG_ENABLE(ada-bfd,
 
 AC_CHECK_PROGS(GPRBUILD, gprbuild, "")
 if test -n "$GPRBUILD"; then
-  ac_enable_matp=yes
+  ac_enable_mat=yes
 else
-  ac_enable_matp=no
+  ac_enable_mat=no
 fi
 
-AC_ARG_ENABLE(matp,
-  [  --enable-matp           Enable compilation of matp tool which requires GNAT Ada compiler (disabled)],
+AC_ARG_ENABLE(mat,
+  [  --enable-mat            Enable compilation of matp tool which requires GNAT Ada compiler (disabled)],
   [case "${enableval}" in
-    no|none)  ac_enable_matp= ;;
-    *)        ac_enable_matp=yes
+    no|none)  ac_enable_mat= ;;
+    *)        ac_enable_mat=yes
 	      ;;
     esac])
 
 AC_CONFIG_SUBDIRS(libmat)
 
-# Build ada-util only when --enable-matp and --enable-ada-util are defined.
-if test x$ac_enable_matp = 'xyes'; then
+# Build ada-util only when --enable-mat and --enable-ada-util are defined.
+if test x$ac_enable_mat = 'xyes'; then
   if test x$ac_enable_ada_util = 'xyes'; then
     SUBDIRS="$SUBDIRS ada-util"
     AC_CONFIG_SUBDIRS(ada-util)
@@ -77,9 +77,9 @@ if test x$ac_enable_matp = 'xyes'; then
     AC_CONFIG_SUBDIRS(ada-bfd)
   fi
 
-  SUBDIRS="$SUBDIRS matp"
-  SUBDIRS_INSTALL="$SUBDIRS_INSTALL matp"
-  AC_CONFIG_SUBDIRS(matp)
+  SUBDIRS="$SUBDIRS mat"
+  SUBDIRS_INSTALL="$SUBDIRS_INSTALL mat"
+  AC_CONFIG_SUBDIRS(mat)
 fi
 
 AC_SUBST(SUBDIRS)
