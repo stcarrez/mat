@@ -89,10 +89,10 @@ $(LIBNAME):		$(OBJS)
 	$(CC) -o $(LIBNAME) $(LDFLAGS) $(OBJS) $(LIBS)
 
 install:
-	mkdir -p ${libdir}
-	$(INSTALL) $(LIBNAME) ${libdir}/$(LIBNAME).$(LIBVER)
-	rm -f ${libdir}/$(LIBNAME)
-	${LN_S} $(LIBNAME).$(LIBVER) ${libdir}/$(LIBNAME)
+	mkdir -p $(DESTDIR)${libdir}
+	$(INSTALL) $(LIBNAME) $(DESTDIR)${libdir}/$(LIBNAME).$(LIBVER)
+	rm -f $(DESTDIR)${libdir}/$(LIBNAME)
+	${LN_S} $(LIBNAME).$(LIBVER) $(DESTDIR)${libdir}/$(LIBNAME)
 
 .c.o:
 	$(COMPILE) -c $<
