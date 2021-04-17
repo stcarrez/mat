@@ -1,5 +1,5 @@
 /*  mat-socket.c -- Write probe information over a socket stream
---  Copyright (C) 2011, 2012, 2013, 2014 Stephane Carrez
+--  Copyright (C) 2011, 2012, 2013, 2014, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -95,7 +95,7 @@ struct mat_socket_server* mat_socket_open (struct mat_socket_server* server, con
   int port;
   struct in_addr ip;
 
-  strncpy (host, param, sizeof (host));
+  strncpy (host, param, sizeof (host) - 1);
   s = strchr (host, ':');
   if (s != NULL)
     {

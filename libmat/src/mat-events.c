@@ -1,5 +1,5 @@
 /* gp-events.c -- Event operations
---  Copyright (C) 2011, 2012, 2013, 2014, 2015 Stephane Carrez
+--  Copyright (C) 2011, 2012, 2013, 2014, 2015, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -494,6 +494,7 @@ mat_event_begin (struct mat_probe *gp)
 {
   int i;
   mat_uint8  mode;
+  char cur_proc[PATH_MAX];
   char path[PATH_MAX];
   mat_uint32 pid;
   ssize_t size;
@@ -513,9 +514,9 @@ mat_event_begin (struct mat_probe *gp)
 
   pid = getpid ();
   mat_read_proc_maps ((int) pid, mat_identify_heap, &heap);
-  snprintf (path, sizeof (path), "/proc/%d/exe", (int) pid);
+  snprintf (cur_proc, sizeof (cur_proc), "/proc/%d/exe", (int) pid);
 
-  size = readlink (path, path, sizeof (path));
+  size = readlink (cur_proc, path, sizeof (path));
   if (size < 0)
     {
       path[0] = 0;
