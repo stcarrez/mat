@@ -1,10 +1,10 @@
 # You may edit this makefile as long as you keep these original 
 # target names defined.
-SVN=svn
 
-distdir=mat-@MAT_VERSION@
+DIST_DIR=mat-@MAT_VERSION@
 
 DIST_FILE=mat-@MAT_VERSION@.tar.gz
+DIST_DIRS=ada-bfd ada-util
 
 srcdir = .
 top_srcdir = @top_srcdir@
@@ -47,50 +47,12 @@ force:
 # Clean, then build executables for all mains defined by the project.
 rebuild: clean build
 
-# Files to package in source distribution
-DISTFILES=README LICENSE.txt config.guess configure config.sub \
-configure.ac Makefile.in install-sh \
-matl/Makefile.in \
-matl/matl.1 \
-matl/matl.c \
-matp/Makefile.in \
-matp/src matp/regtests matp/man \
-matp/configure matp/configure.ac \
-matp/config.guess matp/config.sub \
-matp/Makefile.in matp/install-sh \
-matp/mat.gpr.in matp/gtkmat.gpr.in matp/tests.gpr.in matp/config.gpr \
-libmat/src external \
-libmat/configure libmat/configure.ac \
-libmat/config.guess libmat/config.sub \
-libmat/Makefile.in libmat/install-sh \
-matl/Makefile.in matl/matl.c matl/matl.1
-
 dist:
-	-rm -rf $(distdir)
-	mkdir $(distdir)
-	-chmod 777 $(distdir)
-	here=`cd $(top_builddir) && pwd`; \
-	top_distdir=`cd $(distdir) && pwd`; \
-	distdir=`cd $(distdir) && pwd`; \
-	mkdir -p $(distdir)/mat $(distdir)/libmat $(distdir)/matp $(distdir)/matl; \
-	for file in $(DISTFILES); do \
-	  d=$(srcdir); \
-	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(distdir)/$$file; \
-	  else \
-	    test -f $(distdir)/$$file \
-	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
-	    || cp -p $$d/$$file $(distdir)/$$file || :; \
-	  fi; \
-	done
-	-rm -f $(distdir)/bin/*
-	tar --exclude=.svn --exclude=.git --exclude="*~" --exclude="*.o" --exclude="*.ali" \
-	    --exclude="*.log" --exclude="*.a" --exclude="*.so" \
-	    -cvzf $(DIST_FILE) $(distdir)
-
-# prepare before releasing a new version of the package
-# (collect information about changes and SVN repository)
-prepare-release:
-	${SVN} update
-	${SVN} info > CHANGES
-	${SVN} log -v > ChangeLog
+	rm -f $(DIST_FILE)
+	git archive -o $(DIST_DIR).tar --prefix=$(DIST_DIR)/ HEAD
+	for i in $(DIST_DIRS); do \
+	   cd $$i && git archive -o ../$$i.tar --prefix=$(DIST_DIR)/$$i/ HEAD ; \
+           cd .. && tar --concatenate --file=$(DIST_DIR).tar $$i.tar ; \
+           rm -f $$i.tar; \
+        done
+	gzip $(DIST_DIR).tar
