@@ -20,26 +20,14 @@ SUBDIRS=@SUBDIRS@
 SUBDIRS_INSTALL=@SUBDIRS_INSTALL@
 
 # Build executables for all mains defined by the project.
-all build test:
-	D=`pwd`; \
+all build test clean::
 	for i in $(SUBDIRS); do \
-	   cd "$$D/$$i" && \
-	   $(MAKE) $@ ; \
+	   $(MAKE) -C "$$i" $@ ; \
 	done
 
 install:
-	D=`pwd`; \
 	for i in $(SUBDIRS_INSTALL); do \
-	   cd "$$D/$$i" && \
-	   $(MAKE) $@ ; \
-	done
-
-# Clean the root project of all build products.
-clean:
-	D=`pwd`; \
-	for i in $(SUBDIRS); do \
-	   cd "$$D/$$i" && \
-	   $(MAKE) clean ; \
+	   $(MAKE) -C "$$i" $@ ; \
 	done
 
 force:
