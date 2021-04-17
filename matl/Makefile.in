@@ -52,10 +52,10 @@ matl:	  matl.o
 	$(CC) -o matl matl.o
 
 install:
-	mkdir -p ${bindir}
-	mkdir -p ${mandir}/man1
-	$(INSTALL) matl ${bindir}/
-	$(INSTALL) matl.1 $(mandir)/man1/matl.1
+	mkdir -p $(DESTDIR)${bindir}
+	mkdir -p $(DESTDIR)${mandir}/man1
+	$(INSTALL) matl $(DESTDIR)${bindir}/
+	$(INSTALL) matl.1 $(DESTDIR)$(mandir)/man1/matl.1
 
 .c.o:
 	$(COMPILE) -c $<
