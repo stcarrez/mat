@@ -15,8 +15,6 @@ CP=cp
 
 # Build executables for all mains defined by the project.
 all build::
-
-build::		Makefile.conf $(GPRPATH)
 	$(GNATMAKE) $(GPRFLAGS) -p -P$(NAME) $(MAKE_ARGS)
 
 build-test::
