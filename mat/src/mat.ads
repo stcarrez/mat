@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat -- Memory Analysis Tool
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,10 @@
 -----------------------------------------------------------------------
 package MAT is
 
-   pragma Pure;
+private
 
+   --  Configure the logs.
+   procedure Configure_Logs (Debug   : in Boolean;
+                             Dump    : in Boolean;
+                             Verbose : in Boolean);
 end MAT;
