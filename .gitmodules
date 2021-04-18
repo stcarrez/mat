@@ -4,7 +4,7 @@
 	branch = master
 [submodule "ada-util"]
 	path = ada-util
-	url = git@github.com:stcarrez/ada-util.git
+	url = https://github.com/stcarrez/ada-util.git
 	branch = master
 [submodule "ansi-ada"]
 	path = ansi-ada
