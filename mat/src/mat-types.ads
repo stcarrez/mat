@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-types -- Global types
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,6 @@
 -----------------------------------------------------------------------
 with Interfaces;
 package MAT.Types is
-
-   pragma Preelaborate;
 
    subtype Uint8 is Interfaces.Unsigned_8;
 
