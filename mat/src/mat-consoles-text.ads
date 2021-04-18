@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-consoles-text - Text console interface
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -62,7 +62,8 @@ package MAT.Consoles.Text is
 private
 
    type Console_Type is new MAT.Consoles.Console_Type with record
-      File : Ada.Text_IO.File_Type;
+      File    : Ada.Text_IO.File_Type;
+      Cur_Col : Ada.Text_IO.Count := 0;
    end record;
 
 end MAT.Consoles.Text;
