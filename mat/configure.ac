@@ -41,7 +41,7 @@ AM_GNAT_FIND_PROJECT([ada-util],[Ada Utility Library],[utilada_sys],
   [git@github.com:stcarrez/ada-util.git],
   [Building mat requires the Ada Utility Library.],
   [
-    UTIL_DIR=${gnat_project_dir_utilada_sys}
+    UTIL_DIR=${ac_cv_gnat_project_dir_utilada_sys}
   ])
 AC_SUBST(UTIL_DIR)
 
@@ -52,15 +52,9 @@ AM_GNAT_FIND_PROJECT([ada-bfd],[Ada Bfd Library],[bfdada],
   [git@github.com:stcarrez/ada-bfd.git],
   [Building MAT requires the Ada Bfd Library.],
   [
-    BFD_DIR=${gnat_project_dir_bfdada}
+    BFD_DIR=${ac_cv_gnat_project_dir_bfdada}
   ])
 AC_SUBST(BFD_DIR)
-
-CONFIG_DIR=
-if test x"$UTIL_DIR" = x../ada-util/ ; then
-  CONFIG_DIR=$UTIL_DIR
-fi
-AC_SUBST(CONFIG_DIR)
 
 GTKADA_DIR=
 if test x$ac_enable_gtk = 'xyes'; then
