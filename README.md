@@ -25,14 +25,16 @@ and then to analyze the results with the tool.
 
 - Update for binutils 2.34 and Ada BFD
 - Update for Ada Utility Library 2.4.0
+- Fix monitoring of `calloc` with glibc
+- Add colors in mat analysis
 
 # Using git
 
 The project uses git submodules to integrate several other
 projects.  To get all the sources, use the following commands:
 ```
-   git clone --recursive git@github.com:stcarrez/mat.git
-   cd mat
+git clone --recursive git@github.com:stcarrez/mat.git
+cd mat
 ```
 
 # Building mat
@@ -48,20 +50,20 @@ the GNAT Ada compiler.  By default the mat component is not built.
 If you only need libmat and matl, configure and build as follows:
 
 ```
-  ./configure
-  make
+./configure
+make
 ```
 
 To build a 32-bit or 64-bit version of the shared library you may use:
 
 ```
-  CC="/usr/bin/gcc -m32" ../mat/configure
+  CC="/usr/bin/gcc -m32" ../mat/configure --disable-mat
   make
 ```
 or
 
 ```
-  CC="/usr/bin/gcc -m64" ../mat/configure
+  CC="/usr/bin/gcc -m64" ../mat/configure --disable-mat
   make
 ```
 
@@ -70,7 +72,7 @@ indicate to the configure your target host.  For example to
 build for a remote mips system, use:
 
 ```
-  ./configure --host="mips-uclibc-linux" --target=mips-uclibc-linux
+  ./configure --host="mips-uclibc-linux" --target=mips-uclibc-linux --disable-mat
   make
 ```
 
@@ -85,11 +87,11 @@ On Debian-based systems, you may have to install the following packages:
 
   sudo apt-get install gnat gprbuild binutils-dev libiberty-dev libreadline-dev
 
-If you have installed Ada Utility Library and Ada Bfd Library on your
+If you have not installed Ada Utility Library and Ada Bfd Library on your
 system, you can configure and build by using:
 
 ```
-  ./configure --enable-mat
+  ./configure --enable-ada-util --enable-ada-bfd
   make
 ```
 
