@@ -16,6 +16,8 @@ dnl
 
 AC_INIT(Makefile.in)
 
+cache_file=config.cache
+
 # Current release settings
 MAT_MAJOR_VERSION=1
 MAT_MINOR_VERSION=1
@@ -63,6 +65,8 @@ AC_ARG_ENABLE(mat,
 	      ;;
     esac])
 
+DIR=`pwd $awa_pwd_option`
+
 AC_CONFIG_SUBDIRS(libmat)
 
 # Build ada-util only when --enable-mat and --enable-ada-util are defined.
@@ -79,6 +83,7 @@ if test x$ac_enable_mat = 'xyes'; then
 
   SUBDIRS="$SUBDIRS mat"
   SUBDIRS_INSTALL="$SUBDIRS_INSTALL mat"
+  ac_configure_args="${ac_configure_args} --with-build-root=${DIR}"
   AC_CONFIG_SUBDIRS(mat)
 fi
 
