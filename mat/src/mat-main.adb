@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
---  matp -- Main program
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  mat-main -- Main program
+--  Copyright (C) 2014, 2015, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,13 +17,17 @@
 -----------------------------------------------------------------------
 with Ada.IO_Exceptions;
 
+with Ada.Command_Line;
+with GNAT.Command_Line;
 with MAT.Commands;
 with MAT.Targets;
 with MAT.Consoles.Text;
-procedure Matp is
+procedure Mat.Main is
    Target  : MAT.Targets.Target_Type;
    Console : aliased MAT.Consoles.Text.Console_Type;
 begin
+   MAT.Configure_Logs (Debug => False, Dump => False, Verbose => False);
+
    Target.Console (Console'Unchecked_Access);
    Target.Initialize_Options;
    MAT.Commands.Initialize_Files (Target);
@@ -32,6 +36,9 @@ begin
    Target.Stop;
 
 exception
+   when GNAT.Command_Line.Exit_From_Command_Line | GNAT.Command_Line.Invalid_Switch =>
+      Ada.Command_Line.Set_Exit_Status (Ada.Command_Line.Failure);
+
    when Ada.IO_Exceptions.End_Error | MAT.Targets.Usage_Error =>
       Target.Stop;
-end Matp;
+end Mat.Main;
