@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
---  Clients - Abstract representation of client information
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  mat-targets - Representation of target information
+--  Copyright (C) 2014, 2015, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 -----------------------------------------------------------------------
 with Ada.Text_IO;
 with Ada.Command_Line;
-with Ada.IO_Exceptions;
 with Ada.Unchecked_Deallocation;
 
 with GNAT.Command_Line;
@@ -25,7 +24,6 @@ with GNAT.Command_Line;
 with Readline;
 
 with Util.Strings;
-with Util.Properties;
 with Util.Log.Loggers;
 
 with MAT.Commands;
@@ -44,9 +42,6 @@ package body MAT.Targets is
    procedure Free is
      new Ada.Unchecked_Deallocation (Target_Process_Type'Class,
                                      Target_Process_Type_Access);
-
-   --  Configure the log managers used by mat.
-   procedure Initialize_Logs (Path : in String);
 
    --  ------------------------------
    --  Release the target process instance.
@@ -259,33 +254,10 @@ package body MAT.Targets is
    end Add_Search_Path;
 
    --  ------------------------------
-   --  Configure the log managers used by mat.
-   --  ------------------------------
-   procedure Initialize_Logs (Path : in String) is
-      Props : Util.Properties.Manager;
-   begin
-      begin
-         Props.Load_Properties (Path);
-
-      exception
-         when Ada.IO_Exceptions.Name_Error =>
-            --  Default log configuration.
-            Props.Set ("log4j.rootCategory", "INFO,console,mat");
-            Props.Set ("log4j.appender.console", "Console");
-            Props.Set ("log4j.appender.console.level", "WARN");
-            Props.Set ("log4j.appender.console.layout", "level-message");
-            Props.Set ("log4j.appender.mat", "File");
-            Props.Set ("log4j.appender.mat.File", "mat.log");
-      end;
-      Util.Log.Loggers.Initialize (Props);
-   end Initialize_Logs;
-
-   --  ------------------------------
    --  Parse the command line arguments and configure the target instance.
    --  ------------------------------
    procedure Initialize_Options (Target  : in out MAT.Targets.Target_Type) is
    begin
-      Initialize_Logs ("matp.properties");
       GNAT.Command_Line.Initialize_Option_Scan (Stop_At_First_Non_Switch => True,
                                                 Section_Delimiters       => "targs");
       loop
