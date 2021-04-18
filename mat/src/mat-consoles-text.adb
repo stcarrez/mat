@@ -15,6 +15,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with ANSI;
 with MAT.Interrupts;
 with MAT.Commands;
 package body MAT.Consoles.Text is
@@ -25,9 +26,12 @@ package body MAT.Consoles.Text is
    overriding
    procedure Error (Console : in out Console_Type;
                     Message : in String) is
-      pragma Unreferenced (Console);
    begin
-      Ada.Text_IO.Put_Line (Message);
+      Ada.Text_IO.Put (ANSI.Foreground (ANSI.Red));
+      Ada.Text_IO.Put (Message);
+      Ada.Text_IO.Put (ANSI.Reset);
+      Ada.Text_IO.New_Line;
+      Console.Cur_Col := 0;
    end Error;
 
    --  ------------------------------
@@ -37,9 +41,13 @@ package body MAT.Consoles.Text is
    procedure Notice (Console : in out Console_Type;
                      Kind    : in Notice_Type;
                      Message : in String) is
-      pragma Unreferenced (Console, Kind);
+      pragma Unreferenced (Kind);
    begin
-      Ada.Text_IO.Put_Line (Message);
+      Ada.Text_IO.Put (ANSI.Foreground (ANSI.Blue));
+      Ada.Text_IO.Put (Message);
+      Ada.Text_IO.Put (ANSI.Reset);
+      Ada.Text_IO.New_Line;
+      Console.Cur_Col := 0;
    end Notice;
 
    --  ------------------------------
@@ -90,6 +98,7 @@ package body MAT.Consoles.Text is
          Ada.Text_IO.Set_Col (Pos);
       end if;
       Ada.Text_IO.Put (Value (Start .. Last));
+      Console.Cur_Col := Console.Cur_Col + Ada.Text_IO.Count (Last - Start + 1);
    end Print_Field;
 
    --  ------------------------------
@@ -104,9 +113,13 @@ package body MAT.Consoles.Text is
       Pos : constant Ada.Text_IO.Count := Ada.Text_IO.Count (Console.Cols (Field));
    begin
       if Pos > 1 then
-         Ada.Text_IO.Set_Col (Pos);
+         while Console.Cur_Col < Pos loop
+            Ada.Text_IO.Put (' ');
+            Console.Cur_Col := Console.Cur_Col + 1;
+         end loop;
       end if;
       Ada.Text_IO.Put (Title);
+      Console.Cur_Col := Console.Cur_Col + Title'Length;
    end Print_Title;
 
    --  ------------------------------
@@ -118,15 +131,19 @@ package body MAT.Consoles.Text is
       Console.Field_Count := 0;
       Console.Sizes := (others => 0);
       Console.Cols := (others => 1);
+      Ada.Text_IO.Put (Ansi.Style (Ansi.Bright, Ansi.On));
+      Ada.Text_IO.Put (ANSI.Foreground (ANSI.Light_Cyan));
+      Console.Cur_Col := 0;
    end Start_Title;
 
    --  ------------------------------
    --  Finish a new title in a report.
    --  ------------------------------
    procedure End_Title (Console : in out Console_Type) is
-      pragma Unreferenced (Console);
    begin
+      Ada.Text_Io.Put (ANSI.Reset);
       Ada.Text_IO.New_Line;
+      Console.Cur_Col := 0;
    end End_Title;
 
    --  ------------------------------
@@ -146,9 +163,9 @@ package body MAT.Consoles.Text is
    --  ------------------------------
    overriding
    procedure End_Row (Console : in out Console_Type) is
-      pragma Unreferenced (Console);
    begin
       Ada.Text_IO.New_Line;
+      Console.Cur_Col := 0;
    end End_Row;
 
 end MAT.Consoles.Text;
