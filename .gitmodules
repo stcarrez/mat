@@ -6,3 +6,6 @@
 	path = ada-util
 	url = git@github.com:stcarrez/ada-util.git
 	branch = master
+[submodule "ansi-ada"]
+	path = ansi-ada
+	url = https://github.com/mosteo/ansi-ada
