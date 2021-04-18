@@ -1,4 +1,4 @@
-with "@CONFIG_DIR@config";
+with "mat_config";
 with "@UTIL_DIR@utilada_sys";
 with "@UTIL_DIR@utilada_unit";
 with "mat";
@@ -8,12 +8,12 @@ project Mat_Tests is
    Mains := ("mat_harness.adb");
    for Main use Mains;
    for Source_Dirs use ("regtests");
-   for Object_Dir use "./" & Config'Object_Dir & "/obj";
-   for Exec_Dir use "./" & Config'Exec_Dir & "/bin";
+   for Object_Dir use "./" & Mat_Config'Object_Dir & "/obj";
+   for Exec_Dir use "./" & Mat_Config'Exec_Dir & "/bin";
 
-   package Binder renames Config.Binder;
-   package Builder renames Config.Builder;
-   package Compiler renames Config.Compiler;
-   package Linker renames Config.Linker;
+   package Binder renames Mat_Config.Binder;
+   package Builder renames Mat_Config.Builder;
+   package Compiler renames Mat_Config.Compiler;
+   package Linker renames Mat_Config.Linker;
 
 end Mat_Tests;

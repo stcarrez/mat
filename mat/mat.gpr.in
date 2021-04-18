@@ -1,27 +1,28 @@
-with "@CONFIG_DIR@config";
+with "mat_config";
 with "@UTIL_DIR@utilada_sys";
 with "@BFD_DIR@bfdada";
+with "../ansi-ada/ansi";
 
 project mat is
 
-   Mains := ("matp.adb");
+   Mains := ("mat-main.adb");
 
    for Main use Mains;
 
    for Source_Dirs use ("@srcdir@/src", "@srcdir@/src/events", "@srcdir@/src/frames",
-					    "@srcdir@/src/memory", "@srcdir@/src/readline",
-						"@srcdir@/src/symbols", "@srcdir@/src/parser");
+                        "@srcdir@/src/memory", "@srcdir@/src/readline",
+                        "@srcdir@/src/symbols", "@srcdir@/src/parser");
 
-   for Object_Dir use "./" & Config'Object_Dir & "/obj";
-   for Exec_Dir use "./" & Config'Exec_Dir & "/bin";
+   for Object_Dir use "./" & Mat_Config'Object_Dir & "/obj";
+   for Exec_Dir use "./" & Mat_Config'Exec_Dir & "/bin";
 
-   package Binder renames Config.Binder;
-   package Compiler renames Config.Compiler;
-   package Linker renames Config.Linker;
+   package Binder renames Mat_Config.Binder;
+   package Compiler renames Mat_Config.Compiler;
+   package Linker renames Mat_Config.Linker;
 
    package Builder is
-      for Executable ("matp.adb") use "mat";
-      for Default_Switches use Config.Builder'Default_Switches;
+      for Executable ("mat-main.adb") use "mat";
+      for Default_Switches use Mat_Config.Builder'Default_Switches;
    end Builder;
 
 end mat;
