@@ -4,7 +4,7 @@
 DIST_DIR=mat-@MAT_VERSION@
 
 DIST_FILE=mat-@MAT_VERSION@.tar.gz
-DIST_DIRS=ada-bfd ada-util
+DIST_DIRS=ansi-ada ada-bfd ada-util
 
 srcdir = .
 top_srcdir = @top_srcdir@
