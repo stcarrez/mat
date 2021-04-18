@@ -1799,6 +1799,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
+cache_file=config.cache
+
 # Current release settings
 MAT_MAJOR_VERSION=1
 MAT_MINOR_VERSION=1
@@ -1894,6 +1896,8 @@ if test "${enable_mat+set}" = set; then :
 fi
 
 
+DIR=`pwd $awa_pwd_option`
+
 ac_aux_dir=
 for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
   if test -f "$ac_dir/install-sh"; then
@@ -1944,6 +1948,7 @@ if test x$ac_enable_mat = 'xyes'; then
 
   SUBDIRS="$SUBDIRS mat"
   SUBDIRS_INSTALL="$SUBDIRS_INSTALL mat"
+  ac_configure_args="${ac_configure_args} --with-build-root=${DIR}"
   subdirs="$subdirs mat"
 
 fi
