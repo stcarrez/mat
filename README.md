@@ -95,6 +95,13 @@ system, you can configure and build by using:
 
 # Instrumenting your application
 
+You can instrument your application passively by recording all events and looking
+at the memory allocation after the program has stopped.  It is also possible to
+instrument dynamically while the application is running.  Both methods have
+they advantages.
+
+## Passive instrumentation
+
 You can instrument the memory allocation by using the matl launcher.
 
 ```
@@ -114,6 +121,25 @@ Once the memory events are loaded, you can use the interactive
 commands to look at the events.  The first commands you may use
 are 'info', 'timeline' and 'sizes' as they give a short summary
 and analysis of the events.
+
+
+## Dynamic instrumentation
+
+The dynamic instrumentation requires that the `mat` analyser is started in
+the server mode: it is started first, before the application to analyse.
+The server is activated by the `-s` option.  It listens to the TCP/IP port 4606
+and then enter in the interactive mode:
+
+```
+mat -s
+```
+
+Then, you can launch your application through the same `matl` launcher
+but you will specify the host name to connect:
+
+```
+  matl -s localhost my-program
+```
 
 
 # Embedded systems
