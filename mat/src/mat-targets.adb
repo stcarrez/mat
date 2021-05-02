@@ -15,6 +15,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with ANSI;
 with Ada.Text_IO;
 with Ada.Command_Line;
 with Ada.Unchecked_Deallocation;
@@ -311,11 +312,12 @@ package body MAT.Targets is
    --  and executing the commands.
    --  ------------------------------
    procedure Interactive (Target : in out MAT.Targets.Target_Type) is
+      Prompt : constant String := ANSI.Foreground (ANSI.Green) & "mat>" & ANSI.Reset;
    begin
       MAT.Interrupts.Install;
       loop
          declare
-            Line : constant String := Readline.Get_Line ("mat>");
+            Line : constant String := Readline.Get_Line (Prompt);
          begin
             MAT.Interrupts.Clear;
             MAT.Commands.Execute (Target, Line);

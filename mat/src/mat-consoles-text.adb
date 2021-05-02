@@ -131,7 +131,7 @@ package body MAT.Consoles.Text is
       Console.Field_Count := 0;
       Console.Sizes := (others => 0);
       Console.Cols := (others => 1);
-      Ada.Text_IO.Put (Ansi.Style (Ansi.Bright, Ansi.On));
+      Ada.Text_IO.Put (ANSI.Style (ANSI.Bright, ANSI.On));
       Ada.Text_IO.Put (ANSI.Foreground (ANSI.Light_Cyan));
       Console.Cur_Col := 0;
    end Start_Title;
@@ -141,7 +141,7 @@ package body MAT.Consoles.Text is
    --  ------------------------------
    procedure End_Title (Console : in out Console_Type) is
    begin
-      Ada.Text_Io.Put (ANSI.Reset);
+      Ada.Text_IO.Put (ANSI.Reset);
       Ada.Text_IO.New_Line;
       Console.Cur_Col := 0;
    end End_Title;

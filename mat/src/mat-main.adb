@@ -22,7 +22,7 @@ with GNAT.Command_Line;
 with MAT.Commands;
 with MAT.Targets;
 with MAT.Consoles.Text;
-procedure Mat.Main is
+procedure MAT.Main is
    Target  : MAT.Targets.Target_Type;
    Console : aliased MAT.Consoles.Text.Console_Type;
 begin
@@ -41,4 +41,4 @@ exception
 
    when Ada.IO_Exceptions.End_Error | MAT.Targets.Usage_Error =>
       Target.Stop;
-end Mat.Main;
+end MAT.Main;
