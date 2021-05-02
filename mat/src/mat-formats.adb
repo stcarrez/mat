@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-formats - Format various types for the console or GUI interface
---  Copyright (C) 2015 Stephane Carrez
+--  Copyright (C) 2015, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -266,17 +266,20 @@ package body MAT.Formats is
                           Related    : in MAT.Events.Tools.Target_Event_Vector;
                           Start_Time : in MAT.Types.Target_Tick_Ref) return String is
       Free_Event : MAT.Events.Target_Event_Type;
+      Slot_Addr  : constant String := Addr (Item.Addr);
    begin
       Free_Event := MAT.Events.Tools.Find (Related, MAT.Events.MSG_FREE);
 
-      return Size (Item.Size) & " bytes allocated after " & Duration (Item.Time - Start_Time)
+      return Size (Item.Size) & " bytes allocated at "
+        & Slot_Addr
+        & " after " & Duration (Item.Time - Start_Time)
         & ", freed " & Duration (Free_Event.Time - Item.Time)
         & " after by event" & MAT.Events.Event_Id_Type'Image (Free_Event.Id)
       ;
 
    exception
       when MAT.Events.Tools.Not_Found =>
-         return Size (Item.Size) & " bytes allocated (never freed)";
+         return Size (Item.Size) & " bytes allocated at " & Slot_Addr & " (never freed)";
 
    end Event_Malloc;
 
@@ -288,21 +291,25 @@ package body MAT.Formats is
                            Start_Time : in MAT.Types.Target_Tick_Ref) return String is
       use type MAT.Events.Event_Id_Type;
       Free_Event : MAT.Events.Target_Event_Type;
+      Slot_Addr  : constant String := Addr (Item.Addr);
    begin
       if Item.Next_Id = 0 and Item.Prev_Id = 0 then
-         return Size (Item.Size) & " bytes reallocated after " & Duration (Item.Time - Start_Time)
+         return Size (Item.Size) & " bytes reallocated at " & Slot_Addr
+           & " after " & Duration (Item.Time - Start_Time)
            & " (never freed)";
       end if;
 
       Free_Event := MAT.Events.Tools.Find (Related, MAT.Events.MSG_FREE);
-      return Size (Item.Size) & " bytes reallocated after " & Duration (Item.Time - Start_Time)
+      return Size (Item.Size) & " bytes reallocated at " & Slot_Addr
+        & " after " & Duration (Item.Time - Start_Time)
         & ", freed " & Duration (Free_Event.Time - Item.Time)
         & " after by event" & MAT.Events.Event_Id_Type'Image (Free_Event.Id)
         & " " & Size (Item.Size, Item.Old_Size) & " bytes";
 
    exception
       when MAT.Events.Tools.Not_Found =>
-         return Size (Item.Size) & " bytes reallocated after " & Duration (Item.Time - Start_Time)
+         return Size (Item.Size) & " bytes reallocated at " & Slot_Addr
+           & " after " & Duration (Item.Time - Start_Time)
            & " (never freed) " & Size (Item.Size, Item.Old_Size) & " bytes";
 
    end Event_Realloc;
@@ -314,16 +321,18 @@ package body MAT.Formats is
                         Related    : in MAT.Events.Tools.Target_Event_Vector;
                         Start_Time : in MAT.Types.Target_Tick_Ref) return String is
       Alloc_Event : MAT.Events.Target_Event_Type;
+      Slot_Addr   : constant String := Addr (Item.Addr);
    begin
       Alloc_Event := MAT.Events.Tools.Find (Related, MAT.Events.MSG_MALLOC);
 
-      return Size (Alloc_Event.Size) & " bytes freed after " & Duration (Item.Time - Start_Time)
+      return Size (Alloc_Event.Size) & " bytes freed at " & Slot_Addr
+        & " after " & Duration (Item.Time - Start_Time)
         & ", alloc'ed for " & Duration (Item.Time - Alloc_Event.Time)
         & " by event" & MAT.Events.Event_Id_Type'Image (Alloc_Event.Id);
 
    exception
       when MAT.Events.Tools.Not_Found =>
-         return Size (Item.Size) & " bytes freed";
+         return Size (Item.Size) & " bytes freed at " & Slot_Addr;
 
    end Event_Free;
 
