@@ -1003,23 +1003,31 @@ package body MAT.Commands is
       Console : constant MAT.Consoles.Console_Access := Target.Console;
    begin
       Console.Notice (N_HELP, "Available commands");
-      Console.Notice (N_HELP, "exit                    Exit the tool");
-      Console.Notice (N_HELP, "event id                Print the event ID");
-      Console.Notice (N_HELP, "events <selection>      List the events filtered by the selection");
-      Console.Notice (N_HELP, "threads                 List the threads");
-      Console.Notice (N_HELP, "slots <selection>       List the memory slots"
+      Console.Notice (N_HELP, "exit                                Exit the tool");
+      Console.Notice (N_HELP, "addr <address>                      Give information about an address");
+      Console.Notice (N_HELP, "event <id>                          Print the event ID");
+      Console.Notice (N_HELP, "events [-c] [-l] <selection>        List the events filtered by the selection");
+      Console.Notice (N_HELP, "threads                             List the threads");
+      Console.Notice (N_HELP, "slots [-c] [-l] <selection>         List the memory slots"
                       & " filtered by the selection");
-      Console.Notice (N_HELP, "sizes <selection>       Print a summary of sizes "
+      Console.Notice (N_HELP, "sizes [-c] [-l] <selection>         Print a summary of sizes "
                       & "filtered by the selection");
-      Console.Notice (N_HELP, "frames <level> [<filter>] Print the stack frames up"
+      Console.Notice (N_HELP, "frames <level> [-c] [-l] [<filter>] Print the stack frames up"
                       & " to the given level");
-      Console.Notice (N_HELP, "open <file>             Load the mat file to analyze");
-      Console.Notice (N_HELP, "symbol <file>           Load the executable symbol file");
-      Console.Notice (N_HELP, "info                    Print some information about the program");
-      Console.Notice (N_HELP, "maps                    Print the program memory maps");
+      Console.Notice (N_HELP, "open <file>                         Load the mat file to analyze");
+      Console.Notice (N_HELP, "symbol <file>                       Load the executable symbol file");
+      Console.Notice (N_HELP, "info                                Print some information about the program");
+      Console.Notice (N_HELP, "maps                                Print the program memory maps");
+      Console.Notice (N_HELP, "timeline <duration>                 Analyze and report groups of allocations in timeline");
       Console.Notice (N_HELP, "Selection examples:");
       Console.Notice (N_HELP, "  size > 100 and size < 1000    "
                         & "Selection on the allocation size");
+      Console.Notice (N_HELP, "  after 1.0                     "
+                        & "Report only events after the relative time");
+      Console.Notice (N_HELP, "  before 0.01                   "
+                        & "Report only events before the relative time");
+      Console.Notice (N_HELP, "  from 0.01 to 0.06             "
+                        & "Report only events between the relative times");
       Console.Notice (N_HELP, "  has 0x4a7281                  "
                         & "Allocations with the given address");
       Console.Notice (N_HELP, "  event >= 200 and event <= 300 "
