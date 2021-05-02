@@ -312,7 +312,8 @@ package body MAT.Targets is
    --  and executing the commands.
    --  ------------------------------
    procedure Interactive (Target : in out MAT.Targets.Target_Type) is
-      Prompt : constant String := ANSI.Foreground (ANSI.Green) & "mat>" & ANSI.Reset;
+      Prompt : constant String := ASCII.SOH & ANSI.Foreground (ANSI.Green)
+        & ASCII.STX & "mat>" & ASCII.SOH & ANSI.Reset & ASCII.STX;
    begin
       MAT.Interrupts.Install;
       loop
