@@ -204,7 +204,9 @@ package body MAT.Symbols.Targets is
                Find_Nearest_Line (Symbols => Syms.Value,
                                   Addr    => Addr - Syms.Value.Offset,
                                   Symbol  => Symbol);
-               Demangle (Symbols, Symbol);
+               if Symbols.Use_Demangle then
+                  Demangle (Symbols, Symbol);
+               end if;
                return;
             end if;
 
