@@ -200,19 +200,22 @@ package body MAT.Frames is
          return;
       end if;
       if Current = null then
+         Frame.Used := Frame.Used + 1;
          Add_Frame (Frame, Pc, Result);
          return;
       end if;
       Addr := Pc (Pos);
       loop
          if Addr = Current.Pc then
-            Current.Used := Current.Used + 1;
+            Parent.Used := Parent.Used + 1;
             Pos  := Pos + 1;
             if Pos > Pc'Last then
+               Current.Used := Current.Used + 1;
                Result := Current;
                return;
             end if;
             if Current.Children = null then
+               Current.Used := Current.Used + 1;
                Add_Frame (Current, Pc (Pos .. Pc'Last), Result);
                return;
             end if;
@@ -221,6 +224,7 @@ package body MAT.Frames is
             Addr := Pc (Pos);
 
          elsif Current.Next = null then
+            Parent.Used := Parent.Used + 1;
             Add_Frame (Parent, Pc (Pos .. Pc'Last), Result);
             return;
          else
