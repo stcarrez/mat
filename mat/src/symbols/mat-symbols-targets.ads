@@ -69,12 +69,13 @@ package MAT.Symbols.Targets is
    subtype Symbols_Cursor is Symbols_Maps.Cursor;
 
    type Target_Symbols is new Util.Refs.Ref_Entity with record
-      Path        : Ada.Strings.Unbounded.Unbounded_String;
-      Search_Path : Ada.Strings.Unbounded.Unbounded_String;
-      Symbols     : Bfd.Symbols.Symbol_Table;
-      Libraries   : Symbols_Maps.Map;
-      Demangle    : Bfd.Demangle_Flags := Bfd.Constants.DMGL_AUTO;
-      Console     : MAT.Consoles.Console_Access;
+      Path         : Ada.Strings.Unbounded.Unbounded_String;
+      Search_Path  : Ada.Strings.Unbounded.Unbounded_String;
+      Symbols      : Bfd.Symbols.Symbol_Table;
+      Libraries    : Symbols_Maps.Map;
+      Demangle     : Bfd.Demangle_Flags := Bfd.Constants.DMGL_AUTO;
+      Use_Demangle : Boolean := True;
+      Console      : MAT.Consoles.Console_Access;
    end record;
    type Target_Symbols_Access is access all Target_Symbols;
 
