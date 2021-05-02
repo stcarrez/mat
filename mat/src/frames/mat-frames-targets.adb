@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-frames-targets - Representation of stack frames
---  Copyright (C) 2015 Stephane Carrez
+--  Copyright (C) 2015, 2021 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,7 +45,7 @@ package body MAT.Frames.Targets is
       --  ------------------------------
       function Get_Frame_Count return Natural is
       begin
-         return Root.Used;
+         return Count_Children (Root, True);
       end Get_Frame_Count;
 
       --  ------------------------------
