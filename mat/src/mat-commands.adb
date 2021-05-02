@@ -21,6 +21,7 @@ with Util.Log.Loggers;
 
 with Ada.Containers.Indefinite_Hashed_Maps;
 with Ada.Strings.Hash;
+with Ada.Strings.Fixed;
 with Ada.Exceptions;
 with Ada.IO_Exceptions;
 with Ada.Strings.Unbounded;
@@ -61,6 +62,8 @@ package body MAT.Commands is
                              Args   : in String);
    procedure Exit_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String);
+   procedure Set_Command (Target : in out MAT.Targets.Target_Type'Class;
+                          Args   : in String);
    procedure Open_Command (Target : in out MAT.Targets.Target_Type'Class;
                            Args   : in String);
    procedure Help_Command (Target : in out MAT.Targets.Target_Type'Class;
@@ -953,6 +956,34 @@ package body MAT.Commands is
    end Symbol_Command;
 
    --  ------------------------------
+   --  Set command.
+   --  ------------------------------
+   procedure Set_Command (Target : in out MAT.Targets.Target_Type'Class;
+                          Args   : in String) is
+      use Ada.Strings;
+
+      Process : constant MAT.Targets.Target_Process_Type_Access := Target.Process;
+      Console : constant MAT.Consoles.Console_Access := Target.Console;
+      Trimmed_Args : constant String := Fixed.Trim (Args, Both);
+      Pos          : constant Natural := Util.Strings.Index (Trimmed_Args, ' ');
+   begin
+      if Pos = 0 then
+         Console.Error ("Usage: set <name> <value>");
+         return;
+      end if;
+      
+      declare
+         Name : constant String := Trimmed_Args (Trimmed_Args'First .. Pos - 1);
+         Value : constant String := Trimmed_Args (Pos + 1 .. Trimmed_Args'Last);
+      begin
+         if Name = "demangle" then
+            Process.Symbols.Value.Use_Demangle := Value = "on";
+            return;
+         end if;
+      end;
+   end Set_Command;
+
+   --  ------------------------------
    --  Exit command.
    --  ------------------------------
    procedure Exit_Command (Target : in out MAT.Targets.Target_Type'Class;
@@ -1126,4 +1157,5 @@ begin
    Commands.Insert ("maps", Maps_Command'Access);
    Commands.Insert ("info", Info_Command'Access);
    Commands.Insert ("addr", Addr_Command'Access);
+   Commands.Insert ("set", Set_Command'Access);
 end MAT.Commands;
