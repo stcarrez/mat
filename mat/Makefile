@@ -42,7 +42,7 @@ install::
 # Do not call these unless you modify the lex/yacc grammar.
 parser:	
 	cd src/parser && \
-	   ayacc -n 256 -v -e .ada mat-expressions-parser.y && \
+	   ayacc -k -C -E -n 256 -v -e .ada mat-expressions-parser.y && \
 	   gnatchop -w mat-expressions-parser.ada && \
 	   rm -f mat-expressions-parser.ada
 	-rm -f src/parser/mat-expressions-lexer_io.ads
