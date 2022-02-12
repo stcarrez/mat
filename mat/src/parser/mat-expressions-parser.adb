@@ -61,608 +61,494 @@ package body MAT.Expressions.Parser is
 --           It is useless to modify it. Change the ".Y" & ".L" files instead.
 
 
-procedure YYParse is
+   procedure YYParse is
 
-   -- Rename User Defined Packages to Internal Names.
-    package yy_goto_tables         renames
-      Mat.Expressions.Parser_Goto;
-    package yy_shift_reduce_tables renames
-      Mat.Expressions.Parser_Shift_Reduce;
-    package yy_tokens              renames
-      Mat.Expressions.Parser_Tokens;
+      --  Rename User Defined Packages to Internal Names.
+      package yy_goto_tables renames
+         MAT.Expressions.Parser_Goto;
+      package yy_shift_reduce_tables renames
+         MAT.Expressions.Parser_Shift_Reduce;
+      package yy_tokens renames
+         MAT.Expressions.Parser_Tokens;
 
-   use yy_tokens, yy_goto_tables, yy_shift_reduce_tables;
+      use yy_tokens, yy_goto_tables, yy_shift_reduce_tables;
+      procedure handle_error;
 
-   procedure yyerrok;
-   procedure yyclearin;
+      subtype goto_row is yy_goto_tables.Row;
+      subtype reduce_row is yy_shift_reduce_tables.Row;
 
+      package yy is
 
-   package yy is
+         --  the size of the value and state stacks
+         --  Affects error 'Stack size exceeded on state_stack'
+         stack_size : constant Natural := 256;
 
-       -- the size of the value and state stacks
-       --  Affects error 'Stack size exceeded on state_stack'
-       stack_size : constant Natural :=  256;
+         --  subtype rule         is Natural;
+         subtype parse_state is Natural;
+         --  subtype nonterminal  is Integer;
 
-       -- subtype rule         is natural;
-       subtype parse_state  is natural;
-       -- subtype nonterminal  is integer;
+         --  encryption constants
+         default           : constant := -1;
+         first_shift_entry : constant := 0;
+         accept_code       : constant := -3001;
+         error_code        : constant := -3000;
 
-       -- encryption constants
-       default           : constant := -1;
-       first_shift_entry : constant :=  0;
-       accept_code       : constant := -3001;
-       error_code        : constant := -3000;
+         --  stack data used by the parser
+         tos                : Natural := 0;
+         value_stack        : array (0 .. stack_size) of yy_tokens.YYSType;
+         state_stack        : array (0 .. stack_size) of parse_state;
 
-       -- stack data used by the parser
-       tos                : natural := 0;
-       value_stack        : array(0..stack_size) of yy_tokens.yystype;
-       state_stack        : array(0..stack_size) of parse_state;
+         --  current input symbol and action the parser is on
+         action             : Integer;
+         rule_id            : Rule;
+         input_symbol       : yy_tokens.Token := Error;
 
-       -- current input symbol and action the parser is on
-       action             : integer;
-       rule_id            : rule;
-       input_symbol       : yy_tokens.token:= Error;
+         --  error recovery flag
+         error_flag : Natural := 0;
+         --  indicates  3 - (number of valid shifts after an error occurs)
 
+         look_ahead : Boolean := True;
+         index      : reduce_row;
 
-       -- error recovery flag
-       error_flag : natural := 0;
-          -- indicates  3 - (number of valid shifts after an error occurs)
+         --  Is Debugging option on or off
+         debug : constant Boolean := False;
 
-       look_ahead : boolean := true;
-       index      : integer;
+      end yy;
 
-       -- Is Debugging option on or off
-        DEBUG : constant boolean := FALSE;
+      procedure shift_debug (state_id : yy.parse_state; lexeme : yy_tokens.Token);
+      procedure reduce_debug (rule_id : Rule; state_id : yy.parse_state);
 
-    end yy;
+      function goto_state
+         (state : yy.parse_state;
+          sym   : Nonterminal) return yy.parse_state;
 
+      function parse_action
+         (state : yy.parse_state;
+          t     : yy_tokens.Token) return Integer;
 
-    function goto_state
-      (state : yy.parse_state;
-       sym   : nonterminal) return yy.parse_state;
+      pragma Inline (goto_state, parse_action);
 
-    function parse_action
-      (state : yy.parse_state;
-       t     : yy_tokens.token) return integer;
-
-    pragma inline(goto_state, parse_action);
-
-
-    function goto_state(state : yy.parse_state;
-                        sym   : nonterminal) return yy.parse_state is
-        index : integer;
-    begin
-        index := goto_offset(state);
-        while  integer(goto_matrix(index).nonterm) /= sym loop
+      function goto_state (state : yy.parse_state;
+                           sym   : Nonterminal) return yy.parse_state is
+         index : goto_row;
+      begin
+         index := Goto_Offset (state);
+         while Goto_Matrix (index).Nonterm /= sym loop
             index := index + 1;
-        end loop;
-        return integer(goto_matrix(index).newstate);
-    end goto_state;
+         end loop;
+         return Integer (Goto_Matrix (index).Newstate);
+      end goto_state;
 
 
-    function parse_action(state : yy.parse_state;
-                          t     : yy_tokens.token) return integer is
-        index      : integer;
-        tok_pos    : integer;
-        default    : constant integer := -1;
-    begin
-        tok_pos := yy_tokens.token'pos(t);
-        index   := shift_reduce_offset(state);
-        while integer(shift_reduce_matrix(index).t) /= tok_pos and then
-              integer(shift_reduce_matrix(index).t) /= default
-        loop
+      function parse_action (state : yy.parse_state;
+                             t     : yy_tokens.Token) return Integer is
+         index   : reduce_row;
+         tok_pos : Integer;
+         default : constant Integer := -1;
+      begin
+         tok_pos := yy_tokens.Token'Pos (t);
+         index   := Shift_Reduce_Offset (state);
+         while Integer (Shift_Reduce_Matrix (index).T) /= tok_pos
+           and then Integer (Shift_Reduce_Matrix (index).T) /= default
+         loop
             index := index + 1;
-        end loop;
-        return integer(shift_reduce_matrix(index).act);
-    end parse_action;
+         end loop;
+         return Integer (Shift_Reduce_Matrix (index).Act);
+      end parse_action;
 
--- error recovery stuff
+      --  error recovery stuff
 
-    procedure handle_error is
-      temp_action : integer;
-    begin
+      procedure handle_error is
+         temp_action : Integer;
+      begin
 
-      if yy.error_flag = 3 then -- no shift yet, clobber input.
-      if yy.debug then
-          text_io.put_line("  -- Ayacc.YYParse: Error Recovery Clobbers " &
-                   yy_tokens.token'image(yy.input_symbol));
-      end if;
-        if yy.input_symbol = yy_tokens.end_of_input then  -- don't discard,
-        if yy.debug then
-            text_io.put_line("  -- Ayacc.YYParse: Can't discard END_OF_INPUT, quiting...");
-        end if;
-        raise yy_tokens.syntax_error;
-        end if;
+         if yy.error_flag = 3 then --  no shift yet, clobber input.
+            if yy.debug then
+               Text_IO.Put_Line ("  -- Ayacc.YYParse: Error Recovery Clobbers "
+                                 & yy_tokens.Token'Image (yy.input_symbol));
+            end if;
+            if yy.input_symbol = yy_tokens.End_Of_Input then  -- don't discard,
+               if yy.debug then
+                  Text_IO.Put_Line ("  -- Ayacc.YYParse: Can't discard END_OF_INPUT, quiting...");
+               end if;
+               raise yy_tokens.Syntax_Error;
+            end if;
 
-            yy.look_ahead := true;   -- get next token
-        return;                  -- and try again...
-    end if;
+            yy.look_ahead := True;   --  get next token
+            return;                  --  and try again...
+         end if;
 
-    if yy.error_flag = 0 then -- brand new error
-       yyerror("Syntax Error");
-    end if;
+         if yy.error_flag = 0 then --  brand new error
+            yyerror ("Syntax Error");
+         end if;
 
-    yy.error_flag := 3;
+         yy.error_flag := 3;
 
-    -- find state on stack where error is a valid shift --
+         --  find state on stack where error is a valid shift --
 
-    if yy.debug then
-        text_io.put_line("  -- Ayacc.YYParse: Looking for state with error as valid shift");
-    end if;
+         if yy.debug then
+            Text_IO.Put_Line ("  -- Ayacc.YYParse: Looking for state with error as valid shift");
+         end if;
 
-    loop
-        if yy.debug then
-          text_io.put_line("  -- Ayacc.YYParse: Examining State " &
-               yy.parse_state'image(yy.state_stack(yy.tos)));
-        end if;
-        temp_action := parse_action(yy.state_stack(yy.tos), error);
+         loop
+            if yy.debug then
+               Text_IO.Put_Line ("  -- Ayacc.YYParse: Examining State "
+                                 & yy.parse_state'Image (yy.state_stack (yy.tos)));
+            end if;
+            temp_action := parse_action (yy.state_stack (yy.tos), Error);
 
             if temp_action >= yy.first_shift_entry then
-                if yy.tos = yy.stack_size then
-                    text_io.put_line("  -- Ayacc.YYParse: Stack size exceeded on state_stack");
-                    raise yy_Tokens.syntax_error;
-                end if;
-                yy.tos := yy.tos + 1;
-                yy.state_stack(yy.tos) := temp_action;
-                exit;
+               if yy.tos = yy.stack_size then
+                  Text_IO.Put_Line ("  -- Ayacc.YYParse: Stack size exceeded on state_stack");
+                  raise yy_tokens.Syntax_Error;
+               end if;
+               yy.tos                  := yy.tos + 1;
+               yy.state_stack (yy.tos) := temp_action;
+               exit;
             end if;
 
-        Decrement_Stack_Pointer :
-        begin
-          yy.tos := yy.tos - 1;
-        exception
-          when Constraint_Error =>
-            yy.tos := 0;
-        end Decrement_Stack_Pointer;
+            if yy.tos /= 0 then
+               yy.tos := yy.tos - 1;
+            end if;
 
-        if yy.tos = 0 then
-          if yy.debug then
-            text_io.put_line("  -- Ayacc.YYParse: Error recovery popped entire stack, aborting...");
-          end if;
-          raise yy_tokens.syntax_error;
-        end if;
-    end loop;
+            if yy.tos = 0 then
+               if yy.debug then
+                  Text_IO.Put_Line
+                     ("  -- Ayacc.YYParse: Error recovery popped entire stack, aborting...");
+               end if;
+               raise yy_tokens.Syntax_Error;
+            end if;
+         end loop;
 
-    if yy.debug then
-        text_io.put_line("  -- Ayacc.YYParse: Shifted error token in state " &
-              yy.parse_state'image(yy.state_stack(yy.tos)));
-    end if;
+         if yy.debug then
+            Text_IO.Put_Line ("  -- Ayacc.YYParse: Shifted error token in state "
+                              & yy.parse_state'Image (yy.state_stack (yy.tos)));
+         end if;
 
-    end handle_error;
+      end handle_error;
 
-   -- print debugging information for a shift operation
-   procedure shift_debug(state_id: yy.parse_state; lexeme: yy_tokens.token) is
+      --  print debugging information for a shift operation
+      procedure shift_debug (state_id : yy.parse_state; lexeme : yy_tokens.Token) is
+      begin
+         Text_IO.Put_Line ("  -- Ayacc.YYParse: Shift "
+                           & yy.parse_state'Image (state_id) & " on input symbol "
+                           & yy_tokens.Token'Image (lexeme));
+      end shift_debug;
+
+      --  print debugging information for a reduce operation
+      procedure reduce_debug (rule_id : Rule; state_id : yy.parse_state) is
+      begin
+         Text_IO.Put_Line ("  -- Ayacc.YYParse: Reduce by rule "
+                           & Rule'Image (rule_id) & " goto state "
+                           & yy.parse_state'Image (state_id));
+      end reduce_debug;
+
+
    begin
-       text_io.put_line("  -- Ayacc.YYParse: Shift "& yy.parse_state'image(state_id)&" on input symbol "&
-               yy_tokens.token'image(lexeme) );
-   end;
-
-   -- print debugging information for a reduce operation
-   procedure reduce_debug(rule_id: rule; state_id: yy.parse_state) is
-   begin
-       text_io.put_line("  -- Ayacc.YYParse: Reduce by rule "&rule'image(rule_id)&" goto state "&
-               yy.parse_state'image(state_id));
-   end;
-
-   -- make the parser believe that 3 valid shifts have occured.
-   -- used for error recovery.
-   procedure yyerrok is
-   begin
-       yy.error_flag := 0;
-   end yyerrok;
-
-   -- called to clear input symbol that caused an error.
-   procedure yyclearin is
-   begin
-       -- yy.input_symbol := yylex;
-       yy.look_ahead := true;
-   end yyclearin;
+      --  initialize by pushing state 0 and getting the first input symbol
+      yy.state_stack (yy.tos) := 0;
 
 
-begin
-    -- initialize by pushing state 0 and getting the first input symbol
-    yy.state_stack(yy.tos) := 0;
-
-
-    loop
-
-        yy.index := shift_reduce_offset(yy.state_stack(yy.tos));
-        if integer(shift_reduce_matrix(yy.index).t) = yy.default then
-            yy.action := integer(shift_reduce_matrix(yy.index).act);
-        else
+      loop
+         yy.index := Shift_Reduce_Offset (yy.state_stack (yy.tos));
+         if Integer (Shift_Reduce_Matrix (yy.index).T) = yy.default then
+            yy.action := Integer (Shift_Reduce_Matrix (yy.index).Act);
+         else
             if yy.look_ahead then
-                yy.look_ahead   := false;
+               yy.look_ahead := False;
 
-                yy.input_symbol := yylex;
+               yy.input_symbol := YYLex;
             end if;
-            yy.action :=
-             parse_action(yy.state_stack(yy.tos), yy.input_symbol);
-        end if;
+            yy.action := parse_action (yy.state_stack (yy.tos), yy.input_symbol);
+         end if;
 
 
-        if yy.action >= yy.first_shift_entry then  -- SHIFT
+         if yy.action >= yy.first_shift_entry then  --  SHIFT
 
             if yy.debug then
-                shift_debug(yy.action, yy.input_symbol);
+               shift_debug (yy.action, yy.input_symbol);
             end if;
 
-            -- Enter new state
+            --  Enter new state
             if yy.tos = yy.stack_size then
-                text_io.put_line(" Stack size exceeded on state_stack");
-                raise yy_Tokens.syntax_error;
+               Text_IO.Put_Line (" Stack size exceeded on state_stack");
+               raise yy_tokens.Syntax_Error;
             end if;
-            yy.tos := yy.tos + 1;
-            yy.state_stack(yy.tos) := yy.action;
-              yy.value_stack(yy.tos) := yylval;
+            yy.tos                  := yy.tos + 1;
+            yy.state_stack (yy.tos) := yy.action;
+            yy.value_stack (yy.tos) := YYLVal;
 
-        if yy.error_flag > 0 then  -- indicate a valid shift
-            yy.error_flag := yy.error_flag - 1;
-        end if;
+            if yy.error_flag > 0 then  --  indicate a valid shift
+               yy.error_flag := yy.error_flag - 1;
+            end if;
 
-            -- Advance lookahead
-            yy.look_ahead := true;
+            --  Advance lookahead
+            yy.look_ahead := True;
 
-        elsif yy.action = yy.error_code then       -- ERROR
+         elsif yy.action = yy.error_code then       -- ERROR
 
             handle_error;
 
-        elsif yy.action = yy.accept_code then
+         elsif yy.action = yy.accept_code then
             if yy.debug then
-                text_io.put_line("  -- Ayacc.YYParse: Accepting Grammar...");
+               Text_IO.Put_Line ("  --  Ayacc.YYParse: Accepting Grammar...");
             end if;
             exit;
 
-        else -- Reduce Action
+         else --  Reduce Action
 
-            -- Convert action into a rule
-            yy.rule_id  := -1 * yy.action;
+            --  Convert action into a rule
+            yy.rule_id := Rule (-1 * yy.action);
 
-            -- Execute User Action
-            -- user_action(yy.rule_id);
+            --  Execute User Action
+            --  user_action(yy.rule_id);
 
-
-                case yy.rule_id is
+            case yy.rule_id is
+               pragma Style_Checks (Off);
 
 when 1 => -- #line 33
 
-              Expr := 
-yy.value_stack(yy.tos).Expr;
-            
+              Expr := yy.value_stack (yy.tos).Expr;
+
 
 when 2 => -- #line 40
 
-              
-yyval := 
-yy.value_stack(yy.tos-1);
-            
+              YYVal := yy.value_stack (yy.tos-1);
+
 
 when 3 => -- #line 45
 
-              
-yyval.expr := MAT.Expressions.Create_Not (
-yy.value_stack(yy.tos).expr);
-            
+              YYVal.expr := MAT.Expressions.Create_Not (yy.value_stack (yy.tos).expr);
+
 
 when 4 => -- #line 50
 
-              
-yyval.expr := MAT.Expressions.Create_Or (
-yy.value_stack(yy.tos-2).expr, 
-yy.value_stack(yy.tos).expr);
-            
+              YYVal.expr := MAT.Expressions.Create_Or (yy.value_stack (yy.tos-2).expr, yy.value_stack (yy.tos).expr);
+
 
 when 5 => -- #line 55
 
-              
-yyval.expr := MAT.Expressions.Create_And (
-yy.value_stack(yy.tos-2).expr, 
-yy.value_stack(yy.tos).expr);
-            
+              YYVal.expr := MAT.Expressions.Create_And (yy.value_stack (yy.tos-2).expr, yy.value_stack (yy.tos).expr);
+
 
 when 6 => -- #line 60
 
-               if 
-yy.value_stack(yy.tos-1).bval then
-                  
-yyval.expr := MAT.Expressions.Create_Inside (
-yy.value_stack(yy.tos).name, MAT.Expressions.INSIDE_DIRECT_REGION);
+               if yy.value_stack (yy.tos-1).bval then
+                  YYVal.expr := MAT.Expressions.Create_Inside (yy.value_stack (yy.tos).name, MAT.Expressions.INSIDE_DIRECT_REGION);
                else
-                  
-yyval.expr := MAT.Expressions.Create_Inside (
-yy.value_stack(yy.tos).name, MAT.Expressions.INSIDE_REGION);
+                  YYVal.expr := MAT.Expressions.Create_Inside (yy.value_stack (yy.tos).name, MAT.Expressions.INSIDE_REGION);
                end if;
-            
+
 
 when 7 => -- #line 69
 
-               if 
-yy.value_stack(yy.tos-1).bval then
-                  
-yyval.expr := MAT.Expressions.Create_Inside (
-yy.value_stack(yy.tos).name, MAT.Expressions.INSIDE_DIRECT_FUNCTION);
+               if yy.value_stack (yy.tos-1).bval then
+                  YYVal.expr := MAT.Expressions.Create_Inside (yy.value_stack (yy.tos).name, MAT.Expressions.INSIDE_DIRECT_FUNCTION);
                else
-                  
-yyval.expr := MAT.Expressions.Create_Inside (
-yy.value_stack(yy.tos).name, MAT.Expressions.INSIDE_FUNCTION);
+                  YYVal.expr := MAT.Expressions.Create_Inside (yy.value_stack (yy.tos).name, MAT.Expressions.INSIDE_FUNCTION);
                end if;
-            
+
 
 when 8 => -- #line 78
 
-               if 
-yy.value_stack(yy.tos-1).bval then
-                  
-yyval.expr := MAT.Expressions.Create_Inside (
-yy.value_stack(yy.tos).low, MAT.Expressions.INSIDE_DIRECT_FUNCTION);
+               if yy.value_stack (yy.tos-1).bval then
+                  YYVal.expr := MAT.Expressions.Create_Inside (yy.value_stack (yy.tos).low, MAT.Expressions.INSIDE_DIRECT_FUNCTION);
                else
-                  
-yyval.expr := MAT.Expressions.Create_Inside (
-yy.value_stack(yy.tos).low, MAT.Expressions.INSIDE_FUNCTION);
+                  YYVal.expr := MAT.Expressions.Create_Inside (yy.value_stack (yy.tos).low, MAT.Expressions.INSIDE_FUNCTION);
                end if;
-            
+
 
 when 9 => -- #line 87
 
-              
-yyval.expr := MAT.Expressions.Create_Time (MAT.Types.Target_Tick_Ref (
-yy.value_stack(yy.tos-2).low),
-                                                      MAT.Types.Target_Tick_Ref (
-yy.value_stack(yy.tos).low));
-            
+              YYVal.expr := MAT.Expressions.Create_Time (MAT.Types.Target_Tick_Ref (yy.value_stack (yy.tos-2).low),
+                                                      MAT.Types.Target_Tick_Ref (yy.value_stack (yy.tos).low));
+
 
 when 10 => -- #line 93
 
-              
-yyval.expr := MAT.Expressions.Create_Time (MAT.Types.Target_Tick_Ref (
-yy.value_stack(yy.tos).low),
+              YYVal.expr := MAT.Expressions.Create_Time (MAT.Types.Target_Tick_Ref (yy.value_stack (yy.tos).low),
                                                       MAT.Types.Target_Tick_Ref'Last);
-            
+
 
 when 11 => -- #line 99
 
-              
-yyval.expr := MAT.Expressions.Create_Time (MAT.Types.Target_Tick_Ref'First,
-                                                      MAT.Types.Target_Tick_Ref (
-yy.value_stack(yy.tos).low));
-            
+              YYVal.expr := MAT.Expressions.Create_Time (MAT.Types.Target_Tick_Ref'First,
+                                                      MAT.Types.Target_Tick_Ref (yy.value_stack (yy.tos).low));
+
 
 when 12 => -- #line 105
 
-              
-yyval := 
-yy.value_stack(yy.tos); -- new Condition( C_STIME, $2 );
-            
+              YYVal := yy.value_stack (yy.tos); -- new Condition( C_STIME, $2 );
+
 
 when 13 => -- #line 110
 
-              
-yyval.expr := MAT.Expressions.Create_Size (MAT.Types.Target_Size (
-yy.value_stack(yy.tos).low),
-                                                      MAT.Types.Target_Size (
-yy.value_stack(yy.tos).high));
-            
+              YYVal.expr := MAT.Expressions.Create_Size (MAT.Types.Target_Size (yy.value_stack (yy.tos).low),
+                                                      MAT.Types.Target_Size (yy.value_stack (yy.tos).high));
+
 
 when 14 => -- #line 116
 
-              
-yyval.expr := MAT.Expressions.Create_Thread (MAT.Types.Target_Thread_Ref (
-yy.value_stack(yy.tos).low),
-                                                      	MAT.Types.Target_Thread_Ref (
-yy.value_stack(yy.tos).high));
-            
+              YYVal.expr := MAT.Expressions.Create_Thread (MAT.Types.Target_Thread_Ref (yy.value_stack (yy.tos).low),
+                                                          MAT.Types.Target_Thread_Ref (yy.value_stack (yy.tos).high));
+
 
 when 15 => -- #line 122
 
-              
-yyval.expr := MAT.Expressions.Create_Addr (MAT.Types.Target_Addr (
-yy.value_stack(yy.tos).low),
-                                                      MAT.Types.Target_Addr (
-yy.value_stack(yy.tos).low));
-            
+              YYVal.expr := MAT.Expressions.Create_Addr (MAT.Types.Target_Addr (yy.value_stack (yy.tos).low),
+                                                      MAT.Types.Target_Addr (yy.value_stack (yy.tos).low));
+
 
 when 16 => -- #line 128
 
-              
-yyval.expr := MAT.Expressions.Create_Addr (MAT.Types.Target_Addr (
-yy.value_stack(yy.tos).low),
-                                                      MAT.Types.Target_Addr (
-yy.value_stack(yy.tos).high));
-            
+              YYVal.expr := MAT.Expressions.Create_Addr (MAT.Types.Target_Addr (yy.value_stack (yy.tos).low),
+                                                      MAT.Types.Target_Addr (yy.value_stack (yy.tos).high));
+
 
 when 17 => -- #line 134
 
-              
-yyval.expr := MAT.Expressions.Create_Event (To_Event_Id_Type (
-yy.value_stack(yy.tos).low),
-                                                       To_Event_Id_Type (
-yy.value_stack(yy.tos).high));
-            
+              YYVal.expr := MAT.Expressions.Create_Event (To_Event_Id_Type (yy.value_stack (yy.tos).low),
+                                                       To_Event_Id_Type (yy.value_stack (yy.tos).high));
+
 
 when 18 => -- #line 140
 
-              
-yyval.expr := MAT.Expressions.Create_Event (To_Event_Id_Type (
-yy.value_stack(yy.tos-2).low),
-                                                       To_Event_Id_Type (
-yy.value_stack(yy.tos).low));
-            
+              YYVal.expr := MAT.Expressions.Create_Event (To_Event_Id_Type (yy.value_stack (yy.tos-2).low),
+                                                       To_Event_Id_Type (yy.value_stack (yy.tos).low));
+
 
 when 19 => -- #line 146
 
-              
-yyval.expr := MAT.Expressions.Create_Time (MAT.Types.Target_Tick_Ref (
-yy.value_stack(yy.tos).low),
-                                                      MAT.Types.Target_Tick_Ref (
-yy.value_stack(yy.tos).high));
-            
+              YYVal.expr := MAT.Expressions.Create_Time (MAT.Types.Target_Tick_Ref (yy.value_stack (yy.tos).low),
+                                                      MAT.Types.Target_Tick_Ref (yy.value_stack (yy.tos).high));
+
 
 when 20 => -- #line 152
 
-    		  
-yyval.expr := MAT.Expressions.Create_Event_Type (MAT.Events.MSG_MALLOC);
-    		
+              YYVal.expr := MAT.Expressions.Create_Event_Type (MAT.Events.MSG_MALLOC);
+
 
 when 21 => -- #line 157
 
-    		  
-yyval.expr := MAT.Expressions.Create_Event_Type (MAT.Events.MSG_FREE);
-    		
+              YYVal.expr := MAT.Expressions.Create_Event_Type (MAT.Events.MSG_FREE);
+
 
 when 22 => -- #line 162
 
-    		  
-yyval.expr := MAT.Expressions.Create_Event_Type (MAT.Events.MSG_REALLOC);
-    		
+              YYVal.expr := MAT.Expressions.Create_Event_Type (MAT.Events.MSG_REALLOC);
+
 
 when 23 => -- #line 167
 
-              
-yyval.expr := MAT.Expressions.Create_No_Free;
-    		
+              YYVal.expr := MAT.Expressions.Create_No_Free;
+
 
 when 24 => -- #line 172
 
-              
-yyval.expr := MAT.Expressions.Create_No_Free;
-    		
+              YYVal.expr := MAT.Expressions.Create_No_Free;
+
 
 when 25 => -- #line 177
 
-              
-yyval.low := 0;
-            
+              YYVal.low := 0;
+
 
 when 26 => -- #line 184
 
-              
-yyval.low  := 0;
-              
-yyval.high := 
-yy.value_stack(yy.tos).low - 1;
-            
+              YYVal.low  := 0;
+              YYVal.high := yy.value_stack (yy.tos).low - 1;
+
 
 when 27 => -- #line 190
 
-              
-yyval.low  := 0;
-              
-yyval.high := 
-yy.value_stack(yy.tos).low;
-            
+              YYVal.low  := 0;
+              YYVal.high := yy.value_stack (yy.tos).low;
+
 
 when 28 => -- #line 196
 
-              
-yyval.low  := 
-yy.value_stack(yy.tos).low + 1;
-              
-yyval.high := MAT.Types.Uint64'Last;
-            
+              YYVal.low  := yy.value_stack (yy.tos).low + 1;
+              YYVal.high := MAT.Types.Uint64'Last;
+
 
 when 29 => -- #line 202
 
-              
-yyval.low  := 
-yy.value_stack(yy.tos).low;
-              
-yyval.high := MAT.Types.Uint64'Last;
-            
+              YYVal.low  := yy.value_stack (yy.tos).low;
+              YYVal.high := MAT.Types.Uint64'Last;
+
 
 when 30 => -- #line 208
 
-              
-yyval.low  := 
-yy.value_stack(yy.tos-2).low;
-              
-yyval.high := 
-yy.value_stack(yy.tos).low;
-            
+              YYVal.low  := yy.value_stack (yy.tos-2).low;
+              YYVal.high := yy.value_stack (yy.tos).low;
+
 
 when 31 => -- #line 214
 
-              
-yyval.low  := 
-yy.value_stack(yy.tos).low;
-              
-yyval.high := 
-yy.value_stack(yy.tos).low;
-            
+              YYVal.low  := yy.value_stack (yy.tos).low;
+              YYVal.high := yy.value_stack (yy.tos).low;
+
 
 when 32 => -- #line 220
 
-              
-yyval.low := 
-yy.value_stack(yy.tos).low;
-              
-yyval.high := 
-yy.value_stack(yy.tos).low;
-            
+              YYVal.low := yy.value_stack (yy.tos).low;
+              YYVal.high := yy.value_stack (yy.tos).low;
+
 
 when 33 => -- #line 228
- 
-yyval.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);  
+ YYVal.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);
 
 when 34 => -- #line 231
- 
-yyval.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);  
+ YYVal.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);
 
 when 35 => -- #line 236
- 
-yyval.low := 1;              
+ YYVal.low := 1;
 
 when 36 => -- #line 239
- 
-yyval := MAT.Expressions.Parser_Tokens.YYLval;   
+ YYVal := MAT.Expressions.Parser_Tokens.YYLVal;
 
-when 37 => -- #line 244
- 
-yyval := MAT.Expressions.Parser_Tokens.YYLval; 
+when 40 => -- #line 252
+ YYVal := MAT.Expressions.Parser_Tokens.YYLVal;
 
-when 38 => -- #line 249
- 
-yyval := MAT.Expressions.Parser_Tokens.YYLval; 
+when 41 => -- #line 257
+ YYVal := MAT.Expressions.Parser_Tokens.YYLVal;
 
-when 39 => -- #line 252
- 
-yyval := MAT.Expressions.Parser_Tokens.YYLval; 
-yyval.low := 
-yyval.low * 1_000_000; 
+when 42 => -- #line 260
+ YYVal := MAT.Expressions.Parser_Tokens.YYLVal; YYVal.low := YYVal.low * 1_000_000;
 
-when 40 => -- #line 257
- 
-yyval.bval := False;          
+when 43 => -- #line 265
+ YYVal.bval := False;
 
-when 41 => -- #line 260
- 
-yyval.bval := True;           
+when 44 => -- #line 268
+ YYVal.bval := True;
 
-                    when others => null;
-                end case;
+               pragma Style_Checks (On);
 
+               when others => null;
+            end case;
 
-            -- Pop RHS states and goto next state
-            yy.tos      := yy.tos - rule_length(yy.rule_id) + 1;
+            --  Pop RHS states and goto next state
+            yy.tos := yy.tos - Rule_Length (yy.rule_id) + 1;
             if yy.tos > yy.stack_size then
-                text_io.put_line(" Stack size exceeded on state_stack");
-                raise yy_Tokens.syntax_error;
+               Text_IO.Put_Line (" Stack size exceeded on state_stack");
+               raise yy_tokens.Syntax_Error;
             end if;
-            yy.state_stack(yy.tos) := goto_state(yy.state_stack(yy.tos-1) ,
-                                 get_lhs_rule(yy.rule_id));
+            yy.state_stack (yy.tos) := goto_state (yy.state_stack (yy.tos - 1),
+                                                   Get_LHS_Rule (yy.rule_id));
 
-              yy.value_stack(yy.tos) := yyval;
+            yy.value_stack (yy.tos) := YYVal;
 
             if yy.debug then
-                reduce_debug(yy.rule_id,
-                    goto_state(yy.state_stack(yy.tos - 1),
-                               get_lhs_rule(yy.rule_id)));
+               reduce_debug (yy.rule_id,
+                  goto_state (yy.state_stack (yy.tos - 1),
+                              Get_LHS_Rule (yy.rule_id)));
             end if;
 
-        end if;
+         end if;
 
+      end loop;
 
-    end loop;
+   end YYParse;
 
-
-end yyparse;
 
 end MAT.Expressions.Parser;

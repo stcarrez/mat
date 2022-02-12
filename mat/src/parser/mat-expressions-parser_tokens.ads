@@ -1,28 +1,28 @@
-pragma Style_Checks (Off);
-package Mat.Expressions.Parser_Tokens is
+package MAT.Expressions.Parser_Tokens is
 
 
-   subtype yystype is MAT.Expressions.yystype;
+   subtype YYSType is MAT.Expressions.yystype;
 
-    YYLVal, YYVal : YYSType; 
-    type Token is
-        (End_Of_Input, Error, T_Name, T_Int,
-         T_String, T_Select, T_With,
-         T_At, T_By, T_In,
-         T_Not, T_Or, T_And,
-         T_Size, T_Addr, T_From,
-         T_Begin, T_End, T_To,
-         T_Reallocation, T_All, T_Unot,
-         T_Within, T_Use, T_After,
-         T_Before, T_Direct, T_Is,
-         T_Malloc, T_Realloc, T_Free,
-         T_Leak, T_No_Free, T_Thread,
-         T_Range, T_Event, T_Time,
-         T_Lt, T_Le, T_Gt,
-         T_Ge, T_Ne, T_Eq,
-         T_Has, '[', ']',
-         '(', ')', ',' );
+   YYLVal, YYVal : YYSType;
+   type Token is
+        (END_OF_INPUT, ERROR, T_NAME, T_INT,
+         T_STRING, T_SELECT, T_WITH,
+         T_AT, T_BY, T_IN,
+         T_NOT, T_OR, T_AND,
+         T_SIZE, T_ADDR, T_FROM,
+         T_BEGIN, T_END, T_TO,
+         T_REALLOCATION, T_ALL, T_UNOT,
+         T_WITHIN, T_USE, T_AFTER,
+         T_BEFORE, T_DIRECT, T_IS,
+         T_MALLOC, T_REALLOC, T_FREE,
+         T_LEAK, T_NO_FREE, T_THREAD,
+         T_RANGE, T_EVENT, T_TIME,
+         T_LT, T_LE, T_GT,
+         T_GE, T_NE, T_EQ,
+         T_HAS, '[', ']',
+         '(', ')', ',',
+         '+', '-');
 
-    Syntax_Error : exception;
+   Syntax_Error : exception;
 
-end Mat.Expressions.Parser_Tokens;
+end MAT.Expressions.Parser_Tokens;
