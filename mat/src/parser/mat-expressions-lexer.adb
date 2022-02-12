@@ -26,7 +26,7 @@ package body MAT.Expressions.Lexer is
       YY_END_OF_BUFFER : constant := 49;
       subtype yy_state_type is Integer;
       yy_current_state : yy_state_type;
-INITIAL : constant := 0;
+      INITIAL : constant := 0;
       yy_accept : constant array (0 .. 127) of Short :=
           (0,
         0,    0,   49,   47,    1,   48,   44,   45,   47,   29,
@@ -59,7 +59,21 @@ INITIAL : constant := 0;
 
        25,   26,    5,   27,   28,    5,   29,   30,   31,   32,
        33,    5,    5,   34,   35,   36,    5,   37,   38,   39,
-       40,   41,    1,    1,    1,    1,    1, others => 1
+       40,   41,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1, others => 1
 
        );
 
@@ -295,7 +309,7 @@ INITIAL : constant := 0;
          YY_USER_ACTION;
 
          if aflex_debug then  -- output acceptance info. for (-d) debug mode
-            Text_IO.Put (Standard_Error, "--accepting rule #");
+            Text_IO.Put (Standard_Error, "  -- Aflex.YYLex accept rule #");
             Text_IO.Put (Standard_Error, Integer'Image (yy_act));
             Text_IO.Put_Line (Standard_Error, "(""" & YYText & """)");
          end if;
@@ -312,262 +326,259 @@ INITIAL : constant := 0;
 
 
 
-         when 1 => 
+         when 1 =>
 --# line 4 "mat-expressions-lexer.l"
              null; 
 
-         when 2 => 
+         when 2 =>
 --# line 6 "mat-expressions-lexer.l"
             return T_WITH;
 
-         when 3 => 
+         when 3 =>
 --# line 7 "mat-expressions-lexer.l"
             return T_OR;
 
-         when 4 => 
+         when 4 =>
 --# line 8 "mat-expressions-lexer.l"
             return T_AND;
 
-         when 5 => 
+         when 5 =>
 --# line 9 "mat-expressions-lexer.l"
             return T_NOT;
 
-         when 6 => 
+         when 6 =>
 --# line 10 "mat-expressions-lexer.l"
             return T_AFTER;
 
-         when 7 => 
+         when 7 =>
 --# line 11 "mat-expressions-lexer.l"
             return T_BEFORE;
 
-         when 8 => 
+         when 8 =>
 --# line 12 "mat-expressions-lexer.l"
             return T_WITHIN;
 
-         when 9 => 
+         when 9 =>
 --# line 13 "mat-expressions-lexer.l"
             return T_REALLOCATION;
 
-         when 10 => 
+         when 10 =>
 --# line 14 "mat-expressions-lexer.l"
             return T_THREAD;
 
-         when 11 => 
+         when 11 =>
 --# line 15 "mat-expressions-lexer.l"
             return T_MALLOC;
 
-         when 12 => 
+         when 12 =>
 --# line 16 "mat-expressions-lexer.l"
             return T_FREE;
 
-         when 13 => 
+         when 13 =>
 --# line 17 "mat-expressions-lexer.l"
             return T_REALLOC;
 
-         when 14 => 
+         when 14 =>
 --# line 18 "mat-expressions-lexer.l"
             return T_LEAK;
 
-         when 15 => 
+         when 15 =>
 --# line 19 "mat-expressions-lexer.l"
             return T_NO_FREE;
 
-         when 16 => 
+         when 16 =>
 --# line 20 "mat-expressions-lexer.l"
             return T_BY;
 
-         when 17 => 
+         when 17 =>
 --# line 21 "mat-expressions-lexer.l"
             return T_AT;
 
-         when 18 => 
+         when 18 =>
 --# line 22 "mat-expressions-lexer.l"
             return T_IN;
 
-         when 19 => 
+         when 19 =>
 --# line 23 "mat-expressions-lexer.l"
             return T_SIZE;
 
-         when 20 => 
+         when 20 =>
 --# line 24 "mat-expressions-lexer.l"
             return T_ADDR;
 
-         when 21 => 
+         when 21 =>
 --# line 25 "mat-expressions-lexer.l"
             return T_EVENT;
 
-         when 22 => 
+         when 22 =>
 --# line 26 "mat-expressions-lexer.l"
             return T_ALL;
 
-         when 23 => 
+         when 23 =>
 --# line 27 "mat-expressions-lexer.l"
             return T_IS;
 
-         when 24 => 
+         when 24 =>
 --# line 28 "mat-expressions-lexer.l"
             return T_FROM;
 
-         when 25 => 
+         when 25 =>
 --# line 29 "mat-expressions-lexer.l"
             return T_TO;
 
-         when 26 => 
+         when 26 =>
 --# line 30 "mat-expressions-lexer.l"
             return T_DIRECT;
 
-         when 27 => 
+         when 27 =>
 --# line 31 "mat-expressions-lexer.l"
             return T_HAS;
 
-         when 28 => 
+         when 28 =>
 --# line 32 "mat-expressions-lexer.l"
                Line_Number := Line_Number + 1;  
 
-         when 29 => 
+         when 29 =>
 --# line 33 "mat-expressions-lexer.l"
             return '(';
 
-         when 30 => 
+         when 30 =>
 --# line 34 "mat-expressions-lexer.l"
             return ')';
 
-         when 31 => 
+         when 31 =>
 --# line 35 "mat-expressions-lexer.l"
             return '[';
 
-         when 32 => 
+         when 32 =>
 --# line 36 "mat-expressions-lexer.l"
             return ']';
 
-         when 33 => 
+         when 33 =>
 --# line 37 "mat-expressions-lexer.l"
             return ',';
 
-         when 34 => 
+         when 34 =>
 --# line 38 "mat-expressions-lexer.l"
             return T_RANGE;
 
-         when 35 => 
+         when 35 =>
 --# line 39 "mat-expressions-lexer.l"
             return T_LT;
 
-         when 36 => 
+         when 36 =>
 --# line 40 "mat-expressions-lexer.l"
             return T_LE;
 
-         when 37 => 
+         when 37 =>
 --# line 41 "mat-expressions-lexer.l"
             return T_GT;
 
-         when 38 => 
+         when 38 =>
 --# line 42 "mat-expressions-lexer.l"
             return T_GE;
 
-         when 39 => 
+         when 39 =>
 --# line 43 "mat-expressions-lexer.l"
             return T_EQ;
 
-         when 40 => 
+         when 40 =>
 --# line 45 "mat-expressions-lexer.l"
               yylval.low := MAT.Types.Hex_Value (YYText (YYText'First + 2 .. YYText'Last));
 		           return T_INT;
 		        
 
-         when 41 => 
+         when 41 =>
 --# line 48 "mat-expressions-lexer.l"
             
 		           yylval.low := MAT.Types.Uint64'Value (YYText);
 		           return T_INT;
 
 
-         when 42 => 
+         when 42 =>
 --# line 52 "mat-expressions-lexer.l"
             
 		           yylval.low := MAT.Types.Uint64'Value (YYText);
 		           return T_INT;
 		
 
-         when 43 => 
+         when 43 =>
 --# line 56 "mat-expressions-lexer.l"
             
                    yylval.low := MAT.Types.Uint64 (MAT.Types.Tick_Value (YYText));
 		           return T_TIME;
 		
 
-         when 44 => 
+         when 44 =>
 --# line 60 "mat-expressions-lexer.l"
             
 		  return T_STRING;
 		
 
-         when 45 => 
+         when 45 =>
 --# line 63 "mat-expressions-lexer.l"
             
 		  return T_NAME;
 		
 
-         when 46 => 
+         when 46 =>
 --# line 66 "mat-expressions-lexer.l"
              Line_Number := Line_Number + 1;  
 
-         when 47 => 
+         when 47 =>
 --# line 67 "mat-expressions-lexer.l"
               null;   
 
-         when 48 => 
+         when 48 =>
 --# line 68 "mat-expressions-lexer.l"
             raise AFLEX_SCANNER_JAMMED;
          when YY_END_OF_BUFFER + INITIAL + 1 =>
-               return End_Of_Input;
-            when YY_END_OF_BUFFER =>
-               --  undo the effects of YY_DO_BEFORE_ACTION
-               yy_ch_buf (yy_cp) := yy_hold_char;
+            return End_Of_Input;
+         when YY_END_OF_BUFFER =>
+            --  undo the effects of YY_DO_BEFORE_ACTION
+            yy_ch_buf (yy_cp) := yy_hold_char;
 
-               yytext_ptr := yy_bp;
+            yytext_ptr := yy_bp;
 
-               case yy_get_next_buffer is
-                  when EOB_ACT_END_OF_FILE =>
-                     if yyWrap then
-                        --  note: because we've taken care in
-                        --  yy_get_next_buffer() to have set up yytext,
-                        --  we can now set up yy_c_buf_p so that if some
-                        --  total hoser (like aflex itself) wants
-                        --  to call the scanner after we return the
-                        --  End_Of_Input, it'll still work - another
-                        --  End_Of_Input will get returned.
+            case yy_get_next_buffer is
+               when EOB_ACT_END_OF_FILE =>
+                  if yyWrap then
+                     --  note: because we've taken care in
+                     --  yy_get_next_buffer() to have set up yytext,
+                     --  we can now set up yy_c_buf_p so that if some
+                     --  total hoser (like aflex itself) wants
+                     --  to call the scanner after we return the
+                     --  End_Of_Input, it'll still work - another
+                     --  End_Of_Input will get returned.
 
-                        yy_c_buf_p := yytext_ptr;
-
-                        yy_act := YY_STATE_EOF ((yy_start - 1) / 2);
-
-                        goto do_action;
-                     else
-                        --  start processing a new file
-                        yy_init := True;
-                        goto new_file;
-                     end if;
-
-                  when EOB_ACT_RESTART_SCAN =>
                      yy_c_buf_p := yytext_ptr;
-                     yy_hold_char := yy_ch_buf (yy_c_buf_p);
 
-                  when EOB_ACT_LAST_MATCH =>
-                     yy_c_buf_p := yy_n_chars;
-                     yy_current_state := yy_get_previous_state;
+                     yy_act := YY_STATE_EOF ((yy_start - 1) / 2);
 
-                     yy_cp := yy_c_buf_p;
-                     yy_bp := yytext_ptr;
-                     goto next_action;
-                  when others =>
-                     null;
-               end case; --  case yy_get_next_buffer()
+                     goto do_action;
+                  else
+                     --  start processing a new file
+                     yy_init := True;
+                     goto new_file;
+                  end if;
 
-            when others =>
-               Text_IO.Put ("action # ");
-               Text_IO.Put (Integer'Image (yy_act));
-               Text_IO.New_Line;
-               raise AFLEX_INTERNAL_ERROR;
+               when EOB_ACT_RESTART_SCAN =>
+                  yy_c_buf_p := yytext_ptr;
+                  yy_hold_char := yy_ch_buf (yy_c_buf_p);
+
+               when EOB_ACT_LAST_MATCH =>
+                  yy_c_buf_p := yy_n_chars;
+                  yy_current_state := yy_get_previous_state;
+                  yy_cp := yy_c_buf_p;
+                  yy_bp := yytext_ptr;
+                  goto next_action;
+            end case; --  case yy_get_next_buffer()
+
+         when others =>
+            Text_IO.Put ("action # ");
+            Text_IO.Put (Integer'Image (yy_act));
+            Text_IO.New_Line;
+            raise AFLEX_INTERNAL_ERROR;
          end case; --  case (yy_act)
       end loop; --  end of loop waiting for end of file
    end YYLex;
