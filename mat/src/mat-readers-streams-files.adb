@@ -30,7 +30,7 @@ package body MAT.Readers.Streams.Files is
    --  ------------------------------
    procedure Open (Reader : in out File_Reader_Type;
                    Path   : in String) is
-      Stream : constant access Util.Streams.Input_Stream'Class := Reader.File'Access;
+      Stream : constant access Util.Streams.Input_Stream'Class := Reader.File'Unchecked_Access;
    begin
       Log.Info ("Reading data stream {0}", Path);
 
