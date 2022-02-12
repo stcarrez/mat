@@ -11,6 +11,7 @@ acc.xml
 *.gb_project
 *.project
 *.log
+*.ali
 ChangeLog
 .settings
 configure.lineno
@@ -28,3 +29,7 @@ mat/mat_gtk.gpr
 mat/mat.gpr
 mat/regtests/results
 mat/bin
+mat/mat.cov
+config.cache
+mat/gnatinspect.db
+mat/cover
