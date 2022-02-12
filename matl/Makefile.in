@@ -18,6 +18,7 @@ target_triplet = @target@
 bindir=${prefix}/bin
 libdir=${prefix}/lib
 mandir = @mandir@
+datarootdir=@datarootdir@
 
 AS = @AS@
 CC = @CC@
