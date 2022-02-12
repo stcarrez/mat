@@ -167,6 +167,11 @@ the generated .mat files on your Linux host.  Make sure your program is
 not stripped and available to the mat program to get the symbols
 (use the -s path option if necessary).
 
+# Documentation
+
+* [Memory Analysis Tool (1)](https://github.com/stcarrez/mat/blob/master/docs/mat.md)
+* [Memory Analysis Tool Launcher (1)](https://github.com/stcarrez/mat/blob/master/docs/matl.md)
+
 # Articles
 
 * [Using MAT the Memory Analysis Tool](https://blog.vacs.fr/vacs/blogs/post.html?post=2015/05/15/Using-MAT-the-Memory-Analysis-Tool)
