@@ -529,7 +529,7 @@ package body MAT.Commands is
       Console.Print_Title (MAT.Consoles.F_LEVEL, "Level", 6);
       Console.Print_Title (MAT.Consoles.F_SIZE, "Size", 10);
       Console.Print_Title (MAT.Consoles.F_COUNT, "Count", 8);
-      Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 60);
+      Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 90);
       Console.End_Title;
 
       MAT.Events.Timelines.Find_Frames (Target => Process.Events.all,
@@ -696,7 +696,7 @@ package body MAT.Commands is
       Console.Start_Title;
       Console.Print_Title (MAT.Consoles.F_FRAME_ID, "Id", 3);
       Console.Print_Title (MAT.Consoles.F_FRAME_ADDR, "Frame Address", 22);
-      Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 80);
+      Console.Print_Title (MAT.Consoles.F_FUNCTION_NAME, "Function", 90);
       Console.End_Title;
 
       Print_Frame (Console, Event.Frame, Process.Symbols);
