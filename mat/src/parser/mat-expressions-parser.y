@@ -1,4 +1,4 @@
-
+%unit MAT.Expressions.Parser
 %token      T_NAME T_INT T_STRING
 %token      T_SELECT T_WITH T_AT T_BY T_IN T_NOT T_OR T_AND
 %token      T_SIZE T_ADDR T_FROM T_BEGIN T_END T_TO T_REALLOCATION
@@ -23,7 +23,7 @@
 %right T_UNOT
 
 {
-   subtype yystype is MAT.Expressions.yystype;
+   subtype YYSType is MAT.Expressions.yystype;
 }
 
 %%
@@ -236,20 +236,28 @@ count:
                 { $$.low := 1;              }
     |
         T_INT
-                { $$ := MAT.Expressions.Parser_Tokens.YYLval;   }
+                { $$ := MAT.Expressions.Parser_Tokens.YYLVal;   }
+    ;
+
+int_expr :
+      int_expr '+' integer
+    |
+      int_expr '-' integer
+    |
+      integer
     ;
 
 integer:
         T_INT
-                { $$ := MAT.Expressions.Parser_Tokens.YYLval; }
+                { $$ := MAT.Expressions.Parser_Tokens.YYLVal; }
     ;
 
 time:
         T_TIME
-                { $$ := MAT.Expressions.Parser_Tokens.YYLval; }
+                { $$ := MAT.Expressions.Parser_Tokens.YYLVal; }
     |
         T_INT
-                { $$ := MAT.Expressions.Parser_Tokens.YYLval; $$.low := $$.low * 1_000_000; }
+                { $$ := MAT.Expressions.Parser_Tokens.YYLVal; $$.low := $$.low * 1_000_000; }
     ;
 
 direct:
