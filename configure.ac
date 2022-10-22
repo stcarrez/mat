@@ -69,7 +69,7 @@ if test "$GCC" = yes; then
   case "${target}" in
     mips*|arm*)
       mach_cflags="-funwind-tables"
-	  mach_result="using $mach_cflags"
+      mach_result="using $mach_cflags"
       ;;
 
     *)
@@ -141,7 +141,7 @@ SUBDIRS_INSTALL=$SUBDIRS
 
 ac_enable_ada_util=no
 AC_ARG_ENABLE(ada-util,
-  [  --enable-ada-util       Enable compilation of Ada Utility Library],
+  [  --enable-ada-util       Enable compilation of Ada Utility Library (disabled)],
   [case "${enableval}" in
     no|none)  ac_enable_ada_util= ;;
     *)        ac_enable_ada_util=yes
@@ -164,27 +164,28 @@ else
 fi
 
 AC_ARG_ENABLE(mat,
-  [  --enable-mat            Enable compilation of matp tool which requires GNAT Ada compiler (disabled)],
+  [  --enable-mat            Enable compilation of matp tool which requires GNAT Ada compiler],
   [case "${enableval}" in
     no|none)  ac_enable_mat= ;;
     *)        ac_enable_mat=yes
 	      ;;
     esac])
 
+AM_CHECK_HOST_PWD
 DIR=`pwd $awa_pwd_option`
-
-AM_GNAT_CHECK_PROJECT([bfdada],[bfdada])
-
-if test T$ac_cv_gnat_project_bfdada = Tno; then
-  ac_enable_ada_bfd='yes'
-  BFD_DIR=$DIR/ada-bfd/
-else
-  BFD_DIR=${ac_cv_gnat_project_dir_bfdada}
-fi
-AC_SUBST(BFD_DIR)
 
 # Build ada-util only when --enable-mat and --enable-ada-util are defined.
 if test x$ac_enable_mat = 'xyes'; then
+  AM_GNAT_CHECK_PROJECT([bfdada],[bfdada])
+
+  if test T$ac_cv_gnat_project_bfdada = Tno; then
+    ac_enable_ada_bfd='yes'
+    BFD_DIR=$DIR/ada-bfd/
+  else
+    BFD_DIR=${ac_cv_gnat_project_dir_bfdada}
+  fi
+  AC_SUBST(BFD_DIR)
+
   if test x$ac_enable_ada_util = 'xyes'; then
     SUBDIRS="$SUBDIRS ada-util"
     AC_CONFIG_SUBDIRS(ada-util)
@@ -206,7 +207,7 @@ AM_GNAT_LIBRARY_PROJECT(mat)
 
 ac_enable_gtk=no
 AC_ARG_ENABLE(gtk,
-[  --enable-gtk          Enable compilation of mat Gtk tool (disabled)],
+[  --enable-gtk            Enable compilation of mat Gtk tool (disabled)],
 [case "${enableval}" in
   no|none)  ac_enable_gtk= ;;
   *)        ac_enable_gtk=yes
@@ -215,53 +216,55 @@ esac])dnl
 MAT_GTKADA=$ac_enable_gtk
 AC_SUBST(MAT_GTKADA)
 
-AC_CHECK_LIB([readline],[readline])
+if test x$ac_enable_mat = 'xyes'; then
 
-##########################################
-# Ada Util library
-##########################################
-AM_GNAT_FIND_PROJECT([ada-util],[Ada Utility Library],[utilada_sys],
-  [git@github.com:stcarrez/ada-util.git],
-  [Building mat requires the Ada Utility Library.],
-  [
-    UTIL_DIR=${ac_cv_gnat_project_dir_utilada_sys}
-  ])
+  AC_CHECK_LIB([readline],[readline])
 
-AC_SUBST(UTIL_DIR)
+  if test x$ac_enable_ada_util = 'xyes'; then
+    UTIL_DIR=$DIR/ada-util/
+  else
+    AM_GNAT_FIND_PROJECT([ada-util],[Ada Utility Library],[utilada_sys],
+      [git@github.com:stcarrez/ada-util.git],
+      [Building mat requires the Ada Utility Library.],
+      [
+        UTIL_DIR=${ac_cv_gnat_project_dir_utilada_sys}
+      ])
+    fi
+  fi
+  AC_SUBST(UTIL_DIR)
 
-GTKADA_DIR=
-if test x$ac_enable_gtk = 'xyes'; then
+  GTKADA_DIR=
+  if test x$ac_enable_gtk = 'xyes'; then
 
 ##########################################
 # GtkAda library
 ##########################################
-AC_MSG_CHECKING([GtkAda library (libre.adacore.com/tools/gtkada)])
-AC_ARG_WITH(gtkada,
-AS_HELP_STRING([--with-gtkada=x], [Path for the Gtk Ada library (libre.adacore.com/tools/gtkada)]),
-[
-  GTKADA_DIR=${withval}/
-],
-[
-  echo "with \"gtkada\"; project t is for Source_Dirs use (); end t;" > t.gpr
+  AC_MSG_CHECKING([GtkAda library (libre.adacore.com/tools/gtkada)])
+  AC_ARG_WITH(gtkada,
+  AS_HELP_STRING([--with-gtkada=x], [Path for the Gtk Ada library (libre.adacore.com/tools/gtkada)]),
+  [
+    GTKADA_DIR=${withval}/
+  ],
+  [
+    echo "with \"gtkada\"; project t is for Source_Dirs use (); end t;" > t.gpr
+    gnatmake -p -Pt >/dev/null 2>/dev/null
+    if test $? -eq 0; then
+      GTKADA_DIR=
+    else
+      GTKADA_DIR=../gtkada/
+    fi;
+  ])
+  echo "with \"${GTKADA_DIR}gtkada\"; project t is for Source_Dirs use (); end t;" > t.gpr
   gnatmake -p -Pt >/dev/null 2>/dev/null
-  if test $? -eq 0; then
-    GTKADA_DIR=
-  else
-    GTKADA_DIR=../gtkada/
-  fi;
-])
-echo "with \"${GTKADA_DIR}gtkada\"; project t is for Source_Dirs use (); end t;" > t.gpr
-gnatmake -p -Pt >/dev/null 2>/dev/null
-if test $? -ne 0 ; then
-   rm -f t.gpr
-   ac_enable_gtk=
-   # AC_MSG_ERROR([GtkAda library not found in ${GTKADA_DIR}])
- fi
-rm -f t.gpr
-AC_MSG_RESULT(${GTKADA_DIR})
+  if test $? -ne 0 ; then
+    rm -f t.gpr
+    ac_enable_gtk=
+    # AC_MSG_ERROR([GtkAda library not found in ${GTKADA_DIR}])
+  fi
+  rm -f t.gpr
+  AC_MSG_RESULT(${GTKADA_DIR})
 
 fi
-
 
 if test x$ac_enable_gtk = 'xyes'; then
   GPRPATH=gtkmat.gpr
