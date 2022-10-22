@@ -1,11 +1,12 @@
-with "config";
+with "mat_config";
 with "@UTIL_DIR@utilada_sys";
 with "@BFD_DIR@bfdada";
 with "@GTKADA_DIR@gtkada";
+with "../ansi-ada/ansiada";
 
 project mat_gtk is
 
-   Mains := ("matp.adb", "gtkmatp.adb");
+   Mains := ("mat-main.adb", "gtkmatp.adb");
 
    for Main use Mains;
 
@@ -20,12 +21,12 @@ project mat_gtk is
 
    end Naming;
 
-   for Object_Dir use "./" & Config'Object_Dir & "/obj";
-   for Exec_Dir use "./" & Config'Exec_Dir & "/bin";
+   for Object_Dir use "./" & Mat_Config'Object_Dir & "/obj";
+   for Exec_Dir use "./" & Mat_Config'Exec_Dir & "/bin";
 
-   package Binder renames Config.Binder;
-   package Builder renames Config.Builder;
-   package Compiler renames Config.Compiler;
-   package Linker renames Config.Linker;
+   package Binder renames Mat_Config.Binder;
+   package Builder renames Mat_Config.Builder;
+   package Compiler renames Mat_Config.Compiler;
+   package Linker renames Mat_Config.Linker;
 
 end mat_gtk;
