@@ -1371,14 +1371,14 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-debug          Enable debug mode (disable)
   --enable-tls            Enable or disable use of tls code (disable)
-  --enable-ada-util       Enable compilation of Ada Utility Library
+  --enable-ada-util       Enable compilation of Ada Utility Library (disabled)
   --enable-ada-bfd        Enable compilation of Ada BFD Library
-  --enable-mat            Enable compilation of matp tool which requires GNAT Ada compiler (disabled)
+  --enable-mat            Enable compilation of matp tool which requires GNAT Ada compiler
   --enable-shared         Enable the shared libraries (disabled)
   --enable-default-shared Use shared libraries by default (disabled)
   --enable-distrib        build for distribution, optimized and strip symbols (enabled)
   --enable-coverage       build with coverage support -fprofile-arcs -ftest-coverage (disabled)
-  --enable-gtk          Enable compilation of mat Gtk tool (disabled)
+  --enable-gtk            Enable compilation of mat Gtk tool (disabled)
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -3864,7 +3864,7 @@ $as_echo_n "checking for specific compilation flags for ${target}... " >&6; }
   case "${target}" in
     mips*|arm*)
       mach_cflags="-funwind-tables"
-	  mach_result="using $mach_cflags"
+      mach_result="using $mach_cflags"
       ;;
 
     *)
@@ -4427,8 +4427,25 @@ if test "${enable_mat+set}" = set; then :
 fi
 
 
+
+  if test x${awa_host_pwd_check} != xyes; then
+    case "${target_os}" in
+       mingw32*|cygwin*|mingw64*|msys)
+       awa_pwd_option="-W"
+       ;;
+
+     *)
+      awa_pwd_option=""
+      ;;
+
+    esac
+    awa_host_pwd_check=yes
+  fi
+
 DIR=`pwd $awa_pwd_option`
 
+# Build ada-util only when --enable-mat and --enable-ada-util are defined.
+if test x$ac_enable_mat = 'xyes'; then
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether bfdada project exists" >&5
 $as_echo_n "checking whether bfdada project exists... " >&6; }
@@ -4455,16 +4472,14 @@ fi
 $as_echo "$ac_cv_gnat_project_bfdada" >&6; }
 
 
-if test T$ac_cv_gnat_project_bfdada = Tno; then
-  ac_enable_ada_bfd='yes'
-  BFD_DIR=$DIR/ada-bfd/
-else
-  BFD_DIR=${ac_cv_gnat_project_dir_bfdada}
-fi
+  if test T$ac_cv_gnat_project_bfdada = Tno; then
+    ac_enable_ada_bfd='yes'
+    BFD_DIR=$DIR/ada-bfd/
+  else
+    BFD_DIR=${ac_cv_gnat_project_dir_bfdada}
+  fi
 
 
-# Build ada-util only when --enable-mat and --enable-ada-util are defined.
-if test x$ac_enable_mat = 'xyes'; then
   if test x$ac_enable_ada_util = 'xyes'; then
     SUBDIRS="$SUBDIRS ada-util"
 
@@ -4972,7 +4987,9 @@ fi
 MAT_GTKADA=$ac_enable_gtk
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for readline in -lreadline" >&5
+if test x$ac_enable_mat = 'xyes'; then
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for readline in -lreadline" >&5
 $as_echo_n "checking for readline in -lreadline... " >&6; }
 if ${ac_cv_lib_readline_readline+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -5018,9 +5035,9 @@ _ACEOF
 fi
 
 
-##########################################
-# Ada Util library
-##########################################
+  if test x$ac_enable_ada_util = 'xyes'; then
+    UTIL_DIR=$DIR/ada-util/
+  else
 
 
 # Check whether --with-ada-util was given.
@@ -5122,7 +5139,7 @@ $as_echo "$ac_cv_gnat_project_utilada_sys" >&6; }
 
   if test x${ac_cv_gnat_project_utilada_sys} = xyes; then
 
-    UTIL_DIR=${ac_cv_gnat_project_dir_utilada_sys}
+        UTIL_DIR=${ac_cv_gnat_project_dir_utilada_sys}
 
   else
     if test x"Building mat requires the Ada Utility Library." != x; then
@@ -5142,48 +5159,48 @@ $as_echo "no" >&6; }
     fi
   fi
 
+    fi
+  fi
 
 
-
-GTKADA_DIR=
-if test x$ac_enable_gtk = 'xyes'; then
+  GTKADA_DIR=
+  if test x$ac_enable_gtk = 'xyes'; then
 
 ##########################################
 # GtkAda library
 ##########################################
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking GtkAda library (libre.adacore.com/tools/gtkada)" >&5
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking GtkAda library (libre.adacore.com/tools/gtkada)" >&5
 $as_echo_n "checking GtkAda library (libre.adacore.com/tools/gtkada)... " >&6; }
 
 # Check whether --with-gtkada was given.
 if test "${with_gtkada+set}" = set; then :
   withval=$with_gtkada;
-  GTKADA_DIR=${withval}/
+    GTKADA_DIR=${withval}/
 
 else
 
-  echo "with \"gtkada\"; project t is for Source_Dirs use (); end t;" > t.gpr
-  gnatmake -p -Pt >/dev/null 2>/dev/null
-  if test $? -eq 0; then
-    GTKADA_DIR=
-  else
-    GTKADA_DIR=../gtkada/
-  fi;
+    echo "with \"gtkada\"; project t is for Source_Dirs use (); end t;" > t.gpr
+    gnatmake -p -Pt >/dev/null 2>/dev/null
+    if test $? -eq 0; then
+      GTKADA_DIR=
+    else
+      GTKADA_DIR=../gtkada/
+    fi;
 
 fi
 
-echo "with \"${GTKADA_DIR}gtkada\"; project t is for Source_Dirs use (); end t;" > t.gpr
-gnatmake -p -Pt >/dev/null 2>/dev/null
-if test $? -ne 0 ; then
-   rm -f t.gpr
-   ac_enable_gtk=
-   # AC_MSG_ERROR([GtkAda library not found in ${GTKADA_DIR}])
- fi
-rm -f t.gpr
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${GTKADA_DIR}" >&5
+  echo "with \"${GTKADA_DIR}gtkada\"; project t is for Source_Dirs use (); end t;" > t.gpr
+  gnatmake -p -Pt >/dev/null 2>/dev/null
+  if test $? -ne 0 ; then
+    rm -f t.gpr
+    ac_enable_gtk=
+    # AC_MSG_ERROR([GtkAda library not found in ${GTKADA_DIR}])
+  fi
+  rm -f t.gpr
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${GTKADA_DIR}" >&5
 $as_echo "${GTKADA_DIR}" >&6; }
 
 fi
-
 
 if test x$ac_enable_gtk = 'xyes'; then
   GPRPATH=gtkmat.gpr
