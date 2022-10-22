@@ -18,10 +18,16 @@
 
 with Gtk.Widget;
 with Gtkada.Builder;
+with Util.Log.Loggers;
 
 with MAT.Events.Gtkmat;
 with MAT.Consoles.Gtkmat;
 package MAT.Targets.Gtkmat is
+
+   Initialize_Error : exception;
+
+   --  The logger
+   Log : constant Util.Log.Loggers.Logger := Util.Log.Loggers.Create ("MAT.Events.Gtkmat");
 
    type Target_Type is new MAT.Targets.Target_Type with private;
    type Target_Type_Access is access all Target_Type'Class;

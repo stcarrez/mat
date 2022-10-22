@@ -17,9 +17,11 @@
 -----------------------------------------------------------------------
 
 with Glib.Main;
+with Glib.Application;
 with Gtk.Main;
 with Gtk.Widget;
 with Gtk.Label;
+with Gtk.GEntry;
 
 with Util.Log.Loggers;
 
@@ -35,6 +37,14 @@ package body MAT.Callbacks is
 
    package Timer_Callback is
      new Glib.Main.Generic_Sources (MAT.Targets.Gtkmat.Target_Type_Access);
+
+   function Get_Widget (Object : access Gtkada.Builder.Gtkada_Builder_Record'Class;
+                        Name   : in String) return Gtk.Widget.Gtk_Widget is
+      (Gtk.Widget.Gtk_Widget (Object.Get_Object (Name)));
+
+   function Get_Entry (Object : access Gtkada.Builder.Gtkada_Builder_Record'Class;
+                       Name   : in String) return Gtk.GEntry.Gtk_Entry is
+      (Gtk.GEntry.Gtk_Entry (Object.Get_Object (Name)));
 
    Timer : Glib.Main.G_Source_Id;
    MemTotal : Natural := 1;
@@ -71,6 +81,7 @@ package body MAT.Callbacks is
    --  Callback executed when the "quit" action is executed from the menu.
    --  ------------------------------
    procedure On_Menu_Quit (Object : access Gtkada.Builder.Gtkada_Builder_Record'Class) is
+      pragma Unreferenced (Object);
    begin
       Gtk.Main.Main_Quit;
    end On_Menu_Quit;
@@ -79,8 +90,7 @@ package body MAT.Callbacks is
    --  Callback executed when the "about" action is executed from the menu.
    --  ------------------------------
    procedure On_Menu_About (Object : access Gtkada.Builder.Gtkada_Builder_Record'Class) is
-      About : constant Gtk.Widget.Gtk_Widget :=
-        Gtk.Widget.Gtk_Widget (Object.Get_Object ("about"));
+      About : constant Gtk.Widget.Gtk_Widget := Get_Widget (Object, "about");
    begin
       About.Show;
    end On_Menu_About;
@@ -89,8 +99,7 @@ package body MAT.Callbacks is
    --  Callback executed when the "close-about" action is executed from the about box.
    --  ------------------------------
    procedure On_Close_About (Object : access Gtkada.Builder.Gtkada_Builder_Record'Class) is
-      About : constant Gtk.Widget.Gtk_Widget :=
-        Gtk.Widget.Gtk_Widget (Object.Get_Object ("about"));
+      About : constant Gtk.Widget.Gtk_Widget := Get_Widget (Object, "about");
    begin
       About.Hide;
    end On_Close_About;
@@ -112,5 +121,14 @@ package body MAT.Callbacks is
    begin
       MAT.Commands.Threads_Command (Target.all, "");
    end On_Btn_Threads;
+
+   --  ------------------------------
+   --  Close the main window application and terminate.
+   --  ------------------------------
+   function On_Delete_Main (Object : access Gtk.Widget.Gtk_Widget_Record'Class) return Boolean is
+      pragma Unreferenced (Object);
+   begin
+      return False;
+   end On_Delete_Main;
 
 end MAT.Callbacks;

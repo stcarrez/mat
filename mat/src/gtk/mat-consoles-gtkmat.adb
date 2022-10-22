@@ -108,8 +108,8 @@ package body MAT.Consoles.Gtkmat is
       if Console.Tree /= null then
          Console.Tree.Destroy;
       end if;
---      Gtk.Tree_View.Gtk_New (Console.Tree, +Console.List);
-      Gtk.Tree_View.Gtk_New (Console.Tree);
+      Gtk.Tree_View.Gtk_New (Console.Tree, +Console.List);
+      --  Gtk.Tree_View.Gtk_New (Console.Tree);
 
       for I in 1 .. Console.Field_Count loop
          Gtk.Tree_View_Column.Gtk_New (Col);
@@ -120,7 +120,7 @@ package body MAT.Consoles.Gtkmat is
          Col.Set_Sizing (Gtk.Tree_View_Column.Tree_View_Column_Autosize);
          Col.Add_Attribute (Console.Col_Text, "text", Glib.Gint (I) - 1);
       end loop;
---      Console.Tree.Set_Model (Gtk.Tree_Model.Gtk_Tree_Model (Console.List));
+      --  Console.Tree.Set_Model (Gtk.Tree_Model.Gtk_Tree_Model (Console.List));
       Console.Scrolled.Add (Console.Tree);
       Console.Scrolled.Show_All;
    end End_Title;

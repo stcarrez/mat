@@ -16,6 +16,7 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Gtkada.Builder;
+with Gtk.Widget;
 
 with MAT.Targets.Gtkmat;
 package MAT.Callbacks is
@@ -38,5 +39,8 @@ package MAT.Callbacks is
 
    --  Callback executed when the "cmd-threads" action is executed from the "Threads" action.
    procedure On_Btn_Threads (Object : access Gtkada.Builder.Gtkada_Builder_Record'Class);
+
+   --  Close the main window application and terminate.
+   function On_Delete_Main (Object : access Gtk.Widget.Gtk_Widget_Record'Class) return Boolean;
 
 end MAT.Callbacks;
