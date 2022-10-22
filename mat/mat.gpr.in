@@ -1,7 +1,7 @@
 with "mat_config";
 with "@UTIL_DIR@utilada_sys";
 with "@BFD_DIR@bfdada";
-with "../ansi-ada/ansi";
+with "../ansi-ada/ansiada";
 
 project mat is
 

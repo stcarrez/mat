@@ -15,7 +15,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with ANSI;
+with AnsiAda;
 with MAT.Interrupts;
 with MAT.Commands;
 package body MAT.Consoles.Text is
@@ -27,9 +27,9 @@ package body MAT.Consoles.Text is
    procedure Error (Console : in out Console_Type;
                     Message : in String) is
    begin
-      Ada.Text_IO.Put (ANSI.Foreground (ANSI.Red));
+      Ada.Text_IO.Put (AnsiAda.Foreground (AnsiAda.Red));
       Ada.Text_IO.Put (Message);
-      Ada.Text_IO.Put (ANSI.Reset);
+      Ada.Text_IO.Put (AnsiAda.Reset);
       Ada.Text_IO.New_Line;
       Console.Cur_Col := 0;
    end Error;
@@ -43,9 +43,9 @@ package body MAT.Consoles.Text is
                      Message : in String) is
       pragma Unreferenced (Kind);
    begin
-      Ada.Text_IO.Put (ANSI.Foreground (ANSI.Blue));
+      Ada.Text_IO.Put (AnsiAda.Foreground (AnsiAda.Blue));
       Ada.Text_IO.Put (Message);
-      Ada.Text_IO.Put (ANSI.Reset);
+      Ada.Text_IO.Put (AnsiAda.Reset);
       Ada.Text_IO.New_Line;
       Console.Cur_Col := 0;
    end Notice;
@@ -131,8 +131,8 @@ package body MAT.Consoles.Text is
       Console.Field_Count := 0;
       Console.Sizes := (others => 0);
       Console.Cols := (others => 1);
-      Ada.Text_IO.Put (ANSI.Style (ANSI.Bright, ANSI.On));
-      Ada.Text_IO.Put (ANSI.Foreground (ANSI.Light_Cyan));
+      Ada.Text_IO.Put (AnsiAda.Style (AnsiAda.Bright, AnsiAda.On));
+      Ada.Text_IO.Put (AnsiAda.Foreground (AnsiAda.Light_Cyan));
       Console.Cur_Col := 0;
    end Start_Title;
 
@@ -141,7 +141,7 @@ package body MAT.Consoles.Text is
    --  ------------------------------
    procedure End_Title (Console : in out Console_Type) is
    begin
-      Ada.Text_IO.Put (ANSI.Reset);
+      Ada.Text_IO.Put (AnsiAda.Reset);
       Ada.Text_IO.New_Line;
       Console.Cur_Col := 0;
    end End_Title;
