@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  Memory Events - Definition and Analysis of memory events
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2022 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -271,7 +271,7 @@ package body MAT.Memory.Targets is
                               Slot   : in Allocation) is
       begin
          if Log.Get_Level = Util.Log.DEBUG_LEVEL then
-            Log.Debug ("Malloc at {0} size {1}", MAT.Types.Hex_Image (Addr),
+            Log.Debug ("Malloc at 0x{0} size{1}", MAT.Types.Hex_Image (Addr),
                        MAT.Types.Target_Size'Image (Slot.Size));
          end if;
          Stats.Malloc_Count := Stats.Malloc_Count + 1;
@@ -294,7 +294,7 @@ package body MAT.Memory.Targets is
          Iter : Allocation_Cursor;
       begin
          if Log.Get_Level = Util.Log.DEBUG_LEVEL then
-            Log.Debug ("Free {0}", MAT.Types.Hex_Image (Addr));
+            Log.Debug ("Free 0x{0}", MAT.Types.Hex_Image (Addr));
          end if;
          Stats.Free_Count := Stats.Free_Count + 1;
          Iter := Used_Slots.Find (Addr);
@@ -321,7 +321,7 @@ package body MAT.Memory.Targets is
 
       exception
          when others =>
-            Log.Error ("Free {0} raised some exception", MAT.Types.Hex_Image (Addr));
+            Log.Error ("Free 0x{0} raised some exception", MAT.Types.Hex_Image (Addr));
             raise;
       end Probe_Free;
 
@@ -357,7 +357,7 @@ package body MAT.Memory.Targets is
          Pos      : Allocation_Cursor;
       begin
          if Log.Get_Level = Util.Log.DEBUG_LEVEL then
-            Log.Debug ("Realloc {0} to {1} size {2}", MAT.Types.Hex_Image (Old_Addr),
+            Log.Debug ("Realloc 0x{0} to 0x{1} size{2}", MAT.Types.Hex_Image (Old_Addr),
                        MAT.Types.Hex_Image (Addr), MAT.Types.Target_Size'Image (Slot.Size));
          end if;
          Old_Size := 0;

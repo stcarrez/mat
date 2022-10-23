@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-targets - Representation of target information
---  Copyright (C) 2014, 2015, 2021 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2021, 2022 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -228,9 +228,13 @@ package body MAT.Targets is
    procedure Usage is
       use Ada.Text_IO;
    begin
-      Put_Line ("Usage: mat [-i] [-e] [-nw] [-ns] [-s] [-b [ip:]port] [-d path] [file.mat]");
+      Put_Line ("Usage: mat [-v|-vv|-vvv] [-version] [-i] [-nw] [-ns] [-s] "
+                & "[-b [ip:]port] [-d path] [file.mat]");
+      Put_Line ("-v            Verbose mode to print probe events as they are received");
+      Put_Line ("-vv           Debug mode to print more logs");
+      Put_Line ("-vvv          Dump mode to print event more logs");
+      Put_Line ("-version      Print the MAT version and stop");
       Put_Line ("-i            Enable the interactive mode");
-      Put_Line ("-e            Print the probe events as they are received");
       Put_Line ("-nw           Disable the graphical mode");
       Put_Line ("-s            Start the TCP/IP server to receive events");
       Put_Line ("-b [ip:]port  Define the port and local address to bind");
@@ -258,19 +262,20 @@ package body MAT.Targets is
    --  Parse the command line arguments and configure the target instance.
    --  ------------------------------
    procedure Initialize_Options (Target  : in out MAT.Targets.Target_Type) is
+      use Ada.Text_IO;
+
+      Debug : Boolean := False;
+      Dump  : Boolean := False;
    begin
       GNAT.Command_Line.Initialize_Option_Scan (Stop_At_First_Non_Switch => True,
                                                 Section_Delimiters       => "targs");
       loop
-         case GNAT.Command_Line.Getopt ("i e s nw ns b: d:") is
+         case GNAT.Command_Line.Getopt ("v vv vvv version i s nw ns b: d:") is
             when ASCII.NUL =>
                exit;
 
             when 'i' =>
                Target.Options.Interactive := True;
-
-            when 'e' =>
-               Target.Options.Print_Events := True;
 
             when 's' =>
                Target.Options.Server_Mode := True;
@@ -289,6 +294,21 @@ package body MAT.Targets is
             when 'd' =>
                Add_Search_Path (Target, GNAT.Command_Line.Parameter);
 
+            when 'v' =>
+               if GNAT.Command_Line.Full_Switch = "version" then
+                  Put_Line ("Mat version 1.2.0");
+                  Ada.Command_Line.Set_Exit_Status (0);
+                  raise Usage_Error;
+               elsif GNAT.Command_Line.Full_Switch = "v" then
+                  Target.Options.Print_Events := True;
+               elsif GNAT.Command_Line.Full_Switch = "vv" then
+                  Target.Options.Print_Events := True;
+                  Debug := True;
+               elsif GNAT.Command_Line.Full_Switch = "vvv" then
+                  Debug := True;
+                  Dump := True;
+               end if;
+
             when '*' =>
                exit;
 
@@ -297,6 +317,8 @@ package body MAT.Targets is
 
          end case;
       end loop;
+
+      MAT.Configure_Logs (Debug => Debug, Dump => Dump, Verbose => Target.Options.Print_Events);
 
    exception
       when Usage_Error =>
