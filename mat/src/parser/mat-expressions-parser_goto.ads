@@ -1,4 +1,4 @@
-package MAT.Expressions.Parser_Goto is
+private package MAT.Expressions.Parser_Goto is
 
 
    type Rule        is new Natural;

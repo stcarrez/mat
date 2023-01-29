@@ -1,4 +1,4 @@
-package MAT.Expressions.Parser_Shift_Reduce is
+private package MAT.Expressions.Parser_Shift_Reduce is
 
    type Small_Integer is range -32_000 .. 32_000;
 
