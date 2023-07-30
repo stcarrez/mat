@@ -6,7 +6,7 @@ with MAT.Expressions.Parser_Tokens;
 with MAT.Expressions.Parser_Shift_Reduce;
 with MAT.Expressions.Parser_IO;
 with MAT.Expressions.Lexer;
-with MAT.Expressions.Lexer_Dfa;
+with MAT.Expressions.Lexer_DFA;
 with Ada.Text_IO;
 package body MAT.Expressions.Parser is
 
@@ -487,10 +487,10 @@ when 32 => -- #line 220
 
 
 when 33 => -- #line 228
- YYVal.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);
+ YYVal.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_DFA.YYText);
 
 when 34 => -- #line 231
- YYVal.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);
+ YYVal.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_DFA.YYText);
 
 when 35 => -- #line 236
  YYVal.low := 1;

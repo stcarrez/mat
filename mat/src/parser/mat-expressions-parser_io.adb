@@ -25,8 +25,8 @@ package body MAT.Expressions.Parser_IO is
    begin
       Input := Ada.Strings.Unbounded.To_Unbounded_String (Content);
       Pos   := 1;
-      MAT.Expressions.Lexer_dfa.yy_init  := True;
-      MAT.Expressions.Lexer_dfa.yy_start := 0;
+      MAT.Expressions.Lexer_DFA.yy_init  := True;
+      MAT.Expressions.Lexer_DFA.yy_start := 0;
    end Set_Input;
 
    --  gets input and stuffs it into 'buf'.  number of characters read, or YY_NULL,
