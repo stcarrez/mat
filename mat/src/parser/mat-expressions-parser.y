@@ -225,10 +225,10 @@ compare:
 
 name:
         T_STRING
-                { $$.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);  }
+                { $$.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_DFA.YYText);  }
     |
         T_NAME
-                { $$.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_Dfa.YYText);  }
+                { $$.name := Ada.Strings.Unbounded.To_Unbounded_String (MAT.Expressions.Lexer_DFA.YYText);  }
     ;
 
 count:
@@ -283,7 +283,7 @@ with MAT.Expressions.Parser_Tokens;
 with MAT.Expressions.Parser_Shift_Reduce;
 with MAT.Expressions.Parser_IO;
 with MAT.Expressions.Lexer;
-with MAT.Expressions.Lexer_Dfa;
+with MAT.Expressions.Lexer_DFA;
 with Ada.Text_IO;
 package body MAT.Expressions.Parser is
 

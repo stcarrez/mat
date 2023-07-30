@@ -78,14 +78,14 @@ end MAT.Expressions.Lexer;
 with MAT.Types;
 with MAT.Expressions;
 with Ada.Text_IO;
-with MAT.Expressions.Lexer_dfa;
+with MAT.Expressions.Lexer_DFA;
 with MAT.Expressions.Parser_IO;
 
 package body MAT.Expressions.Lexer is
 
    use Ada.Text_IO;
    use Ada;
-   use MAT.Expressions.Lexer_dfa;
+   use MAT.Expressions.Lexer_DFA;
    use MAT.Expressions.Parser_IO;
 
    Line_Number : Natural := 0;
