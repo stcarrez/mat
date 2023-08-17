@@ -76,7 +76,6 @@ package MAT.Expressions.Lexer is
 end MAT.Expressions.Lexer;
 
 with MAT.Types;
-with MAT.Expressions;
 with Ada.Text_IO;
 with MAT.Expressions.Lexer_DFA;
 with MAT.Expressions.Parser_IO;

@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-targets - Representation of target information
---  Copyright (C) 2014, 2015, 2021, 2022 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2021, 2022, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,11 +21,11 @@ with Ada.Command_Line;
 with Ada.Unchecked_Deallocation;
 
 with GNAT.Command_Line;
+with GNAT.Sockets;
 
 with Readline;
 
 with Util.Strings;
-with Util.Log.Loggers;
 
 with MAT.Commands;
 with MAT.Interrupts;
@@ -323,6 +323,11 @@ package body MAT.Targets is
    exception
       when Usage_Error =>
          raise;
+
+      when GNAT.Sockets.Socket_Error =>
+         Put_Line ("Invalid hostname");
+         Ada.Command_Line.Set_Exit_Status (2);
+         raise Usage_Error;
 
       when others =>
          Usage;

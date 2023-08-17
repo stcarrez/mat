@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  Memory - Memory slot
---  Copyright (C) 2014, 2015, 2019 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2019, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,6 +47,7 @@ package MAT.Memory is
    type Region_Info is record
       Start_Addr : MAT.Types.Target_Addr := 0;
       End_Addr   : MAT.Types.Target_Addr := 0;
+      Offset     : MAT.Types.Target_Addr := 0;
       Size       : MAT.Types.Target_Size := 0;
       Flags      : ELF.Elf32_Word := 0;
       Path       : Ada.Strings.Unbounded.Unbounded_String;

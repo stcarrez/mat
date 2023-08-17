@@ -15,6 +15,7 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
+with Interfaces;
 with Bfd.Sections;
 with ELF;
 with Util.Strings;
@@ -121,7 +122,7 @@ package body MAT.Symbols.Targets is
                   Region.Path := Symbols.Path;
                   Offset := 0;
                else
-                  Offset := Region.Start_Addr;
+                  Offset := Region.Offset;
                end if;
                MAT.Symbols.Targets.Load_Symbols (Symbols, Region, Offset);
             end if;
@@ -169,6 +170,7 @@ package body MAT.Symbols.Targets is
    procedure Find_Nearest_Line (Symbols : in Region_Symbols;
                                 Addr    : in MAT.Types.Target_Addr;
                                 Symbol  : out Symbol_Info) is
+      use type Bfd.Vma_Type;
       Text_Section : Bfd.Sections.Section;
       Pc : constant Bfd.Vma_Type := Bfd.Vma_Type (Addr);
    begin
@@ -202,7 +204,7 @@ package body MAT.Symbols.Targets is
             if Syms.Value.Region.End_Addr > Addr then
                Symbol.Symbols := Syms;
                Find_Nearest_Line (Symbols => Syms.Value,
-                                  Addr    => Addr - Syms.Value.Offset,
+                                  Addr    => Addr - Syms.Value.Region.Offset,
                                   Symbol  => Symbol);
                if Symbols.Use_Demangle then
                   Demangle (Symbols, Symbol);

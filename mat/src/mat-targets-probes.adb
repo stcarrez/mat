@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-targets-probes - Definition and Analysis of process start events
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -218,13 +218,14 @@ package body MAT.Targets.Probes is
                   Offset := Region.Start_Addr;
                end if;
                Event.Size := Event.Size + Region.Size;
+               Region.Offset := Addr;
                Probe.Target.Process.Memory.Add_Region (Region);
 
                --  When auto-symbol loading is enabled, load the symbols associated with the
                --  shared libraries used by the program.
                if Probe.Target.Options.Load_Symbols then
                   begin
-                     Probe.Target.Process.Symbols.Value.Load_Symbols (Region, Offset);
+                     Probe.Target.Process.Symbols.Value.Load_Symbols (Region, Addr);
 
                   exception
                      when Bfd.OPEN_ERROR =>

@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-readers-files -- Reader for files
---  Copyright (C) 2014 Stephane Carrez
+--  Copyright (C) 2014, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,6 @@
 --  limitations under the License.
 -----------------------------------------------------------------------
 with Util.Streams.Files;
-with MAT.Readers.Streams;
 package MAT.Readers.Streams.Files is
 
    type File_Reader_Type is new MAT.Readers.Streams.Stream_Reader_Type with private;

@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-events-probes -- Event probes
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,6 @@ with Ada.Strings.Hash;
 with Ada.Finalization;
 
 with MAT.Types;
-with MAT.Events;
 with MAT.Events.Targets;
 with MAT.Readers;
 with MAT.Frames.Targets;

@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-memory-probes - Definition and Analysis of memory events
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@ with Util.Log.Loggers;
 
 with MAT.Types;
 with MAT.Readers.Marshaller;
-with MAT.Memory;
 package body MAT.Memory.Probes is
 
    --  The logger

@@ -971,7 +971,7 @@ package body MAT.Commands is
          Console.Error ("Usage: set <name> <value>");
          return;
       end if;
-      
+
       declare
          Name : constant String := Trimmed_Args (Trimmed_Args'First .. Pos - 1);
          Value : constant String := Trimmed_Args (Pos + 1 .. Trimmed_Args'Last);
