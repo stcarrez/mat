@@ -1,6 +1,6 @@
 # Memory Analysis Tool
 
-[![Build Status](https://img.shields.io/jenkins/s/http/jenkins.vacs.fr/Mat.svg)](http://jenkins.vacs.fr/job/Mat/)
+[![Build Status](https://img.shields.io/endpoint?url=https://porion.vacs.fr/porion/api/v1/projects/mat/badges/build.json)](https://porion.vacs.fr/porion/projects/view/mat/summary)
 [![Download](https://img.shields.io/badge/download-1.0.0-brightgreen.svg)](http://download.vacs.fr/mat/mat-1.0.0.tar.gz)
 [![License](http://img.shields.io/badge/license-APACHE2-blue.svg)](LICENSE)
 ![Commits](https://img.shields.io/github/commits-since/stcarrez/mat/1.0.0.svg)
@@ -33,7 +33,7 @@ A first version of MAT existed back in 1994 but it was written in C++ when
 ## Version 1.2     - Under development
 
 - Update the build process
-- Update for Ada Utility Library 2.5.0 and Ada BFD 1.2.1
+- Update for Ada Utility Library 2.6.0 and Ada BFD 1.3.0
 
 ## Version 1.1     - Apr 2021
 
@@ -47,7 +47,7 @@ A first version of MAT existed back in 1994 but it was written in C++ when
 The project uses git submodules to integrate several other
 projects.  To get all the sources, use the following commands:
 ```
-git clone --recursive git@github.com:stcarrez/mat.git
+git clone --recursive https://github.com/stcarrez/mat.git
 cd mat
 ```
 
