@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-consoles - Console interface
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -143,5 +143,14 @@ package body MAT.Consoles is
    begin
       Console.Field_Count := 0;
    end Clear_Fields;
+
+   --  ------------------------------
+   --  Enable or disable the use of colors for the outputs.
+   --  ------------------------------
+   procedure Set_Color (Console : in out Console_Type;
+                        Enable  : in Boolean) is
+   begin
+      Console.Use_Colors := Enable;
+   end Set_Color;
 
 end MAT.Consoles;

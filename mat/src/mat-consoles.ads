@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-consoles - Console interface
---  Copyright (C) 2014, 2015 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -150,6 +150,10 @@ package MAT.Consoles is
    --  Reset the field count.
    procedure Clear_Fields (Console : in out Console_Type);
 
+   --  Enable or disable the use of colors for the outputs.
+   procedure Set_Color (Console : in out Console_Type;
+                        Enable  : in Boolean);
+
 private
 
    type Field_Size_Array is array (Field_Type) of Natural;
@@ -161,6 +165,7 @@ private
       Cols        : Field_Size_Array := (others => 1);
       Fields      : Field_List_Array;
       Field_Count : Natural := 0;
+      Use_Colors  : Boolean := False;
    end record;
 
 end MAT.Consoles;

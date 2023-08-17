@@ -64,7 +64,6 @@ private
    type Console_Type is new MAT.Consoles.Console_Type with record
       File       : Ada.Text_IO.File_Type;
       Cur_Col    : Ada.Text_IO.Count := 0;
-      Use_Colors : Boolean := False;
    end record;
 
 end MAT.Consoles.Text;

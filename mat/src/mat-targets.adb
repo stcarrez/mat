@@ -21,7 +21,6 @@ with Ada.Command_Line;
 with Ada.Unchecked_Deallocation;
 
 with GNAT.Command_Line;
-with GNAT.Sockets;
 
 with Readline;
 
@@ -229,7 +228,7 @@ package body MAT.Targets is
       use Ada.Text_IO;
    begin
       Put_Line ("Usage: mat [-v|-vv|-vvv] [-version] [-i] [-nw] [-ns] [-s] "
-                & "[-b [ip:]port] [-d path] [file.mat]");
+                & "[-b [ip:]port] [-d path] [--no-color] [file.mat]");
       Put_Line ("-v            Verbose mode to print probe events as they are received");
       Put_Line ("-vv           Debug mode to print more logs");
       Put_Line ("-vvv          Dump mode to print event more logs");
@@ -240,6 +239,7 @@ package body MAT.Targets is
       Put_Line ("-b [ip:]port  Define the port and local address to bind");
       Put_Line ("-ns           Disable the automatic symbols loading");
       Put_Line ("-d path       Search path to find shared libraries and load their symbols");
+      Put_Line ("--no-color    Disable colors in output");
       Ada.Command_Line.Set_Exit_Status (2);
       raise Usage_Error;
    end Usage;
@@ -270,7 +270,7 @@ package body MAT.Targets is
       GNAT.Command_Line.Initialize_Option_Scan (Stop_At_First_Non_Switch => True,
                                                 Section_Delimiters       => "targs");
       loop
-         case GNAT.Command_Line.Getopt ("v vv vvv version i s nw ns b: d:") is
+         case GNAT.Command_Line.Getopt ("v vv vvv version i s nw ns b: d: -no-color") is
             when ASCII.NUL =>
                exit;
 
@@ -307,6 +307,11 @@ package body MAT.Targets is
                elsif GNAT.Command_Line.Full_Switch = "vvv" then
                   Debug := True;
                   Dump := True;
+               end if;
+
+            when '-' =>
+               if GNAT.Command_Line.Full_Switch = "-no-color" then
+                  Target.Options.Color_Mode := False;
                end if;
 
             when '*' =>
@@ -376,6 +381,16 @@ package body MAT.Targets is
          Target.Server.Stop;
       end if;
    end Stop;
+
+   function Color_Mode (Target : in Target_Type) return Boolean is
+   begin
+      return Target.Options.Color_Mode;
+   end Color_Mode;
+
+   procedure Color_Mode (Target : in out Target_Type; Enable : in Boolean) is
+   begin
+      Target.Options.Color_Mode := Enable;
+   end Color_Mode;
 
    --  ------------------------------
    --  Release the storage used by the target object.

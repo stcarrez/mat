@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-targets - Representation of target information
---  Copyright (C) 2014, 2015, 2021 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2021, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,6 +50,9 @@ package MAT.Targets is
 
       --  Print the events as they are received.
       Print_Events : Boolean := False;
+
+      --  Enable/Disable the color mode.
+      Color_Mode   : Boolean := True;
 
       --  When true, start the mat server.
       Server_Mode  : Boolean := False;
@@ -152,6 +155,9 @@ package MAT.Targets is
 
    --  Stop the server thread.
    procedure Stop (Target : in out Target_Type);
+
+   function Color_Mode (Target : in Target_Type) return Boolean;
+   procedure Color_Mode (Target : in out Target_Type; Enable : in Boolean);
 
    --  Convert the string to a socket address.  The string can have two forms:
    --     port

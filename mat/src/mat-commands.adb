@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-interp -- Command interpreter
---  Copyright (C) 2014, 2015, 2021 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2021, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -980,6 +980,10 @@ package body MAT.Commands is
             Process.Symbols.Value.Use_Demangle := Value = "on";
             return;
          end if;
+	 if Name = "colors" then
+	    Target.Color_Mode (Value = "on");
+	    return;
+	 end if;
       end;
    end Set_Command;
 
@@ -1049,6 +1053,7 @@ package body MAT.Commands is
       Console.Notice (N_HELP, "symbol <file>                       Load the executable symbol file");
       Console.Notice (N_HELP, "info                                Print some information about the program");
       Console.Notice (N_HELP, "maps                                Print the program memory maps");
+      Console.Notice (N_HELP, "set option {on|off}                 Set the option 'demangle' or 'colors'");
       Console.Notice (N_HELP, "timeline <duration>                 Analyze and report groups of allocations in timeline");
       Console.Notice (N_HELP, "Selection examples:");
       Console.Notice (N_HELP, "  size > 100 and size < 1000    "
@@ -1092,6 +1097,7 @@ package body MAT.Commands is
    begin
       Log.Info ("Execute '{0}'", Line);
 
+      Target.Console.Set_Color (Target.Color_Mode);
       if Command_Map.Has_Element (Pos) then
          if Index = 0 then
             Index := Line'Last + 1;
