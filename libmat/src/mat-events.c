@@ -1,5 +1,5 @@
-/* gp-events.c -- Event operations
---  Copyright (C) 2011, 2012, 2013, 2014, 2015, 2021 Stephane Carrez
+/* mat-events.c -- Event operations
+--  Copyright (C) 2011, 2012, 2013, 2014, 2015, 2021, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -322,6 +322,63 @@ mat_event_mutex_trylock (struct mat_probe *gp, void *p)
   mat_event_send (gp, 0, &mat_event_mutex_trylock_def, p);
 }
 
+static const struct mat_attr_def mat_secondary_stack_mark_attrs[] = {
+  { "size", GP_TYPE_SIZE_T, sizeof (size_t) },
+  { "pointer", GP_TYPE_POINTER, sizeof (void*) }
+};
+  
+static const struct mat_event_def mat_event_secondary_stack_mark_def = {
+  "secondary_stack_mark",
+  GP_EVENT_SECONDARY_STACK_MARK,
+  sizeof (size_t) + sizeof (void*),
+  GP_TABLE_SIZE (mat_secondary_stack_mark_attrs),
+  mat_secondary_stack_mark_attrs
+};
+
+void
+mat_event_secondary_stack_mark (struct mat_probe *gp, void *mark, size_t size)
+{
+  mat_event_send (gp, 0, &mat_event_secondary_stack_mark_def, size, mark);
+}
+
+static const struct mat_attr_def mat_secondary_stack_allocate_attrs[] = {
+  { "pointer", GP_TYPE_POINTER, sizeof (void*) },
+  { "size", GP_TYPE_SIZE_T, sizeof (size_t) }
+};
+  
+static const struct mat_event_def mat_event_secondary_stack_allocate_def = {
+  "secondary_stack_allocate",
+  GP_EVENT_SECONDARY_STACK_ALLOCATE,
+  sizeof (size_t) + sizeof (void *),
+  GP_TABLE_SIZE (mat_secondary_stack_allocate_attrs),
+  mat_secondary_stack_allocate_attrs
+};
+
+void
+mat_event_secondary_stack_allocate (struct mat_probe *gp, void *p, size_t size)
+{
+  mat_event_send (gp, 0, &mat_event_secondary_stack_allocate_def, p, size);
+}
+
+static const struct mat_attr_def mat_secondary_stack_release_attrs[] = {
+  { "size", GP_TYPE_SIZE_T, sizeof (size_t) },
+  { "pointer", GP_TYPE_POINTER, sizeof (void*) }
+};
+  
+static const struct mat_event_def mat_event_secondary_stack_release_def = {
+  "secondary_stack_release",
+  GP_EVENT_SECONDARY_STACK_RELEASE,
+  sizeof (size_t) + sizeof (void*),
+  GP_TABLE_SIZE (mat_secondary_stack_release_attrs),
+  mat_secondary_stack_release_attrs
+};
+
+void
+mat_event_secondary_stack_release (struct mat_probe *gp, void *mark, size_t size)
+{
+  mat_event_send (gp, 0, &mat_event_secondary_stack_release_def, size, mark);
+}
+
 static const struct mat_attr_def mat_shlib_attrs[] = {
   { "libname", GP_TYPE_STRING, sizeof (mat_uint16) },
   { "laddr",   GP_TYPE_POINTER, sizeof (char*) },
@@ -401,7 +458,10 @@ static const struct mat_event_def* events[] = {
   &mat_event_mutex_unlock_def,
   &mat_event_mutex_trylock_def,
   &mat_event_end_def,
-  &mat_event_shlib_def
+  &mat_event_shlib_def,
+  &mat_event_secondary_stack_mark_def,
+  &mat_event_secondary_stack_allocate_def,
+  &mat_event_secondary_stack_release_def
 };
 
 /**

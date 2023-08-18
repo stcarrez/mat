@@ -1,5 +1,5 @@
 /*  mat-events.h -- Event operations
---  Copyright (C) 2011, 2012, 2013, 2014, 2015 Stephane Carrez
+--  Copyright (C) 2011, 2012, 2013, 2014, 2015, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,7 +60,10 @@ typedef enum
   GP_EVENT_MUTEX_LOCK,
   GP_EVENT_MUTEX_TRYLOCK,
   GP_EVENT_MUTEX_UNLOCK,
-  GP_EVENT_SHLIB
+  GP_EVENT_SHLIB,
+  GP_EVENT_SECONDARY_STACK_MARK,
+  GP_EVENT_SECONDARY_STACK_ALLOCATE,
+  GP_EVENT_SECONDARY_STACK_RELEASE
 } mat_event_type;
 
 
@@ -112,5 +115,9 @@ extern void mat_event_end (struct mat_probe *gp);
 extern void mat_event_mutex_lock (struct mat_probe *gp, void* mutex);
 extern void mat_event_mutex_unlock (struct mat_probe *gp, void* mutex);
 extern void mat_event_mutex_trylock (struct mat_probe *gp, void* mutex);
+
+extern void mat_event_secondary_stack_mark (struct mat_probe *gp, void *mark, size_t size);
+extern void mat_event_secondary_stack_allocate (struct mat_probe *gp, void* p, size_t size);
+extern void mat_event_secondary_stack_release (struct mat_probe *gp, void *mark, size_t size);
 
 #endif
