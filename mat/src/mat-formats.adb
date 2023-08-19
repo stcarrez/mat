@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-formats - Format various types for the console or GUI interface
---  Copyright (C) 2015, 2021 Stephane Carrez
+--  Copyright (C) 2015, 2021, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,6 +42,21 @@ package body MAT.Formats is
    function Event_Free (Item       : in MAT.Events.Target_Event_Type;
                         Related    : in MAT.Events.Tools.Target_Event_Vector;
                         Start_Time : in MAT.Types.Target_Tick_Ref) return String;
+
+   --  Format a short description of a secondary stack mark event.
+   function Event_Secondary_Mark (Item       : in MAT.Events.Target_Event_Type;
+                                  Related    : in MAT.Events.Tools.Target_Event_Vector;
+                                  Start_Time : in MAT.Types.Target_Tick_Ref) return String;
+
+   --  Format a short description of a secondary allocation.
+   function Event_Secondary_Allocate (Item       : in MAT.Events.Target_Event_Type;
+                                      Related    : in MAT.Events.Tools.Target_Event_Vector;
+                                      Start_Time : in MAT.Types.Target_Tick_Ref) return String;
+
+   --  Format a short description of a secondary stack mark event.
+   function Event_Secondary_Release (Item       : in MAT.Events.Target_Event_Type;
+                                     Related    : in MAT.Events.Tools.Target_Event_Vector;
+                                     Start_Time : in MAT.Types.Target_Tick_Ref) return String;
 
    --  ------------------------------
    --  Set the size of a target address to format them.
@@ -247,6 +262,27 @@ package body MAT.Formats is
                return "free(" & Addr (Item.Addr) & "), " & Size (Item.Size);
             end if;
 
+         when MAT.Events.MSG_SECONDARY_STACK_MARK =>
+            if Mode = BRIEF then
+               return "smark";
+            else
+               return "smark(" & Addr (Item.Addr) & "), " & Size (Item.Size);
+            end if;
+
+         when MAT.Events.MSG_SECONDARY_STACK_ALLOC =>
+            if Mode = BRIEF then
+               return "salloc";
+            else
+               return "salloc(" & Size (Item.Size) & ")";
+            end if;
+
+         when MAT.Events.MSG_SECONDARY_STACK_RELEASE =>
+            if Mode = BRIEF then
+               return "srelease";
+            else
+               return "srelease(" & Addr (Item.Addr) & "), " & Size (Item.Size);
+            end if;
+
          when MAT.Events.MSG_BEGIN =>
             return "begin";
 
@@ -337,6 +373,81 @@ package body MAT.Formats is
    end Event_Free;
 
    --  ------------------------------
+   --  Format a short description of a secondary stack mark event.
+   --  ------------------------------
+   function Event_Secondary_Mark (Item       : in MAT.Events.Target_Event_Type;
+                                  Related    : in MAT.Events.Tools.Target_Event_Vector;
+                                  Start_Time : in MAT.Types.Target_Tick_Ref) return String is
+      Release_Event : MAT.Events.Target_Event_Type;
+      Mark_Addr     : constant String := Addr (Item.Addr);
+   begin
+      Release_Event := MAT.Events.Tools.Find (Related, MAT.Events.MSG_SECONDARY_STACK_RELEASE);
+      return "smark at stack "
+        & Mark_Addr
+        & ", released " & Duration (Release_Event.Time - Item.Time)
+        & " after by event" & MAT.Events.Event_Id_Type'Image (Release_Event.Id)
+        & ", mark size " & Size (Item.Size) & " release size " & Size (Release_Event.Size)
+        & " after " & Duration (Item.Time - Start_Time);
+
+   exception
+      when MAT.Events.Tools.Not_Found =>
+         return "smark at stack "
+           & Mark_Addr
+           & ", not released "
+           & " mark size " & Size (Item.Size)
+           & " after " & Duration (Item.Time - Start_Time);
+   end Event_Secondary_Mark;
+
+   --  ------------------------------
+   --  Format a short description of a secondary stack allocation event.
+   --  ------------------------------
+   function Event_Secondary_Allocate (Item       : in MAT.Events.Target_Event_Type;
+                                      Related    : in MAT.Events.Tools.Target_Event_Vector;
+                                      Start_Time : in MAT.Types.Target_Tick_Ref) return String is
+      Mark_Event : MAT.Events.Target_Event_Type;
+      Slot_Addr  : constant String := Addr (Item.Addr);
+   begin
+      Mark_Event := MAT.Events.Tools.Find (Related, MAT.Events.MSG_SECONDARY_STACK_MARK);
+      return Size (Item.Size) & " bytes allocated in secondary stack (from mark"
+        & MAT.Events.Event_Id_Type'Image (Mark_Event.Id)
+        & ") at "
+        & Slot_Addr
+        & " after " & Duration (Item.Time - Start_Time);
+
+   exception
+      when MAT.Events.Tools.Not_Found =>
+         return Size (Item.Size) & " bytes allocated in secondary stack at "
+           & Slot_Addr
+           & " after " & Duration (Item.Time - Start_Time);
+   end Event_Secondary_Allocate;
+
+   --  ------------------------------
+   --  Format a short description of a secondary stack mark event.
+   --  ------------------------------
+   function Event_Secondary_Release (Item       : in MAT.Events.Target_Event_Type;
+                                     Related    : in MAT.Events.Tools.Target_Event_Vector;
+                                     Start_Time : in MAT.Types.Target_Tick_Ref) return String is
+      Mark_Event : MAT.Events.Target_Event_Type;
+      Mark_Addr  : constant String := Addr (Item.Addr);
+   begin
+      Mark_Event := MAT.Events.Tools.Find (Related, MAT.Events.MSG_SECONDARY_STACK_MARK);
+      return "srelease at stack "
+        & Mark_Addr
+        & ", marked " & Duration (Item.Time - Mark_Event.Time)
+        & " before by event" & MAT.Events.Event_Id_Type'Image (Mark_Event.Id)
+        & ", mark size " & Size (Mark_Event.Size) & " release size " & Size (Item.Size)
+        & " after " & Duration (Item.Time - Start_Time);
+
+   exception
+      when MAT.Events.Tools.Not_Found =>
+         return "srelease at stack "
+           & Mark_Addr
+           & ", not marked "
+           & " release size " & Size (Item.Size)
+           & " after " & Duration (Item.Time - Start_Time);
+   end Event_Secondary_Release;
+
+   --  ------------------------------
    --  Format a short description of the event.
    --  ------------------------------
    function Event (Item       : in MAT.Events.Target_Event_Type;
@@ -352,6 +463,15 @@ package body MAT.Formats is
 
          when MAT.Events.MSG_FREE =>
             return Event_Free (Item, Related, Start_Time);
+
+         when MAT.Events.MSG_SECONDARY_STACK_MARK =>
+            return Event_Secondary_Mark (Item, Related, Start_Time);
+
+         when MAT.Events.MSG_SECONDARY_STACK_ALLOC =>
+            return Event_Secondary_Allocate (Item, Related, Start_Time);
+
+         when MAT.Events.MSG_SECONDARY_STACK_RELEASE =>
+            return Event_Secondary_Release (Item, Related, Start_Time);
 
          when MAT.Events.MSG_BEGIN =>
             return "Begin event";
