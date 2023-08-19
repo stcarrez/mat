@@ -60,6 +60,7 @@ SOURCES = \
 	src/mat-socket.c \
 	src/mat-malloc.c \
 	src/mat-proc.c \
+	src/mat-gnat.c \
 	@CPU_FILES@
 
 OBJS=mat-events.o \
@@ -69,6 +70,7 @@ OBJS=mat-events.o \
 	mat-malloc.o \
 	mat-socket.o \
 	mat-proc.o \
+	mat-gnat.o \
 	@CPU_OBJS@
 
 LIBEXT=so
