@@ -34,6 +34,7 @@ A first version of MAT existed back in 1994 but it was written in C++ when
 
 - Update the build process
 - Update for Ada Utility Library 2.6.0 and Ada BFD 1.3.0
+- Add support to analyze GNAT Ada compiler secondary stack allocations
 
 ## Version 1.1     - Apr 2021
 
@@ -118,16 +119,16 @@ they advantages.
 
 ## Passive instrumentation
 
-You can instrument the memory allocation by using the matl launcher.
+You can instrument the memory allocation by using the `matl` launcher.
 
 ```
   matl -o name my-program
 ```
 
 While the program runs and the libmat.so collect events,
-it generates a file 'name-<pid>.mat'.
+it generates a file `name-<pid>.mat`.
 
-Start mat with the generated file:
+Start `mat` with the generated file:
 
 ```
   mat name-xxx.mat
@@ -135,7 +136,7 @@ Start mat with the generated file:
 
 Once the memory events are loaded, you can use the interactive
 commands to look at the events.  The first commands you may use
-are 'info', 'timeline' and 'sizes' as they give a short summary
+are `info`, `timeline` and `sizes` as they give a short summary
 and analysis of the events.
 
 
