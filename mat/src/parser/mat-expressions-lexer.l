@@ -1,70 +1,73 @@
 %unit MAT.Expressions.Lexer
 %%
 
-[ \t]+			{ null; }
+[ \t]+                  { null; }
 
-with		    return T_WITH;
-or		        return T_OR;
-and		        return T_AND;
-not		        return T_NOT;
-after		    return T_AFTER;
-before		    return T_BEFORE;
-within		    return T_WITHIN;
-reallocation	return T_REALLOCATION;
+with            return T_WITH;
+or              return T_OR;
+and             return T_AND;
+not             return T_NOT;
+after           return T_AFTER;
+before          return T_BEFORE;
+within          return T_WITHIN;
+reallocation    return T_REALLOCATION;
 thread          return T_THREAD;
 malloc          return T_MALLOC;
 free            return T_FREE;
 realloc         return T_REALLOC;
+salloc          return T_SALLOC;
+smark           return T_SMARK;
+srelease        return T_SRELEASE;
 leak            return T_LEAK;
 nofree          return T_NO_FREE;
-by		        return T_BY;
-at		        return T_AT;
-in		        return T_IN;
-size		    return T_SIZE;
-addr		    return T_ADDR;
+by              return T_BY;
+at              return T_AT;
+in              return T_IN;
+size            return T_SIZE;
+addr            return T_ADDR;
 event           return T_EVENT;
-all		        return T_ALL;
-is		        return T_IS;
-from		    return T_FROM;
+all             return T_ALL;
+is              return T_IS;
+from            return T_FROM;
 to              return T_TO;
-direct		    return T_DIRECT;
+direct          return T_DIRECT;
 has             return T_HAS;
-\\\n		{   Line_Number := Line_Number + 1;  }
+\\\n            { Line_Number := Line_Number + 1;  }
 \(              return '(';
 \)              return ')';
 \[              return '[';
 \]              return ']';
 \,              return ',';
 \.\.            return T_RANGE;
-\<               return T_LT;
-\<\=              return T_LE;
-\>               return T_GT;
-\>\=              return T_GE;
-\=               return T_EQ;
+\<              return T_LT;
+\<\=            return T_LE;
+\>              return T_GT;
+\>\=            return T_GE;
+\=              return T_EQ;
 
-0x[0-9a-fA-F]+	{  yylval.low := MAT.Types.Hex_Value (YYText (YYText'First + 2 .. YYText'Last));
-		           return T_INT;
-		        }
-\\[0-7]+	{
-		           yylval.low := MAT.Types.Uint64'Value (YYText);
-		           return T_INT;
-}
-[0-9]+		{
-		           yylval.low := MAT.Types.Uint64'Value (YYText);
-		           return T_INT;
-		}
-[0-9]+\.[0-9]+	{
+0x[0-9a-fA-F]+  {  yylval.low := MAT.Types.Hex_Value (YYText (YYText'First + 2 .. YYText'Last));
+                   return T_INT;
+                }
+\\[0-7]+        {
+                   yylval.low := MAT.Types.Uint64'Value (YYText);
+                   return T_INT;
+                }
+[0-9]+          {
+                   yylval.low := MAT.Types.Uint64'Value (YYText);
+                   return T_INT;
+                }
+[0-9]+\.[0-9]+  {
                    yylval.low := MAT.Types.Uint64 (MAT.Types.Tick_Value (YYText));
-		           return T_TIME;
-		}
-\"		{
-		  return T_STRING;
-		}
-[A-Za-z_\$][A-Za-z0-9_\.\$]*	{
-		  return T_NAME;
-		}
-'\n'    { Line_Number := Line_Number + 1;  }
-.		{  null;  } 
+                   return T_TIME;
+                }
+\"              {
+                  return T_STRING;
+                }
+[A-Za-z_\$][A-Za-z0-9_\.\$]*    {
+                  return T_NAME;
+                }
+'\n'            { Line_Number := Line_Number + 1;  }
+.               { null;  } 
 %%
 with MAT.Expressions.Parser_Tokens;
 package MAT.Expressions.Lexer is

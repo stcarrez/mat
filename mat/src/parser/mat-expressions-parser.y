@@ -8,6 +8,9 @@
 %token T_MALLOC
 %token T_REALLOC
 %token T_FREE
+%token T_SMARK
+%token T_SALLOC
+%token T_SRELEASE
 %token T_LEAK
 %token T_NO_FREE
 %token T_THREAD
@@ -161,6 +164,21 @@ condition :
     	T_REALLOC
     		{
     		  $$.expr := MAT.Expressions.Create_Event_Type (MAT.Events.MSG_REALLOC);
+    		}
+    |
+    	T_SMARK
+    		{
+    		  $$.expr := MAT.Expressions.Create_Event_Type (MAT.Events.MSG_SECONDARY_STACK_MARK);
+    		}
+    |
+    	T_SALLOC
+    		{
+    		  $$.expr := MAT.Expressions.Create_Event_Type (MAT.Events.MSG_SECONDARY_STACK_ALLOC);
+    		}
+    |
+    	T_SRELEASE
+    		{
+    		  $$.expr := MAT.Expressions.Create_Event_Type (MAT.Events.MSG_SECONDARY_STACK_RELEASE);
     		}
     |
     	T_LEAK
