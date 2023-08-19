@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
---  Memory Events - Definition and Analysis of memory events
---  Copyright (C) 2014, 2015, 2022 Stephane Carrez
+--  mat-memory-targets - Definition and Analysis of memory events
+--  Copyright (C) 2014, 2015, 2022, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -109,6 +109,42 @@ package body MAT.Memory.Targets is
    begin
       Memory.Memory.Probe_Realloc (Addr, Old_Addr, Slot, Old_Size, By);
    end Probe_Realloc;
+
+   --  ------------------------------
+   --  Take into account a secondary_stack mark.  The address corresponds to
+   --  the `Mark_Id` structure that is recorded on the stack for the release.
+   --  ------------------------------
+   procedure Probe_Secondary_Mark (Memory : in out Target_Memory;
+                                   Addr   : in MAT.Types.Target_Addr;
+                                   Slot   : in Allocation) is
+   begin
+      Memory.Memory.Probe_Secondary_Mark (Addr, Slot);
+   end Probe_Secondary_Mark;
+
+   --  ------------------------------
+   --  Take into account a secondary_stack allocate.  The address corresponds to
+   --  the allocated block returned by secondary stack allocate.
+   --  ------------------------------
+   procedure Probe_Secondary_Allocate (Memory : in out Target_Memory;
+                                       Addr   : in MAT.Types.Target_Addr;
+                                       Slot   : in Allocation) is
+   begin
+      Memory.Memory.Probe_Secondary_Allocate (Addr, Slot);
+   end Probe_Secondary_Allocate;
+
+   --  ------------------------------
+   --  Take into account a secondary_stack release.  The address corresponds to
+   --  the `Mark_Id` structure that is recorded on the stack for the release.
+   --  It must match the first previous mark event with the same address and
+   --  the mark event is reported in `By`.
+   --  ------------------------------
+   procedure Probe_Secondary_Release (Memory : in out Target_Memory;
+                                      Addr   : in MAT.Types.Target_Addr;
+                                      Slot   : in Allocation;
+                                      By     : out MAT.Events.Event_Id_Type) is
+   begin
+      Memory.Memory.Probe_Secondary_Release (Addr, Slot, By);
+   end Probe_Secondary_Release;
 
    --  ------------------------------
    --  Collect the information about memory slot sizes allocated by the application.
@@ -382,6 +418,33 @@ package body MAT.Memory.Targets is
             Remove_Free (Addr, Slot.Size);
          end if;
       end Probe_Realloc;
+
+      --  Take into account a secondary_stack mark.  The address corresponds to
+      --  the `Mark_Id` structure that is recorded on the stack for the release.
+      procedure Probe_Secondary_Mark (Addr   : in MAT.Types.Target_Addr;
+                                      Slot   : in Allocation) is
+      begin
+         null;
+      end Probe_Secondary_Mark;
+
+      --  Take into account a secondary_stack allocate.  The address corresponds to
+      --  the allocated block returned by secondary stack allocate.
+      procedure Probe_Secondary_Allocate (Addr   : in MAT.Types.Target_Addr;
+                                          Slot   : in Allocation) is
+      begin
+         null;
+      end Probe_Secondary_Allocate;
+
+      --  Take into account a secondary_stack release.  The address corresponds to
+      --  the `Mark_Id` structure that is recorded on the stack for the release.
+      --  It must match the first previous mark event with the same address and
+      --  the mark event is reported in `By`.
+      procedure Probe_Secondary_Release (Addr   : in MAT.Types.Target_Addr;
+                                         Slot   : in Allocation;
+                                         By     : out MAT.Events.Event_Id_Type) is
+      begin
+         By := 0;
+      end Probe_Secondary_Release;
 
       --  ------------------------------
       --  Collect the information about memory slot sizes allocated by the application.

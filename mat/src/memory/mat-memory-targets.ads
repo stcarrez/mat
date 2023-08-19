@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
---  Memory clients - Client info related to its memory
---  Copyright (C) 2014, 2015, 2019 Stephane Carrez
+--  mat-memory-targets - Client info related to its memory
+--  Copyright (C) 2014, 2015, 2019, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -83,6 +83,27 @@ package MAT.Memory.Targets is
                             Old_Size : out MAT.Types.Target_Size;
                             By       : out MAT.Events.Event_Id_Type);
 
+   --  Take into account a secondary_stack mark.  The address corresponds to
+   --  the `Mark_Id` structure that is recorded on the stack for the release.
+   procedure Probe_Secondary_Mark (Memory : in out Target_Memory;
+                                   Addr   : in MAT.Types.Target_Addr;
+                                   Slot   : in Allocation);
+
+   --  Take into account a secondary_stack allocate.  The address corresponds to
+   --  the allocated block returned by secondary stack allocate.
+   procedure Probe_Secondary_Allocate (Memory : in out Target_Memory;
+                                       Addr   : in MAT.Types.Target_Addr;
+                                       Slot   : in Allocation);
+
+   --  Take into account a secondary_stack release.  The address corresponds to
+   --  the `Mark_Id` structure that is recorded on the stack for the release.
+   --  It must match the first previous mark event with the same address and
+   --  the mark event is reported in `By`.
+   procedure Probe_Secondary_Release (Memory : in out Target_Memory;
+                                      Addr   : in MAT.Types.Target_Addr;
+                                      Slot   : in Allocation;
+                                      By     : out MAT.Events.Event_Id_Type);
+
    --  Collect the information about memory slot sizes allocated by the application.
    procedure Size_Information (Memory : in out Target_Memory;
                                Sizes  : in out MAT.Memory.Tools.Size_Info_Map);
@@ -148,6 +169,24 @@ private
                                Slot     : in Allocation;
                                Old_Size : out MAT.Types.Target_Size;
                                By       : out MAT.Events.Event_Id_Type);
+
+      --  Take into account a secondary_stack mark.  The address corresponds to
+      --  the `Mark_Id` structure that is recorded on the stack for the release.
+      procedure Probe_Secondary_Mark (Addr   : in MAT.Types.Target_Addr;
+                                      Slot   : in Allocation);
+
+      --  Take into account a secondary_stack allocate.  The address corresponds to
+      --  the allocated block returned by secondary stack allocate.
+      procedure Probe_Secondary_Allocate (Addr   : in MAT.Types.Target_Addr;
+                                          Slot   : in Allocation);
+
+      --  Take into account a secondary_stack release.  The address corresponds to
+      --  the `Mark_Id` structure that is recorded on the stack for the release.
+      --  It must match the first previous mark event with the same address and
+      --  the mark event is reported in `By`.
+      procedure Probe_Secondary_Release (Addr   : in MAT.Types.Target_Addr;
+                                         Slot   : in Allocation;
+                                         By     : out MAT.Events.Event_Id_Type);
 
       --  Collect the information about memory slot sizes allocated by the application.
       procedure Size_Information (Sizes  : in out MAT.Memory.Tools.Size_Info_Map);

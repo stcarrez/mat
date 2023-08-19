@@ -73,6 +73,15 @@ package body MAT.Memory.Probes is
                            Memory_Attributes'Access);
       Into.Register_Probe (Probe.all'Access, "realloc", MAT.Events.MSG_REALLOC,
                            Memory_Attributes'Access);
+      Into.Register_Probe (Probe.all'Access, "secondary_stack_mark",
+                           MAT.Events.MSG_SECONDARY_STACK_MARK,
+                           Memory_Attributes'Access);
+      Into.Register_Probe (Probe.all'Access, "secondary_stack_allocate",
+                           MAT.Events.MSG_SECONDARY_STACK_ALLOC,
+                           Memory_Attributes'Access);
+      Into.Register_Probe (Probe.all'Access, "secondary_stack_release",
+                           MAT.Events.MSG_SECONDARY_STACK_RELEASE,
+                           Memory_Attributes'Access);
    end Register;
 
    ----------------------
@@ -130,6 +139,15 @@ package body MAT.Memory.Probes is
          when MAT.Events.MSG_REALLOC =>
             Unmarshall_Allocation (Msg, Event.Size, Event.Addr, Event.Old_Addr, Params.all);
 
+         when MAT.Events.MSG_SECONDARY_STACK_MARK =>
+            Unmarshall_Allocation (Msg, Event.Size, Event.Addr, Event.Old_Addr, Params.all);
+
+         when MAT.Events.MSG_SECONDARY_STACK_ALLOC =>
+            Unmarshall_Allocation (Msg, Event.Size, Event.Addr, Event.Old_Addr, Params.all);
+
+         when MAT.Events.MSG_SECONDARY_STACK_RELEASE =>
+            Unmarshall_Allocation (Msg, Event.Size, Event.Addr, Event.Old_Addr, Params.all);
+
          when others =>
             Log.Error ("Invalid event {0} for memory extract probe",
                        MAT.Events.Probe_Index_Type'Image (Event.Index));
@@ -159,6 +177,16 @@ package body MAT.Memory.Probes is
             Probe.Data.Probe_Realloc (Event.Addr, Event.Old_Addr, Slot,
                                       Event.Old_Size, Event.Prev_Id);
             Probe.Update_Event (Event.Id, Event.Old_Size, Event.Prev_Id);
+
+         when MAT.Events.MSG_SECONDARY_STACK_MARK =>
+            Probe.Data.Probe_Secondary_Mark (Event.Addr, Slot);
+
+         when MAT.Events.MSG_SECONDARY_STACK_ALLOC =>
+            Probe.Data.Probe_Secondary_Allocate (Event.Addr, Slot);
+
+         when MAT.Events.MSG_SECONDARY_STACK_RELEASE =>
+            Probe.Data.Probe_Secondary_Release (Event.Addr, Slot, Event.Prev_Id);
+            Probe.Update_Event (Event.Id, Event.Size, Event.Prev_Id);
 
          when others =>
             Log.Error ("Invalid event {0} for memory execute probe",
