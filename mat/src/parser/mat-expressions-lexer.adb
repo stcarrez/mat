@@ -1,6 +1,5 @@
 
 with MAT.Types;
-with MAT.Expressions;
 with Ada.Text_IO;
 with MAT.Expressions.Lexer_DFA;
 with MAT.Expressions.Parser_IO;
@@ -23,24 +22,26 @@ package body MAT.Expressions.Lexer is
       --  returned upon end-of-file
       YY_END_TOK : constant Integer := 0;
       subtype yy_state_type is Integer;
-      YY_END_OF_BUFFER : constant := 49;
+      YY_END_OF_BUFFER : constant := 52;
       INITIAL : constant := 0;
-      yy_accept : constant array (0 .. 127) of Short :=
+      yy_accept : constant array (0 .. 143) of Short :=
           (0,
-        0,    0,   49,   47,    1,   48,   44,   45,   47,   29,
-       30,   33,   47,   42,   42,   35,   39,   37,   31,   47,
-       32,   45,   45,   45,   45,   45,   45,   45,   45,   45,
-       45,   45,   45,   45,   45,   45,    1,   45,    0,   34,
-        0,   42,    0,   36,   38,   28,   41,   45,   45,   45,
-       45,   17,   45,   16,   45,   45,   45,   45,   18,   23,
-       45,   45,   45,    3,   45,   45,   45,   25,   45,   46,
-       43,   40,   45,   45,   22,    4,   45,   45,   45,   45,
-       45,   27,   45,   45,   45,    5,   45,   45,   45,   45,
-       20,   45,   45,   45,   45,   12,   24,   14,   45,   45,
+        0,    0,   52,   50,    1,   51,   47,   48,   50,   32,
+       33,   36,   50,   45,   45,   38,   42,   40,   34,   50,
+       35,   48,   48,   48,   48,   48,   48,   48,   48,   48,
+       48,   48,   48,   48,   48,   48,    1,   48,    0,   37,
+        0,   45,    0,   39,   41,   31,   44,   48,   48,   48,
+       48,   20,   48,   19,   48,   48,   48,   48,   21,   26,
+       48,   48,   48,    3,   48,   48,   48,   48,   48,   48,
+       28,   48,   49,   46,   43,   48,   48,   25,    4,   48,
+       48,   48,   48,   48,   30,   48,   48,   48,    5,   48,
+       48,   48,   48,   48,   48,   48,   23,   48,   48,   48,
 
-       45,   19,   45,    2,    6,   45,   45,   21,   45,   45,
-       45,   45,   45,    7,   26,   11,   15,   45,   10,    8,
-       13,   45,   45,   45,   45,    9,    0
+       48,   12,   27,   17,   48,   48,   48,   48,   22,   48,
+       48,   48,    2,    6,   48,   48,   24,   48,   48,   48,
+       48,   15,   48,   48,   48,    7,   29,   11,   18,   48,
+       14,   48,   10,    8,   13,   48,   48,   16,   48,   48,
+       48,    9,    0
        );
 
       yy_ec : constant array (ASCII.NUL .. Character'Last) of Short := (0,
@@ -84,92 +85,98 @@ package body MAT.Expressions.Lexer is
         2
        );
 
-      yy_base : constant array (0 .. 129) of Short :=
+      yy_base : constant array (0 .. 145) of Short :=
           (0,
-        0,    0,  152,  153,  149,  153,  153,    0,  147,  153,
-      153,  153,  139,   32,   36,  133,  153,  132,  153,   47,
-      153,   30,   27,  118,  108,  110,  122,   29,  117,  120,
-      107,  105,  113,  109,   24,  108,  133,    0,  128,  153,
-       57,   62,    0,  153,  153,  153,   65,  109,   96,  101,
-      106,    0,  103,    0,   94,  102,   30,   91,    0,    0,
-      104,   94,   52,    0,  102,   81,   87,    0,   84,  153,
-       68,    0,   85,   93,    0,    0,   84,   91,   83,   89,
-       82,    0,   83,   81,   76,    0,   79,   83,   82,   79,
-        0,   71,   70,   80,   66,    0,    0,    0,   68,   75,
+        0,    0,  168,  169,  165,  169,  169,    0,  163,  169,
+      169,  169,  155,   32,   36,  149,  169,  148,  169,   47,
+      169,   30,   27,  134,  124,  126,  138,   29,  133,  136,
+      123,  121,  129,   42,   24,  125,  150,    0,  145,  169,
+       66,   70,    0,  169,  169,  169,   57,  126,  113,  118,
+      123,    0,  120,    0,  111,  119,   59,  108,    0,    0,
+      121,  111,   29,    0,  119,  109,   97,  116,  111,  101,
+        0,   98,  169,   74,    0,   99,  107,    0,    0,   98,
+      105,   97,  103,   96,    0,   97,   95,   90,    0,   93,
+       92,   96,   86,   89,   93,   90,    0,   82,   81,   91,
 
-       69,    0,   77,   69,    0,   71,   59,    0,   71,   68,
-       59,   67,   55,    0,    0,    0,    0,   63,    0,    0,
-       64,   48,   55,   49,   33,    0,  153,   87,   50
+       77,    0,    0,    0,   79,   86,   80,   76,    0,   79,
+       82,   85,   77,    0,   79,   67,    0,   79,   76,   67,
+       76,    0,   77,   73,   64,    0,    0,    0,    0,   72,
+        0,   56,    0,    0,   69,   64,   52,    0,   47,   41,
+       40,    0,  169,   91,   50
        );
 
-      yy_def : constant array (0 .. 129) of Short :=
+      yy_def : constant array (0 .. 145) of Short :=
           (0,
-      127,    1,  127,  127,  127,  127,  127,  128,  127,  127,
-      127,  127,  127,  127,  127,  127,  127,  127,  127,  127,
-      127,  128,  128,  128,  128,  128,  128,  128,  128,  128,
-      128,  128,  128,  128,  128,  128,  127,  128,  127,  127,
-      127,  127,  129,  127,  127,  127,  127,  128,  128,  128,
-      128,  128,  128,  128,  128,  128,  128,  128,  128,  128,
-      128,  128,  128,  128,  128,  128,  128,  128,  128,  127,
-      127,  129,  128,  128,  128,  128,  128,  128,  128,  128,
-      128,  128,  128,  128,  128,  128,  128,  128,  128,  128,
-      128,  128,  128,  128,  128,  128,  128,  128,  128,  128,
+      143,    1,  143,  143,  143,  143,  143,  144,  143,  143,
+      143,  143,  143,  143,  143,  143,  143,  143,  143,  143,
+      143,  144,  144,  144,  144,  144,  144,  144,  144,  144,
+      144,  144,  144,  144,  144,  144,  143,  144,  143,  143,
+      143,  143,  145,  143,  143,  143,  143,  144,  144,  144,
+      144,  144,  144,  144,  144,  144,  144,  144,  144,  144,
+      144,  144,  144,  144,  144,  144,  144,  144,  144,  144,
+      144,  144,  143,  143,  145,  144,  144,  144,  144,  144,
+      144,  144,  144,  144,  144,  144,  144,  144,  144,  144,
+      144,  144,  144,  144,  144,  144,  144,  144,  144,  144,
 
-      128,  128,  128,  128,  128,  128,  128,  128,  128,  128,
-      128,  128,  128,  128,  128,  128,  128,  128,  128,  128,
-      128,  128,  128,  128,  128,  128,    0,  127,  127
+      144,  144,  144,  144,  144,  144,  144,  144,  144,  144,
+      144,  144,  144,  144,  144,  144,  144,  144,  144,  144,
+      144,  144,  144,  144,  144,  144,  144,  144,  144,  144,
+      144,  144,  144,  144,  144,  144,  144,  144,  144,  144,
+      144,  144,    0,  143,  143
        );
 
-      yy_nxt : constant array (0 .. 194) of Short :=
+      yy_nxt : constant array (0 .. 210) of Short :=
           (0,
         4,    5,    6,    7,    8,    9,   10,   11,   12,   13,
        14,   15,   15,   16,   17,   18,    8,   19,   20,   21,
        22,   23,    8,   24,   25,   26,   27,   28,    8,   29,
        30,   31,   32,   33,   34,   35,    8,   36,    8,    8,
         8,   41,   42,   42,   42,   41,   42,   42,   42,   46,
-       67,   53,   72,   48,   80,   49,   68,   47,   47,   50,
-       59,   51,   81,   60,  126,   52,   54,   71,   71,   71,
-       43,   41,   42,   42,   42,   47,   47,   85,   71,   71,
-       71,  125,  124,  123,  122,  121,  120,   86,   38,   38,
-      119,  118,  117,  116,  115,  114,  113,  112,  111,  110,
+       70,   53,   75,   48,   88,   49,   71,   47,   47,   50,
+       59,   51,   66,   60,   89,   52,   54,   47,   47,   67,
+       43,  142,   68,  141,  140,   69,   74,   74,   74,   41,
+       42,   42,   42,   83,   74,   74,   74,  139,  138,  137,
+      136,   84,   38,   38,  135,  134,  133,  132,  131,  130,
 
+      129,  128,  127,  126,  125,  124,  123,  122,  121,  120,
+      119,  118,  117,  116,  115,  114,  113,  112,  111,  110,
       109,  108,  107,  106,  105,  104,  103,  102,  101,  100,
        99,   98,   97,   96,   95,   94,   93,   92,   91,   90,
-       89,   88,   87,   84,   83,   82,   79,   78,   77,   76,
-       75,   74,   73,   70,   37,   69,   66,   65,   64,   63,
-       62,   61,   58,   57,   56,   55,   45,   44,   40,   39,
-       37,  127,    3,  127,  127,  127,  127,  127,  127,  127,
-      127,  127,  127,  127,  127,  127,  127,  127,  127,  127,
-      127,  127,  127,  127,  127,  127,  127,  127,  127,  127,
-      127,  127,  127,  127,  127,  127,  127,  127,  127,  127,
-      127,  127,  127,  127
+       87,   86,   85,   82,   81,   80,   79,   78,   77,   76,
+       73,   37,   72,   65,   64,   63,   62,   61,   58,   57,
+       56,   55,   45,   44,   40,   39,   37,  143,    3,  143,
+      143,  143,  143,  143,  143,  143,  143,  143,  143,  143,
+      143,  143,  143,  143,  143,  143,  143,  143,  143,  143,
+      143,  143,  143,  143,  143,  143,  143,  143,  143,  143,
 
+      143,  143,  143,  143,  143,  143,  143,  143,  143,  143
        );
 
-      yy_chk : constant array (0 .. 194) of Short :=
+      yy_chk : constant array (0 .. 210) of Short :=
           (0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,   14,   14,   14,   14,   15,   15,   15,   15,   20,
-       35,   23,  129,   22,   57,   22,   35,   20,   20,   22,
-       28,   22,   57,   28,  125,   22,   23,   41,   41,   41,
-       14,   42,   42,   42,   42,   47,   47,   63,   71,   71,
-       71,  124,  123,  122,  121,  118,  113,   63,  128,  128,
-      112,  111,  110,  109,  107,  106,  104,  103,  101,  100,
+       35,   23,  145,   22,   63,   22,   35,   20,   20,   22,
+       28,   22,   34,   28,   63,   22,   23,   47,   47,   34,
+       14,  141,   34,  140,  139,   34,   41,   41,   41,   42,
+       42,   42,   42,   57,   74,   74,   74,  137,  136,  135,
+      132,   57,  144,  144,  130,  125,  124,  123,  121,  120,
 
-       99,   95,   94,   93,   92,   90,   89,   88,   87,   85,
-       84,   83,   81,   80,   79,   78,   77,   74,   73,   69,
-       67,   66,   65,   62,   61,   58,   56,   55,   53,   51,
-       50,   49,   48,   39,   37,   36,   34,   33,   32,   31,
-       30,   29,   27,   26,   25,   24,   18,   16,   13,    9,
-        5,    3,  127,  127,  127,  127,  127,  127,  127,  127,
-      127,  127,  127,  127,  127,  127,  127,  127,  127,  127,
-      127,  127,  127,  127,  127,  127,  127,  127,  127,  127,
-      127,  127,  127,  127,  127,  127,  127,  127,  127,  127,
-      127,  127,  127,  127
+      119,  118,  116,  115,  113,  112,  111,  110,  108,  107,
+      106,  105,  101,  100,   99,   98,   96,   95,   94,   93,
+       92,   91,   90,   88,   87,   86,   84,   83,   82,   81,
+       80,   77,   76,   72,   70,   69,   68,   67,   66,   65,
+       62,   61,   58,   56,   55,   53,   51,   50,   49,   48,
+       39,   37,   36,   33,   32,   31,   30,   29,   27,   26,
+       25,   24,   18,   16,   13,    9,    5,    3,  143,  143,
+      143,  143,  143,  143,  143,  143,  143,  143,  143,  143,
+      143,  143,  143,  143,  143,  143,  143,  143,  143,  143,
+      143,  143,  143,  143,  143,  143,  143,  143,  143,  143,
 
+      143,  143,  143,  143,  143,  143,  143,  143,  143,  143
        );
 
       yy_act : Integer;
@@ -218,7 +225,7 @@ package body MAT.Expressions.Lexer is
             end if;
             while yy_chk (yy_base (yy_current_state) + yy_c) /= yy_current_state loop
                yy_current_state := yy_def (yy_current_state);
-               if yy_current_state >= 128 then
+               if yy_current_state >= 144 then
                   yy_c := yy_meta (yy_c);
                end if;
             end loop;
@@ -283,13 +290,13 @@ package body MAT.Expressions.Lexer is
                end if;
                while yy_chk (yy_base (yy_current_state) + yy_c) /= yy_current_state loop
                   yy_current_state := yy_def (yy_current_state);
-                  if yy_current_state >= 128 then
+                  if yy_current_state >= 144 then
                      yy_c := yy_meta (yy_c);
                   end if;
                end loop;
                yy_current_state := yy_nxt (yy_base (yy_current_state) + yy_c);
             yy_cp := yy_cp + 1;
-            if yy_current_state = 127 then
+            if yy_current_state = 143 then
                 exit;
             end if;
          end loop;
@@ -372,157 +379,169 @@ package body MAT.Expressions.Lexer is
 
          when 14 =>
 --# line 18 "mat-expressions-lexer.l"
-            return T_LEAK;
+            return T_SALLOC;
 
          when 15 =>
 --# line 19 "mat-expressions-lexer.l"
-            return T_NO_FREE;
+            return T_SMARK;
 
          when 16 =>
 --# line 20 "mat-expressions-lexer.l"
-            return T_BY;
+            return T_SRELEASE;
 
          when 17 =>
 --# line 21 "mat-expressions-lexer.l"
-            return T_AT;
+            return T_LEAK;
 
          when 18 =>
 --# line 22 "mat-expressions-lexer.l"
-            return T_IN;
+            return T_NO_FREE;
 
          when 19 =>
 --# line 23 "mat-expressions-lexer.l"
-            return T_SIZE;
+            return T_BY;
 
          when 20 =>
 --# line 24 "mat-expressions-lexer.l"
-            return T_ADDR;
+            return T_AT;
 
          when 21 =>
 --# line 25 "mat-expressions-lexer.l"
-            return T_EVENT;
+            return T_IN;
 
          when 22 =>
 --# line 26 "mat-expressions-lexer.l"
-            return T_ALL;
+            return T_SIZE;
 
          when 23 =>
 --# line 27 "mat-expressions-lexer.l"
-            return T_IS;
+            return T_ADDR;
 
          when 24 =>
 --# line 28 "mat-expressions-lexer.l"
-            return T_FROM;
+            return T_EVENT;
 
          when 25 =>
 --# line 29 "mat-expressions-lexer.l"
-            return T_TO;
+            return T_ALL;
 
          when 26 =>
 --# line 30 "mat-expressions-lexer.l"
-            return T_DIRECT;
+            return T_IS;
 
          when 27 =>
 --# line 31 "mat-expressions-lexer.l"
-            return T_HAS;
+            return T_FROM;
 
          when 28 =>
 --# line 32 "mat-expressions-lexer.l"
-               Line_Number := Line_Number + 1;  
+            return T_TO;
 
          when 29 =>
 --# line 33 "mat-expressions-lexer.l"
-            return '(';
+            return T_DIRECT;
 
          when 30 =>
 --# line 34 "mat-expressions-lexer.l"
-            return ')';
+            return T_HAS;
 
          when 31 =>
 --# line 35 "mat-expressions-lexer.l"
-            return '[';
+             Line_Number := Line_Number + 1;  
 
          when 32 =>
 --# line 36 "mat-expressions-lexer.l"
-            return ']';
+            return '(';
 
          when 33 =>
 --# line 37 "mat-expressions-lexer.l"
-            return ',';
+            return ')';
 
          when 34 =>
 --# line 38 "mat-expressions-lexer.l"
-            return T_RANGE;
+            return '[';
 
          when 35 =>
 --# line 39 "mat-expressions-lexer.l"
-            return T_LT;
+            return ']';
 
          when 36 =>
 --# line 40 "mat-expressions-lexer.l"
-            return T_LE;
+            return ',';
 
          when 37 =>
 --# line 41 "mat-expressions-lexer.l"
-            return T_GT;
+            return T_RANGE;
 
          when 38 =>
 --# line 42 "mat-expressions-lexer.l"
-            return T_GE;
+            return T_LT;
 
          when 39 =>
 --# line 43 "mat-expressions-lexer.l"
-            return T_EQ;
+            return T_LE;
 
          when 40 =>
---# line 45 "mat-expressions-lexer.l"
-              yylval.low := MAT.Types.Hex_Value (YYText (YYText'First + 2 .. YYText'Last));
-		           return T_INT;
-		        
+--# line 44 "mat-expressions-lexer.l"
+            return T_GT;
 
          when 41 =>
---# line 48 "mat-expressions-lexer.l"
-            
-		           yylval.low := MAT.Types.Uint64'Value (YYText);
-		           return T_INT;
-
+--# line 45 "mat-expressions-lexer.l"
+            return T_GE;
 
          when 42 =>
---# line 52 "mat-expressions-lexer.l"
-            
-		           yylval.low := MAT.Types.Uint64'Value (YYText);
-		           return T_INT;
-		
+--# line 46 "mat-expressions-lexer.l"
+            return T_EQ;
 
          when 43 =>
---# line 56 "mat-expressions-lexer.l"
-            
-                   yylval.low := MAT.Types.Uint64 (MAT.Types.Tick_Value (YYText));
-		           return T_TIME;
-		
+--# line 48 "mat-expressions-lexer.l"
+              yylval.low := MAT.Types.Hex_Value (YYText (YYText'First + 2 .. YYText'Last));
+                   return T_INT;
+                
 
          when 44 =>
---# line 60 "mat-expressions-lexer.l"
+--# line 51 "mat-expressions-lexer.l"
             
-		  return T_STRING;
-		
+                   yylval.low := MAT.Types.Uint64'Value (YYText);
+                   return T_INT;
+                
 
          when 45 =>
---# line 63 "mat-expressions-lexer.l"
+--# line 55 "mat-expressions-lexer.l"
             
-		  return T_NAME;
-		
+                   yylval.low := MAT.Types.Uint64'Value (YYText);
+                   return T_INT;
+                
 
          when 46 =>
---# line 66 "mat-expressions-lexer.l"
-             Line_Number := Line_Number + 1;  
+--# line 59 "mat-expressions-lexer.l"
+            
+                   yylval.low := MAT.Types.Uint64 (MAT.Types.Tick_Value (YYText));
+                   return T_TIME;
+                
 
          when 47 =>
---# line 67 "mat-expressions-lexer.l"
-              null;   
+--# line 63 "mat-expressions-lexer.l"
+            
+                  return T_STRING;
+                
 
          when 48 =>
---# line 68 "mat-expressions-lexer.l"
+--# line 66 "mat-expressions-lexer.l"
+            
+                  return T_NAME;
+                
+
+         when 49 =>
+--# line 69 "mat-expressions-lexer.l"
+             Line_Number := Line_Number + 1;  
+
+         when 50 =>
+--# line 70 "mat-expressions-lexer.l"
+             null;   
+
+         when 51 =>
+--# line 71 "mat-expressions-lexer.l"
             raise AFLEX_SCANNER_JAMMED;
          when YY_END_OF_BUFFER + INITIAL + 1 =>
             return End_Of_Input;
@@ -576,7 +595,7 @@ package body MAT.Expressions.Lexer is
       end loop; --  end of loop waiting for end of file
    end YYLex;
 
---# line 68 "mat-expressions-lexer.l"
+--# line 71 "mat-expressions-lexer.l"
    pragma Style_Checks (On);
 
 end MAT.Expressions.Lexer;

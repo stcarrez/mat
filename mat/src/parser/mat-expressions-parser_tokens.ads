@@ -15,6 +15,7 @@ package MAT.Expressions.Parser_Tokens is
          T_WITHIN, T_USE, T_AFTER,
          T_BEFORE, T_DIRECT, T_IS,
          T_MALLOC, T_REALLOC, T_FREE,
+         T_SMARK, T_SALLOC, T_SRELEASE,
          T_LEAK, T_NO_FREE, T_THREAD,
          T_RANGE, T_EVENT, T_TIME,
          T_LT, T_LE, T_GT,
