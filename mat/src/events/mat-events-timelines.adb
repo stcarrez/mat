@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-events-timelines - Timelines
---  Copyright (C) 2015, 2019 Stephane Carrez
+--  Copyright (C) 2015, 2019, 2023 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -88,6 +88,9 @@ package body MAT.Events.Timelines is
 
       procedure Collect_Free (Event : in MAT.Events.Target_Event_Type);
       procedure Collect_Alloc (Event : in MAT.Events.Target_Event_Type);
+      procedure Collect_Mark (Event : in MAT.Events.Target_Event_Type);
+      procedure Collect_Related_Release (Event : in MAT.Events.Target_Event_Type);
+      procedure Collect_Related_Mark (Event : in MAT.Events.Target_Event_Type);
 
       First_Id    : MAT.Events.Event_Id_Type;
       Last_Id     : MAT.Events.Event_Id_Type;
@@ -127,6 +130,35 @@ package body MAT.Events.Timelines is
          end if;
       end Collect_Alloc;
 
+      procedure Collect_Mark (Event : in MAT.Events.Target_Event_Type) is
+      begin
+         if Event.Index = MAT.Events.MSG_SECONDARY_STACK_MARK then
+            Addr := Event.Addr;
+            List.Append (Event);
+            raise Done;
+         end if;
+      end Collect_Mark;
+
+      procedure Collect_Related_Mark (Event : in MAT.Events.Target_Event_Type) is
+      begin
+         if Event.Index = MAT.Events.MSG_SECONDARY_STACK_MARK
+           and then Event.Addr = Addr
+         then
+            List.Append (Event);
+            raise Done;
+         end if;
+      end Collect_Related_Mark;
+
+      procedure Collect_Related_Release (Event : in MAT.Events.Target_Event_Type) is
+      begin
+         if Event.Index = MAT.Events.MSG_SECONDARY_STACK_RELEASE
+           and then Event.Addr = Addr
+         then
+            List.Append (Event);
+            raise Done;
+         end if;
+      end Collect_Related_Release;
+
    begin
       Target.Get_Limits (First_Event, Last_Event);
       First_Id := Event.Id;
@@ -143,6 +175,56 @@ package body MAT.Events.Timelines is
                             Finish  => Last_Id,
                             Process => Collect_Alloc'Access);
             First_Id := Last_Id;
+         end loop;
+      elsif Event.Index = MAT.Events.MSG_SECONDARY_STACK_ALLOC then
+         --  Search backward for the first MSG_SECONDARY_STACK_MARK found.
+         begin
+            First_Id := First_Id - 1;
+            while First_Id > First_Event.Id loop
+               if First_Id > ITERATE_COUNT then
+                  Last_Id := First_Id - ITERATE_COUNT;
+               else
+                  Last_Id := First_Event.Id;
+               end if;
+               Target.Iterate (Start   => First_Id,
+                               Finish  => Last_Id,
+                               Process => Collect_Mark'Access);
+               First_Id := Last_Id;
+            end loop;
+
+         exception
+            when Done =>
+               --  Search forward for associated MSG_SECONDARY_STACK_RELEASE.
+               First_Id := Event.Id + 1;
+               while First_Id < Last_Event.Id loop
+                  Target.Iterate (Start   => First_Id,
+                                  Finish  => First_Id + ITERATE_COUNT,
+                                  Process => Collect_Related_Release'Access);
+                  First_Id := First_Id + ITERATE_COUNT;
+               end loop;
+         end;
+      elsif Event.Index = MAT.Events.MSG_SECONDARY_STACK_RELEASE then
+         --  Search backward for the associated MSG_SECONDARY_STACK_MARK.
+         First_Id := First_Id - 1;
+         while First_Id > First_Event.Id loop
+            if First_Id > ITERATE_COUNT then
+               Last_Id := First_Id - ITERATE_COUNT;
+            else
+               Last_Id := First_Event.Id;
+            end if;
+            Target.Iterate (Start   => First_Id,
+                            Finish  => Last_Id,
+                            Process => Collect_Related_Mark'Access);
+            First_Id := Last_Id;
+         end loop;
+      elsif Event.Index = MAT.Events.MSG_SECONDARY_STACK_MARK then
+         --  Search forward for associated MSG_SECONDARY_STACK_RELEASE.
+         First_Id := First_Id + 1;
+         while First_Id < Last_Event.Id loop
+            Target.Iterate (Start   => First_Id,
+                            Finish  => First_Id + ITERATE_COUNT,
+                            Process => Collect_Related_Release'Access);
+            First_Id := First_Id + ITERATE_COUNT;
          end loop;
       else
          --  Search forward for MSG_REALLOC and MSG_FREE

@@ -32,7 +32,6 @@ package MAT.Events.Tools is
    function Find (List : in Target_Event_Vector;
                   Kind : in Probe_Index_Type) return Target_Event_Type;
 
-
    type Event_Info_Type is record
       First_Event    : Target_Event_Type;
       Last_Event     : Target_Event_Type;
