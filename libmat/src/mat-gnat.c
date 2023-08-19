@@ -85,7 +85,7 @@ compute_secondary_stack_size (gnat_secondary_mark_t *mark)
   if (mark == 0 || mark->stack_ptr == 0 || mark->top.chunk == 0)
     return 0;
 
-  return mark->top.chunk->size_up_to_chunk + mark->stack_ptr->top.memory_index;
+  return mark->top.chunk->size_up_to_chunk + mark->stack_ptr->top.memory_index - 1;
 }
 
 /**
@@ -101,9 +101,6 @@ system__secondary_stack__ss_allocate (size_t size)
   int has_probe;
   void *p;
 
-  /* Get the probe.  */
-  has_probe = mat_get_probe (&probe);
-
   if (_secondary_allocate == 0)
     {
       load_symbols ();
@@ -111,6 +108,9 @@ system__secondary_stack__ss_allocate (size_t size)
   
   /* Call the real memory allocator.  */
   p = _secondary_allocate (size);
+
+  /* Get the probe.  */
+  has_probe = mat_get_probe (&probe);
 
   /* Send the information only when this is possible (can have
      recursive calls to malloc from mat_get_probe, and the communication
@@ -131,14 +131,14 @@ system__secondary_stack__ss_mark (gnat_secondary_mark_t *ptr)
   struct mat_probe probe;
   int has_probe;
 
-  /* Get the probe information.  */
-  has_probe = mat_get_probe (&probe);
-
   if (_secondary_mark == 0)
     {
       load_symbols ();
     }
   _secondary_mark (ptr);
+
+  /* Get the probe information.  */
+  has_probe = mat_get_probe (&probe);
 
   if (has_probe)
     {
