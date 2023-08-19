@@ -524,12 +524,14 @@ static int dl_callback (struct dl_phdr_info* info, size_t size, void* data)
   mat_event_send_vattr (&mat_shlib_attrs[0], (mat_uint16) slen, info->dlpi_name);
   mat_event_send_vattr (&mat_shlib_attrs[1], (mat_pointer) info->dlpi_addr);
   mat_event_send_vattr (&mat_shlib_attrs[2], (mat_uint16) count);
+  mat_debug_msg ("\n");
   for (i = 0; i < count; i++)
     {
       mat_event_send_vattr (&mat_shlib_attrs[3], (mat_uint32) info->dlpi_phdr[i].p_type);
       mat_event_send_vattr (&mat_shlib_attrs[3], (mat_uint32) info->dlpi_phdr[i].p_flags);
       mat_event_send_vattr (&mat_shlib_attrs[4], (mat_pointer) info->dlpi_phdr[i].p_vaddr);
       mat_event_send_vattr (&mat_shlib_attrs[5], (mat_pointer) info->dlpi_phdr[i].p_memsz);
+      mat_debug_msg ("\n");
     }
   return 0;  
 }
