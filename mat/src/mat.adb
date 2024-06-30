@@ -46,7 +46,7 @@ package body MAT is
       end if;
       if Debug or Dump then
          Log_Config.Set ("log4j.logger.Util", "WARN");
-         Log_Config.Set ("log4j.logger.MAT", "INFO");
+         Log_Config.Set ("log4j.logger.MAT", "DEBUG");
       end if;
       if Debug or Dump then
          Log_Config.Set ("log4j.logger.Util.Processes", "INFO");
