@@ -66,7 +66,8 @@ abstract project Mat_Config is
             for Default_Switches ("ada") use ("-fprofile-arcs");
 	 
 	 when others =>
-	    null;
+            for Default_Switches ("ada") use ("-Wl,-Bdynamic", "-Wl,-lgnat");
+
       end case;
 
    end linker;        
