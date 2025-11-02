@@ -30,10 +30,16 @@ provided by a [Valgrind](https://valgrind.org/) plugin.
 A first version of MAT existed back in 1994 (for sun3 and sun4 only) but it was written in C++ when
 [Valgrind](https://valgrind.org/) was not available.
 
+MAT is difficult to use compared to [Valgrind](https://valgrind.org/) (hey, any help or improvement
+are welcome !!!) but it can be useful in environments where Valgrind is not available or too heavy.
+While working for Bouygues Telecom on the Bbox gateway, I've used MAT on several Mips boards
+(BCM6362, BCM63168, Vox185 < 128Mb of memory for the system) and it was very useful to understand
+the memory allocations and reduce the memory used by several programs.
+
 ## Version 1.2     - Nov 2025
 
 - Update the build process
-- Update for Ada Utility Library 2.6.0 and Ada BFD 1.3.0
+- Update for Ada Utility Library 2.8.0 and Ada BFD 1.3.0
 - Add support to analyze GNAT Ada compiler secondary stack allocations
 
 ## Version 1.1     - Apr 2021
