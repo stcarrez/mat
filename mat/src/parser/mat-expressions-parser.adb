@@ -69,6 +69,7 @@ package body MAT.Expressions.Parser is
 
       use yy_tokens, yy_goto_tables, yy_shift_reduce_tables;
 
+
       procedure handle_error;
 
       subtype goto_row is yy_goto_tables.Row;
@@ -111,6 +112,7 @@ package body MAT.Expressions.Parser is
          debug : constant Boolean := False;
       end yy;
 
+
       procedure shift_debug (state_id : yy.parse_state; lexeme : yy_tokens.Token);
       procedure reduce_debug (rule_id : Rule; state_id : yy.parse_state);
 
@@ -135,7 +137,6 @@ package body MAT.Expressions.Parser is
          return Integer (Goto_Matrix (index).Newstate);
       end goto_state;
 
-
       function parse_action (state : yy.parse_state;
                              t     : yy_tokens.Token) return Integer is
          index   : reduce_row;
@@ -159,13 +160,10 @@ package body MAT.Expressions.Parser is
       begin
 
          if yy.error_flag = 3 then --  no shift yet, clobber input.
-            if yy.debug then
-               Text_IO.Put_Line ("  -- Ayacc.YYParse: Error Recovery Clobbers "
-                                 & yy_tokens.Token'Image (yy.input_symbol));
-            end if;
             if yy.input_symbol = yy_tokens.END_OF_INPUT then  -- don't discard,
                if yy.debug then
-                  Text_IO.Put_Line ("  -- Ayacc.YYParse: Can't discard END_OF_INPUT, quiting...");
+                  Ada.Text_IO.Put_Line ("  -- Ayacc.YYParse: Can't discard END_OF_INPUT,"
+                                        & " quiting...");
                end if;
                raise yy_tokens.Syntax_Error;
             end if;
@@ -183,19 +181,20 @@ package body MAT.Expressions.Parser is
          --  find state on stack where error is a valid shift --
 
          if yy.debug then
-            Text_IO.Put_Line ("  -- Ayacc.YYParse: Looking for state with error as valid shift");
+            Ada.Text_IO.Put_Line ("  -- Ayacc.YYParse: Looking for state with"
+                                  & " error as valid shift");
          end if;
 
          loop
             if yy.debug then
-               Text_IO.Put_Line ("  -- Ayacc.YYParse: Examining State "
+               Ada.Text_IO.Put_Line ("  -- Ayacc.YYParse: Examining State "
                                  & yy.parse_state'Image (yy.state_stack (yy.tos)));
             end if;
             temp_action := parse_action (yy.state_stack (yy.tos), ERROR);
 
             if temp_action >= yy.first_shift_entry then
                if yy.tos = yy.stack_size then
-                  Text_IO.Put_Line ("  -- Ayacc.YYParse: Stack size exceeded on state_stack");
+                  Ada.Text_IO.Put_Line ("  -- Ayacc.YYParse: Stack size exceeded on state_stack");
                   raise yy_tokens.Syntax_Error;
                end if;
                yy.tos                  := yy.tos + 1;
@@ -209,7 +208,7 @@ package body MAT.Expressions.Parser is
 
             if yy.tos = 0 then
                if yy.debug then
-                  Text_IO.Put_Line
+                  Ada.Text_IO.Put_Line
                      ("  -- Ayacc.YYParse: Error recovery popped entire stack, aborting...");
                end if;
                raise yy_tokens.Syntax_Error;
@@ -217,7 +216,7 @@ package body MAT.Expressions.Parser is
          end loop;
 
          if yy.debug then
-            Text_IO.Put_Line ("  -- Ayacc.YYParse: Shifted error token in state "
+            Ada.Text_IO.Put_Line ("  -- Ayacc.YYParse: Shifted error token in state "
                               & yy.parse_state'Image (yy.state_stack (yy.tos)));
          end if;
 
@@ -226,7 +225,7 @@ package body MAT.Expressions.Parser is
       --  print debugging information for a shift operation
       procedure shift_debug (state_id : yy.parse_state; lexeme : yy_tokens.Token) is
       begin
-         Text_IO.Put_Line ("  -- Ayacc.YYParse: Shift "
+         Ada.Text_IO.Put_Line ("  -- Ayacc.YYParse: Shift "
                            & yy.parse_state'Image (state_id) & " on input symbol "
                            & yy_tokens.Token'Image (lexeme));
       end shift_debug;
@@ -234,7 +233,7 @@ package body MAT.Expressions.Parser is
       --  print debugging information for a reduce operation
       procedure reduce_debug (rule_id : Rule; state_id : yy.parse_state) is
       begin
-         Text_IO.Put_Line ("  -- Ayacc.YYParse: Reduce by rule "
+         Ada.Text_IO.Put_Line ("  -- Ayacc.YYParse: Reduce by rule "
                            & Rule'Image (rule_id) & " goto state "
                            & yy.parse_state'Image (state_id));
       end reduce_debug;
@@ -264,7 +263,7 @@ package body MAT.Expressions.Parser is
 
             --  Enter new state
             if yy.tos = yy.stack_size then
-               Text_IO.Put_Line (" Stack size exceeded on state_stack");
+               Ada.Text_IO.Put_Line (" Stack size exceeded on state_stack");
                raise yy_tokens.Syntax_Error;
             end if;
             yy.tos                  := yy.tos + 1;
@@ -283,7 +282,7 @@ package body MAT.Expressions.Parser is
 
          elsif yy.action = yy.accept_code then
             if yy.debug then
-               Text_IO.Put_Line ("  --  Ayacc.YYParse: Accepting Grammar...");
+               Ada.Text_IO.Put_Line ("  --  Ayacc.YYParse: Accepting Grammar...");
             end if;
             exit;
 
@@ -535,12 +534,11 @@ when 47 => -- #line 286
             --  Pop RHS states and goto next state
             yy.tos := yy.tos - Rule_Length (yy.rule_id) + 1;
             if yy.tos > yy.stack_size then
-               Text_IO.Put_Line (" Stack size exceeded on state_stack");
+               Ada.Text_IO.Put_Line (" Stack size exceeded on state_stack");
                raise yy_tokens.Syntax_Error;
             end if;
             yy.state_stack (yy.tos) := goto_state (yy.state_stack (yy.tos - 1),
                                                    Get_LHS_Rule (yy.rule_id));
-
             yy.value_stack (yy.tos) := YYVal;
             if yy.debug then
                reduce_debug (yy.rule_id,
