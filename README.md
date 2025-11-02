@@ -27,10 +27,10 @@ MAT was created to answer these simple questions:
 It is similar to the [Massif heap profiler](https://valgrind.org/docs/manual/ms-manual.html)
 provided by a [Valgrind](https://valgrind.org/) plugin.
 
-A first version of MAT existed back in 1994 but it was written in C++ when
+A first version of MAT existed back in 1994 (for sun3 and sun4 only) but it was written in C++ when
 [Valgrind](https://valgrind.org/) was not available.
 
-## Version 1.2     - Under development
+## Version 1.2     - Nov 2025
 
 - Update the build process
 - Update for Ada Utility Library 2.6.0 and Ada BFD 1.3.0
@@ -43,17 +43,9 @@ A first version of MAT existed back in 1994 but it was written in C++ when
 - Fix monitoring of `calloc` with glibc
 - Add colors in mat analysis
 
-# Using git
-
-The project uses git submodules to integrate several other
-projects.  To get all the sources, use the following commands:
-```
-git clone --recursive https://github.com/stcarrez/mat.git
-cd mat
-```
-
 # Building mat
 
+The project now relies on Alire to build due to some specific Ada dependencies.
 The package is composed of three separate components:
 
 - `libmat` is the shared library that instruments the memory allocation.
@@ -61,12 +53,13 @@ The package is composed of three separate components:
 - `mat` is the analysis tool.
 
 `libmat` and `matl` are written in C and `mat` is written in Ada which requires
-the GNAT Ada compiler.  By default the `mat` component is not built.
-If you only need `libmat` and `matl`, configure and build as follows:
+the GNAT Ada compiler.
 
 ```
-./configure
-make
+git clone https://github.com/stcarrez/mat.git
+cd mat
+alr update
+alr build
 ```
 
 To build a 32-bit or 64-bit version of the shared library you may use:
@@ -94,21 +87,12 @@ build for a remote mips system, use:
 To build the `mat` analysis tool, you must have installed the following
 components on your system:
 
-- the GNAT Ada compiler (at least 4.7.3 or higher),
-- the GNU Ada Bfd library (https://github.com/stcarrez/ada-bfd.git),
-- the Ada Utility Library (https://github.com/stcarrez/ada-util.git)
+- the GNAT Ada compiler (at least gcc 13 or higher),
+- the [Alire](https://alire.ada.dev/) command line tool
 
 On Debian-based systems, you may have to install the following packages:
 
   sudo apt-get install gnat gprbuild binutils-dev libiberty-dev libreadline-dev
-
-If you have not installed Ada Utility Library and Ada Bfd Library on your
-system, you can configure and build by using:
-
-```
-  ./configure --enable-ada-util --enable-ada-bfd
-  make
-```
 
 # Instrumenting your application
 
