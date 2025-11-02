@@ -4778,11 +4778,6 @@ fi
 
 DIR=`pwd $awa_pwd_option`
 
-if test x$ac_enable_mat = 'xyes'; then
-  SUBDIRS="$SUBDIRS mat"
-  SUBDIRS_INSTALL="$SUBDIRS_INSTALL mat"
-fi
-
 
 
 
@@ -5405,7 +5400,7 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile libmat/Makefile matl/Makefile mat/Makefile.conf"
+ac_config_files="$ac_config_files Makefile Makefile.conf libmat/Makefile matl/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -6094,9 +6089,9 @@ do
   case $ac_config_target in
     "libmat/src/mat-config.h") CONFIG_HEADERS="$CONFIG_HEADERS libmat/src/mat-config.h" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "Makefile.conf") CONFIG_FILES="$CONFIG_FILES Makefile.conf" ;;
     "libmat/Makefile") CONFIG_FILES="$CONFIG_FILES libmat/Makefile" ;;
     "matl/Makefile") CONFIG_FILES="$CONFIG_FILES matl/Makefile" ;;
-    "mat/Makefile.conf") CONFIG_FILES="$CONFIG_FILES mat/Makefile.conf" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
