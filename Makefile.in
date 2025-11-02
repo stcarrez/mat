@@ -29,6 +29,8 @@ all clean::
 
 install::
 	$(MAKE) -C libmat $@
+	$(ALR) exec -- gprinstall --prefix=$(DESTDIR)${prefix} -p -m --mode=usage -P mat
+	cd matl && $(ALR) exec -- gprinstall --prefix=$(DESTDIR)${prefix} -p -m --mode=usage -P matl
 
 build:: mat
 
