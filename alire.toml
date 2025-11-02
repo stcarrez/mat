@@ -56,3 +56,7 @@ MANPATH.prepend = "${CRATE_ROOT}/man"
 
 [configuration]
 disabled = true
+
+[[actions]]
+type = "post-fetch"
+command = ["sh", "configure"]
