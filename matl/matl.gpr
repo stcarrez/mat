@@ -1,0 +1,20 @@
+with "../mat/mat_config";
+
+project matl is
+
+   for Languages use ("C");
+   for Main use ("matl.c");
+   for Source_Dirs use (".");
+
+   for Object_Dir use "../" & Mat_Config'Object_Dir & "/obj";
+   for Exec_Dir use "../" & Mat_Config'Exec_Dir & "/bin";
+
+   package Binder renames Mat_Config.Binder;
+   package Compiler renames Mat_Config.Compiler;
+   package Linker renames Mat_Config.Linker;
+
+   package Builder is
+      for Default_Switches use Mat_Config.Builder'Default_Switches;
+   end Builder;
+
+end matl;
