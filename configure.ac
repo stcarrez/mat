@@ -157,11 +157,6 @@ AC_ARG_ENABLE(mat,
 AM_CHECK_HOST_PWD
 DIR=`pwd $awa_pwd_option`
 
-if test x$ac_enable_mat = 'xyes'; then
-  SUBDIRS="$SUBDIRS mat"
-  SUBDIRS_INSTALL="$SUBDIRS_INSTALL mat"
-fi
-
 AC_SUBST(SUBDIRS)
 AC_SUBST(SUBDIRS_INSTALL)
 
@@ -227,6 +222,5 @@ AC_SUBST(GTKADA_DIR)
 AC_CONFIG_FILES([Makefile
 libmat/Makefile
 matl/Makefile
-mat/Makefile.conf
 ])
 AC_OUTPUT

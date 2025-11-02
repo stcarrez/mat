@@ -3,6 +3,7 @@
 *.o
 *.so
 *.mat
+/alire/
 config.status
 CHANGES
 access.xml
@@ -23,10 +24,10 @@ autom4te.cache
 lib/
 obj/
 libmat/src/mat-config.h
-mat/Makefile.conf
-mat/regtests/results
-mat/bin
-mat/mat.cov
+Makefile.conf
+regtests/results
+bin
+mat.cov
 config.cache
-mat/gnatinspect.db
-mat/cover
+gnatinspect.db
+cover
