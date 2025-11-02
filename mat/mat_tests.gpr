@@ -1,6 +1,6 @@
 with "mat_config";
-with "@UTIL_DIR@utilada_sys";
-with "@UTIL_DIR@utilada_unit";
+with "utilada_sys";
+with "utilada_unit";
 with "mat";
 
 project Mat_Tests is

@@ -1,7 +1,7 @@
 with "mat_config";
-with "@UTIL_DIR@utilada_sys";
-with "@BFD_DIR@bfdada";
-with "../ansi-ada/ansiada";
+with "utilada_sys";
+with "bfdada";
+with "ansiada";
 
 project mat is
 
@@ -9,9 +9,9 @@ project mat is
 
    for Main use Mains;
 
-   for Source_Dirs use ("@srcdir@/src", "@srcdir@/src/events", "@srcdir@/src/frames",
-                        "@srcdir@/src/memory", "@srcdir@/src/readline",
-                        "@srcdir@/src/symbols", "@srcdir@/src/parser");
+   for Source_Dirs use ("./src", "./src/events", "./src/frames",
+                        "./src/memory", "./src/readline",
+                        "./src/symbols", "./src/parser");
 
    for Object_Dir use "./" & Mat_Config'Object_Dir & "/obj";
    for Exec_Dir use "./" & Mat_Config'Exec_Dir & "/bin";

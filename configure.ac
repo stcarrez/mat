@@ -14,7 +14,8 @@ dnl  See the License for the specific language governing permissions and
 dnl  limitations under the License.
 dnl 
 
-AC_INIT(Makefile.in)
+AC_INIT
+AC_CONFIG_SRCDIR([Makefile.in])
 
 cache_file=config.cache
 
@@ -28,7 +29,7 @@ AC_SUBST(MAT_VERSION)
 EXEC_PREFIX="$prefix"
 AC_SUBST(EXEC_PREFIX)
 
-AC_CANONICAL_SYSTEM
+AC_CANONICAL_TARGET
 
 AC_CONFIG_HEADERS([libmat/src/mat-config.h])
 
@@ -48,7 +49,7 @@ AC_CHECK_TOOL(RANLIB, ranlib, :)
 AC_CHECK_TOOL(STRIP, strip, :)
 AC_PROG_LN_S
 
-AC_ISC_POSIX
+AC_SEARCH_LIBS([strerror],[cposix])
 
 MAT_DEBUG=
 ac_enable_debug=
@@ -139,24 +140,6 @@ AC_SUBST(AR)
 SUBDIRS="libmat matl"
 SUBDIRS_INSTALL=$SUBDIRS
 
-ac_enable_ada_util=no
-AC_ARG_ENABLE(ada-util,
-  [  --enable-ada-util       Enable compilation of Ada Utility Library (disabled)],
-  [case "${enableval}" in
-    no|none)  ac_enable_ada_util= ;;
-    *)        ac_enable_ada_util=yes
-		  	  ;;
-  esac])
-
-ac_enable_ada_bfd=no
-AC_ARG_ENABLE(ada-bfd,
-  [  --enable-ada-bfd        Enable compilation of Ada BFD Library],
-  [case "${enableval}" in
-    no|none)  ac_enable_ada_bfd= ;;
-    *)        ac_enable_ada_bfd=yes
-		  	  ;;
-  esac])
-
 if test -n "$GPRBUILD"; then
   ac_enable_mat=yes
 else
@@ -174,28 +157,7 @@ AC_ARG_ENABLE(mat,
 AM_CHECK_HOST_PWD
 DIR=`pwd $awa_pwd_option`
 
-# Build ada-util only when --enable-mat and --enable-ada-util are defined.
 if test x$ac_enable_mat = 'xyes'; then
-  AM_GNAT_CHECK_PROJECT([bfdada],[bfdada])
-
-  if test T$ac_cv_gnat_project_bfdada = Tno; then
-    ac_enable_ada_bfd='yes'
-    BFD_DIR=$DIR/ada-bfd/
-  else
-    BFD_DIR=${ac_cv_gnat_project_dir_bfdada}
-  fi
-  AC_SUBST(BFD_DIR)
-
-  if test x$ac_enable_ada_util = 'xyes'; then
-    SUBDIRS="$SUBDIRS ada-util"
-    AC_CONFIG_SUBDIRS(ada-util)
-  fi
-
-  if test x$ac_enable_ada_bfd = 'xyes'; then
-    SUBDIRS="$SUBDIRS ada-bfd"    
-    AC_CONFIG_SUBDIRS(ada-bfd)
-  fi
-
   SUBDIRS="$SUBDIRS mat"
   SUBDIRS_INSTALL="$SUBDIRS_INSTALL mat"
 fi
@@ -219,19 +181,6 @@ AC_SUBST(MAT_GTKADA)
 if test x$ac_enable_mat = 'xyes'; then
 
   AC_CHECK_LIB([readline],[readline])
-
-  if test x$ac_enable_ada_util = 'xyes'; then
-    UTIL_DIR=$DIR/ada-util/
-  else
-    AM_GNAT_FIND_PROJECT([ada-util],[Ada Utility Library],[utilada_sys],
-      [git@github.com:stcarrez/ada-util.git],
-      [Building mat requires the Ada Utility Library.],
-      [
-        UTIL_DIR=${ac_cv_gnat_project_dir_utilada_sys}
-      ])
-    fi
-  fi
-  AC_SUBST(UTIL_DIR)
 
   GTKADA_DIR=
   if test x$ac_enable_gtk = 'xyes'; then
@@ -263,7 +212,7 @@ if test x$ac_enable_mat = 'xyes'; then
   fi
   rm -f t.gpr
   AC_MSG_RESULT(${GTKADA_DIR})
-
+  fi
 fi
 
 if test x$ac_enable_gtk = 'xyes'; then
@@ -275,12 +224,9 @@ fi
 AC_SUBST(GPRPATH)
 AC_SUBST(GTKADA_DIR)
 
-AC_OUTPUT(
-Makefile
+AC_CONFIG_FILES([Makefile
 libmat/Makefile
 matl/Makefile
 mat/Makefile.conf
-mat/mat.gpr
-mat/mat_gtk.gpr
-mat/mat_tests.gpr
-)
+])
+AC_OUTPUT

@@ -24,9 +24,6 @@ lib/
 obj/
 libmat/src/mat-config.h
 mat/Makefile.conf
-mat/mat_tests.gpr
-mat/mat_gtk.gpr
-mat/mat.gpr
 mat/regtests/results
 mat/bin
 mat/mat.cov
