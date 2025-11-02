@@ -220,6 +220,7 @@ AC_SUBST(GPRPATH)
 AC_SUBST(GTKADA_DIR)
 
 AC_CONFIG_FILES([Makefile
+Makefile.conf
 libmat/Makefile
 matl/Makefile
 ])

@@ -2,7 +2,6 @@ with "mat_config";
 with "utilada_sys";
 with "bfdada";
 with "ansiada";
-with "matl/matl";
 project mat is
 
    Mains := ("mat-main.adb");

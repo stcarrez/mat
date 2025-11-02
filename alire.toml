@@ -1,0 +1,58 @@
+name = "mat"
+description = "Memory Analysis Tool"
+version = "1.2.0"
+
+authors = ["Stephane.Carrez@gmail.com"]
+maintainers = ["Stephane.Carrez@gmail.com"]
+maintainers-logins = ["stcarrez"]
+licenses = "Apache-2.0"
+website = "https://github.com/stcarrez/mat"
+tags = ["memory", "profiler", "analysis"]
+
+executables = ["mat", "matl"]
+
+project-files = ["mat", "matl/matl"]
+
+long-description = """
+MAT is a simple memory analysis tool intended to help
+understand where the memory is used in a program.
+
+The tool works by using a small shared library that
+can be loaded by using the `LD_PRELOAD` dynamic linker option.
+The shared library collects memory allocation events and
+generates an event file that can be analyzed by MAT tool.
+
+From the event file, the tool is able to provide useful
+information.  This includes the details about the memory
+allocation (size, address), the complete stack frame where the
+memory allocation was made, the timestamp and thread information.
+
+MAT was created to answer these simple questions:
+
+* where is my memory used?
+* what is the size of data structures and their impact on the global memory?
+* what function or area of my program is using the most memory?
+
+"""
+
+[[depends-on]]
+utilada = "^2.8.0"
+utilada_xml = "^2.8.0"
+ansiada = "^1.0.0"
+bfdada = "^1.3.0"
+
+[gpr-set-externals."case(os)"]
+linux = { USE_MAGICADA = "yes" }
+freebsd = { USE_MAGICADA = "no" }
+macos = { USE_MAGICADA = "no" }
+windows = { USE_MAGICADA = "no" }
+
+[[pins]]
+bfdada = { url = 'https://github.com/stcarrez/ada-bfd.git' }
+
+[environment]
+PATH.prepend = "${CRATE_ROOT}/bin"
+MANPATH.prepend = "${CRATE_ROOT}/man"
+
+[configuration]
+disabled = true

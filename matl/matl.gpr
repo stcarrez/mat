@@ -1,4 +1,4 @@
-with "../mat/mat_config";
+with "../mat_config";
 
 project matl is
 
