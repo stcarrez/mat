@@ -53,6 +53,7 @@ bfdada = { url = 'https://github.com/stcarrez/ada-bfd.git' }
 [environment]
 PATH.prepend = "${CRATE_ROOT}/bin"
 MANPATH.prepend = "${CRATE_ROOT}/man"
+LD_LIBRARY_PATH.prepend = "${CRATE_ROOT}/lib"
 
 [configuration]
 disabled = true

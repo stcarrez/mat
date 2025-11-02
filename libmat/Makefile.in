@@ -89,6 +89,8 @@ clean:
 
 $(LIBNAME):		$(OBJS)
 	$(CC) -o $(LIBNAME) $(LDFLAGS) $(OBJS) $(LIBS)
+	mkdir ../lib
+	$(INSTALL) $(LIBNAME) ../lib/
 
 install:
 	mkdir -p $(DESTDIR)${libdir}

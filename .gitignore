@@ -3,7 +3,7 @@
 *.o
 *.so
 *.mat
-/alire/
+alire/
 config.status
 CHANGES
 access.xml

@@ -24,4 +24,8 @@ project mat is
       for Default_Switches use Mat_Config.Builder'Default_Switches;
    end Builder;
 
+   package Install is
+      for Artifacts ("share/man") use ("man/*");
+   end Install;
+
 end mat;
