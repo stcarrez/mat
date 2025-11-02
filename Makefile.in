@@ -24,7 +24,7 @@ SUBDIRS=libmat
 SUBDIRS_INSTALL=@SUBDIRS_INSTALL@
 
 # Build executables for all mains defined by the project.
-all test clean::
+all clean::
 	$(MAKE) -C libmat $@
 
 install::
@@ -34,6 +34,10 @@ build:: mat
 
 mat:
 	$(BUILD_COMMAND) $(GPRFLAGS) $(MAKE_ARGS)
+
+test::
+	cd regtests && $(BUILD_COMMAND) $(GPRFLAGS) $(MAKE_ARGS)
+	bin/mat_harness
 
 force:
 
