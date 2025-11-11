@@ -15,7 +15,6 @@
 --  See the License for the specific language governing permissions and
 --  limitations under the License.
 -----------------------------------------------------------------------
-with Interfaces;
 with Bfd.Sections;
 with ELF;
 with Util.Strings;
@@ -170,7 +169,6 @@ package body MAT.Symbols.Targets is
    procedure Find_Nearest_Line (Symbols : in Region_Symbols;
                                 Addr    : in MAT.Types.Target_Addr;
                                 Symbol  : out Symbol_Info) is
-      use type Bfd.Vma_Type;
       Text_Section : Bfd.Sections.Section;
       Pc : constant Bfd.Vma_Type := Bfd.Vma_Type (Addr);
    begin

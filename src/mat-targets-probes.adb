@@ -155,7 +155,7 @@ package body MAT.Targets.Probes is
       Path  : Ada.Strings.Unbounded.Unbounded_String;
       Addr  : MAT.Types.Target_Addr;
       Pos   : Natural := Defs'Last + 1;
-      Offset : MAT.Types.Target_Addr;
+      --  Offset : MAT.Types.Target_Addr;
    begin
       for I in Defs'Range loop
          declare
@@ -212,10 +212,10 @@ package body MAT.Targets.Probes is
                Region.End_Addr   := Region.Start_Addr + Region.Size;
                if Ada.Strings.Unbounded.Length (Path) = 0 then
                   Region.Path := Probe.Target.Process.Path;
-                  Offset := 0;
+                  --  Offset := 0;
                else
                   Region.Path := Path;
-                  Offset := Region.Start_Addr;
+                  --  Offset := Region.Start_Addr;
                end if;
                Event.Size := Event.Size + Region.Size;
                Region.Offset := Addr;

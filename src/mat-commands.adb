@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------
 --  mat-interp -- Command interpreter
---  Copyright (C) 2014, 2015, 2021, 2023 Stephane Carrez
+--  Copyright (C) 2014, 2015, 2021, 2023, 2025 Stephane Carrez
 --  Written by Stephane Carrez (Stephane.Carrez@gmail.com)
 --
 --  Licensed under the Apache License, Version 2.0 (the "License");
@@ -980,10 +980,10 @@ package body MAT.Commands is
             Process.Symbols.Value.Use_Demangle := Value = "on";
             return;
          end if;
-	 if Name = "colors" then
-	    Target.Color_Mode (Value = "on");
-	    return;
-	 end if;
+         if Name = "colors" then
+            Target.Color_Mode (Value = "on");
+            return;
+         end if;
       end;
    end Set_Command;
 
@@ -1039,9 +1039,11 @@ package body MAT.Commands is
    begin
       Console.Notice (N_HELP, "Available commands");
       Console.Notice (N_HELP, "exit                                Exit the tool");
-      Console.Notice (N_HELP, "addr <address>                      Give information about an address");
+      Console.Notice (N_HELP, "addr <address>                      "
+                      & "Give information about an address");
       Console.Notice (N_HELP, "event <id>                          Print the event ID");
-      Console.Notice (N_HELP, "events [-c] [-l] <selection>        List the events filtered by the selection");
+      Console.Notice (N_HELP, "events [-c] [-l] <selection>        "
+                      & "List the events filtered by the selection");
       Console.Notice (N_HELP, "threads                             List the threads");
       Console.Notice (N_HELP, "slots [-c] [-l] <selection>         List the memory slots"
                       & " filtered by the selection");
@@ -1050,11 +1052,16 @@ package body MAT.Commands is
       Console.Notice (N_HELP, "frames <level> [-c] [-l] [<filter>] Print the stack frames up"
                       & " to the given level");
       Console.Notice (N_HELP, "open <file>                         Load the mat file to analyze");
-      Console.Notice (N_HELP, "symbol <file>                       Load the executable symbol file");
-      Console.Notice (N_HELP, "info                                Print some information about the program");
-      Console.Notice (N_HELP, "maps                                Print the program memory maps");
-      Console.Notice (N_HELP, "set option {on|off}                 Set the option 'demangle' or 'colors'");
-      Console.Notice (N_HELP, "timeline <duration>                 Analyze and report groups of allocations in timeline");
+      Console.Notice (N_HELP, "symbol <file>                       "
+                      & "Load the executable symbol file");
+      Console.Notice (N_HELP, "info                                "
+                      & "Print some information about the program");
+      Console.Notice (N_HELP, "maps                                "
+                      & "Print the program memory maps");
+      Console.Notice (N_HELP, "set option {on|off}                 "
+                      & "Set the option 'demangle' or 'colors'");
+      Console.Notice (N_HELP, "timeline <duration>                 "
+                      & "Analyze and report groups of allocatiosns in timeline");
       Console.Notice (N_HELP, "Selection examples:");
       Console.Notice (N_HELP, "  size > 100 and size < 1000    "
                         & "Selection on the allocation size");
